@@ -109,18 +109,16 @@ int remote_fb_validate_layout(const RemoteFramebufferLayout *l,
 			      size_t n)
 {
 	size_t visible, offset;
-	if (l->bpp != 16) {
-		snprintf(e, n, "unsupported %u-bit framebuffer", l->bpp);
-		return -1;
-	}
-	if (l->red_offset != 11 || l->red_length != 5 || l->green_offset != 5 ||
-	    l->green_length != 6 || l->blue_offset != 0 ||
-	    l->blue_length != 5) {
-		snprintf(e, n, "unsupported RGB bitfields");
-		return -1;
-	}
+    int rgb565 = l->bpp == 16 && l->red_offset == 11 && l->red_length == 5 &&
+        l->green_offset == 5 && l->green_length == 6 && l->blue_offset == 0 && l->blue_length == 5;
+    int xrgb8888 = l->bpp == 32 && l->red_offset == 16 && l->red_length == 8 &&
+        l->green_offset == 8 && l->green_length == 8 && l->blue_offset == 0 && l->blue_length == 8;
+    if (!rgb565 && !xrgb8888) {
+        snprintf(e, n, "unsupported framebuffer pixel format (%u bpp)", l->bpp);
+        return -1;
+    }
 	if (!l->width || !l->height || l->width > 2048 || l->height > 2048 ||
-	    l->stride < l->width * 2U) {
+	    l->stride < l->width * (l->bpp / 8U)) {
 		snprintf(e, n, "invalid framebuffer dimensions or stride");
 		return -1;
 	}
@@ -199,7 +197,12 @@ static int layout_ok(const struct fb_fix_screeninfo *f,
 				     v->blue.offset,
 				     v->blue.length,
 				     f->smem_len};
-	return remote_fb_validate_layout(&l, e, n) == 0;
+	if (v->xoffset || v->red.msb_right || v->green.msb_right || v->blue.msb_right ||
+        f->type != FB_TYPE_PACKED_PIXELS || f->visual != FB_VISUAL_TRUECOLOR) {
+        snprintf(e, n, "unsupported framebuffer offsets or visual");
+        return 0;
+    }
+    return remote_fb_validate_layout(&l, e, n) == 0;
 }
 
 /**
@@ -219,7 +222,15 @@ parse_source(const char *s, const char **path, int *forced, unsigned *page)
 		*path = "/dev/fb0";
 		return 1;
 	}
-	if (!strcmp(s, "fb1") || !strcmp(s, "auto")) {
+	if (!strcmp(s, "auto")) {
+#ifdef SB_TARGET_FAB4
+        *path = "/dev/fb0";
+#else
+        *path = "/dev/fb1";
+#endif
+        return 1;
+    }
+    if (!strcmp(s, "fb1")) {
 		*path = "/dev/fb1";
 		return 1;
 	}
@@ -320,8 +331,10 @@ int remote_fb_capture(RemoteFramebuffer *fb,
 	for (attempt = 0; attempt < 2; attempt++) {
 		if (ioctl(fd, FBIOGET_VSCREENINFO, &before))
 			break;
-		if (forced)
-			before.yoffset = forced_page * before.yres;
+        if (!layout_ok(&fix, &before, fb->error, sizeof fb->error) ||
+            (size_t)before.yres * fix.line_length != length) break;
+        if (forced)
+            before.yoffset = forced_page * before.yres;
 		if (before.yoffset > before.yres_virtual ||
 		    before.yres > before.yres_virtual - before.yoffset) {
 			snprintf(
@@ -361,6 +374,7 @@ int remote_fb_capture(RemoteFramebuffer *fb,
 	out->width = before.xres;
 	out->height = before.yres;
 	out->stride = fix.line_length;
+    out->bpp = before.bits_per_pixel;
 	out->yoffset = before.yoffset;
 	out->page = before.yres ? before.yoffset / before.yres : 0;
 	out->red_offset = before.red.offset;

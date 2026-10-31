@@ -44,6 +44,8 @@ add_test(NAME extended_storage COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/storage/te
   ${CMAKE_SOURCE_DIR}/artifacts/ubi/sbdata-empty.ubifs)
 find_program(LUA_EXECUTABLE NAMES lua lua5.1)
 if(LUA_EXECUTABLE)
+  add_test(NAME touch_bridge_lua COMMAND ${LUA_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/remote/test_touch_bridge.lua ${CMAKE_SOURCE_DIR})
+  add_test(NAME platform_identity COMMAND ${LUA_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_platform.lua ${CMAKE_SOURCE_DIR})
   add_test(NAME alarm_playback_lua COMMAND ${LUA_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/alarms/test_playback.lua ${CMAKE_SOURCE_DIR})
   add_test(NAME firmware_physical_input COMMAND ${LUA_EXECUTABLE}
@@ -76,6 +78,7 @@ endif()
 
 find_program(NODE_EXECUTABLE NAMES node nodejs)
 if(NODE_EXECUTABLE)
+  add_test(NAME remote_pixel_decode COMMAND ${NODE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/remote/test_pixels.js ${CMAKE_SOURCE_DIR}/native/sbwebserver/web/js/remote.js)
   add_test(NAME process_monitor_frontend COMMAND ${NODE_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/monitor/test_performance_logic.js
     ${CMAKE_SOURCE_DIR}/native/sbwebserver/web/js/performance.js)

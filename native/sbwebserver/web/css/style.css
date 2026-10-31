@@ -14,3 +14,16 @@
 /* Firmware-only layout: polling updates values, never rebuilds these cards. */
 .firmware-page .form-row{display:block;margin-bottom:16px}.firmware-page .form-row input{max-width:720px}
 .firmware-page{display:grid;gap:16px}.firmware-page .page-title{margin-bottom:0}.firmware-page .card{min-width:0}.firmware-facts{grid-template-columns:minmax(145px,30%) minmax(0,1fr)}.firmware-facts dd{text-align:left;padding-left:18px;min-height:37px}.firmware-page .form-row{max-width:720px}.firmware-page .form-row label{display:block;font-weight:600;margin-bottom:5px}.firmware-page input:not([type=radio]){width:100%;min-width:0}.firmware-page input[name=checksum]{font-family:monospace}.firmware-source{display:flex;flex-wrap:wrap;gap:12px 24px;border:1px solid var(--line);border-radius:7px;margin:0 0 16px;padding:10px 14px}.firmware-source legend{color:var(--muted);font-size:13px}.firmware-source label{display:flex;align-items:center;gap:6px}.firmware-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.firmware-page summary{cursor:pointer;font-weight:600;color:#274c69}.firmware-page details p{max-width:80ch}.firmware-state.is-ready{color:var(--good)}.firmware-state.is-failed{color:#9b3434}#firmware-message{min-height:1.5em;margin-bottom:0;overflow-wrap:anywhere}#firmware-transfer{border-top:1px solid var(--line);margin-top:16px;padding-top:10px}#firmware-transfer h4{margin:0 0 8px}#firmware-progress{width:100%;max-width:720px;height:12px}.firmware-page [hidden]{display:none!important}.firmware-page button:disabled{opacity:.55;cursor:default}@media(max-width:540px){.firmware-facts{grid-template-columns:125px minmax(0,1fr)}.firmware-facts dd{padding-left:12px}.firmware-page .card{padding:14px}.firmware-source{flex-direction:column}.firmware-actions button{flex:1}}
+
+/* The Touch has a landscape touchscreen, with controls on the display itself. */
+.remote-touch .photo-stage{aspect-ratio:3/2}
+.remote-touch .photo-screen{border-radius:0;box-shadow:none;touch-action:none}
+.remote-touch .photo-screen canvas{touch-action:none;cursor:pointer}
+.remote-touch .photo-hotspots{pointer-events:none}
+.remote-touch .photo-screen:fullscreen canvas{width:min(100vw,176.47vh);height:min(56.667vw,100vh)}
+.remote-touch .screen-bezel{aspect-ratio:480/272}
+.remote-touch .photo-radio.calibrating .photo-screen:after{content:'LCD 480 ? 272'}
+.remote-touch .photo-settings>label,.remote-touch #capture-rotation{display:none}
+.touch-tools{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.touch-tools button{padding:9px 14px}
+.photo-hotspot{pointer-events:auto}

@@ -21,6 +21,12 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef SB_TARGET_FAB4
+#define REMOTE_PLATFORM "fab4"
+#else
+#define REMOTE_PLATFORM "baby"
+#endif
+
 #define REMOTE_CLIENTS 4
 #define REMOTE_QUEUE 32
 #define LEASE_SECONDS 15
@@ -417,7 +423,15 @@ handle_session(struct mg_connection *c, struct mg_http_message *m, int readonly)
  */
 static int valid_control(const char *c, const char *p)
 {
-	static const char *controls[] = {"home",
+#ifdef SB_TARGET_FAB4
+    unsigned x, y; int end = 0;
+    if (sscanf(c, "touch_%u_%u%n", &x, &y, &end) == 2 && end > 0 && !c[end]) {
+        if (x >= 480 || y >= 272) return 0;
+        return !strcmp(p,"down") || !strcmp(p,"drag") || !strcmp(p,"up") ||
+               !strcmp(p,"tap") || !strcmp(p,"hold");
+    }
+#endif
+    static const char *controls[] = {"home",
 					 "back",
 					 "encoder_cw",
 					 "encoder_ccw",
@@ -540,20 +554,23 @@ static void raw_frame(struct mg_connection *c, RemoteFrame *f)
 	mg_printf(
 		c,
 		"HTTP/1.1 200 OK\r\nContent-Type: "
-		"application/x-rgb565\r\nContent-Length: %lu\r\nCache-Control: "
+		"%s\r\nContent-Length: %lu\r\nCache-Control: "
 		"no-store\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Width: "
 		"%u\r\nX-Frame-Height: %u\r\nX-Frame-Stride: "
-		"%u\r\nX-Frame-Format: RGB565\r\nX-Frame-Byte-Order: "
+		"%u\r\nX-Frame-Format: %s\r\nX-Frame-Byte-Order: "
 		"little-endian\r\nX-Frame-Orientation: "
-		"physical-portrait\r\nX-Frame-Sequence: "
+		"%s\r\nX-Frame-Sequence: "
 		"%llu\r\nX-Frame-Timestamp: %llu\r\nX-Capture-Us: "
 		"%llu\r\nX-Framebuffer: %s\r\nX-Framebuffer-Page: "
 		"%u\r\nConnection: close\r\n\r\n",
-		(unsigned long)f->length,
-		f->width,
+        f->bpp == 32 ? "application/x-bgrx8888" : "application/x-rgb565",
+        (unsigned long)f->length,
+        f->width,
 		f->height,
-		f->stride,
-		(unsigned long long)f->sequence,
+        f->stride,
+        f->bpp == 32 ? "BGRX8888" : "RGB565",
+        f->bpp == 32 ? "logical-landscape" : "physical-portrait",
+        (unsigned long long)f->sequence,
 		(unsigned long long)f->captured_ms,
 		(unsigned long long)f->capture_us,
 		f->device,
@@ -680,7 +697,7 @@ static void status(struct mg_connection *c)
 	bridge = !stat(heartbeat, &st) && time(NULL) - st.st_mtime < 4;
 	snprintf(b,
 		 sizeof b,
-		 "{\"clients\":%u,\"capture_active\":%s,\"bmp_requested\":%s,"
+		 "{\"platform\":\"" REMOTE_PLATFORM "\",\"clients\":%u,\"capture_active\":%s,\"bmp_requested\":%s,"
 		 "\"jive_bridge\":%s,\"frame_sequence\":%llu,\"queue_depth\":%"
 		 "u,\"last_error\":\"%s\"}",
 		 active_leases(),

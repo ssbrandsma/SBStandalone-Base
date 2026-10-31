@@ -1,0 +1,77 @@
+{
+  "version": "0.7.0",
+  "applets": [
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.0",
+      "target": "baby",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.0-baby.zip",
+      "sha": "e47f6f955edf355d12d61bdf4cb9808f64941c18",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
+      "changes": "Dual-platform Baby/Fab4 builds and live Virtual Touch display with touchscreen controls.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.0",
+      "target": "fab4",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.0-fab4.zip",
+      "sha": "94d40186bb3cba27a7155e0c404f039aa34338ee",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
+      "changes": "Dual-platform Baby/Fab4 builds and live Virtual Touch display with touchscreen controls.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.18",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.18.zip",
+      "sha": "cc13a8e7c298cc9a4a32b34524d5c74d232b345e",
+      "desc": "Standalone internet radio playback for Squeezebox Radio.",
+      "changes": "Managed LMS handoff and local playback-owner fixes, with user stations and exact-name logo fallback.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.18",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.18.zip",
+      "sha": "cc13a8e7c298cc9a4a32b34524d5c74d232b345e",
+      "desc": "Standalone internet radio playback for Squeezebox Touch.",
+      "changes": "Managed LMS handoff and local playback-owner fixes, with user stations and exact-name logo fallback.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "StandaloneBase-0.7.0-baby.zip",
+      "target": "baby",
+      "sha1": "e47f6f955edf355d12d61bdf4cb9808f64941c18",
+      "sha256": "dc66873bf56931396d8579efb6c77ff676ab817a5849dcb6b13f9620e62bc62b"
+    },
+    {
+      "file": "StandaloneBase-0.7.0-fab4.zip",
+      "target": "fab4",
+      "sha1": "94d40186bb3cba27a7155e0c404f039aa34338ee",
+      "sha256": "0c1f618c5c6b69897f98581afb6999caaa198f129518818140fee67d727d54da"
+    },
+    {
+      "file": "StandaloneRadio-0.9.18.zip",
+      "target": "baby,fab4",
+      "sha1": "cc13a8e7c298cc9a4a32b34524d5c74d232b345e",
+      "sha256": "37f621c7b8f9400821c7ba4bfe7ba03883a02cf83c1c90745acd6f2c9c957667"
+    }
+  ]
+}

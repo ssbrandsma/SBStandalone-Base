@@ -1,4 +1,5 @@
 -- Exercise the real Lua 5.1 module sandbox: require is NOT a module global.
+package.preload["applets.StandaloneBase.Platform"] = function() return {detect=function() return {name="baby"} end} end
 local framework = {constants = function() end}
 package.preload['loop.simple'] = function() return {class = function() end} end
 package.preload['jive.ui.Framework'] = function() return framework end

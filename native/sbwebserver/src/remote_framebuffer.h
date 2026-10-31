@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 typedef struct {
-	unsigned width, height, stride, page, yoffset;
+	unsigned width, height, stride, page, yoffset, bpp;
 	unsigned red_offset, red_length, green_offset, green_length;
 	unsigned blue_offset, blue_length;
 	uint64_t sequence, captured_ms, capture_us;

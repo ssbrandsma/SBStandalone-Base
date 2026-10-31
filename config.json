@@ -1,6 +1,6 @@
 {
   "catalog_version": "1",
-  "standalone_base_version": "0.6.7",
+  "standalone_base_version": "0.7.0",
   "server": {
     "name": "Standalone Base",
     "uuid": "9d989f40-499a-4b85-b92f-8dc415af2a04",
@@ -15,13 +15,26 @@
     {
       "name": "StandaloneBase",
       "title": "Standalone Base",
-      "version": "0.6.7",
+      "version": "0.7.0",
       "target": "baby",
       "min_target_version": "7.7.2",
-      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.6.7.zip",
-      "sha": "fd40ca82416c9d0a0dcb7eeea7bd8be564a2736f",
-      "desc": "Local LMS-compatible infrastructure services for Squeezebox Radio.",
-      "changes": "Fix HTTPS playback for legacy RSA/AES-GCM broadcasters such as Radio Enciclopedia, retaining TLS 1.3 and device-target filtering.",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.0-baby.zip",
+      "sha": "e47f6f955edf355d12d61bdf4cb9808f64941c18",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
+      "changes": "Dual-platform Baby/Fab4 builds and live Virtual Touch display with touchscreen controls.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.0",
+      "target": "fab4",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.0-fab4.zip",
+      "sha": "94d40186bb3cba27a7155e0c404f039aa34338ee",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
+      "changes": "Dual-platform Baby/Fab4 builds and live Virtual Touch display with touchscreen controls.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },
@@ -33,8 +46,21 @@
       "min_target_version": "7.7",
       "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.18.zip",
       "sha": "cc13a8e7c298cc9a4a32b34524d5c74d232b345e",
-      "desc": "Standalone internet radio playback for Logitech Squeezebox Radio.",
-      "changes": "Include managed LMS handoff and local playback-owner fixes alongside native UBIFS stations and exact-name logo fallback.",
+      "desc": "Standalone internet radio playback for Squeezebox Radio.",
+      "changes": "Managed LMS handoff and local playback-owner fixes, with user stations and exact-name logo fallback.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.18",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.18.zip",
+      "sha": "cc13a8e7c298cc9a4a32b34524d5c74d232b345e",
+      "desc": "Standalone internet radio playback for Squeezebox Touch.",
+      "changes": "Managed LMS handoff and local playback-owner fixes, with user stations and exact-name logo fallback.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },
@@ -61,19 +87,6 @@
       "sha": "f1f24a4e377e6b6ee3e95d82b0c536a23f6e7b1e",
       "desc": "Qobuz Connect playback for Logitech Squeezebox Radio. Requires StandaloneBase.",
       "changes": "Adds Disabled, Manual and Always On lifecycle modes with safe supervision and detailed status.",
-      "creator": "Sjoerd Brandsma",
-      "email": ""
-    },
-    {
-      "name": "StandaloneRadio",
-      "title": "Standalone Radio",
-      "version": "0.9.18",
-      "target": "fab4",
-      "min_target_version": "7.7",
-      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.18.zip",
-      "sha": "cc13a8e7c298cc9a4a32b34524d5c74d232b345e",
-      "desc": "Standalone internet radio playback for Squeezebox Touch. LMS is only needed to install the applet.",
-      "changes": "Include managed LMS handoff and local playback-owner fixes alongside native UBIFS stations and exact-name logo fallback.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     }

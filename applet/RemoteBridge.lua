@@ -1,3 +1,4 @@
+local Platform = require("applets.StandaloneBase.Platform")
 local oo = require("loop.simple")
 local Framework = require("jive.ui.Framework")
 local Event = require("jive.ui.Event")
@@ -17,6 +18,7 @@ local BMP = RUN.."/remote-screen.bmp"
 local HEARTBEAT = RUN.."/remote-bridge-heartbeat"
 local CAPABILITY = "/mnt/storage/standalonebase/remote.capability"
 local SETTINGS = "/mnt/storage/standalonebase/settings.conf"
+local platform = Platform.detect()
 local injecting = false
 local untrustedUntil = 0
 
@@ -41,6 +43,21 @@ local function webPort()
     f:close(); return 80
 end
 local function dispatch(control,phase)
+    local x,y=control:match("^touch_(%d+)_(%d+)$")
+    if x and platform.name=="fab4" then
+        x,y=tonumber(x),tonumber(y)
+        local sw,sh=Framework:getScreenSize()
+        if x>=sw or y>=sh then return end
+        local types={down=EVENT_MOUSE_DOWN,drag=EVENT_MOUSE_DRAG,up=EVENT_MOUSE_UP,
+            tap=EVENT_MOUSE_PRESS,hold=EVENT_MOUSE_HOLD}
+        -- Firmware's C constructor pushes its userdata before reading optional
+        -- mouse fields. Supply all three fields so it never reads that userdata.
+        if types[phase] then
+            Framework:pushEvent(Event:new(types[phase],x,y,1,1,1))
+            if phase=="tap" then Framework:pushEvent(Event:new(EVENT_MOUSE_UP,x,y,1,1,1)) end
+        end
+        return
+    end
     if control=="encoder_cw" then Framework:pushEvent(Event:new(EVENT_SCROLL,1)); return end
     if control=="encoder_ccw" then Framework:pushEvent(Event:new(EVENT_SCROLL,-1)); return end
     local action=(phase=="long" and hold[control]) or short[control]

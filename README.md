@@ -67,8 +67,8 @@ $env:SB_RELEASE_BASE_URL = 'https://downloads.example.invalid/standalonebase'
 ```
 
 To produce another version, update:
-- $Version in [build-package.ps1 (line 8)]
-- zipfile in [build-package.sh (line 13)]
+- Release version in `packaging/build-package.sh` and `packaging/target-metadata.py`
+- Build both targets using `sh scripts/build-arm.sh all`, then package with `sh packaging/build-package.sh all`
 - The displayed version in [StandaloneBaseApplet.lua]
 - Native version constants in [sbbase.h (line 10)]and [sbproxy.c (line 19)]
 - standalone_base_version in the tracked root `config.json`; update its applet versions, public download URLs and ZIP checksums when publishing applets
@@ -97,3 +97,7 @@ See [timed ID3 metadata](docs/HLS_TIMED_METADATA.md) for session-aware track
 updates, bounded artwork and synchronization limits.
 The [metadata-delivery optimization](docs/HLS_METADATA_DELIVERY.md) replaces
 500 ms HTTP polling with bounded long polling and one-shot playback timers.
+
+## Release 0.7.0
+
+Baby and Fab4 share one source tree, with target-specific static binaries and installer ZIPs. Fab4 includes live landscape Virtual Touch capture and touchscreen controls. See [dual-platform build instructions](docs/DUAL_PLATFORM.md) and [Virtual Touch validation](docs/VIRTUAL_TOUCH.md).

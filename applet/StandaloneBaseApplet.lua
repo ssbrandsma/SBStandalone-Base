@@ -8,6 +8,8 @@ local Timer = require("jive.ui.Timer")
 local SlimServer = require("jive.slim.SlimServer")
 local Player = require("jive.slim.Player")
 local migrationLog = require("jive.utils.log").logger("StandaloneBase")
+local Platform = require("applets.StandaloneBase.Platform")
+local platform = Platform.detect()
 local StorageManager = require("applets.StandaloneBase.StorageManager")
 local ExtendedStorageState = require("applets.StandaloneBase.ExtendedStorageState")
 local TimeSync = require("applets.StandaloneBase.TimeSync")
@@ -185,7 +187,20 @@ local function refreshConfig()
     if f then f:close() else os.execute("cp "..ROOT.."/config.json "..CONFIG) end
 end
 function init(self)
-    if started then return end; started=true
+    if started then return end
+    if platform.name == "unknown" or not Platform.packageMatches(platform.name) then
+        migrationLog:error("StandaloneBase: unsupported board; services not started")
+        return
+    end
+    if platform.name == "fab4" then
+        local conflicts=Platform.portConflicts()
+        if #conflicts > 0 then
+            migrationLog:error("StandaloneBase: ports occupied: ", table.concat(conflicts,", "),
+                "; inspect TinySC via Settings > Advanced > Squeezebox Server, then retry")
+            return
+        end
+    end
+    started=true
     os.execute("mkdir -p "..RUN.." /mnt/storage/standalonebase")
     os.execute("chmod 755 "..ROOT.."/svgpngrenderer "..ROOT.."/sb-storage-helper "..ROOT.."/storage-setup.sh "..ROOT.."/storage-boot.sh >/dev/null 2>&1")
     redirectBootstrapServer()
@@ -199,13 +214,14 @@ function init(self)
     for i=2,#SERVICES do if not launch(SERVICES[i]) then self.failures[SERVICES[i].exe]=1 end end
     self.timeSync=TimeSync.new(); self.timeSync:start()
     self.remoteBridge=RemoteBridge(); self.remoteBridge:init()
-    self.firmwareUpdates=FirmwareUpdates.new(self,self.remoteBridge); self.firmwareUpdates:start()
+    if platform.extended_storage then self.firmwareUpdates=FirmwareUpdates.new(self,self.remoteBridge); self.firmwareUpdates:start() end
     self.alarmPlayback=AlarmPlayback.new()
     jnt:subscribe(self.alarmPlayback)
     redirectLiveBootstrapServer()
     self.monitor=Timer(15000,function() self:supervise() end); self.monitor:start()
     -- A firmware upgrade can leave sbdata intact while removing its boot
     -- support. Recover asynchronously after reinstall, never during check().
+    if platform.extended_storage then
     self.storageRecoveryTimer=Timer(2000,function()
         self.storageRecoveryTimer=nil
         local status=storage:check()
@@ -218,6 +234,7 @@ function init(self)
         end
     end,true)
     self.storageRecoveryTimer:start()
+    end
 end
 function startServices(self)
     for _,s in ipairs(SERVICES) do if not launch(s) then self.failures[s.exe]=1 end end
@@ -241,10 +258,10 @@ function menu(self)
     local window=Window("text_list","Standalone Base")
     local menu=SimpleMenu("menu")
     for _,s in ipairs(SERVICES) do menu:addItem({text=s.name..": "..(alive(s) and "Running" or "Stopped")}) end
-    menu:addItem({text="Extended Storage",callback=function() self:storageMenu() end})
+    if platform.extended_storage then menu:addItem({text="Extended Storage",callback=function() self:storageMenu() end}) end
     menu:addItem({text="Web Access",callback=function() if not self.remoteBridge:isInjecting() then self:webAccessMenu() end end})
-    menu:addItem({text="Custom Firmware Updates",callback=function() self.firmwareUpdates:menu() end})
-	menu:addItem({text="Version: 0.6.7"})
+    if self.firmwareUpdates then menu:addItem({text="Custom Firmware Updates",callback=function() self.firmwareUpdates:menu() end}) end
+	menu:addItem({text="Version: 0.7.0"})
     window:addWidget(menu); window:show()
 end
 function webAccessMenu(self)

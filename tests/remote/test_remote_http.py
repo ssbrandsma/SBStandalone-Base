@@ -65,6 +65,17 @@ with tempfile.TemporaryDirectory() as directory:
         assert status == 200 and b"home\tshort\t1" in actions and b"back\tlong\t1" in actions
         assert b"encoder_ccw\tshort\t2" in actions and b"preset_6\tlong\t4" in actions and b"volume_up\trepeat\t5" in actions
         assert call("/api/remote/actions", auth=False)[0] == 403
+        platform=json.loads(call("/api/remote/status")[1])["platform"]
+        for control in ("touch_480_0","touch_0_272","touch_-1_0","touch_1_2garbage"):
+            assert call("/api/remote/input","POST",{"client":client,"control":control,"phase":"down","sequence":31})[0]==400
+        if platform=="fab4":
+            time.sleep(1.05)
+            for seq,phase in enumerate(("down","drag","hold","up","tap"),31):
+                assert call("/api/remote/input","POST",{"client":client,"control":"touch_479_271","phase":phase,"sequence":seq})[0]==202
+            actions=call("/api/remote/actions",headers={"X-Remote-Capability":capability},auth=False)[1]
+            assert b"touch_479_271\tdown" in actions and b"touch_479_271\ttap" in actions
+        else:
+            assert call("/api/remote/input","POST",{"client":client,"control":"touch_1_2","phase":"down","sequence":31})[0]==400
         assert call("/webserver-settings", "PUT", {"readonly":True})[0] == 200
         assert call("/api/remote/input", "POST", {"client":client,"control":"home","phase":"short","sequence":31})[0] == 403
         time.sleep(16)
