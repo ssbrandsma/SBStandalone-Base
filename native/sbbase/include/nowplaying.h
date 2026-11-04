@@ -91,6 +91,9 @@ int np_demo(np_manager *m);
 int np_demo_next(np_manager *m);
 int np_playerstatus_json(np_manager *m, char *out, size_t cap);
 int np_public_json(np_manager *m, char *out, size_t cap);
+/* Trusted native projection only. Caller must independently hold confirmed
+ * physical Music ownership. This function cannot acquire/release a decoder. */
+int np_native_music(np_manager *, const np_status *, int physically_owned);
 /* Handle an LMS command array inside a Comet message. Returns 1 if handled. */
 int np_lms_query_json(
 	np_manager *m, const char *json, size_t len, char *out, size_t cap);
@@ -101,6 +104,10 @@ int np_lms_arguments(const char *json,
 		     size_t capacity,
 		     char arguments[][512],
 		     int maximum);
+/* Reuse the same bounded tokenizer/escaping for native protocol adapters. */
+typedef struct { char channel[64], client[32], response[160], unsubscribe[160], id[96]; } np_lms_envelope;
+int np_lms_envelope_read(const char *,size_t,np_lms_envelope *);
+size_t np_json_escape(char *,size_t,const char *);
 
 /* Returns an HTTP status code and writes a JSON response. changed is set when
  * SqueezePlay-visible state changed. */

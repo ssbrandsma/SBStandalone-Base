@@ -48,7 +48,7 @@ with tempfile.TemporaryDirectory(prefix="sb-alarm-comet-") as temporary:
             except OSError:
                 time.sleep(0.05)
         assert slim is not None
-        helo = bytes([7, 0]) + bytes.fromhex(PLAYER.replace(":", ""))
+        helo = bytes([7, 0]) + bytes.fromhex(PLAYER.replace(":", "")) + bytes(26) + b"ENModel=baby,mp3,flc,ogg"
         slim.sendall(b"HELO" + struct.pack("!I", len(helo)) + helo)
         assert b"strm" in slim.recv(100)
         validate_menu(command("alarmsettings", 0, 100))

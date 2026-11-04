@@ -55,7 +55,7 @@ try:
             time.sleep(0.05)
     assert slim is not None, "sbbase did not start"
     slim.settimeout(2)
-    helo = bytes([7, 0]) + bytes.fromhex(PLAYER.replace(":", ""))
+    helo = bytes([7, 0]) + bytes.fromhex(PLAYER.replace(":", "")) + bytes(26) + b"ENModel=baby,mp3,flc,ogg"
     slim.sendall(b"HELO" + struct.pack("!I", len(helo)) + helo)
     assert frame(slim)[:4] == b"strm"
 

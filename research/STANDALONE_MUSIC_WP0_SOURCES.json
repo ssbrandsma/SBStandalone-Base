@@ -1,0 +1,816 @@
+[
+  {
+    "path": "native/common/music_contracts.h",
+    "sha256": "dfc03df67f5dcb116ac3a84e993285857fd981103bfdc6f5528769ebc942e500",
+    "anchors": [
+      {
+        "line": 7,
+        "text": "#define SB_MUSIC_ENABLED 0"
+      },
+      {
+        "line": 115,
+        "text": "int sb_music_source_equal(const sb_music_source_id *, const sb_music_source_id *);"
+      },
+      {
+        "line": 116,
+        "text": "int sb_music_media_current(const sb_music_media *, const sb_music_media *);"
+      },
+      {
+        "line": 117,
+        "text": "int sb_music_yield_ack(sb_music_ownership *, uint64_t request_id,"
+      },
+      {
+        "line": 119,
+        "text": "int sb_music_can_commit_owner(const sb_music_ownership *, uint64_t now_ms);"
+      },
+      {
+        "line": 120,
+        "text": "int sb_music_stream_event(sb_music_stream_guard *, const sb_music_stream_id *, sb_music_event);"
+      },
+      {
+        "line": 121,
+        "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *, const sb_music_queue_update *);"
+      },
+      {
+        "line": 122,
+        "text": "int sb_music_query_valid(const sb_music_query *);"
+      },
+      {
+        "line": 123,
+        "text": "int sb_music_resource_current(const sb_music_resource *, const sb_music_media *,"
+      },
+      {
+        "line": 125,
+        "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *);"
+      }
+    ]
+  },
+  {
+    "path": "native/common/music_contracts.c",
+    "sha256": "caa3b17ec99d83d667744d8ecc4af86ccf7d0128e4d21d3f13d28fe9f575354e",
+    "anchors": [
+      {
+        "line": 4,
+        "text": "int sb_music_source_equal(const sb_music_source_id *a, const sb_music_source_id *b)"
+      },
+      {
+        "line": 9,
+        "text": "int sb_music_media_current(const sb_music_media *a, const sb_music_media *b)"
+      },
+      {
+        "line": 14,
+        "text": "int sb_music_yield_ack(sb_music_ownership *o, uint64_t request, uint64_t generation,"
+      },
+      {
+        "line": 25,
+        "text": "int sb_music_can_commit_owner(const sb_music_ownership *o, uint64_t now)"
+      },
+      {
+        "line": 31,
+        "text": "static int stream_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)"
+      },
+      {
+        "line": 38,
+        "text": "int sb_music_stream_event(sb_music_stream_guard *s, const sb_music_stream_id *id, sb_music_event event)"
+      },
+      {
+        "line": 51,
+        "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *s, const sb_music_queue_update *u)"
+      },
+      {
+        "line": 58,
+        "text": "int sb_music_query_valid(const sb_music_query *q)"
+      },
+      {
+        "line": 65,
+        "text": "int sb_music_resource_current(const sb_music_resource *r, const sb_music_media *m,"
+      },
+      {
+        "line": 77,
+        "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *r)"
+      }
+    ]
+  },
+  {
+    "path": "native/sbbase/include/lms_command.h",
+    "sha256": "4f54a783d64c0025887bbbaffb805bc000a13852b7437da4baf1f1c9fa131cf6",
+    "anchors": [
+      {
+        "line": 16,
+        "text": "int sb_lms_json_valid(const char *, size_t);"
+      },
+      {
+        "line": 17,
+        "text": "sb_command_result sb_lms_command_parse(const char *, size_t, sb_lms_command *);"
+      },
+      {
+        "line": 18,
+        "text": "const char *sb_lms_tag(const sb_lms_command *, const char *);"
+      },
+      {
+        "line": 19,
+        "text": "const char *sb_lms_command_error(sb_command_result);"
+      }
+    ]
+  },
+  {
+    "path": "native/sbbase/src/lms_command.c",
+    "sha256": "922a8ec6b07f32d6c990b5f6b38bdbc55a2413bb9dcd5fd3234b37195f339e4c",
+    "anchors": [
+      {
+        "line": 7,
+        "text": "static void space(cursor *c) { while (c->p < c->end && *c->p && strchr(\" \\t\\r\\n\", *c->p)) c->p++; }"
+      },
+      {
+        "line": 8,
+        "text": "static int hex(unsigned char c) { return c >= '0' && c <= '9' ? c-'0' : c >= 'a' && c <= 'f' ? c-'a'+10 : c >= 'A' && c <= 'F' ? c-'A'+10 : -1; }"
+      },
+      {
+        "line": 9,
+        "text": "static int unicode(cursor *c)"
+      },
+      {
+        "line": 15,
+        "text": "static int string(cursor *c, int key)"
+      },
+      {
+        "line": 43,
+        "text": "static int value(cursor *c, unsigned depth)"
+      },
+      {
+        "line": 78,
+        "text": "int sb_lms_json_valid(const char *json, size_t length)"
+      },
+      {
+        "line": 85,
+        "text": "const char *sb_lms_tag(const sb_lms_command *cmd,const char *key)"
+      },
+      {
+        "line": 91,
+        "text": "sb_command_result sb_lms_command_parse(const char *json,size_t length,sb_lms_command *cmd)"
+      },
+      {
+        "line": 116,
+        "text": "const char *sb_lms_command_error(sb_command_result r)"
+      }
+    ]
+  },
+  {
+    "path": "native/sbbase/src/main.c",
+    "sha256": "5c9d251945a5f07a1012537e1ebae3ff3a2b4c6e1fe4853947da7f81bdba2a07",
+    "anchors": [
+      {
+        "line": 54,
+        "text": "#define SEND_WAIT_MS 2000"
+      },
+      {
+        "line": 67,
+        "text": "static int player_connected;"
+      },
+      {
+        "line": 68,
+        "text": "static int test_nowplaying;"
+      },
+      {
+        "line": 89,
+        "text": "static size_t catalog_entry_count;"
+      },
+      {
+        "line": 96,
+        "text": "static int"
+      },
+      {
+        "line": 103,
+        "text": "static void stop(int sig)"
+      },
+      {
+        "line": 113,
+        "text": "static void reload(int sig)"
+      },
+      {
+        "line": 124,
+        "text": "static int nonblock(int fd)"
+      },
+      {
+        "line": 136,
+        "text": "static int listener(int type, unsigned port)"
+      },
+      {
+        "line": 165,
+        "text": "static void close_client(client *c)"
+      },
+      {
+        "line": 183,
+        "text": "static int send_data(client *c, const char *data, size_t size)"
+      },
+      {
+        "line": 201,
+        "text": "r = poll(&pfd, 1, SEND_WAIT_MS);"
+      },
+      {
+        "line": 226,
+        "text": "static void"
+      },
+      {
+        "line": 253,
+        "text": "static void stream_start(client *c, const char *body)"
+      },
+      {
+        "line": 278,
+        "text": "static void stream_heartbeat(client *c)"
+      },
+      {
+        "line": 289,
+        "text": "static void stream_event(client *c, const char *body)"
+      },
+      {
+        "line": 304,
+        "text": "static void player_status_json(char *out, size_t cap)"
+      },
+      {
+        "line": 320,
+        "text": "static int split_playerstatus_path(const char *path,"
+      },
+      {
+        "line": 361,
+        "text": "static void publish_playerstatus(void)"
+      },
+      {
+        "line": 406,
+        "text": "static void register_playerstatus(const char *path)"
+      },
+      {
+        "line": 432,
+        "text": "static void firmware_payload(const char *version,"
+      },
+      {
+        "line": 450,
+        "text": "static void firmware_parameter(const char *message,"
+      },
+      {
+        "line": 471,
+        "text": "static void firmware_subscribe(const char *path,"
+      },
+      {
+        "line": 511,
+        "text": "static void firmware_publish(const char *reconnected)"
+      },
+      {
+        "line": 544,
+        "text": "static void unregister_playerstatus(const char *body)"
+      },
+      {
+        "line": 569,
+        "text": "static void publish_player(void)"
+      },
+      {
+        "line": 613,
+        "text": "static void token(char out[9])"
+      },
+      {
+        "line": 625,
+        "text": "static void json_unescape_slashes(char *s)"
+      },
+      {
+        "line": 641,
+        "text": "static int valid_player_id(const char *id)"
+      },
+      {
+        "line": 666,
+        "text": "static int json_string(const char *body, const char *key, char *out, size_t cap)"
+      },
+      {
+        "line": 695,
+        "text": "static int json_raw(const char *body, const char *key, char *out, size_t cap)"
+      },
+      {
+        "line": 730,
+        "text": "static int before(const char *start, const char *needle, const char *end)"
+      },
+      {
+        "line": 743,
+        "text": "static void add_json(char *out, size_t cap, size_t *used, const char *json)"
+      },
+      {
+        "line": 760,
+        "text": "static int load_catalog(const char *path)"
+      },
+      {
+        "line": 874,
+        "text": "static void catalog_response(const char *target, char *out, size_t capacity)"
+      },
+      {
+        "line": 913,
+        "text": "static int"
+      },
+      {
+        "line": 942,
+        "text": "static int command_delimiter(const char **cursor, const char *end, char ch)"
+      },
+      {
+        "line": 962,
+        "text": "static int switch_server(const char *start, const char *end)"
+      },
+      {
+        "line": 1016,
+        "text": "static const char *message_end(const char *p)"
+      },
+      {
+        "line": 1044,
+        "text": "static void"
+      },
+      {
+        "line": 1283,
+        "text": "static void handle_http(client *c, const sb_config *cfg)"
+      },
+      {
+        "line": 1572,
+        "text": "static void keepalive(client *c)"
+      },
+      {
+        "line": 1589,
+        "text": "static void handle_slim(client *c)"
+      },
+      {
+        "line": 1649,
+        "text": "static void defaults(sb_config *c)"
+      },
+      {
+        "line": 1667,
+        "text": "int main(int argc, char **argv)"
+      }
+    ]
+  },
+  {
+    "path": "native/sbbase/src/nowplaying.c",
+    "sha256": "30eb6c674b92043d9a014c71b33f34fc1e7fc901349b647255b474d82e54a54b",
+    "anchors": [
+      {
+        "line": 43,
+        "text": "static int"
+      },
+      {
+        "line": 62,
+        "text": "static void reset_status(np_manager *m)"
+      },
+      {
+        "line": 93,
+        "text": "void np_destroy(np_manager *m)"
+      },
+      {
+        "line": 131,
+        "text": "int np_expire(np_manager *m)"
+      },
+      {
+        "line": 147,
+        "text": "static int alloc_token(char out[NP_TOKEN_MAX])"
+      },
+      {
+        "line": 171,
+        "text": "static int parse_json(const char *js, size_t len, jtok *t, unsigned cap)"
+      },
+      {
+        "line": 263,
+        "text": "static int eq(const char *j, const jtok *t, const char *s)"
+      },
+      {
+        "line": 277,
+        "text": "static int subtree(jtok *t, int n, int i)"
+      },
+      {
+        "line": 295,
+        "text": "static int member(const char *j, jtok *t, int n, int obj, const char *key)"
+      },
+      {
+        "line": 316,
+        "text": "static int hex4(const char *s)"
+      },
+      {
+        "line": 342,
+        "text": "static size_t put_utf8(char *o, size_t cap, size_t n, unsigned v)"
+      },
+      {
+        "line": 377,
+        "text": "static int string_value(const char *j, const jtok *t, char *o, size_t cap)"
+      },
+      {
+        "line": 439,
+        "text": "static int boolean(const char *j, const jtok *t, int *d)"
+      },
+      {
+        "line": 462,
+        "text": "static int number(const char *j, const jtok *t, uint64_t *d)"
+      },
+      {
+        "line": 484,
+        "text": "static int valid_utf8(const char *s)"
+      },
+      {
+        "line": 516,
+        "text": "static size_t esc(char *o, size_t cap, const char *s)"
+      },
+      {
+        "line": 548,
+        "text": "static const char *state_name(np_state s)"
+      },
+      {
+        "line": 562,
+        "text": "static const char *lms_mode(np_state s)"
+      },
+      {
+        "line": 574,
+        "text": "int np_public_json(np_manager *m, char *out, size_t cap)"
+      },
+      {
+        "line": 621,
+        "text": "int np_playerstatus_json(np_manager *m, char *out, size_t cap)"
+      },
+      {
+        "line": 712,
+        "text": "static int getstr(const char *j,"
+      },
+      {
+        "line": 739,
+        "text": "static int"
+      },
+      {
+        "line": 756,
+        "text": "static int"
+      },
+      {
+        "line": 772,
+        "text": "static int has_member(const char *j, jtok *t, int n, int obj, const char *k)"
+      },
+      {
+        "line": 778,
+        "text": "static int metadata_uint(const char *j,"
+      },
+      {
+        "line": 794,
+        "text": "static int audio_read(const char *j,"
+      },
+      {
+        "line": 876,
+        "text": "static int station_read(const char *j, jtok *t, int n, np_station *station)"
+      },
+      {
+        "line": 916,
+        "text": "static int track_equal(const np_track *a, const np_track *b)"
+      },
+      {
+        "line": 940,
+        "text": "static int session_ok(np_manager *m, const char *j, jtok *t, int n)"
+      },
+      {
+        "line": 954,
+        "text": "static int error_json(char *out, size_t cap, const char *code)"
+      },
+      {
+        "line": 967,
+        "text": "int np_queue_command(np_manager *m, const char *command, int64_t value)"
+      },
+      {
+        "line": 991,
+        "text": "static int commands_json(np_manager *m, char *out, size_t cap)"
+      },
+      {
+        "line": 1024,
+        "text": "int np_api(np_manager *m,"
+      },
+      {
+        "line": 1448,
+        "text": "int np_demo(np_manager *m)"
+      },
+      {
+        "line": 1475,
+        "text": "int np_demo_next(np_manager *m)"
+      },
+      {
+        "line": 1512,
+        "text": "static void write_json(np_writer *w, const char *format, ...)"
+      },
+      {
+        "line": 1528,
+        "text": "static void write_bytes(np_writer *w, const unsigned char *bytes, size_t length)"
+      },
+      {
+        "line": 1542,
+        "text": "static void write_string_content(np_writer *w, const char *value)"
+      },
+      {
+        "line": 1561,
+        "text": "static void write_string(np_writer *w, const char *value)"
+      },
+      {
+        "line": 1569,
+        "text": "static void field_string(np_field *f,"
+      },
+      {
+        "line": 1586,
+        "text": "static void field_number(np_field *f,"
+      },
+      {
+        "line": 1603,
+        "text": "static int collect_fields(const np_status *s, const char *tags, np_field *f)"
+      },
+      {
+        "line": 1729,
+        "text": "static void write_field(np_writer *w, const np_field *field)"
+      },
+      {
+        "line": 1740,
+        "text": "static void write_audio(np_writer *w, const char *key, const np_audio *a)"
+      },
+      {
+        "line": 1781,
+        "text": "static int"
+      },
+      {
+        "line": 1837,
+        "text": "int np_lms_arguments(const char *json,"
+      },
+      {
+        "line": 1888,
+        "text": "int np_lms_query_json("
+      }
+    ]
+  },
+  {
+    "path": "native/sbbase/CMakeLists.txt",
+    "sha256": "60e91d7063e569f34f92eb93382992f4becb13d2b4ac8e9f2e0da6947bb246d7",
+    "anchors": [
+      {
+        "line": 11,
+        "text": "option(SB_ENABLE_MUSIC \"Reserved Standalone Music activation (unavailable in WP0)\" OFF)"
+      },
+      {
+        "line": 12,
+        "text": "if(SB_ENABLE_MUSIC)"
+      }
+    ]
+  },
+  {
+    "path": "scripts/build-arm.sh",
+    "sha256": "803e8f686e9e90dc24118c39ad4dc587f9eabd8a07081a079f2169a9e936f04b",
+    "anchors": []
+  },
+  {
+    "path": "tests/CMakeLists.txt",
+    "sha256": "43c19e066b1523a09903bb434500d4ed49ca445eb6f35d48e2c26e49e2ac6c92",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/benchmark_base.py",
+    "sha256": "3b30eb6a784d4225b215bf24567cad42a149d5af12edd6602091b90d1c587b72",
+    "anchors": [
+      {
+        "line": 15,
+        "text": "def run(binary, seconds=2, count=100):"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/benchmark_parsers.py",
+    "sha256": "f7b2a432b0dd5655a3e2471ab269efa81f3233fdf01d49082595ec427c47e4fb",
+    "anchors": [
+      {
+        "line": 10,
+        "text": "def run(directory, platform, iterations):"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/build_parser_spike.sh",
+    "sha256": "afadb7f8250aed6d4612a6dfa7c704dd8ea647056258a7b8008b69538daf8f8d",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/cross_contracts.sh",
+    "sha256": "cd0e984a100ca8383101368c7bd7b9a990ca33fb6b76d32e35088b39e51053e0",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/make_corpus.py",
+    "sha256": "4823bbd80b2eb6bac1544564bfad4b75d24640f287941c1fa04c8e1e7136fda7",
+    "anchors": [
+      {
+        "line": 12,
+        "text": "def sync(n):"
+      },
+      {
+        "line": 16,
+        "text": "def generate(output, ffmpeg):"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/parser_hls.c",
+    "sha256": "3e3f2d7bd59ee49d0a79594e87c898525be5da81f9db8cb2dcef85a19d8c8922",
+    "anchors": [
+      {
+        "line": 10,
+        "text": "static void emit(void *unused,const hls_metadata *m){(void)unused;output=*m;events++;}"
+      },
+      {
+        "line": 11,
+        "text": "int main(int argc,char **argv)"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/parser_taglib.cpp",
+    "sha256": "bbaa3d49fcc6767d4028b8076f7ac01625c144627521b7cc269cbcf1531748f0",
+    "anchors": [
+      {
+        "line": 21,
+        "text": "static size_t calls, live, peak;"
+      },
+      {
+        "line": 23,
+        "text": "void *operator new(size_t n) {"
+      },
+      {
+        "line": 27,
+        "text": "void operator delete(void *p) noexcept { if(p){Header *h=static_cast<Header *>(p)-1;live-=h->bytes;std::free(h);} }"
+      },
+      {
+        "line": 28,
+        "text": "void *operator new[](size_t n){return ::operator new(n);}"
+      },
+      {
+        "line": 29,
+        "text": "void operator delete[](void *p) noexcept {::operator delete(p);}"
+      },
+      {
+        "line": 30,
+        "text": "void operator delete(void *p,size_t) noexcept {::operator delete(p);}"
+      },
+      {
+        "line": 31,
+        "text": "void operator delete[](void *p,size_t) noexcept {::operator delete(p);}"
+      },
+      {
+        "line": 32,
+        "text": "static void quoted(const std::string &s) {"
+      },
+      {
+        "line": 35,
+        "text": "int main(int argc,char **argv) {"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/test_commands.c",
+    "sha256": "337ab6274eb5d6de7896bc992ccceb3e85ab5e42eb0837e1a246b8ec7e4a3f43",
+    "anchors": [
+      {
+        "line": 5,
+        "text": "static sb_command_result parse(const char *args,sb_lms_command *c)"
+      },
+      {
+        "line": 10,
+        "text": "int main(int argc,char **argv)"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/test_contracts.c",
+    "sha256": "4de7d38d53b69f527cbe586f9582844e3a0b592bb6d82154ed14035318998d87",
+    "anchors": [
+      {
+        "line": 7,
+        "text": "int main(void)"
+      },
+      {
+        "line": 10,
+        "text": "assert(!SB_MUSIC_ENABLED);"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/test_dispatch_http.py",
+    "sha256": "f959528df2a8526f6ae7f33339c914c46856fbf031419fefe1ad93559e5913ca",
+    "anchors": [
+      {
+        "line": 13,
+        "text": "def envelope(args, rid=1):"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/test_fd_contract.py",
+    "sha256": "17fdd8f9901035a81010eb486ea311cb9cddd52b2ee0938a7148795073f03cd3",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/test_wire_fixtures.py",
+    "sha256": "7b845b1834da4a0ef7f3106ed8888a2c3be2ba4d784a1fc9a88ca45c9f4b56c7",
+    "anchors": []
+  },
+  {
+    "path": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua",
+    "sha256": "84797e840d274bc23384048655eb6084817a5b0eab3150d9f1aafa1dc34c4c00",
+    "anchors": [
+      {
+        "line": 81,
+        "text": "function _ipstring(ip)"
+      },
+      {
+        "line": 340,
+        "text": "function __init(self, jnt, heloPacket)"
+      },
+      {
+        "line": 413,
+        "text": "function getServerIp(self)"
+      },
+      {
+        "line": 419,
+        "text": "function getId(self)"
+      },
+      {
+        "line": 426,
+        "text": "function connectIp(self, serverip, slimserverip)"
+      },
+      {
+        "line": 456,
+        "text": "function connect(self, server)"
+      },
+      {
+        "line": 473,
+        "text": "function _connectToAddr(self, serverip)"
+      },
+      {
+        "line": 478,
+        "text": "function connectTask(self, serverip)"
+      },
+      {
+        "line": 619,
+        "text": "function _setGeekmode( self, geekmode)"
+      },
+      {
+        "line": 624,
+        "text": "function setGeekmodeTask( self, geekmode)"
+      },
+      {
+        "line": 635,
+        "text": "function _blastIR( self, irstr)"
+      },
+      {
+        "line": 640,
+        "text": "function blastIRTask( self, irstr)"
+      },
+      {
+        "line": 649,
+        "text": "function disconnect(self)"
+      },
+      {
+        "line": 662,
+        "text": "function isConnected(self)"
+      },
+      {
+        "line": 667,
+        "text": "function hasConnectionFailed(self)"
+      },
+      {
+        "line": 672,
+        "text": "function statusPacketCallback(self, callback)"
+      },
+      {
+        "line": 678,
+        "text": "function capability(self, key, value)"
+      },
+      {
+        "line": 687,
+        "text": "function subscribe(self, opcode, subscription)"
+      },
+      {
+        "line": 698,
+        "text": "function unsubscribe(self, opcode, subscription)"
+      },
+      {
+        "line": 709,
+        "text": "function send(self, packet, force)"
+      },
+      {
+        "line": 745,
+        "text": "function sendStatus(self, event, serverTimestamp)"
+      },
+      {
+        "line": 751,
+        "text": "function _defaultStatusCallback(self, event, serverTimestamp)"
+      },
+      {
+        "line": 766,
+        "text": "function _handleDisconnect(self, reason)"
+      },
+      {
+        "line": 779,
+        "text": "function _handleTimer(self)"
+      },
+      {
+        "line": 789,
+        "text": "function notify_networkConnected(self)"
+      }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "qualified": false,
+  "hardware_installation_allowed": false,
+  "blocker": "Factory /linuxrc erases the persistent overlay after mount failure and then continues boot with factory TinySC code. Overlay-only guards cannot remain fail-closed in that required fault case. Factory boot modification is outside the task constraints.",
+  "scope": "local prototype; never installed",
+  "targets": {
+    "/etc/init.d/squeezecenter": "squeezecenter",
+    "/usr/share/jive/applets/SqueezeCenter/SqueezeCenterMeta.lua": "SqueezeCenterMeta.lua",
+    "/usr/share/jive/applets/SqueezeCenter/SqueezeCenterApplet.lua": "SqueezeCenterApplet.lua",
+    "/usr/squeezecenter/slimserver.pl": "slimserver.pl",
+    "/usr/squeezecenter/gdresized.pl": "gdresized.pl",
+    "/usr/squeezecenter/scanner.pl": "scanner.pl"
+  },
+  "sha256": {
+    "squeezecenter": "b2a460f752e164b3a7b22c9b1d93b24589285afb17901c6d0c450b7e3468c7aa",
+    "SqueezeCenterMeta.lua": "84981ae4dc560851ef435f5286e0b0274cb058e9b02f5e4c58aceb91ecdc18d9",
+    "SqueezeCenterApplet.lua": "541d9a7b31495d52448379dacce1101ddd8a3af09513527cb54881670cd754a9",
+    "slimserver.pl": "e95a6a0f216182bc95be3faef9e7483c8c01d2772d461e9b77aaf714957258fe",
+    "gdresized.pl": "bef83c8bb801064504bb7797aa10db31a37a1307e5a540574551d5460d649687",
+    "scanner.pl": "ee74134fa1114470e0a8327f9c65df721f46e1d6a67e3601d555d5fde8ede9ba"
+  },
+  "user_decision_2026_11_04": "Full requirement retained; no hardware changes. Overlay-loss case remains in the required fault model."
+}

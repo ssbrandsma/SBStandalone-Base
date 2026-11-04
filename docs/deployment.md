@@ -69,3 +69,23 @@ initialization. Use `--no-restart` to leave SqueezePlay running or `--dry-run`
 to perform only local package validation. Unknown SSH host keys are rejected;
 use `--accept-new-host-key` for a new Radio after independently confirming its
 identity.
+
+For an explicitly scoped Fab4 applet smoke test, `--applet-only --no-restart
+--backup-dir <new-local-directory>` selects twenty Lua/data dependencies from a
+Fab4 ZIP. This mode requires an existing Fab4 installation, idle playback and
+trusted SSH. It preserves native executables, persistent configuration, web assets
+and firmware hooks. Only changed selected files are replaced. It stores and
+verifies original bytes/metadata in the backup directory before replacement,
+checks installed hashes, and restores originals if copying fails. Symlink targets
+are refused before replacement. It does not reload the applet or restart services.
+
+Restore the exact on-disk applet state with the same ZIP and target, using
+`--applet-only --no-restart --restore-backup <backup-directory>`. Unknown current
+file revisions are refused. Disk rollback does not replace Lua modules already
+loaded in Jive. Do not improvise unload/reload: the applet's `free()` stops native
+services. The normal deployment mode retains its existing full-package behavior;
+`--no-restart` alone does not select applet-only deployment.
+
+The password may be supplied through `SB_DEVICE_PASSWORD` rather than a command
+argument. Do not accept a new or changed host key automatically for a restricted
+hardware smoke test.

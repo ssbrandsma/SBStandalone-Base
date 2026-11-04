@@ -1,0 +1,4033 @@
+{
+  "date": "2026-11-03",
+  "scope": "WP4a.1 source/reference/fixture evidence; no actual audio or hardware",
+  "changed_from_package_inputs": [
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/applet/MusicOwnership.lua",
+      "before": "6763bb90ce4492378fbac56c8c14404a976bdbbb64d1a2926a52256d94da2c18",
+      "after": "4461a3c897071cd8aa7a82d7918bcb4e8c08558a62aece7ba67ba190f3d3c22c"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/native/sbbase/include/music_playback.h",
+      "before": "dd2e79a06a10cce906c7195d63dbeee15539f484f0b74911e57a687d8c2e9a33",
+      "after": "b4eec503270ccdc5abbda4d6abbd6816fe8a1a6cde1ac075c09b1230ad6e661f"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/native/sbbase/src/main.c",
+      "before": "1d36dd0c7cb2f8b7ee030dd874432e0604f39a361b07027d667af1d6c4c8f04c",
+      "after": "4d5ae52fc4e05fd9ed79a8f8ccc54f42734f14f22919e9ef0209a409f5956689"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/native/sbbase/src/music_playback.c",
+      "before": "8e3a67afbc9bab67b0b571a7ba2444d03a119e0d4b87a1e93054aafea7a8665c",
+      "after": "63c8ce17f8ccf660eef255174edffac0045833674f0996a2ca73877c987f6ddd"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/scripts/build-arm.sh",
+      "before": "80858160f38192cfbd4b4e528a4e0f04f42bf2764a5e368843b6816e272391c7",
+      "after": "3f647f931957041f4b0a9ecc1dda113abe997abe9436b3b0b339e3baa1fd878b"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/scripts/build-browse-arm.sh",
+      "before": "3f4e302da9fa0b9f3839e105f3837065dcd051a8875849c7777f46f231644db4",
+      "after": "b005840bb3e24942f766a1bce7d1bc7eec7a1c0a7634913fdb0e62c69928bc6d"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/scripts/build-playback-arm.sh",
+      "before": "443346fca20fd3882c3dfe129800a3c6e6e8e33d4d0f3fe522b217a4d43b3de2",
+      "after": "8aeeb422f0c820602c57f7a71a80a010a3cf1e22112a920d77c6ed9579b8c907"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "before": "054b8ee6e75b53b8fa71949e2adb8d31d3ce9278359f952e7c177eaa923201b8",
+      "after": "92668af4fb80f012e8e83e8c4e734645cd5dcd3055bc0c932204aacf00b5442f"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyConnectApplet.lua",
+      "before": "b8626d49e9db87d23dbf134bd12d79b9be9ed3dda876659f58bb8c9d98e9a7c0",
+      "after": "bc82ea39cd5e45dc81df0580995b9ea6c9ba807da09253b8cf8e0f7fbce4248b"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "before": "3e28389acb9c3cad8255dfb3f4b0f5cba99c56d7e5fd359851e377b1b318456d",
+      "after": "091acf32aceef1363f4becc9094702b0178335c00cfa7ba305154f9b61b63731"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyService.lua",
+      "before": "c6354f55cfda8518a3cd2cc8a66980418ccc953b74acd9c2d7b64be2ac43701d",
+      "after": "7a1e6636e401c34d755bc67f4d617e944cd75365197f39a6044df2028eba0c34"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzConnectApplet.lua",
+      "before": "7a1445414d7c420b6b7c4e0f0ee042653ce99a80c5eeac80b9a8976b6c4db8aa",
+      "after": "44961f53c7b5e50c97bdcf67a2ec492a85aebb53b94d2a1b08d93dcaf1014834"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "before": "1e3c594f5ddda5521c6b052e4448dff733009a33524a7adaafb8ff7d3cf2bfae",
+      "after": "49e21e918464b5ae5d69a0f52765c8c80e64c50eb1bc213669ae4acc967ab7c9"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzService.lua",
+      "before": "06f680308bbc0cf73232e9a488923960bf9e77f032e912eeeb5f89f29f9caad3",
+      "after": "30c974dc528e55de8cc50714f7ee12c6c16065a8c8f5b99bd0dfaa5513171a52"
+    }
+  ],
+  "sources": [
+    {
+      "path": "native/sbbase/include/alarms.h",
+      "bytes": 3038,
+      "sha256": "1d4624a037c75e211a97938be553e9ad9e317ea4fa644f8e0d4c14eda6704e82"
+    },
+    {
+      "path": "native/sbbase/include/lms_command.h",
+      "bytes": 838,
+      "sha256": "4f54a783d64c0025887bbbaffb805bc000a13852b7437da4baf1f1c9fa131cf6"
+    },
+    {
+      "path": "native/sbbase/include/music_browse.h",
+      "bytes": 1908,
+      "sha256": "f2838901e7384ee8bfe392f84a5056793ac789438a76ea82b6d36520f38046b0"
+    },
+    {
+      "path": "native/sbbase/include/music_file.h",
+      "bytes": 1005,
+      "sha256": "0aba41ed76baf85f995f35c39fc9ccacfa8e8ad3520a3f704afda5b9beecbbc8"
+    },
+    {
+      "path": "native/sbbase/include/music_load.h",
+      "bytes": 1232,
+      "sha256": "5f132fa1dda8df5759269a9a39f9faba3be5e9ccfde9b5c01d6f0d6f83a6998a"
+    },
+    {
+      "path": "native/sbbase/include/music_playback.h",
+      "bytes": 3546,
+      "sha256": "b4eec503270ccdc5abbda4d6abbd6816fe8a1a6cde1ac075c09b1230ad6e661f"
+    },
+    {
+      "path": "native/sbbase/include/music_queue.h",
+      "bytes": 3641,
+      "sha256": "6801e6e6d95a05a4ed75966f4d3f4040e5ed1f28f920a04dcbdf420f5c532b9a"
+    },
+    {
+      "path": "native/sbbase/include/nowplaying.h",
+      "bytes": 4007,
+      "sha256": "a1aff3a464ef1cd05740b9b970b8fba684135ecbf20cd225f15c3bc5736da1b2"
+    },
+    {
+      "path": "native/sbbase/include/output_queue.h",
+      "bytes": 1271,
+      "sha256": "04b170394692589d77f541687fd17071ef7ec48f40b15a7c3987c533b750a687"
+    },
+    {
+      "path": "native/sbbase/include/ownership_bridge.h",
+      "bytes": 1841,
+      "sha256": "33c50c93676fa6e933dc831276e6602c47d5fd92bcb187349c5269e8a83dd0b8"
+    },
+    {
+      "path": "native/sbbase/include/sbbase.h",
+      "bytes": 1074,
+      "sha256": "e3f2001023a5b36005aaab5b4bc6044495ca91e11db2f6ab22a7d0269d999b06"
+    },
+    {
+      "path": "native/sbbase/include/sleep.h",
+      "bytes": 696,
+      "sha256": "5a29879c1bffd3d287f98ca1e813036bb57f761f6175e66cae504deca898796b"
+    },
+    {
+      "path": "native/sbbase/include/slim_controller.h",
+      "bytes": 5826,
+      "sha256": "798dbc6c02c2424fbd9bbea5d43cd42c05cf9ee649027016939d1058115556fe"
+    },
+    {
+      "path": "native/sbbase/src/alarms.c",
+      "bytes": 28444,
+      "sha256": "b3908a1ef2758edde1ec5fe0d8ff0ea96c2efe50a509e7dbdbe0a4161dee235b"
+    },
+    {
+      "path": "native/sbbase/src/lms_command.c",
+      "bytes": 6042,
+      "sha256": "922a8ec6b07f32d6c990b5f6b38bdbc55a2413bb9dcd5fd3234b37195f339e4c"
+    },
+    {
+      "path": "native/sbbase/src/main.c",
+      "bytes": 63052,
+      "sha256": "4d5ae52fc4e05fd9ed79a8f8ccc54f42734f14f22919e9ef0209a409f5956689"
+    },
+    {
+      "path": "native/sbbase/src/music_browse.c",
+      "bytes": 18748,
+      "sha256": "91d4047ae89bb6cee645f448ddf684f69559d7f25d5a0c016783afc4108a2784"
+    },
+    {
+      "path": "native/sbbase/src/music_browse_http.inc",
+      "bytes": 16091,
+      "sha256": "09686f07baa70b4d1c6af846c65ce1d7548e85eb021c26a0d24af6372282c573"
+    },
+    {
+      "path": "native/sbbase/src/music_file.c",
+      "bytes": 6500,
+      "sha256": "a6a18d9844f73dddfb50f8f2885a67cc31fe38cc1a215cc7a1b6f780ba43812a"
+    },
+    {
+      "path": "native/sbbase/src/music_load.c",
+      "bytes": 6565,
+      "sha256": "8971d72d0e7047568dd6bc25524c5cc176a226ffee4e92549e90537625c67bf1"
+    },
+    {
+      "path": "native/sbbase/src/music_playback.c",
+      "bytes": 32389,
+      "sha256": "63c8ce17f8ccf660eef255174edffac0045833674f0996a2ca73877c987f6ddd"
+    },
+    {
+      "path": "native/sbbase/src/music_playback_test.inc",
+      "bytes": 13630,
+      "sha256": "57fe777c2df3044a9ea97d2f558bee9912d1a05e94538a2dad226c6c5a795722"
+    },
+    {
+      "path": "native/sbbase/src/music_queue.c",
+      "bytes": 10685,
+      "sha256": "b29e0af86692abf1335591d063e0a44663641ce3979311de3d7a38e604020b9e"
+    },
+    {
+      "path": "native/sbbase/src/nowplaying.c",
+      "bytes": 60452,
+      "sha256": "1b9a9612acb4b9afba78b306656d5c2f0500cf39613c3e455fd86b9e06e1c86e"
+    },
+    {
+      "path": "native/sbbase/src/output_queue.c",
+      "bytes": 2614,
+      "sha256": "cebbefa99ecb8381c040116dcc14c75867df37d003e05a7329d0e9be048249bc"
+    },
+    {
+      "path": "native/sbbase/src/ownership_bridge.c",
+      "bytes": 11971,
+      "sha256": "9019e5e20b3cbb9899343e3d2e310e9fa6faee909aa3557c620cbd4c5d9e97e3"
+    },
+    {
+      "path": "native/sbbase/src/ownership_http.inc",
+      "bytes": 3297,
+      "sha256": "e41c3b3cbcdc62e4ac1081eb6277dd959026300f23ae19880bf4392322cbfc94"
+    },
+    {
+      "path": "native/sbbase/src/protocol.c",
+      "bytes": 4863,
+      "sha256": "398c2386f88e7f8051811959b5c9abf0dabe34fd7803fa9af4e68c294aeb599a"
+    },
+    {
+      "path": "native/sbbase/src/sleep.c",
+      "bytes": 4119,
+      "sha256": "c083c1531d4155484c46eccca9f26c06e0624b0fcab75b949bfd125a4fd39725"
+    },
+    {
+      "path": "native/sbbase/src/slim_controller.c",
+      "bytes": 21717,
+      "sha256": "be8deea76335e0d2b4c5935a748cb2542c4bab60707ff23d61991229b6d20b4d"
+    },
+    {
+      "path": "native/common/firmware_state.h",
+      "bytes": 1861,
+      "sha256": "1390db75f5d27cab297dc7757707136c074cf62deeef73337bd7f960e81216f5"
+    },
+    {
+      "path": "native/common/http_trace.h",
+      "bytes": 4159,
+      "sha256": "8b073833d4442201f59bc2e0cce6a226756c13a18d501a727c72f047c338d449"
+    },
+    {
+      "path": "native/common/metadata_text.h",
+      "bytes": 3065,
+      "sha256": "8bdd310aacc6834413f19bde5067f09a84193ea6b1ab8b4c4592d1e5ed22a410"
+    },
+    {
+      "path": "native/common/music_contracts.c",
+      "bytes": 4193,
+      "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6"
+    },
+    {
+      "path": "native/common/music_contracts.h",
+      "bytes": 6091,
+      "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d"
+    },
+    {
+      "path": "native/common/music_http.c",
+      "bytes": 2196,
+      "sha256": "5d0936392dcd5ce2c89d86d04260edca938c1f56a38f6d6ff7a1e32b25f03d59"
+    },
+    {
+      "path": "native/common/music_http.h",
+      "bytes": 617,
+      "sha256": "e7b88e67a1df259262ffbb1f71094813c1d7beb2e4940f6c62e031d92a21265b"
+    },
+    {
+      "path": "native/common/music_resource_ipc.c",
+      "bytes": 6742,
+      "sha256": "6883eeb6aaad71ece8558f9b3d89614b998e9457aeb3da74f78f2c486a889b98"
+    },
+    {
+      "path": "native/common/music_resource_ipc.h",
+      "bytes": 1226,
+      "sha256": "9a9c1913fa758792acb931860203b5b5660fed6fa35619c410b71a45d0532723"
+    },
+    {
+      "path": "native/common/public_address.h",
+      "bytes": 789,
+      "sha256": "bcbda06a2ad403670333c53e395752c2069c3b7791c8d58fc2b712e904e028c8"
+    },
+    {
+      "path": "applet/AlarmPlayback.lua",
+      "bytes": 9604,
+      "sha256": "96bfd3e774569bcbb972a8485f433d30c9d3a2b0c2b354c16fb4fc9f61d9c918"
+    },
+    {
+      "path": "applet/Artwork.lua",
+      "bytes": 4449,
+      "sha256": "ff4bcd6983fef203e3f4a2cb748d2d57f9e76df27597837c004a92f6972d027e"
+    },
+    {
+      "path": "applet/ArtworkUrlNormalizer.lua",
+      "bytes": 1214,
+      "sha256": "2c73792430affe3b59966a433d6c8992df0de9eed8314d7f18caef2483e86f97"
+    },
+    {
+      "path": "applet/ExtendedStorageState.lua",
+      "bytes": 2376,
+      "sha256": "1373bf3cb11f8d517a9cd83295671414b2b672edf74ab62263ce807360140b57"
+    },
+    {
+      "path": "applet/FirmwareUpdates.lua",
+      "bytes": 8746,
+      "sha256": "a5e59abd8a4c180900661c8870faa700527e2fc94fc8b08e34a455f45a03e481"
+    },
+    {
+      "path": "applet/HttpTrace.lua",
+      "bytes": 5802,
+      "sha256": "1637969e806fbc36aee964db526879b4bb0f3380b7c0f79509d1cde907b98c1d"
+    },
+    {
+      "path": "applet/ImageRender.lua",
+      "bytes": 2507,
+      "sha256": "240421ca4397e7c502953db51330ef150a66a42f96c850e29a3dd410564ade00"
+    },
+    {
+      "path": "applet/InstallerCompat.lua",
+      "bytes": 8645,
+      "sha256": "24dfbf095e22f93f5fa04ee0162b8f2f3148621e4e49adadd3a11e8c3f2c16a8"
+    },
+    {
+      "path": "applet/MusicOwnership.lua",
+      "bytes": 5611,
+      "sha256": "4461a3c897071cd8aa7a82d7918bcb4e8c08558a62aece7ba67ba190f3d3c22c"
+    },
+    {
+      "path": "applet/MusicStorage.lua",
+      "bytes": 2054,
+      "sha256": "67f9c56fe2c6d53ba25f59a7169d06c9fe02b81a0b157c4736dd2b2de67aaa94"
+    },
+    {
+      "path": "applet/NativeMusicOwnership.lua",
+      "bytes": 758,
+      "sha256": "722a8b5b14080d230379dbcab1e6dfde55434198e20878342dbfd4072d1fcb8f"
+    },
+    {
+      "path": "applet/NetworkAddress.lua",
+      "bytes": 814,
+      "sha256": "9438df4adfa6d2d6c4dc604316851a3ce5a9d32f8c3588eb151dd448544b12d4"
+    },
+    {
+      "path": "applet/OwnershipBinding.lua",
+      "bytes": 4163,
+      "sha256": "332a003b219d2b0383b9947228c448fd1958cdcc6ad915609f7e6019f523e444"
+    },
+    {
+      "path": "applet/OwnershipClient.lua",
+      "bytes": 9030,
+      "sha256": "e35185ad0983a95b5601315f4f42ba812751ae2ff62b33fc0f8b9eab47ffc1af"
+    },
+    {
+      "path": "applet/OwnershipDecoder.lua",
+      "bytes": 1650,
+      "sha256": "952990de08e9840051bba54a2fd8aec9827d7feab07e09681cad842322cde8d9"
+    },
+    {
+      "path": "applet/OwnershipHooks.lua",
+      "bytes": 1582,
+      "sha256": "f0e7c0cf98ed608ed582d40328d5847adcdc17353dc6510f4cebe5aaed6c4f47"
+    },
+    {
+      "path": "applet/OwnershipHttp.lua",
+      "bytes": 1513,
+      "sha256": "8686abc475237a4b3e509a3389361cfdaba1f094cddad8fb86cc100138da7c30"
+    },
+    {
+      "path": "applet/OwnershipRuntime.lua",
+      "bytes": 1149,
+      "sha256": "a4040ea3f318f2f78c2a8d6ff6b644440e10f46241fb72fb1ea08f318cfd2ffb"
+    },
+    {
+      "path": "applet/Platform.lua",
+      "bytes": 1805,
+      "sha256": "0ad760bb2e474077756176fca51a74ad99088c5827ee78614beed5816cb862a5"
+    },
+    {
+      "path": "applet/RemoteBridge.lua",
+      "bytes": 8064,
+      "sha256": "d542786fed956c5575b2a67d180d938d628907f503d631c286353b816d4c35b4"
+    },
+    {
+      "path": "applet/ServerMigration.lua",
+      "bytes": 3203,
+      "sha256": "0cf2b03459d004207f238d3eb8f104c3288c9695565cb4b46ef34779aa0fc63d"
+    },
+    {
+      "path": "applet/StandaloneBaseApplet.lua",
+      "bytes": 23986,
+      "sha256": "8bb6913fed306b89f6baf1a1793718cfefc0921a39ed425096e3b01a7b1bc06b"
+    },
+    {
+      "path": "applet/StandaloneBaseMeta.lua",
+      "bytes": 762,
+      "sha256": "2f69c8f626c2e56d0df8be2e32a385981c2bf24a3fe8ab2cb705b281c254c4a1"
+    },
+    {
+      "path": "applet/StorageManager.lua",
+      "bytes": 4311,
+      "sha256": "e33941ebed15c9dc1ca856ae1626b5d6f3786137531d7368cfc5165db72db1ce"
+    },
+    {
+      "path": "applet/TimeResolver.lua",
+      "bytes": 2004,
+      "sha256": "bb22bb5996ef8b829baa193ddad698ed135b155b92cc1fb33e4ef0a686b0abad"
+    },
+    {
+      "path": "applet/TimeSync.lua",
+      "bytes": 8825,
+      "sha256": "1f148b1cc80448f71c2576f523bd39af5ac25c3e678eeecb0d7320d7bddcde08"
+    },
+    {
+      "path": "tests/music/benchmark_base.py",
+      "bytes": 3999,
+      "sha256": "3b30eb6a784d4225b215bf24567cad42a149d5af12edd6602091b90d1c587b72"
+    },
+    {
+      "path": "tests/music/benchmark_browse.py",
+      "bytes": 134,
+      "sha256": "5942dd1d62318d9b5e2f22940c312f7b81c8b220a9d18e44a047393a553e2d91"
+    },
+    {
+      "path": "tests/music/benchmark_library.py",
+      "bytes": 1323,
+      "sha256": "fc69ba5e4b9d0c1e8b71c66bbc7988f9ddc80dde1d8808cb229ee6cc4fd74382"
+    },
+    {
+      "path": "tests/music/benchmark_parsers.py",
+      "bytes": 2609,
+      "sha256": "f7b2a432b0dd5655a3e2471ab269efa81f3233fdf01d49082595ec427c47e4fb"
+    },
+    {
+      "path": "tests/music/benchmark_scanner.py",
+      "bytes": 3035,
+      "sha256": "4aa40856d851891f62550b26aa9f5ecf4cdd571eda50bbe0a66f507da0967634"
+    },
+    {
+      "path": "tests/music/build_parser_spike.sh",
+      "bytes": 2249,
+      "sha256": "afadb7f8250aed6d4612a6dfa7c704dd8ea647056258a7b8008b69538daf8f8d"
+    },
+    {
+      "path": "tests/music/cross_contracts.sh",
+      "bytes": 1143,
+      "sha256": "cd0e984a100ca8383101368c7bd7b9a990ca33fb6b76d32e35088b39e51053e0"
+    },
+    {
+      "path": "tests/music/make_corpus.py",
+      "bytes": 4358,
+      "sha256": "4823bbd80b2eb6bac1544564bfad4b75d24640f287941c1fa04c8e1e7136fda7"
+    },
+    {
+      "path": "tests/music/metadata_fault.c",
+      "bytes": 1065,
+      "sha256": "5e74fc568f90b346df3c01a67ebf74b08d84ae7c1ab3abac2dac57a4f27f7612"
+    },
+    {
+      "path": "tests/music/ownership_driver.c",
+      "bytes": 2378,
+      "sha256": "d3247fc3ad4fc55646069e279d0f6b193c1b861c67ac997ce9e89801d74c47d5"
+    },
+    {
+      "path": "tests/music/parser_hls.c",
+      "bytes": 1494,
+      "sha256": "3e3f2d7bd59ee49d0a79594e87c898525be5da81f9db8cb2dcef85a19d8c8922"
+    },
+    {
+      "path": "tests/music/test_browse.c",
+      "bytes": 13108,
+      "sha256": "228319f8cca970b759ad399483b064c2f2cac0047d50e2e8ec6a87b8ea2c003c"
+    },
+    {
+      "path": "tests/music/test_browse.py",
+      "bytes": 1089,
+      "sha256": "cde3fbf93a7901d5cbff85a398456843262a75261183e435bd641f2b8a2665cd"
+    },
+    {
+      "path": "tests/music/test_browse_disabled.py",
+      "bytes": 1369,
+      "sha256": "670ddd02a49e369f4cdba89a275360056410452839722df8f90f3af2535f184a"
+    },
+    {
+      "path": "tests/music/test_browse_empty.py",
+      "bytes": 119,
+      "sha256": "be6b5c6bde91770a4bfd3581b7d220845d2ce1e084c1a97dd5f1f688632e2092"
+    },
+    {
+      "path": "tests/music/test_browse_faults.py",
+      "bytes": 4094,
+      "sha256": "af9a4caf49f77e673fb0aac9fafe3a506e968310ed0691bd9f659361678a8241"
+    },
+    {
+      "path": "tests/music/test_browse_http.py",
+      "bytes": 16811,
+      "sha256": "87bd54f63e9bda63610fd158d76e95b5c3c2bb007a13185d01a65af518ce72d7"
+    },
+    {
+      "path": "tests/music/test_commands.c",
+      "bytes": 1872,
+      "sha256": "337ab6274eb5d6de7896bc992ccceb3e85ab5e42eb0837e1a246b8ec7e4a3f43"
+    },
+    {
+      "path": "tests/music/test_contracts.c",
+      "bytes": 4451,
+      "sha256": "4de7d38d53b69f527cbe586f9582844e3a0b592bb6d82154ed14035318998d87"
+    },
+    {
+      "path": "tests/music/test_dispatch_http.py",
+      "bytes": 3780,
+      "sha256": "f959528df2a8526f6ae7f33339c914c46856fbf031419fefe1ad93559e5913ca"
+    },
+    {
+      "path": "tests/music/test_fd_contract.py",
+      "bytes": 1379,
+      "sha256": "17fdd8f9901035a81010eb486ea311cb9cddd52b2ee0938a7148795073f03cd3"
+    },
+    {
+      "path": "tests/music/test_firmware_ownership.py",
+      "bytes": 13357,
+      "sha256": "b48d4a4005111541717f4c29a1f1c96cd1416734fa01065ee88503496dc27b95"
+    },
+    {
+      "path": "tests/music/test_library.c",
+      "bytes": 22274,
+      "sha256": "4d83bc3dc280ae8c03b7e73242b52c40da986adfa27b8fc6f10ea0422588697c"
+    },
+    {
+      "path": "tests/music/test_library_large.py",
+      "bytes": 368,
+      "sha256": "22efdad7dca7a48d71581a27552fb253924e1dba706fba1fd13eeac290cb3b68"
+    },
+    {
+      "path": "tests/music/test_library_qemu.py",
+      "bytes": 691,
+      "sha256": "2b71cbf4dbe472049e0074a453359b849588546ca6fafd7e3112b9f2a6d53974"
+    },
+    {
+      "path": "tests/music/test_library_storage.py",
+      "bytes": 5218,
+      "sha256": "eb9b3c93ee5eb2aebbcd8b641e214694459f59c1bbbe19319f1ea9a10b50ff70"
+    },
+    {
+      "path": "tests/music/test_load.c",
+      "bytes": 4598,
+      "sha256": "8ed9858fefbc76b51a19529cdc0a4e45e0a0c8ee7a6d6fdb9ca412565e2e4efa"
+    },
+    {
+      "path": "tests/music/test_music_http.c",
+      "bytes": 1938,
+      "sha256": "002e56383480ea11d6a2229926818f7bf0918706dfaef63712d2c3cc70212ce7"
+    },
+    {
+      "path": "tests/music/test_ownership_bridge.py",
+      "bytes": 3618,
+      "sha256": "3b0fc61ca9c32fb4967bcfae7845376a5df859a0db1151b37d8e7379e6ba2403"
+    },
+    {
+      "path": "tests/music/test_ownership_firmware_edges.lua",
+      "bytes": 2611,
+      "sha256": "3fe4e10d42b5d9ee575bfd666991d9f4e24d1d90718fa17f4b11090aba67ffef"
+    },
+    {
+      "path": "tests/music/test_ownership_http.py",
+      "bytes": 4864,
+      "sha256": "c5760dd2c4a1a21af16218dabaf440f9bb1bed7365244e4658cc9b09606f8e4b"
+    },
+    {
+      "path": "tests/music/test_ownership_lua.lua",
+      "bytes": 2401,
+      "sha256": "fbb79e5a0415effb8d41c79dfbd377abd907bf054145c8ab361bda80314a0ca2"
+    },
+    {
+      "path": "tests/music/test_playback.c",
+      "bytes": 16705,
+      "sha256": "bc61be2a4464553b2b3c09b37e6256154e581bcf25c04b0ad461edafcc4936bc"
+    },
+    {
+      "path": "tests/music/test_playback_http.py",
+      "bytes": 26966,
+      "sha256": "869d7c3532153f59ff1f971cf4df4a51c5b3fee45db55a103dc5b5d367a26f36"
+    },
+    {
+      "path": "tests/music/test_queue.c",
+      "bytes": 4093,
+      "sha256": "750930f4b54f45b43d9558d7b56a20f788468aea5b0645b29867fa3e3c18cb82"
+    },
+    {
+      "path": "tests/music/test_scanner.c",
+      "bytes": 15252,
+      "sha256": "aef017e89795e33e6b9582426b0ac21db07f3518264e0764938e3f1c9131dc6d"
+    },
+    {
+      "path": "tests/music/test_scanner.py",
+      "bytes": 11039,
+      "sha256": "2c4a3a5add82648e4bc6698a5e949105902455980e0b673fb4cd1ffc4ff9bf9f"
+    },
+    {
+      "path": "tests/music/test_scanner_qemu.py",
+      "bytes": 1096,
+      "sha256": "b4abfcf55ad0527e9e9db624463e8aaf642857e07ea01f3bacde1b5da4c79cd1"
+    },
+    {
+      "path": "tests/music/test_storage.c",
+      "bytes": 25657,
+      "sha256": "19bd795c9f1c274e4227b5d6b4f0d0c4a0fdaaad9dbc3352c9ac384d05809b4b"
+    },
+    {
+      "path": "tests/music/test_storage.py",
+      "bytes": 288,
+      "sha256": "4a5be739e33dee6061012aa4290ba1a4f5a4a85c55dd89bd31c5b66b05cb8336"
+    },
+    {
+      "path": "tests/music/test_storage_lua.lua",
+      "bytes": 1665,
+      "sha256": "59b6c840c69b66642bd2bc773b82c4f56ff73a48e868654fbb8bc5022bd5d664"
+    },
+    {
+      "path": "tests/music/test_storage_qemu.py",
+      "bytes": 599,
+      "sha256": "759ab8cb594578c4923d8db24ac82b553a08bb77a0fcc3138c3aa58e3d924c68"
+    },
+    {
+      "path": "tests/music/test_stream.c",
+      "bytes": 4276,
+      "sha256": "97f012b34b8681914046ee13a9803c74407d38b24adc6baba73d76b0092b4b64"
+    },
+    {
+      "path": "tests/music/test_stream_http.py",
+      "bytes": 7628,
+      "sha256": "e19c5745557dcc49284f44ebfb4a7883746775633b0df582cdbdb795a61b6090"
+    },
+    {
+      "path": "tests/music/test_transport.c",
+      "bytes": 18037,
+      "sha256": "62e4118e36c29ebd952d691c9b744ac714f541228e0a4c461c0038900c42edfa"
+    },
+    {
+      "path": "tests/music/test_transport_wire.py",
+      "bytes": 2009,
+      "sha256": "bcd3ef3a09a3645a12f7a466b4cb581b28e8a2db10353596274a36d3e7e65356"
+    },
+    {
+      "path": "tests/music/test_wire_fixtures.py",
+      "bytes": 3130,
+      "sha256": "7b845b1834da4a0ef7f3106ed8888a2c3be2ba4d784a1fc9a88ca45c9f4b56c7"
+    },
+    {
+      "path": "tests/music/wp2_fixtures.py",
+      "bytes": 4072,
+      "sha256": "a9e2e103ba34a8271050b43f6f681c7d52e557319d48d5b155f97446cedb3091"
+    },
+    {
+      "path": "scripts/build-arm.sh",
+      "bytes": 6383,
+      "sha256": "3f647f931957041f4b0a9ecc1dda113abe997abe9436b3b0b339e3baa1fd878b"
+    },
+    {
+      "path": "scripts/build-browse-arm.sh",
+      "bytes": 2293,
+      "sha256": "b005840bb3e24942f766a1bce7d1bc7eec7a1c0a7634913fdb0e62c69928bc6d"
+    },
+    {
+      "path": "scripts/build-image-arm.sh",
+      "bytes": 1544,
+      "sha256": "68c0c9fd80a2bcfed079e1bf0f6a786e7401aeb89df34a4d69022c8d8e5fbdcc"
+    },
+    {
+      "path": "scripts/build-image-libs.sh",
+      "bytes": 2204,
+      "sha256": "65f807ddf1b4dff3f0d0f963d28283d03f325dac0175a988b4ea6f985c77476a"
+    },
+    {
+      "path": "scripts/build-image-test.sh",
+      "bytes": 801,
+      "sha256": "b6d57f1e718390a17f230f5a137a3621c6c58cf086da207ac6e3186711220d61"
+    },
+    {
+      "path": "scripts/build-music-arm.sh",
+      "bytes": 4203,
+      "sha256": "71faa0557951e3972e5c163b0a3075835685f3db93d6a54b8c6f75359a42b42d"
+    },
+    {
+      "path": "scripts/build-ownership-arm.sh",
+      "bytes": 1826,
+      "sha256": "cf13f90f75922a80b6320449bb8cf3004575f0a05c0e32a6cd3240447e93fe42"
+    },
+    {
+      "path": "scripts/build-playback-arm.sh",
+      "bytes": 4156,
+      "sha256": "8aeeb422f0c820602c57f7a71a80a010a3cf1e22112a920d77c6ed9579b8c907"
+    },
+    {
+      "path": "scripts/build-proxy-tls.sh",
+      "bytes": 1551,
+      "sha256": "c3e70aec960390ae99a1860107105dbb9d5dd8b59e59988297795858f35e6165"
+    },
+    {
+      "path": "scripts/build-transport-arm.sh",
+      "bytes": 1662,
+      "sha256": "8fad207a43fd2bd1a00b179f9293ebb0425b02ee165d5b278a6f3da5c8577e40"
+    },
+    {
+      "path": "scripts/deploy_dist.py",
+      "bytes": 12956,
+      "sha256": "4a445cf8800fadc22b6df0b2b048c63b2c262e60116ab6944d9071f987c53ccd"
+    },
+    {
+      "path": "scripts/device-diagnostics.sh",
+      "bytes": 987,
+      "sha256": "b83836d0606e8e2c5cda52c42c95279ab73828ed080b148e4bce41aec4ffe653"
+    },
+    {
+      "path": "scripts/patch-squeezeplay-artwork.sh",
+      "bytes": 3726,
+      "sha256": "7740c88655de01abee573e0c590e5b5db6cde0b2d8b54cc8aee0c9bc8e90a3ab"
+    },
+    {
+      "path": "scripts/sbdata-boot.sh",
+      "bytes": 1970,
+      "sha256": "455bc24ea0c6a6c3d60889031fcfe8123564e000d1c93fc77e2d1a0d94086c7d"
+    },
+    {
+      "path": "scripts/storage-boot.sh",
+      "bytes": 5440,
+      "sha256": "fe5c90de420a061ed2ce9da75ef80bfcd94b6424848cc204780c3870e26ec97a"
+    },
+    {
+      "path": "scripts/storage-setup.sh",
+      "bytes": 45713,
+      "sha256": "64718402719240e7c1a0e72ae7d0eea9d78813b9ef5bf116e2de3abbd93fc3db"
+    },
+    {
+      "path": "scripts/test-host.sh",
+      "bytes": 228,
+      "sha256": "626202d78df653d163212706365476387e071c3e328a2daf087df6b6a3173f7b"
+    },
+    {
+      "path": "scripts/test-proxy-tls.sh",
+      "bytes": 1253,
+      "sha256": "8145d6c58d20e63f46fba9b336292d779a815fdae13a74144ea17d4e1dfe74bf"
+    },
+    {
+      "path": "scripts/test-qemu.sh",
+      "bytes": 1485,
+      "sha256": "a04a7b4ff5f242d3d0116b10459a0d31126cadf1f38ad33ccea4aecfeb29a1fd"
+    },
+    {
+      "path": "scripts/verify-arm.sh",
+      "bytes": 819,
+      "sha256": "bc015af7d5848bf93e633da78496901a48edf616bc0483875eb285afe32eb7c1"
+    },
+    {
+      "path": "native/sbbase/CMakeLists.txt",
+      "bytes": 3112,
+      "sha256": "6bb7db709a133dd795c289af84891de7fe6cb3aab885559995f9461152a0cf13"
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "bytes": 26494,
+      "sha256": "57ca3a24af2f5c551c3b08a0e69b98e94c60164fcb4b15b9cb5c79fe53598e99"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/Countries.lua",
+      "bytes": 10051,
+      "sha256": "ba4cf7eb5d2f7e5d433837912cdc7c3d4d513243db301b5a4f03c66cb71a34f3"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/HlsMetadata.lua",
+      "bytes": 6452,
+      "sha256": "6c7e18cfd9cb77ec9946b90b502b2fa303199288c73b44a6b699a5075f9e727e"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/HttpsProxyStatus.lua",
+      "bytes": 2161,
+      "sha256": "2d16176bc4cb325c6ce97fc6add372e555b41dc0c428a23b6ecd14eef985583e"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/LogoCache.lua",
+      "bytes": 16291,
+      "sha256": "ab9c37ba04b0baf31b565d8c15d94022ed3aab7e523403c7d69b28f87b96d8a3"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/NativeNowPlaying.lua",
+      "bytes": 3019,
+      "sha256": "d873a6728d164bd460d770c9a9c1949bf655e37d214bac052e6d57be9ba4fc49"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/OpmlClient.lua",
+      "bytes": 26942,
+      "sha256": "4a344f197c03893784c67585d9624f8ed3820749981331d9ff3654ec0a6df9d7"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/OpmlNavigator.lua",
+      "bytes": 7836,
+      "sha256": "5ecf50cb8f174aab435939d9ee9006413a283b9fe82018aad1a4ee88616bc3d0"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/OpmlParser.lua",
+      "bytes": 10751,
+      "sha256": "8a1701c6bfa93cef213a80e283850ae32c7eff56f0a2bc1754ce8f95d9241c23"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/OpmlProviders.lua",
+      "bytes": 2934,
+      "sha256": "b3911b1c3909e287f458fec796beabce962449c495d79e97f03b69468883c2c3"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/PodcastRssParser.lua",
+      "bytes": 13707,
+      "sha256": "eb4ff5d5436d02ca0fa2a2fe67e2b3b3dad7ae21e6354b40a9db5e6a0e39c518"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/PresetStore.lua",
+      "bytes": 5249,
+      "sha256": "2d776edae82d1254229267fdf08f6dad17d24e11429baf672e785adeb54313ed"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/RadioBrowser.lua",
+      "bytes": 19433,
+      "sha256": "24dad7dbe65cf6e3aff13a81bfab94f56eff1c356cf896b1cb5cadd006a12db2"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/RadioOwnership.lua",
+      "bytes": 1081,
+      "sha256": "43b6a227bc3884d1cc03f88f0ada109431eb85b4bda7b598305ce66ca16decbf"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/Resolver.lua",
+      "bytes": 2450,
+      "sha256": "ccafd663aa3554e3d5624f0914b6d24cea0d9b8af28e4be888c6fbdda8574dcf"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StandaloneBaseNowPlaying.lua",
+      "bytes": 23235,
+      "sha256": "42e74cf0cd8d06739d1bfabd43c9443d0eaa8cb01e2bbbc30e709674667baba1"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StandaloneRadioApplet.lua",
+      "bytes": 32504,
+      "sha256": "4a49fed44163dd9613c5c517a9f831f5a4f8dd445600683d07d503e4a117a1c7"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StandaloneRadioMeta.lua",
+      "bytes": 1661,
+      "sha256": "0533e0d7b753033d60af3eafa2b9c2b5a54d7c5fe919038ef6bb654b5f17065e"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/Stations.lua",
+      "bytes": 1312,
+      "sha256": "b750b9239b54141306e4cc0fd838a214828fc7a9ce27fb2b0e4f8a910bd45c84"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamMetadata.lua",
+      "bytes": 622,
+      "sha256": "11622e44174517754b17d770c26ed0420ff201b6b34c649b052558d24cda2f4b"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "bytes": 39447,
+      "sha256": "92668af4fb80f012e8e83e8c4e734645cd5dcd3055bc0c932204aacf00b5442f"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/TrackArtwork.lua",
+      "bytes": 4442,
+      "sha256": "8f5e3a24adf674bfe2887e8c3343bb4acdc68755fdedab8b9ca5a52deaebde36"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/UrlTransport.lua",
+      "bytes": 5404,
+      "sha256": "32f3455d85ff29b86e67936bde1f700a690761a3567c66e329cb8a2b7e556120"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/UserStations.lua",
+      "bytes": 9824,
+      "sha256": "e79f3e32a9dd6d9230dc8751060b5da8b587602ba56847b6df7603f38e0ee08c"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/qrencode.lua",
+      "bytes": 50997,
+      "sha256": "c5afe1f5026208e59e5bae9b1ec617725aaba37c5a1aeaf5ac8c4d4b68d96d85"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyArtwork.lua",
+      "bytes": 3675,
+      "sha256": "2b831f1030b459eaf66a917fc7290417e5d7c5b09d4603014e6c971a5976cd7c"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyConnectApplet.lua",
+      "bytes": 10252,
+      "sha256": "bc82ea39cd5e45dc81df0580995b9ea6c9ba807da09253b8cf8e0f7fbce4248b"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyConnectMeta.lua",
+      "bytes": 6554,
+      "sha256": "0d41d3b0e16c9dfd25c047e5f44bed587d0a966fa20d7eed95542b25f5177487"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyConnectState.lua",
+      "bytes": 30,
+      "sha256": "74f4fe40785a1eada6ebaeffaa2bd8338ba56278a12dc91b0e677f3aa3e82a99"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyNativeNowPlaying.lua",
+      "bytes": 1853,
+      "sha256": "1576e9b65c131718775a0aa76d9d4e77e22042d63e7397de3225ca8a1d2abdc5"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyNowPlaying.lua",
+      "bytes": 4787,
+      "sha256": "477c6af2e679c4f54094d2fed06b21f11ac170e88293ecf40777da40960d07ea"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyOwnership.lua",
+      "bytes": 772,
+      "sha256": "1c0733ae6204c08dd38aead38d0c5306bf7631cd2e0eb1a588684516beeebe20"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "bytes": 3980,
+      "sha256": "091acf32aceef1363f4becc9094702b0178335c00cfa7ba305154f9b61b63731"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyResolver.lua",
+      "bytes": 2113,
+      "sha256": "33b55abe1413f02ea2044bde0b5dbb03fe0d66aecdc541597e28e78742e1bb08"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyService.lua",
+      "bytes": 13594,
+      "sha256": "7a1e6636e401c34d755bc67f4d617e944cd75365197f39a6044df2028eba0c34"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyStandaloneNowPlaying.lua",
+      "bytes": 12205,
+      "sha256": "f27ae074d8aa2589ea9b2b29547a07601173329c54840566570263e40a94f051"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyUrlTransport.lua",
+      "bytes": 1031,
+      "sha256": "871b683c92978bb4d82043b4fcb97a9005b855a0dfeeeaad69c5aedd8a949bf3"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzConnectApplet.lua",
+      "bytes": 4165,
+      "sha256": "44961f53c7b5e50c97bdcf67a2ec492a85aebb53b94d2a1b08d93dcaf1014834"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzConnectMeta.lua",
+      "bytes": 3682,
+      "sha256": "2478713297ae304b425b32887409bb6f000eca0c0a6da36426dfcb108dda4253"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzLifecyclePolicy.lua",
+      "bytes": 863,
+      "sha256": "5bcdb38031f094994b9baa7fdf1baed96b3f6fabda45a093f2a46a3bb07b4bc2"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzNowPlaying.lua",
+      "bytes": 5207,
+      "sha256": "f7fe06c7daf9f084e6a7e76f145ca0714d4f907ac5085ea2bf8dd8981c4a0da3"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzOwnership.lua",
+      "bytes": 1008,
+      "sha256": "89817341d8c47fca4ae5da77bfcfff2739770e8f147ee02b8712c1da95e9bb01"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "bytes": 8014,
+      "sha256": "49e21e918464b5ae5d69a0f52765c8c80e64c50eb1bc213669ae4acc967ab7c9"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzService.lua",
+      "bytes": 9961,
+      "sha256": "30c974dc528e55de8cc50714f7ee12c6c16065a8c8f5b99bd0dfaa5513171a52"
+    }
+  ],
+  "prior_reports_unchanged": [
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_PHASE0_DIAGRAMS.md",
+      "bytes": 6895,
+      "sha256": "279a54896c48de7e523c36f561f324e33d02384cf40dd515c75ad3f2f753ca5e"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_PHASE0_EVIDENCE.md",
+      "bytes": 28030,
+      "sha256": "25a1ce1ddde78f0d734db8a4498a94316d2e7f0fd7949f671d4abc19aae5ac4c"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_PHASE0_GAPS.md",
+      "bytes": 10072,
+      "sha256": "69a46983463e83b84efa340dc88983245fd3da4ceac3bb490a24db278177bb0f"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_PHASE0_PROTOCOL.md",
+      "bytes": 17455,
+      "sha256": "20b96f0db1889d53cc8fa33764f84f3083a188ef0d0ffbfda321b42f766d03ae"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_PHASE0_REPORT.md",
+      "bytes": 35067,
+      "sha256": "ae2b3f537fadf9087ccab7ffe917a614906bef3ae5af39fff9ec433a45fe9353"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_PHASE0_ROADMAP.md",
+      "bytes": 17797,
+      "sha256": "dccc9e3a7039a33d1bae627bc1b5c8abc84e8768305dbce2f224e24192583327"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP0_CONTRACTS.md",
+      "bytes": 10589,
+      "sha256": "d9dba0af501417633783b78821f13bff3d9d6c1adeb7708945e437a232de2439"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP0_EVIDENCE.md",
+      "bytes": 11147,
+      "sha256": "a259f21e45a1bf2b5980b64b5fe6c7c2ea9c2e677817189d6a35a8dc92f9340a"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP0_PARSER_EVALUATION.md",
+      "bytes": 9003,
+      "sha256": "c470faa99c5b6980640ef197f7bc519e865310a000e3f0c1bab3afabdad26697"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP0_PROTOCOL_FIXTURES.md",
+      "bytes": 7041,
+      "sha256": "29d0053d61796922c4aeab517464c59bb3ff3dc9aa1561d1cb9b0baad9dfc420"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP0_REPORT.md",
+      "bytes": 9447,
+      "sha256": "64c120e2f970ea71d7df7e078e682339886f9bc4836ef8a2cadd5e95a5a05628"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP0_TEST_RESULTS.md",
+      "bytes": 7999,
+      "sha256": "4145db5ec3ae7456c4a391d815b903595cfb68fc1d3d2744631340f4427cf437"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP1_EVIDENCE.md",
+      "bytes": 9477,
+      "sha256": "3f868d310df9ff688039150a9268159db3fdac0d8d513e95cdc3d2514e9654ce"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP1_PERFORMANCE.md",
+      "bytes": 6379,
+      "sha256": "46aaebed06a48faa8f7f5bf46acdcdf3011d419a233ac00be74ebc51bf2f0264"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP1_REPORT.md",
+      "bytes": 7893,
+      "sha256": "7373ba4c2a179e4e76a4eac9218d08aeb2873614807fa0ceddf373297a20efd0"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP1_SCHEMA.md",
+      "bytes": 11067,
+      "sha256": "f5f2accb4434f5fc5583a423f4fa972325c501f6b95007c8eea5e67a79a65cb5"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP1_TEST_RESULTS.md",
+      "bytes": 6440,
+      "sha256": "416572dfba1e02d5420f09c239bd32348db215ea58cff97debc2a0df66e190fe"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP2_EVIDENCE.md",
+      "bytes": 5813,
+      "sha256": "85369671414a584f188796f717646a5c750fa34ef86d16e448354416fa0d0042"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP2_METADATA_FORMATS.md",
+      "bytes": 7736,
+      "sha256": "c015bd69920d6c6f40d5223a9d814ef4fa2eb33359cfa3df679b55eb6d89c1c4"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP2_PERFORMANCE.md",
+      "bytes": 6976,
+      "sha256": "5fcb885fa4f762bba21ba54c14c94a8a83bdabe7774a577c9c090c5fe5e88c65"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP2_REPORT.md",
+      "bytes": 8360,
+      "sha256": "406e117c9eb795e312ce1bf3fe368f45d05134c7560de14724bf1405f183e9c3"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP2_SCANNER_DESIGN.md",
+      "bytes": 12501,
+      "sha256": "623a99971e28d276854950b5b9f4277fae02d9820c435e69c27ecb740b2db178"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP2_TEST_RESULTS.md",
+      "bytes": 7748,
+      "sha256": "634f1d4aa0f6a2a972f213005247de2098dea06d373edee54013ddc447f77881"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_EVIDENCE.md",
+      "bytes": 5434,
+      "sha256": "2c969dc4664ac6c8bbf1df9dd0228fcf6de77d484c054d1e0c4037bd7b21e7c2"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_OWNERSHIP.md",
+      "bytes": 5850,
+      "sha256": "ec03c4b12d6d680028183d545c8828c42689d207c49d7b3b58dd008edca991de"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_PERFORMANCE.md",
+      "bytes": 6271,
+      "sha256": "3d13ab61676e240458aa33276af738fe5a99fac608c168c02e4db94eb8ab84fe"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_REPORT.md",
+      "bytes": 9639,
+      "sha256": "9d0a693200111d25de9a6c0b28811e606df4724a6fcb4d7a72a1fa6d74bd0aa8"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_SLIMPROTO.md",
+      "bytes": 9335,
+      "sha256": "5aa133fa99fde7de590e7d0625c3f38f9cd6da268d19640279a16fbb191c0e0a"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_SOCKET_IO.md",
+      "bytes": 4222,
+      "sha256": "e9f5a62c6276c1a776692cc3e997fdae033a856635ec07f5bc92fe6d8ba93d73"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3A_TEST_RESULTS.md",
+      "bytes": 7265,
+      "sha256": "44ae729923b1e8538bb9348bb538dc7e1e6531c53d02b08ba827f0937651c228"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_ASYNC_DISPATCH.md",
+      "bytes": 4515,
+      "sha256": "9059cce9f16b7972b7dc91b000f4ae5dc328984573eb485c79de7117ca5bdc33"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_BROWSE_API.md",
+      "bytes": 5204,
+      "sha256": "9136797f44901c4339e29c7d9e6b01f79c1f45351295b0025577a8afac24f803"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_EVIDENCE.md",
+      "bytes": 4971,
+      "sha256": "8e335f7774ccd23aa579903b5cf1e10198ac6a052249d276267e384a3173e1bb"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_PERFORMANCE.md",
+      "bytes": 4128,
+      "sha256": "c7d412e90430a38d734b1336a74c165fb04721237b909e6228c470148b775a0e"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_PROTOCOL.md",
+      "bytes": 5510,
+      "sha256": "c1559e1ca05d32fd9c317aa8b30a925068a86189ca3c2d33bafb564820595cb4"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_REPORT.md",
+      "bytes": 6736,
+      "sha256": "a4bb790af084eb765a98619bcca9d72feca25789c6ced068c8612020b69c4e35"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP3B_TEST_RESULTS.md",
+      "bytes": 5109,
+      "sha256": "542a7bdc5cc2029198284f725e267640fa61ad1c247b06fc4065cdd081c57581"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_EVIDENCE.md",
+      "bytes": 4466,
+      "sha256": "594a24bf29a05f57c76d419d7b751bcecfc4e7c39456ae64feccc12f3de3db2e"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_HTTP_STREAMING.md",
+      "bytes": 5220,
+      "sha256": "f6f8887ca20248547d1f2d1bda2176febd72c410138309648d20475be03a8d4b"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_OWNERSHIP.md",
+      "bytes": 5583,
+      "sha256": "6eb8ff2bfea327d0066dc082f84d396f792e262bdfc3039dbf1a3039592b42b3"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_PERFORMANCE.md",
+      "bytes": 4954,
+      "sha256": "1a00ba8775ea5ecdc40c6aaf211deb6fb6ed543ef521ff318a0ac7c62d42ca6a"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_QUEUE.md",
+      "bytes": 4829,
+      "sha256": "3b757cdcf65a786c765e3f8385b1a0b80126666bab14ce8cdbdf1f4723ccb1c9"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_REPORT.md",
+      "bytes": 5120,
+      "sha256": "1f2c982da723300d2fd7539dd32605df23522c1cd23b6a95ba89a300d3e1a5a2"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_SLIMPROTO.md",
+      "bytes": 5091,
+      "sha256": "22edef5df51e4dc985e371941f9ecf3eb2666e96e91e455569854110cf0ca5b3"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP4_TEST_RESULTS.md",
+      "bytes": 4808,
+      "sha256": "783368093f9e73e6f4d560fa81e18c559714ccb7a23594de962eac8ec4dcbcbe"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP6A_FILESYSTEM_COMPATIBILITY.md",
+      "bytes": 7447,
+      "sha256": "9947017564340b05c689d6a67c9554d88aca428d546b774a39b6e032e502e95e"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP6A_FIRMWARE_INTEGRATION.md",
+      "bytes": 8315,
+      "sha256": "e555ed3aff01568726c0d8ef934974d1e6a3fef0d79f936de67307405cbe5868"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP6A_REPORT.md",
+      "bytes": 7408,
+      "sha256": "5ff869e6bebe133196f9833acbe046ad7492bd638daa4e080c78d54267063e1c"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP6A_STORAGE_CONTRACT.md",
+      "bytes": 12527,
+      "sha256": "41dd8210e9e6f19040f9efa39458145a1111d66ad3f57f79176ee25b8b610ea9"
+    },
+    {
+      "path": "C:/Projects/SBStandaloneBase/StandaloneBase/research/STANDALONE_MUSIC_WP6A_TEST_RESULTS.md",
+      "bytes": 10062,
+      "sha256": "7440784d2d2e4abff14cfc89be5a3759d4868a6d651d91338d8f2064496000d3"
+    }
+  ],
+  "references": [
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SlimBrowser/SlimBrowserApplet.lua",
+      "bytes": 107254,
+      "sha256": "0d85ade9be0d47488378afa29dd78f87dee2f2718a5892868a57e945f9191e40"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SlimBrowser/DB.lua",
+      "bytes": 9427,
+      "sha256": "d85db7083689401ee058d5485f632f998884506914edbac7395bd38f5db1eaee"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/LocalPlayer.lua",
+      "bytes": 10088,
+      "sha256": "5f72349475aeebfe75cc9c550850d4531bf01f762a13d98c40b3556ef4fc9b76"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/NowPlaying/NowPlayingApplet.lua",
+      "bytes": 54477,
+      "sha256": "eab17c7e30d533160dad360015ada4e83496823f638142272a97e14c65a9f21b"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/MediaManager/MediaManagerApplet.lua",
+      "bytes": 25112,
+      "sha256": "731d8b698a10cd0728101b35597317e7c01962ccf4852f8f629f7b6fd219a67f"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SqueezeCenter/SqueezeCenterApplet.lua",
+      "bytes": 25400,
+      "sha256": "526973a57d2587cd86359dd0eded3a42744d142f2dbff3a1b199f5a77fec9dc6"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+      "bytes": 53144,
+      "sha256": "a86c71f0485f2916ae9f66cda998a562f45ab62ba25d9ded5a37cb6f023255f2"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Jive.pm",
+      "bytes": 76918,
+      "sha256": "ec095df1d924fba0ed5f8aed24c18393df9106d5bb0f3d257221f9b979c36434"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Queries.pm",
+      "bytes": 157179,
+      "sha256": "823fc8e096ba30d97a92aa54462796fa630fde807333dbcb583c83335b306f90"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Commands.pm",
+      "bytes": 88247,
+      "sha256": "de73dd1ec21e259a3ee44e4c8f8538b09586bb7ca4a728c50f1b2ca4133afe6c"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Buttons/XMLBrowser.pm",
+      "bytes": 40390,
+      "sha256": "e017ff61a00f1fcbea60b7f4d8be31ec54edcc09da39e70ce212ec83c81bff59"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm",
+      "bytes": 57354,
+      "sha256": "fed655006d68991dbf47e90815834ae5418fb65dc684585c124acf578e7d6508"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Web/XMLBrowser.pm",
+      "bytes": 41035,
+      "sha256": "c62b9aab17a97eb3533553fc91b3f18077baccffd3c13bfc1ce65c85c951f388"
+    },
+    {
+      "path": ".local/wp3b/SlimMenusApplet.lua",
+      "bytes": 41444,
+      "sha256": "6e2db5b9ab17c14fe2702bda9407f226d3a49f1438241a242b4bd54a3b9e63a8"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "bytes": 39447,
+      "sha256": "92668af4fb80f012e8e83e8c4e734645cd5dcd3055bc0c932204aacf00b5442f"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "bytes": 3980,
+      "sha256": "091acf32aceef1363f4becc9094702b0178335c00cfa7ba305154f9b61b63731"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyService.lua",
+      "bytes": 13594,
+      "sha256": "7a1e6636e401c34d755bc67f4d617e944cd75365197f39a6044df2028eba0c34"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "bytes": 8014,
+      "sha256": "49e21e918464b5ae5d69a0f52765c8c80e64c50eb1bc213669ae4acc967ab7c9"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzService.lua",
+      "bytes": 9961,
+      "sha256": "30c974dc528e55de8cc50714f7ee12c6c16065a8c8f5b99bd0dfaa5513171a52"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/Player.lua",
+      "bytes": 48812,
+      "sha256": "2f72cca9167e6b6acecf133995260a5efc24c4eb99a1d8456814715621befb64"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/bridge/bridge.rs",
+      "bytes": 12953,
+      "sha256": "9b2844be840275805f74ba2c38d4f847fab16d713da784395e0829dc58f568df"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/supervisor/main.rs",
+      "bytes": 5335,
+      "sha256": "ba6b611bc47dc958177ef792672a4de146b719802f54043933baae1077fffb32"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/metadata/main.rs",
+      "bytes": 2711,
+      "sha256": "034c50c1a8ae1dec168b73aca0210a033473d51a0d220e4eb1435e7de8349fe0"
+    },
+    {
+      "path": "C:/Projects/QoBuz/native/qobuzconnectd/src/main.rs",
+      "bytes": 27481,
+      "sha256": "edb039b2fef90cf6c6e66ce44e977069e18b34d05872255f5364d152c371b874"
+    },
+    {
+      "path": "C:/Projects/QoBuz/native/qobuzconnectd/src/playback.rs",
+      "bytes": 25553,
+      "sha256": "d64afe270187d6a9ba1566c1841bc6f636a36e389cb93c08a085b39812e2497f"
+    },
+    {
+      "path": ".local/fab4-music-research/upstream/src/squeezeplay/src/audio/decode/decode.c",
+      "bytes": 24321,
+      "sha256": "3682c4fda2855bef982ba27ddb99f1d1d7758dbc937ad1adb6a609028ddd6b74"
+    },
+    {
+      "path": ".local/fab4-music-research/upstream/src/squeezeplay/src/audio/decode/decode.h",
+      "bytes": 1392,
+      "sha256": "295e3fe7912dbe9bb157a29a6004e45c5d6908dfb50040a9b439f3838ec19c48"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/audio/Playback.lua",
+      "bytes": 34910,
+      "sha256": "8e06a00174707449858615e5a02452297420da4956864e19f03c0e9b3a1bea2c"
+    }
+  ],
+  "lifecycle_source_lines": [
+    {
+      "path": "native/sbbase/src/music_playback.c",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 1145,
+          "source": "int sb_playback_bridge_proof(void *context,uint64_t adapter,uint64_t connection,uint64_t generation,uint64_t now)"
+        },
+        {
+          "line": 1150,
+          "source": "int sb_playback_bridge_begin(void *context,uint64_t now)"
+        },
+        {
+          "line": 1160,
+          "source": "int sb_playback_bridge_ready(void *context)"
+        }
+      ]
+    },
+    {
+      "path": "applet/AlarmPlayback.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 12,
+          "source": "function M.new(dependencies)"
+        },
+        {
+          "line": 19,
+          "source": "function M:owns(player)"
+        },
+        {
+          "line": 26,
+          "source": "function M:radio(load)"
+        },
+        {
+          "line": 35,
+          "source": "function M:stopRadio(radio)"
+        },
+        {
+          "line": 44,
+          "source": "function M:cancelFade()"
+        },
+        {
+          "line": 51,
+          "source": "function M:bindFallback(alarmUI)"
+        },
+        {
+          "line": 80,
+          "source": "function M:setVolume(player, target, fade)"
+        },
+        {
+          "line": 99,
+          "source": "function M:start(player, status)"
+        },
+        {
+          "line": 143,
+          "source": "function M:finish(player, keepAudio, snoozing)"
+        },
+        {
+          "line": 157,
+          "source": "alarmUI:_stopSnoozeTimer()"
+        },
+        {
+          "line": 165,
+          "source": "function M:notify_playerAlarmState(player)"
+        },
+        {
+          "line": 189,
+          "source": "function M:notify_playerConnected(player)"
+        },
+        {
+          "line": 196,
+          "source": "function M:notify_playerDisconnected(player)"
+        },
+        {
+          "line": 205,
+          "source": "function M:notify_playerSleepChange(player)"
+        }
+      ]
+    },
+    {
+      "path": "applet/MusicOwnership.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 15,
+          "source": "function M.new(options)"
+        },
+        {
+          "line": 56,
+          "source": "function self:request(request)"
+        },
+        {
+          "line": 86,
+          "source": "function self:tick()"
+        },
+        {
+          "line": 90,
+          "source": "function self:cancel(request_id)"
+        },
+        {
+          "line": 98,
+          "source": "function self:authorize(generation, connection)"
+        },
+        {
+          "line": 106,
+          "source": "function self:canStart(generation, connection)"
+        },
+        {
+          "line": 111,
+          "source": "function self:invalidate()"
+        },
+        {
+          "line": 116,
+          "source": "function self:stop()"
+        }
+      ]
+    },
+    {
+      "path": "applet/NativeMusicOwnership.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.new(o)"
+        }
+      ]
+    },
+    {
+      "path": "applet/OwnershipBinding.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 6,
+          "source": "function M.new(o,p)"
+        },
+        {
+          "line": 31,
+          "source": "function binding:canStart() return self.active and client:canStart() end"
+        },
+        {
+          "line": 32,
+          "source": "function binding:request(done) return client:request(done) end"
+        },
+        {
+          "line": 34,
+          "source": "function binding:reconcile(mode,done)"
+        },
+        {
+          "line": 66,
+          "source": "function binding:setStandby(suspended,done)"
+        },
+        {
+          "line": 74,
+          "source": "function binding:shutdown() self.active=false;fence();client:shutdown() end"
+        }
+      ]
+    },
+    {
+      "path": "applet/OwnershipClient.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 18,
+          "source": "function M.new(o)"
+        },
+        {
+          "line": 91,
+          "source": "function self:command(op, flags, request, timeout, callback)"
+        },
+        {
+          "line": 110,
+          "source": "function self:poll()"
+        },
+        {
+          "line": 122,
+          "source": "function self:awaitMusicReady(done)"
+        },
+        {
+          "line": 130,
+          "source": "function self:request(callback) return self:command(\"request\",0,\"0\",10000,callback) end"
+        },
+        {
+          "line": 131,
+          "source": "function self:release(callback) return self:command(\"release\",7,\"0\",0,callback) end"
+        },
+        {
+          "line": 132,
+          "source": "function self:canStart()"
+        },
+        {
+          "line": 137,
+          "source": "function self:shutdown() fail(\"shutdown\") end"
+        }
+      ]
+    },
+    {
+      "path": "applet/OwnershipDecoder.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 5,
+          "source": "function M.stop(options, done)"
+        }
+      ]
+    },
+    {
+      "path": "applet/OwnershipHooks.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.new()"
+        },
+        {
+          "line": 5,
+          "source": "function self:install(target, key, make)"
+        },
+        {
+          "line": 17,
+          "source": "function self:record(target,key,original)"
+        },
+        {
+          "line": 23,
+          "source": "function self:restore()"
+        }
+      ]
+    },
+    {
+      "path": "applet/OwnershipHttp.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.new(o)"
+        }
+      ]
+    },
+    {
+      "path": "applet/OwnershipRuntime.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 4,
+          "source": "function M.options(o)"
+        },
+        {
+          "line": 20,
+          "source": "timer=Timer(math.max(1,ms),function() timer=nil;fn() end,true)"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/test_ownership_firmware_edges.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 8,
+          "source": "function pb:stopInternal() count=count+1;if kind=='throw' then error('stop failed') end;self.stream=nil end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/RadioOwnership.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.new(o)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 70,
+          "source": "function new(options)"
+        },
+        {
+          "line": 94,
+          "source": "function StreamPlayer:_isCurrent(generation, station)"
+        },
+        {
+          "line": 99,
+          "source": "function StreamPlayer:_notifyState(station, state, show)"
+        },
+        {
+          "line": 105,
+          "source": "function StreamPlayer:_resetWatchdog()"
+        },
+        {
+          "line": 111,
+          "source": "function StreamPlayer:_resetAudioRecovery()"
+        },
+        {
+          "line": 157,
+          "source": "function StreamPlayer:_startPowerKeepalive()"
+        },
+        {
+          "line": 162,
+          "source": "self.powerKeepaliveTimer = Timer(POWER_KEEPALIVE_INTERVAL, function()"
+        },
+        {
+          "line": 169,
+          "source": "function StreamPlayer:_powerKeepaliveTick()"
+        },
+        {
+          "line": 181,
+          "source": "function StreamPlayer:_startWatchdog()"
+        },
+        {
+          "line": 186,
+          "source": "self.watchdogTimer = Timer(WATCHDOG_INTERVAL, function()"
+        },
+        {
+          "line": 193,
+          "source": "function StreamPlayer:_startAudioRecovery()"
+        },
+        {
+          "line": 198,
+          "source": "self.audioRecoveryTimer = Timer(AUDIO_RECOVERY_INTERVAL, function()"
+        },
+        {
+          "line": 205,
+          "source": "function StreamPlayer:_audioRecoveryTick()"
+        },
+        {
+          "line": 253,
+          "source": "function StreamPlayer:_watchdogTick()"
+        },
+        {
+          "line": 303,
+          "source": "function StreamPlayer:_cancelReconnect()"
+        },
+        {
+          "line": 311,
+          "source": "function StreamPlayer:_stopPlayback()"
+        },
+        {
+          "line": 323,
+          "source": "function StreamPlayer:_handleMetadata(data)"
+        },
+        {
+          "line": 353,
+          "source": "function StreamPlayer:_scheduleReconnect(station, generation, redirect)"
+        },
+        {
+          "line": 366,
+          "source": "self.reconnectTimer = Timer(delay, function()"
+        },
+        {
+          "line": 376,
+          "source": "function StreamPlayer:_handleDisconnect(reason, flush)"
+        },
+        {
+          "line": 402,
+          "source": "function StreamPlayer:_finishRedirectProbe(token, station, callback, failed)"
+        },
+        {
+          "line": 413,
+          "source": "function StreamPlayer:_probeStreamRedirect(station, generation, redirectCount, token, callback)"
+        },
+        {
+          "line": 556,
+          "source": "function StreamPlayer:_resolveStreamRedirect(station, generation, callback)"
+        },
+        {
+          "line": 567,
+          "source": "function StreamPlayer:_startHlsMetadata(session)"
+        },
+        {
+          "line": 587,
+          "source": "function StreamPlayer:_installHooks(playback)"
+        },
+        {
+          "line": 813,
+          "source": "function StreamPlayer:_begin(station, reconnect)"
+        },
+        {
+          "line": 943,
+          "source": "function StreamPlayer:start(station)"
+        },
+        {
+          "line": 948,
+          "source": "function StreamPlayer:stop(state)"
+        },
+        {
+          "line": 969,
+          "source": "function StreamPlayer:stopConnecting()"
+        },
+        {
+          "line": 984,
+          "source": "function StreamPlayer:pause()"
+        },
+        {
+          "line": 992,
+          "source": "function StreamPlayer:play()"
+        },
+        {
+          "line": 1007,
+          "source": "function StreamPlayer:getCurrentStation()"
+        },
+        {
+          "line": 1012,
+          "source": "function StreamPlayer:isPlaying()"
+        },
+        {
+          "line": 1017,
+          "source": "function StreamPlayer:configureOwnership(gate)"
+        },
+        {
+          "line": 1023,
+          "source": "function StreamPlayer:ownershipFence()"
+        },
+        {
+          "line": 1042,
+          "source": "function StreamPlayer:ownershipReleaseHooks()"
+        },
+        {
+          "line": 1048,
+          "source": "function StreamPlayer:ownershipGranted()"
+        },
+        {
+          "line": 1054,
+          "source": "function StreamPlayer:createOwnership(options)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyArtwork.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 21,
+          "source": "function new(log, callback) return setmetatable({ log = log, callback = callback, resolver = Resolver.new({ log = log }), generation = 0, key = nil, temp = nil }, Artwork) end"
+        },
+        {
+          "line": 22,
+          "source": "function Artwork:cancel() self.generation = self.generation + 1; self.key = nil; if self.temp then os.remove(self.temp); self.temp = nil end end"
+        },
+        {
+          "line": 23,
+          "source": "function Artwork:lookup(title, artist, direct, key)"
+        },
+        {
+          "line": 44,
+          "source": "function Artwork:_download(url, key, generation)"
+        },
+        {
+          "line": 55,
+          "source": "timer = Timer(200, function()"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyConnectApplet.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 70,
+          "source": "function init(self)"
+        },
+        {
+          "line": 96,
+          "source": "self._trackWatcher = Timer(250, function()"
+        },
+        {
+          "line": 166,
+          "source": "Timer(2500, function()"
+        },
+        {
+          "line": 169,
+          "source": "Timer(1500, function() if not stillCurrent() then return end;self.playback:start(\"127.0.0.1\", 17880, \"/spotify.ogg\") end, true):start()"
+        },
+        {
+          "line": 174,
+          "source": "function free(self)"
+        },
+        {
+          "line": 185,
+          "source": "function menu(self)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyConnectMeta.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 23,
+          "source": "function jiveVersion() return 1, 1 end"
+        },
+        {
+          "line": 50,
+          "source": "timer = Timer(1000, function()"
+        },
+        {
+          "line": 61,
+          "source": "Timer(1200, function() applet.playback:start(\"127.0.0.1\", 17880, \"/spotify.ogg\") end, true):start()"
+        },
+        {
+          "line": 68,
+          "source": "function registerApplet(self)"
+        },
+        {
+          "line": 100,
+          "source": "local statusTimer=Timer(2000,function()"
+        },
+        {
+          "line": 107,
+          "source": "function defaultSettings() return {enabled=false,deviceName=modelName,serviceMode=\"manual\",serviceModeExplicit=true} end"
+        },
+        {
+          "line": 108,
+          "source": "function upgradeSettings(_, settings)"
+        },
+        {
+          "line": 114,
+          "source": "function configureApplet() end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyNativeNowPlaying.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 7,
+          "source": "function new(options)"
+        },
+        {
+          "line": 11,
+          "source": "function Navigation:_cancel()"
+        },
+        {
+          "line": 16,
+          "source": "function Navigation:_current(generation)"
+        },
+        {
+          "line": 20,
+          "source": "function Navigation:_schedule(generation, attempt)"
+        },
+        {
+          "line": 29,
+          "source": "function Navigation:_open(generation, attempt)"
+        },
+        {
+          "line": 42,
+          "source": "function Navigation:request(generation)"
+        },
+        {
+          "line": 47,
+          "source": "function Navigation:cancel() self.generation = nil; self:_cancel() end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyNowPlaying.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 31,
+          "source": "function new(applet, log)"
+        },
+        {
+          "line": 36,
+          "source": "function NowPlaying:_window()"
+        },
+        {
+          "line": 81,
+          "source": "function NowPlaying:_setArtwork(path, key)"
+        },
+        {
+          "line": 89,
+          "source": "function NowPlaying:_showFallback()"
+        },
+        {
+          "line": 95,
+          "source": "function NowPlaying:update()"
+        },
+        {
+          "line": 112,
+          "source": "function NowPlaying:show()"
+        },
+        {
+          "line": 114,
+          "source": "if not self.timer then self.timer = Timer(1000, function() self:update() end); self.timer:start() end"
+        },
+        {
+          "line": 116,
+          "source": "function NowPlaying:close()"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyOwnership.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.new(o)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 12,
+          "source": "function init(self, applet)"
+        },
+        {
+          "line": 18,
+          "source": "function start(self, host, port, path)"
+        },
+        {
+          "line": 50,
+          "source": "function setRemoteVolume(self, percent)"
+        },
+        {
+          "line": 65,
+          "source": "function stop(self)"
+        },
+        {
+          "line": 71,
+          "source": "function pause(self)"
+        },
+        {
+          "line": 81,
+          "source": "function resume(self)"
+        },
+        {
+          "line": 96,
+          "source": "function configureOwnership(self,gate)"
+        },
+        {
+          "line": 101,
+          "source": "function createOwnership(self, options)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyResolver.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 42,
+          "source": "function new(options)"
+        },
+        {
+          "line": 46,
+          "source": "function Resolver:resolve(host, callback)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyService.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 60,
+          "source": "function init(self, applet)"
+        },
+        {
+          "line": 63,
+          "source": "function getMode(self)"
+        },
+        {
+          "line": 67,
+          "source": "function setMode(self, mode)"
+        },
+        {
+          "line": 76,
+          "source": "function credentialsExist(self) return os.execute(\"test -s \" .. q(USER .. \"/credentials.json\") .. \" 2>/dev/null\")==0 end"
+        },
+        {
+          "line": 77,
+          "source": "function isRunning(self) return owned(PID,\"spotify-supervisor\") end"
+        },
+        {
+          "line": 78,
+          "source": "function _bridgeRunning(self) return owned(BPID,\"ogg-http-bridge\") end"
+        },
+        {
+          "line": 79,
+          "source": "function getStatus(self)"
+        },
+        {
+          "line": 89,
+          "source": "function getLastError(self) return self.lastError end"
+        },
+        {
+          "line": 90,
+          "source": "function status(self)"
+        },
+        {
+          "line": 98,
+          "source": "function statusData(self)"
+        },
+        {
+          "line": 111,
+          "source": "function eventData(self) return {loading=readSmall(METADATA_LOADING),stream=readSmall(STREAM_MARKER),playback_state=readSmall(METADATA_STATE),volume=tonumber(readSmall(METADATA_VOLUME)),position=readSmall(METADATA_POSITION)} end"
+        },
+        {
+          "line": 113,
+          "source": "function _verifyStart(self, operation, attempts)"
+        },
+        {
+          "line": 117,
+          "source": "self.startTimer=Timer(250,function() self.startTimer=nil; self:_verifyStart(operation,attempts-1) end,true); self.startTimer:start()"
+        },
+        {
+          "line": 119,
+          "source": "function _startHealthMonitor(self)"
+        },
+        {
+          "line": 121,
+          "source": "self.healthTimer=Timer(10000,function()"
+        },
+        {
+          "line": 129,
+          "source": "function start(self, pairing)"
+        },
+        {
+          "line": 148,
+          "source": "function _finishStop(self, operation, attempts)"
+        },
+        {
+          "line": 156,
+          "source": "self.stopTimer=Timer(250,function() self.stopTimer=nil; self:_finishStop(operation,attempts-1) end,true); self.stopTimer:start()"
+        },
+        {
+          "line": 158,
+          "source": "function stop(self, force)"
+        },
+        {
+          "line": 166,
+          "source": "function restart(self)"
+        },
+        {
+          "line": 173,
+          "source": "function disconnect(self)"
+        },
+        {
+          "line": 176,
+          "source": "function shutdown(self) if self.healthTimer then self.healthTimer:stop(); self.healthTimer=nil end; self:stop(true) end"
+        },
+        {
+          "line": 180,
+          "source": "function ownershipFence(self)"
+        },
+        {
+          "line": 188,
+          "source": "function ownershipStop(self,done)"
+        },
+        {
+          "line": 196,
+          "source": "function ownershipGranted(self) self.ownershipFenced=false end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyStandaloneNowPlaying.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 39,
+          "source": "function new(options)"
+        },
+        {
+          "line": 45,
+          "source": "function Client:_timer(delay, callback, once)"
+        },
+        {
+          "line": 47,
+          "source": "if okTimer then return Timer(delay, callback, once) end"
+        },
+        {
+          "line": 49,
+          "source": "function Client:_stopTimer(name)"
+        },
+        {
+          "line": 52,
+          "source": "function Client:_log(level, ...)"
+        },
+        {
+          "line": 55,
+          "source": "function Client:_nativeRequest(method, path, payload, callback)"
+        },
+        {
+          "line": 73,
+          "source": "function Client:_request(method,path,payload,callback)"
+        },
+        {
+          "line": 77,
+          "source": "function Client:_send(kind,method,path,payload,handler)"
+        },
+        {
+          "line": 80,
+          "source": "self:_stopTimer(\"requestTimer\")"
+        },
+        {
+          "line": 88,
+          "source": "self.inFlight=nil; self:_stopTimer(\"requestTimer\"); local decoded"
+        },
+        {
+          "line": 94,
+          "source": "function Client:_retry(reason)"
+        },
+        {
+          "line": 102,
+          "source": "function Client:_snapshot()"
+        },
+        {
+          "line": 115,
+          "source": "function Client:_invalidate()"
+        },
+        {
+          "line": 116,
+          "source": "self.sessionId=nil; self.sessionGeneration=nil; self.publishedRevision=-1; self:_stopTimer(\"heartbeatTimer\")"
+        },
+        {
+          "line": 118,
+          "source": "function Client:_heartbeatTimer()"
+        },
+        {
+          "line": 124,
+          "source": "function Client:_claim()"
+        },
+        {
+          "line": 128,
+          "source": "self:_heartbeatTimer(); self:_sync()"
+        },
+        {
+          "line": 132,
+          "source": "function Client:_lost()"
+        },
+        {
+          "line": 142,
+          "source": "function Client:_update()"
+        },
+        {
+          "line": 151,
+          "source": "function Client:_heartbeat()"
+        },
+        {
+          "line": 159,
+          "source": "function Client:_release()"
+        },
+        {
+          "line": 168,
+          "source": "function Client:_sync()"
+        },
+        {
+          "line": 169,
+          "source": "if self.inFlight then return end; self:_stopTimer(\"retryTimer\")"
+        },
+        {
+          "line": 174,
+          "source": "function Client:activate(data,generation)"
+        },
+        {
+          "line": 180,
+          "source": "function Client:update(data,generation)"
+        },
+        {
+          "line": 191,
+          "source": "function Client:release()"
+        },
+        {
+          "line": 194,
+          "source": "function Client:shutdown()"
+        },
+        {
+          "line": 196,
+          "source": "self.revision=self.revision+1; self:_stopTimer(\"retryTimer\"); self:_stopTimer(\"heartbeatTimer\"); self:_sync()"
+        },
+        {
+          "line": 198,
+          "source": "function Client:status() return {activeIntent=self.activeIntent==true,hasSession=self.sessionId~=nil,generation=self.sessionGeneration,revision=self.revision,state=self.desiredState} end"
+        },
+        {
+          "line": 199,
+          "source": "function normalizeTrackId(data) return trackId(data) end"
+        },
+        {
+          "line": 200,
+          "source": "function advertisedCapabilities() return capabilities() end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyUrlTransport.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 12,
+          "source": "function UrlTransport.artworkUrl(url)"
+        },
+        {
+          "line": 25,
+          "source": "function UrlTransport.proxyPrefix() return PROXY_PREFIX end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzConnectApplet.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 20,
+          "source": "function init(self)"
+        },
+        {
+          "line": 35,
+          "source": "self.timer = Timer(200, function() self:_poll() end)"
+        },
+        {
+          "line": 40,
+          "source": "function startService(self)"
+        },
+        {
+          "line": 47,
+          "source": "function stopService(self)"
+        },
+        {
+          "line": 54,
+          "source": "function isServiceRunning(self) return self.service:isRunning() end"
+        },
+        {
+          "line": 56,
+          "source": "function setServiceActive(self, active)"
+        },
+        {
+          "line": 63,
+          "source": "function _get(self, path, callback)"
+        },
+        {
+          "line": 70,
+          "source": "function _poll(self)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzConnectMeta.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 13,
+          "source": "function jiveVersion() return 1, 1 end"
+        },
+        {
+          "line": 14,
+          "source": "function defaultSettings()"
+        },
+        {
+          "line": 17,
+          "source": "function upgradeSettings(_, settings)"
+        },
+        {
+          "line": 23,
+          "source": "function registerApplet(self)"
+        },
+        {
+          "line": 52,
+          "source": "local timer=Timer(2000,function()"
+        },
+        {
+          "line": 62,
+          "source": "function configureApplet() end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzLifecyclePolicy.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.validMode(mode) return MODES[mode]==true end"
+        },
+        {
+          "line": 4,
+          "source": "function M.defaultSettings() return {enabled=false,deviceName=\"Squeezebox Radio\",serviceMode=\"manual\",serviceModeExplicit=true} end"
+        },
+        {
+          "line": 5,
+          "source": "function M.upgrade(settings)"
+        },
+        {
+          "line": 12,
+          "source": "function M.canStart(mode) return mode~=\"disabled\" end"
+        },
+        {
+          "line": 13,
+          "source": "function M.canStop(mode, force) return force==true or mode~=\"always_on\" end"
+        },
+        {
+          "line": 14,
+          "source": "function M.backoff(failures)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzNowPlaying.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 14,
+          "source": "function Client.new()"
+        },
+        {
+          "line": 18,
+          "source": "function Client:play(command)"
+        },
+        {
+          "line": 27,
+          "source": "function Client:state(generation, state, position)"
+        },
+        {
+          "line": 41,
+          "source": "function Client:release()"
+        },
+        {
+          "line": 45,
+          "source": "function Client:_send(action, payload, callback)"
+        },
+        {
+          "line": 95,
+          "source": "function Client:tick()"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzOwnership.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "function M.new(o)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 25,
+          "source": "function init(self, log, report)"
+        },
+        {
+          "line": 29,
+          "source": "self.recoveryTimer = Timer(250, function() self:_monitorPlayback() end)"
+        },
+        {
+          "line": 33,
+          "source": "function _monitorPlayback(self)"
+        },
+        {
+          "line": 63,
+          "source": "function start(self, url, generation, codec)"
+        },
+        {
+          "line": 111,
+          "source": "function pause(self, generation)"
+        },
+        {
+          "line": 119,
+          "source": "function resume(self)"
+        },
+        {
+          "line": 127,
+          "source": "function setVolume(self, value)"
+        },
+        {
+          "line": 140,
+          "source": "function stop(self, report, generation)"
+        },
+        {
+          "line": 148,
+          "source": "function configureOwnership(self,gate)"
+        },
+        {
+          "line": 152,
+          "source": "function ownershipFence(self)"
+        },
+        {
+          "line": 157,
+          "source": "function ownershipReleaseHooks(self)"
+        },
+        {
+          "line": 167,
+          "source": "function ownershipGranted(self)"
+        },
+        {
+          "line": 171,
+          "source": "function createOwnership(self, options)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzService.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 29,
+          "source": "function init(self, applet)"
+        },
+        {
+          "line": 40,
+          "source": "function getMode(self)"
+        },
+        {
+          "line": 44,
+          "source": "function setMode(self, mode)"
+        },
+        {
+          "line": 52,
+          "source": "function boot(self)"
+        },
+        {
+          "line": 55,
+          "source": "function isRunning(self) return owned() end"
+        },
+        {
+          "line": 56,
+          "source": "function getStatus(self)"
+        },
+        {
+          "line": 61,
+          "source": "function getLastError(self) return self.lastError end"
+        },
+        {
+          "line": 62,
+          "source": "function statusData(self)"
+        },
+        {
+          "line": 67,
+          "source": "function noteCommand(self)"
+        },
+        {
+          "line": 71,
+          "source": "function _setPolling(self, enabled)"
+        },
+        {
+          "line": 74,
+          "source": "function _startHealthMonitor(self)"
+        },
+        {
+          "line": 76,
+          "source": "self.healthTimer=Timer(10000,function()"
+        },
+        {
+          "line": 86,
+          "source": "function _verifyStart(self, operation, attempts)"
+        },
+        {
+          "line": 97,
+          "source": "self.startTimer=Timer(250,function() self.startTimer=nil; self:_verifyStart(operation,attempts-1) end,true)"
+        },
+        {
+          "line": 100,
+          "source": "function _launch(self)"
+        },
+        {
+          "line": 118,
+          "source": "function start(self)"
+        },
+        {
+          "line": 126,
+          "source": "function _finishStop(self, operation, attempts)"
+        },
+        {
+          "line": 138,
+          "source": "self.stopTimer=Timer(250,function() self.stopTimer=nil; self:_finishStop(operation,attempts-1) end,true); self.stopTimer:start()"
+        },
+        {
+          "line": 140,
+          "source": "function stop(self, force)"
+        },
+        {
+          "line": 151,
+          "source": "function restart(self)"
+        },
+        {
+          "line": 160,
+          "source": "function shutdown(self)"
+        },
+        {
+          "line": 165,
+          "source": "function ownershipFence(self)"
+        },
+        {
+          "line": 174,
+          "source": "function ownershipStop(self,done)"
+        },
+        {
+          "line": 182,
+          "source": "function ownershipGranted(self) self.ownershipFenced=false end"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/LocalPlayer.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 35,
+          "source": "function setDeviceType(self, model, name)"
+        },
+        {
+          "line": 43,
+          "source": "function getDeviceType(self)"
+        },
+        {
+          "line": 49,
+          "source": "function disconnectServerAndPreserveLocalPlayer(self)"
+        },
+        {
+          "line": 66,
+          "source": "function getLastSqueezeCenter(self)"
+        },
+        {
+          "line": 71,
+          "source": "function setLastSqueezeCenter(self, server)"
+        },
+        {
+          "line": 78,
+          "source": "function __init(self, jnt, playerId, uuid)"
+        },
+        {
+          "line": 102,
+          "source": "function destroy(self, server)"
+        },
+        {
+          "line": 118,
+          "source": "function playFileInLoop(self, file)"
+        },
+        {
+          "line": 123,
+          "source": "function updateInit(self, server, init)"
+        },
+        {
+          "line": 132,
+          "source": "function incrementSequenceNumber(self)"
+        },
+        {
+          "line": 136,
+          "source": "function getCurrentSequenceNumber(self)"
+        },
+        {
+          "line": 140,
+          "source": "function isSequenceNumberInSync(self, serverSequenceNumber)"
+        },
+        {
+          "line": 144,
+          "source": "function isStreaming(self)"
+        },
+        {
+          "line": 153,
+          "source": "function refreshLocallyMaintainedParameters(self)"
+        },
+        {
+          "line": 166,
+          "source": "function isLocal(self)"
+        },
+        {
+          "line": 171,
+          "source": "function needsNetworkConfig(self)"
+        },
+        {
+          "line": 176,
+          "source": "function needsMusicSource(self)"
+        },
+        {
+          "line": 185,
+          "source": "function canConnectToServer(self)"
+        },
+        {
+          "line": 190,
+          "source": "function connectToServer(self, server)"
+        },
+        {
+          "line": 221,
+          "source": "function connectIp(self, serverip, slimserverip)"
+        },
+        {
+          "line": 231,
+          "source": "function disconnectFromServer(self)"
+        },
+        {
+          "line": 241,
+          "source": "function getLastSeen(self)"
+        },
+        {
+          "line": 258,
+          "source": "function isConnected(self)"
+        },
+        {
+          "line": 268,
+          "source": "function hasConnectionFailed(self)"
+        },
+        {
+          "line": 276,
+          "source": "function setSignalStrength(self, signalStrength)"
+        },
+        {
+          "line": 281,
+          "source": "function getEffectivePlayMode(self)"
+        },
+        {
+          "line": 293,
+          "source": "function getCapturePlayMode(self)"
+        },
+        {
+          "line": 298,
+          "source": "function setCapturePlayMode(self, capturePlayMode)"
+        },
+        {
+          "line": 303,
+          "source": "function captureVolume(self, volume)"
+        },
+        {
+          "line": 308,
+          "source": "function getCaptureVolume(self)"
+        },
+        {
+          "line": 313,
+          "source": "function getVolume(self)"
+        },
+        {
+          "line": 320,
+          "source": "function volume(self, vol, send)"
+        },
+        {
+          "line": 326,
+          "source": "function _volumeNoIncrement(self, vol, send)"
+        },
+        {
+          "line": 331,
+          "source": "function volumeLocal(self, vol, updateSequenceNumber, stateOnly)"
+        },
+        {
+          "line": 340,
+          "source": "function mute(self, mute)"
+        },
+        {
+          "line": 357,
+          "source": "function pause(self, useBackgroundRequest)"
+        },
+        {
+          "line": 371,
+          "source": "function stop(self, skipDelay)"
+        },
+        {
+          "line": 392,
+          "source": "function unpause(self)"
+        },
+        {
+          "line": 403,
+          "source": "function play(self)"
+        },
+        {
+          "line": 414,
+          "source": "function setPower(self, on, _, isServerRequest) -- ignoring third param 'sequenceNumber' (only used by parent class's version)"
+        },
+        {
+          "line": 430,
+          "source": "function __tostring(self)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 70,
+          "source": "function new(options)"
+        },
+        {
+          "line": 94,
+          "source": "function StreamPlayer:_isCurrent(generation, station)"
+        },
+        {
+          "line": 99,
+          "source": "function StreamPlayer:_notifyState(station, state, show)"
+        },
+        {
+          "line": 105,
+          "source": "function StreamPlayer:_resetWatchdog()"
+        },
+        {
+          "line": 111,
+          "source": "function StreamPlayer:_resetAudioRecovery()"
+        },
+        {
+          "line": 157,
+          "source": "function StreamPlayer:_startPowerKeepalive()"
+        },
+        {
+          "line": 162,
+          "source": "self.powerKeepaliveTimer = Timer(POWER_KEEPALIVE_INTERVAL, function()"
+        },
+        {
+          "line": 169,
+          "source": "function StreamPlayer:_powerKeepaliveTick()"
+        },
+        {
+          "line": 181,
+          "source": "function StreamPlayer:_startWatchdog()"
+        },
+        {
+          "line": 186,
+          "source": "self.watchdogTimer = Timer(WATCHDOG_INTERVAL, function()"
+        },
+        {
+          "line": 193,
+          "source": "function StreamPlayer:_startAudioRecovery()"
+        },
+        {
+          "line": 198,
+          "source": "self.audioRecoveryTimer = Timer(AUDIO_RECOVERY_INTERVAL, function()"
+        },
+        {
+          "line": 205,
+          "source": "function StreamPlayer:_audioRecoveryTick()"
+        },
+        {
+          "line": 253,
+          "source": "function StreamPlayer:_watchdogTick()"
+        },
+        {
+          "line": 303,
+          "source": "function StreamPlayer:_cancelReconnect()"
+        },
+        {
+          "line": 311,
+          "source": "function StreamPlayer:_stopPlayback()"
+        },
+        {
+          "line": 323,
+          "source": "function StreamPlayer:_handleMetadata(data)"
+        },
+        {
+          "line": 353,
+          "source": "function StreamPlayer:_scheduleReconnect(station, generation, redirect)"
+        },
+        {
+          "line": 366,
+          "source": "self.reconnectTimer = Timer(delay, function()"
+        },
+        {
+          "line": 376,
+          "source": "function StreamPlayer:_handleDisconnect(reason, flush)"
+        },
+        {
+          "line": 402,
+          "source": "function StreamPlayer:_finishRedirectProbe(token, station, callback, failed)"
+        },
+        {
+          "line": 413,
+          "source": "function StreamPlayer:_probeStreamRedirect(station, generation, redirectCount, token, callback)"
+        },
+        {
+          "line": 556,
+          "source": "function StreamPlayer:_resolveStreamRedirect(station, generation, callback)"
+        },
+        {
+          "line": 567,
+          "source": "function StreamPlayer:_startHlsMetadata(session)"
+        },
+        {
+          "line": 587,
+          "source": "function StreamPlayer:_installHooks(playback)"
+        },
+        {
+          "line": 813,
+          "source": "function StreamPlayer:_begin(station, reconnect)"
+        },
+        {
+          "line": 943,
+          "source": "function StreamPlayer:start(station)"
+        },
+        {
+          "line": 948,
+          "source": "function StreamPlayer:stop(state)"
+        },
+        {
+          "line": 969,
+          "source": "function StreamPlayer:stopConnecting()"
+        },
+        {
+          "line": 984,
+          "source": "function StreamPlayer:pause()"
+        },
+        {
+          "line": 992,
+          "source": "function StreamPlayer:play()"
+        },
+        {
+          "line": 1007,
+          "source": "function StreamPlayer:getCurrentStation()"
+        },
+        {
+          "line": 1012,
+          "source": "function StreamPlayer:isPlaying()"
+        },
+        {
+          "line": 1017,
+          "source": "function StreamPlayer:configureOwnership(gate)"
+        },
+        {
+          "line": 1023,
+          "source": "function StreamPlayer:ownershipFence()"
+        },
+        {
+          "line": 1042,
+          "source": "function StreamPlayer:ownershipReleaseHooks()"
+        },
+        {
+          "line": 1048,
+          "source": "function StreamPlayer:ownershipGranted()"
+        },
+        {
+          "line": 1054,
+          "source": "function StreamPlayer:createOwnership(options)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 12,
+          "source": "function init(self, applet)"
+        },
+        {
+          "line": 18,
+          "source": "function start(self, host, port, path)"
+        },
+        {
+          "line": 50,
+          "source": "function setRemoteVolume(self, percent)"
+        },
+        {
+          "line": 65,
+          "source": "function stop(self)"
+        },
+        {
+          "line": 71,
+          "source": "function pause(self)"
+        },
+        {
+          "line": 81,
+          "source": "function resume(self)"
+        },
+        {
+          "line": 96,
+          "source": "function configureOwnership(self,gate)"
+        },
+        {
+          "line": 101,
+          "source": "function createOwnership(self, options)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyService.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 60,
+          "source": "function init(self, applet)"
+        },
+        {
+          "line": 63,
+          "source": "function getMode(self)"
+        },
+        {
+          "line": 67,
+          "source": "function setMode(self, mode)"
+        },
+        {
+          "line": 76,
+          "source": "function credentialsExist(self) return os.execute(\"test -s \" .. q(USER .. \"/credentials.json\") .. \" 2>/dev/null\")==0 end"
+        },
+        {
+          "line": 77,
+          "source": "function isRunning(self) return owned(PID,\"spotify-supervisor\") end"
+        },
+        {
+          "line": 78,
+          "source": "function _bridgeRunning(self) return owned(BPID,\"ogg-http-bridge\") end"
+        },
+        {
+          "line": 79,
+          "source": "function getStatus(self)"
+        },
+        {
+          "line": 89,
+          "source": "function getLastError(self) return self.lastError end"
+        },
+        {
+          "line": 90,
+          "source": "function status(self)"
+        },
+        {
+          "line": 98,
+          "source": "function statusData(self)"
+        },
+        {
+          "line": 111,
+          "source": "function eventData(self) return {loading=readSmall(METADATA_LOADING),stream=readSmall(STREAM_MARKER),playback_state=readSmall(METADATA_STATE),volume=tonumber(readSmall(METADATA_VOLUME)),position=readSmall(METADATA_POSITION)} end"
+        },
+        {
+          "line": 113,
+          "source": "function _verifyStart(self, operation, attempts)"
+        },
+        {
+          "line": 117,
+          "source": "self.startTimer=Timer(250,function() self.startTimer=nil; self:_verifyStart(operation,attempts-1) end,true); self.startTimer:start()"
+        },
+        {
+          "line": 119,
+          "source": "function _startHealthMonitor(self)"
+        },
+        {
+          "line": 121,
+          "source": "self.healthTimer=Timer(10000,function()"
+        },
+        {
+          "line": 129,
+          "source": "function start(self, pairing)"
+        },
+        {
+          "line": 148,
+          "source": "function _finishStop(self, operation, attempts)"
+        },
+        {
+          "line": 156,
+          "source": "self.stopTimer=Timer(250,function() self.stopTimer=nil; self:_finishStop(operation,attempts-1) end,true); self.stopTimer:start()"
+        },
+        {
+          "line": 158,
+          "source": "function stop(self, force)"
+        },
+        {
+          "line": 166,
+          "source": "function restart(self)"
+        },
+        {
+          "line": 173,
+          "source": "function disconnect(self)"
+        },
+        {
+          "line": 176,
+          "source": "function shutdown(self) if self.healthTimer then self.healthTimer:stop(); self.healthTimer=nil end; self:stop(true) end"
+        },
+        {
+          "line": 180,
+          "source": "function ownershipFence(self)"
+        },
+        {
+          "line": 188,
+          "source": "function ownershipStop(self,done)"
+        },
+        {
+          "line": 196,
+          "source": "function ownershipGranted(self) self.ownershipFenced=false end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 25,
+          "source": "function init(self, log, report)"
+        },
+        {
+          "line": 29,
+          "source": "self.recoveryTimer = Timer(250, function() self:_monitorPlayback() end)"
+        },
+        {
+          "line": 33,
+          "source": "function _monitorPlayback(self)"
+        },
+        {
+          "line": 63,
+          "source": "function start(self, url, generation, codec)"
+        },
+        {
+          "line": 111,
+          "source": "function pause(self, generation)"
+        },
+        {
+          "line": 119,
+          "source": "function resume(self)"
+        },
+        {
+          "line": 127,
+          "source": "function setVolume(self, value)"
+        },
+        {
+          "line": 140,
+          "source": "function stop(self, report, generation)"
+        },
+        {
+          "line": 148,
+          "source": "function configureOwnership(self,gate)"
+        },
+        {
+          "line": 152,
+          "source": "function ownershipFence(self)"
+        },
+        {
+          "line": 157,
+          "source": "function ownershipReleaseHooks(self)"
+        },
+        {
+          "line": 167,
+          "source": "function ownershipGranted(self)"
+        },
+        {
+          "line": 171,
+          "source": "function createOwnership(self, options)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzService.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 29,
+          "source": "function init(self, applet)"
+        },
+        {
+          "line": 40,
+          "source": "function getMode(self)"
+        },
+        {
+          "line": 44,
+          "source": "function setMode(self, mode)"
+        },
+        {
+          "line": 52,
+          "source": "function boot(self)"
+        },
+        {
+          "line": 55,
+          "source": "function isRunning(self) return owned() end"
+        },
+        {
+          "line": 56,
+          "source": "function getStatus(self)"
+        },
+        {
+          "line": 61,
+          "source": "function getLastError(self) return self.lastError end"
+        },
+        {
+          "line": 62,
+          "source": "function statusData(self)"
+        },
+        {
+          "line": 67,
+          "source": "function noteCommand(self)"
+        },
+        {
+          "line": 71,
+          "source": "function _setPolling(self, enabled)"
+        },
+        {
+          "line": 74,
+          "source": "function _startHealthMonitor(self)"
+        },
+        {
+          "line": 76,
+          "source": "self.healthTimer=Timer(10000,function()"
+        },
+        {
+          "line": 86,
+          "source": "function _verifyStart(self, operation, attempts)"
+        },
+        {
+          "line": 97,
+          "source": "self.startTimer=Timer(250,function() self.startTimer=nil; self:_verifyStart(operation,attempts-1) end,true)"
+        },
+        {
+          "line": 100,
+          "source": "function _launch(self)"
+        },
+        {
+          "line": 118,
+          "source": "function start(self)"
+        },
+        {
+          "line": 126,
+          "source": "function _finishStop(self, operation, attempts)"
+        },
+        {
+          "line": 138,
+          "source": "self.stopTimer=Timer(250,function() self.stopTimer=nil; self:_finishStop(operation,attempts-1) end,true); self.stopTimer:start()"
+        },
+        {
+          "line": 140,
+          "source": "function stop(self, force)"
+        },
+        {
+          "line": 151,
+          "source": "function restart(self)"
+        },
+        {
+          "line": 160,
+          "source": "function shutdown(self)"
+        },
+        {
+          "line": 165,
+          "source": "function ownershipFence(self)"
+        },
+        {
+          "line": 174,
+          "source": "function ownershipStop(self,done)"
+        },
+        {
+          "line": 182,
+          "source": "function ownershipGranted(self) self.ownershipFenced=false end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/bridge/bridge.rs",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 16,
+          "source": "fn setsockopt(fd: i32, level: i32, option: i32, value: *const i32, length: u32) -> i32;"
+        },
+        {
+          "line": 19,
+          "source": "fn page(r: &mut impl Read) -> io::Result<Option<Vec<u8>>> {"
+        },
+        {
+          "line": 47,
+          "source": "fn observe(&mut self, p: &[u8]) -> io::Result<()> {"
+        },
+        {
+          "line": 91,
+          "source": "fn accept_http(mut s: TcpStream) -> io::Result<TcpStream> {"
+        },
+        {
+          "line": 123,
+          "source": "fn write_marker(path: &Path, generation: u64, serial: u32) -> io::Result<()> {"
+        },
+        {
+          "line": 129,
+          "source": "fn read_marker(path: &Path) -> Option<String> {"
+        },
+        {
+          "line": 136,
+          "source": "fn main() -> io::Result<()> {"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/supervisor/main.rs",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 10,
+          "source": "fn esc(value: &str) -> String { value.replace('\\\\', \"\\\\\\\\\").replace('\"', \"\\\\\\\"\").replace('\\n', \"\\\\n\").replace('\\r', \"\\\\r\") }"
+        },
+        {
+          "line": 11,
+          "source": "fn status_body(state: &str, extra: Option<(&str, &str)>) -> String {"
+        },
+        {
+          "line": 19,
+          "source": "fn write_status(path: &str, state: &str, extra: Option<(&str, &str)>) {"
+        },
+        {
+          "line": 35,
+          "source": "fn status_extra_field_is_valid_json_shape() {"
+        },
+        {
+          "line": 42,
+          "source": "fn parse_status(path: &str, line: &str) {"
+        },
+        {
+          "line": 46,
+          "source": "fn relay(child: &mut Child, status: &str) -> Vec<thread::JoinHandle<()>> {"
+        },
+        {
+          "line": 52,
+          "source": "fn stop_child(child: &mut Child) {"
+        },
+        {
+          "line": 58,
+          "source": "fn main() -> std::io::Result<()> {"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/metadata/main.rs",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 3,
+          "source": "fn esc(value: &str) -> String {"
+        },
+        {
+          "line": 7,
+          "source": "fn main() -> std::io::Result<()> {"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/native/qobuzconnectd/src/main.rs",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 22,
+          "source": "fn start_resolution("
+        },
+        {
+          "line": 65,
+          "source": "fn usage() {"
+        },
+        {
+          "line": 80,
+          "source": "fn parse_args() -> Result<Args, String> {"
+        },
+        {
+          "line": 135,
+          "source": "fn decode_id(s: &str) -> Option<[u8; 16]> {"
+        },
+        {
+          "line": 147,
+          "source": "fn encode_id(id: &[u8; 16]) -> String {"
+        },
+        {
+          "line": 151,
+          "source": "fn load_or_create_id(path: &Path) -> io::Result<[u8; 16]> {"
+        },
+        {
+          "line": 181,
+          "source": "fn renderer_state(bridge: &PlaybackBridge) -> msg::QueueRendererState {"
+        },
+        {
+          "line": 615,
+          "source": "fn identity_hex_round_trip() {"
+        },
+        {
+          "line": 623,
+          "source": "fn stopped_is_truthful() {"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/native/qobuzconnectd/src/playback.rs",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 76,
+          "source": "pub fn new() -> Self {"
+        },
+        {
+          "line": 90,
+          "source": "fn publish("
+        },
+        {
+          "line": 126,
+          "source": "pub fn begin_play(&self, track_id: u32, queue_item_id: u64, position_ms: u32) -> u64 {"
+        },
+        {
+          "line": 137,
+          "source": "pub fn complete_play(&self, generation: u64, stream: ResolvedStream) -> bool {"
+        },
+        {
+          "line": 163,
+          "source": "pub fn fail_play(&self, generation: u64) -> bool {"
+        },
+        {
+          "line": 172,
+          "source": "pub fn is_current_item(&self, track_id: u32, queue_item_id: u64) -> bool {"
+        },
+        {
+          "line": 178,
+          "source": "pub fn is_paused_item(&self, track_id: u32, queue_item_id: u64) -> bool {"
+        },
+        {
+          "line": 184,
+          "source": "pub fn resume(&self) {"
+        },
+        {
+          "line": 187,
+          "source": "pub fn pause(&self, position_ms: u32) {"
+        },
+        {
+          "line": 190,
+          "source": "pub fn stop(&self) {"
+        },
+        {
+          "line": 198,
+          "source": "pub fn generation(&self) -> u64 {"
+        },
+        {
+          "line": 202,
+          "source": "pub fn take_event(&self) -> Option<PlaybackEvent> {"
+        },
+        {
+          "line": 205,
+          "source": "pub fn volume(&self, volume: u32) {"
+        },
+        {
+          "line": 209,
+          "source": "pub fn snapshot(&self) -> (PlayingState, BufferState, u32, Option<i32>) {"
+        },
+        {
+          "line": 249,
+          "source": "fn audio_metadata(&self) -> Option<AudioMetadata> {"
+        },
+        {
+          "line": 290,
+          "source": "fn signature(endpoint: &str, params: &[(&str, String)], ts: u64, secret: &str) -> String {"
+        },
+        {
+          "line": 300,
+          "source": "fn authenticated("
+        },
+        {
+          "line": 656,
+          "source": "fn parse_state(s: &str) -> Option<ActualState> {"
+        },
+        {
+          "line": 694,
+          "source": "fn optional_source_quality_uses_real_values_only() {"
+        },
+        {
+          "line": 709,
+          "source": "fn generations_reject_stale_work() {"
+        },
+        {
+          "line": 737,
+          "source": "fn actual_state_mapping_is_truthful() {"
+        },
+        {
+          "line": 746,
+          "source": "fn duplicate_identity_includes_queue_item() {"
+        },
+        {
+          "line": 762,
+          "source": "fn applet_events_are_generation_scoped() {"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/upstream/src/squeezeplay/src/audio/decode/decode.c",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 116,
+          "source": "static void decode_resume_decoder_handler(void) {"
+        },
+        {
+          "line": 125,
+          "source": "static void decode_resume_audio_handler(void) {"
+        },
+        {
+          "line": 148,
+          "source": "static void decode_pause_audio_handler(void) {"
+        },
+        {
+          "line": 173,
+          "source": "static void decode_skip_ahead_handler(void) {"
+        },
+        {
+          "line": 189,
+          "source": "static void decode_stop_handler(void) {"
+        },
+        {
+          "line": 214,
+          "source": "static void decode_flush_handler(void) {"
+        },
+        {
+          "line": 237,
+          "source": "static void decode_start_handler(void) {"
+        },
+        {
+          "line": 296,
+          "source": "static void decode_capture_handler(void) {"
+        },
+        {
+          "line": 318,
+          "source": "static void decode_song_ended_handler(void) {"
+        },
+        {
+          "line": 388,
+          "source": "static int decode_thread_execute(void *unused) {"
+        },
+        {
+          "line": 539,
+          "source": "static int decode_dequeue_packet(lua_State *L) {"
+        },
+        {
+          "line": 572,
+          "source": "static int decode_resume_decoder(lua_State *L) {"
+        },
+        {
+          "line": 590,
+          "source": "static int decode_resume_audio(lua_State *L) {"
+        },
+        {
+          "line": 613,
+          "source": "static int decode_pause_audio(lua_State *L) {"
+        },
+        {
+          "line": 636,
+          "source": "static int decode_skip_ahead(lua_State *L) {"
+        },
+        {
+          "line": 659,
+          "source": "static int decode_stop(lua_State *L) {"
+        },
+        {
+          "line": 682,
+          "source": "static int decode_flush(lua_State *L) {"
+        },
+        {
+          "line": 700,
+          "source": "static int decode_start(lua_State *L) {"
+        },
+        {
+          "line": 747,
+          "source": "static int decode_capture(lua_State *L) {"
+        },
+        {
+          "line": 770,
+          "source": "static int decode_song_ended(lua_State *L) {"
+        },
+        {
+          "line": 788,
+          "source": "static int decode_status(lua_State *L) {"
+        },
+        {
+          "line": 897,
+          "source": "static int decode_audio_enable(lua_State *L) {"
+        },
+        {
+          "line": 907,
+          "source": "static int decode_audio_gain(lua_State *L) {"
+        },
+        {
+          "line": 923,
+          "source": "static int decode_capture_gain(lua_State *L) {"
+        },
+        {
+          "line": 939,
+          "source": "static int decode_init_audio(lua_State *L) {"
+        },
+        {
+          "line": 1005,
+          "source": "static int decode_audio_open(lua_State *L) {"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/audio/Playback.lua",
+      "symbols_and_timer_callbacks": [
+        {
+          "line": 60,
+          "source": "function __init(self, jnt, slimproto)"
+        },
+        {
+          "line": 107,
+          "source": "obj.timer = Timer(100, function()"
+        },
+        {
+          "line": 175,
+          "source": "function setDecodeThreshold(self, threshold)"
+        },
+        {
+          "line": 180,
+          "source": "function stop(self)"
+        },
+        {
+          "line": 188,
+          "source": "function _setSource(self, source)"
+        },
+        {
+          "line": 214,
+          "source": "function playFileInLoop(self, file)"
+        },
+        {
+          "line": 244,
+          "source": "function setSignalStrength(self, signalStrength)"
+        },
+        {
+          "line": 249,
+          "source": "function sendStatus(self, status, event, serverTimestamp)"
+        },
+        {
+          "line": 260,
+          "source": "function _timerCallback(self)"
+        },
+        {
+          "line": 461,
+          "source": "function _ipstring(ip)"
+        },
+        {
+          "line": 475,
+          "source": "function _streamConnect(self, serverIp, serverPort, reader, writer, slaves)"
+        },
+        {
+          "line": 527,
+          "source": "function _proxyQueueSegment(self, chunk)"
+        },
+        {
+          "line": 533,
+          "source": "function _proxyConnClose(self, conn, err, leaveConnectionTable)"
+        },
+        {
+          "line": 549,
+          "source": "function _proxyWrite(self, conn, networkErr)"
+        },
+        {
+          "line": 580,
+          "source": "function _proxyRead(self, conn, networkErr)"
+        },
+        {
+          "line": 599,
+          "source": "function _proxyAccept(self, networkErr)"
+        },
+        {
+          "line": 618,
+          "source": "function (self, networkErr) self:_proxyWrite(conn, networkErr) end,"
+        },
+        {
+          "line": 621,
+          "source": "function (self, networkErr) self:_proxyRead(conn, networkErr) end,"
+        },
+        {
+          "line": 650,
+          "source": "function _proxyCleanup(self)"
+        },
+        {
+          "line": 664,
+          "source": "function _proxyInit(self, expected, stream)"
+        },
+        {
+          "line": 697,
+          "source": "function _proxyAndStream(self, canRead)"
+        },
+        {
+          "line": 740,
+          "source": "function _streamDisconnect(self, reason, flush)"
+        },
+        {
+          "line": 785,
+          "source": "function _streamWrite(self, networkErr)"
+        },
+        {
+          "line": 801,
+          "source": "function _streamRead(self, networkErr)"
+        },
+        {
+          "line": 824,
+          "source": "function _streamHttpHeaders(self, headers)"
+        },
+        {
+          "line": 835,
+          "source": "function _reconnect(self)"
+        },
+        {
+          "line": 852,
+          "source": "function _strm(self, data)"
+        },
+        {
+          "line": 1007,
+          "source": "function stopInternal(self)"
+        },
+        {
+          "line": 1022,
+          "source": "function pause(self)"
+        },
+        {
+          "line": 1027,
+          "source": "function _pauseInternal(self, interval_ms)"
+        },
+        {
+          "line": 1035,
+          "source": "function _cont(self, data)"
+        },
+        {
+          "line": 1057,
+          "source": "function _aude(self, data)"
+        },
+        {
+          "line": 1061,
+          "source": "function _setd(self, data)"
+        },
+        {
+          "line": 1081,
+          "source": "function incrementSequenceNumber(self)"
+        },
+        {
+          "line": 1086,
+          "source": "function getCurrentSequenceNumber(self)"
+        },
+        {
+          "line": 1090,
+          "source": "function isSequenceNumberInSync(self, serverSequenceNumber)"
+        },
+        {
+          "line": 1112,
+          "source": "function overrideDefaultVolumeToGain(self, value)"
+        },
+        {
+          "line": 1116,
+          "source": "function setVolume(self, volume, stateOnly)"
+        },
+        {
+          "line": 1126,
+          "source": "function getVolume(self)"
+        },
+        {
+          "line": 1131,
+          "source": "function _getGainFromVolume(self, volume)"
+        },
+        {
+          "line": 1136,
+          "source": "function _setGain(self, gain)"
+        },
+        {
+          "line": 1145,
+          "source": "function _audg(self, data, isLocal)"
+        },
+        {
+          "line": 1179,
+          "source": "function translateServerGain(self, serverGain)"
+        },
+        {
+          "line": 1194,
+          "source": "function setCaptureVolume(self, volume)"
+        },
+        {
+          "line": 1205,
+          "source": "function getSource(self)"
+        },
+        {
+          "line": 1210,
+          "source": "function getCaptureVolume(self)"
+        },
+        {
+          "line": 1215,
+          "source": "function getCapturePlayMode(self)"
+        },
+        {
+          "line": 1220,
+          "source": "function setCapturePlayMode(self, capturePlayMode)"
+        },
+        {
+          "line": 1241,
+          "source": "function _stopPauseAndStopTimers(self)"
+        },
+        {
+          "line": 1253,
+          "source": "function isLocalPauseOrStopTimeoutActive(self)"
+        },
+        {
+          "line": 1259,
+          "source": "function startLocalPauseTimeout(self)"
+        },
+        {
+          "line": 1261,
+          "source": "self.localPauseTimer = Timer(    LOCAL_PAUSE_STOP_TIMEOUT,"
+        },
+        {
+          "line": 1262,
+          "source": "function ()"
+        },
+        {
+          "line": 1273,
+          "source": "function startLocalStopTimeout(self)"
+        },
+        {
+          "line": 1275,
+          "source": "self.localStopTimer = Timer(    LOCAL_PAUSE_STOP_TIMEOUT,"
+        },
+        {
+          "line": 1276,
+          "source": "function ()"
+        },
+        {
+          "line": 1287,
+          "source": "function registerHandler(self, id, handler)"
+        }
+      ]
+    }
+  ],
+  "arm_artifacts": [
+    {
+      "path": "build-arm/baby/ownership/manifest.txt",
+      "bytes": 557,
+      "sha256": "03d742e0bb31f009d05c282e772101ffaff646b51903cdc9c3acde0920edaa20"
+    },
+    {
+      "path": "build-arm/baby/ownership/sbbase",
+      "bytes": 148568,
+      "sha256": "74abb07f3ab0fb1af016a9061f71bd9af01c0104d1ed6942cc37eb687c9081d4"
+    },
+    {
+      "path": "build-arm/baby/ownership/test_ownership_driver",
+      "bytes": 54488,
+      "sha256": "bd5fc1d11ed7e1b67e67b1012e19f996ad9e7ef8f02e6e4339f2891d2f79f110"
+    },
+    {
+      "path": "build-arm/baby/playback/manifest.txt",
+      "bytes": 1351,
+      "sha256": "3680cf7b15245e63f2ba566ab9af020df7ca6d7a5c56b3c74e8bbb5b6f9c9ec6"
+    },
+    {
+      "path": "build-arm/baby/playback/sbbase_music_test",
+      "bytes": 897020,
+      "sha256": "3d5b466db657da25d8aa9827a5463848282192e01a29e59e6b946514fb30200a"
+    },
+    {
+      "path": "build-arm/baby/playback/sbwebserver_music_test",
+      "bytes": 308364,
+      "sha256": "61f057336703ab0929624e667f919d5adab29d1b47daa533d5d7c27ea4013c58"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_http_policy",
+      "bytes": 25660,
+      "sha256": "fced6dccf286cec9ff1a1bb93c9f910e1383323e133dfc5cfa2dc271c72efd43"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_load",
+      "bytes": 737236,
+      "sha256": "58184f15ce5e2e33dbd71a35215ccdb5002f6641469a6c8a9337fe7f156305c0"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_playback",
+      "bytes": 819188,
+      "sha256": "118015b6b9a6b1a618ffb6dc6a3aec0b96c1d68db67c641fe4c819494b424c1d"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_queue",
+      "bytes": 37948,
+      "sha256": "332477896a3a6021255d260b85e05383e861297daf76c524da3fc6feb7d56619"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_stream",
+      "bytes": 46148,
+      "sha256": "890a7583eebb2b38892b1c05db5f9719e397b399d6dd3bb9eeef80a457102a92"
+    },
+    {
+      "path": "build-arm/fab4/ownership/manifest.txt",
+      "bytes": 575,
+      "sha256": "0305c7335cf7a1645aa97bfcb2df12232923875aef4211a429d5387e320a2e49"
+    },
+    {
+      "path": "build-arm/fab4/ownership/sbbase",
+      "bytes": 148568,
+      "sha256": "5054fa039e6e7be99a4c3e53b2a6afb1edf40ab889c8d72d3eb3693e10dd6a8d"
+    },
+    {
+      "path": "build-arm/fab4/ownership/test_ownership_driver",
+      "bytes": 54488,
+      "sha256": "428532684dcf5f924f69db42919d844216295c8586c2334b4101cea299b1b36c"
+    },
+    {
+      "path": "build-arm/fab4/playback/manifest.txt",
+      "bytes": 1369,
+      "sha256": "1002b055289dc53d95786d305b3e8d1023775f0f8dd1ab99646ba575190c79f8"
+    },
+    {
+      "path": "build-arm/fab4/playback/sbbase_music_test",
+      "bytes": 888828,
+      "sha256": "f6caa73eba1e3747cf490e8af984f4dc673982281c4c7f6fc29bfa7467ad0d14"
+    },
+    {
+      "path": "build-arm/fab4/playback/sbwebserver_music_test",
+      "bytes": 308364,
+      "sha256": "e90dee2b957aa455033b0b67057ce0fde76488d9ece97b8cbe5415f4501126a0"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_http_policy",
+      "bytes": 25660,
+      "sha256": "da52725f2b9dea3bf0a93dae9a5ea3f0eff83fd7cdba89f16658e303ab438b01"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_load",
+      "bytes": 729044,
+      "sha256": "d9dcc58bf6753018122d9146006ee38654483d8486ccad1371083ee02eca9b2c"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_playback",
+      "bytes": 815092,
+      "sha256": "4a26c80df49ee6a1657a7389bcdf2dfc08d4c59792889f3a10822cfda4df1646"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_queue",
+      "bytes": 37948,
+      "sha256": "7a1c033ca5e0724c3ee4a52ff1efaf4444deadf00abd0474b935d313f028eb48"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_stream",
+      "bytes": 46148,
+      "sha256": "205bf43a4c232e07184f83b67638de341509450a77f291aa3ecdc99a86b9e453"
+    }
+  ],
+  "private_log_hashes": [
+    {
+      "path": ".local/wp4a1/host-final.log",
+      "bytes": 10376,
+      "sha256": "5bb49fafdcd646b86bea35b7566a12890ac41eef9783b2c7dca873973d30b7be"
+    },
+    {
+      "path": ".local/wp4a1/focused-final.log",
+      "bytes": 803,
+      "sha256": "cbea51ee481da0b53027e39efc0d8846d0b29903d9e58e7aeb85d79445e6ccb8"
+    },
+    {
+      "path": ".local/wp4a1/arm-ownership.log",
+      "bytes": 690,
+      "sha256": "dfe36b767b091889cc75add5e8e9f9de5d79c398d0e34b334f582602b09fe672"
+    },
+    {
+      "path": ".local/wp4a1/arm-playback.log",
+      "bytes": 4116,
+      "sha256": "373e1e6a99fa0134c9e7b46370661c5c3af8b41a817479021d5748b6314878c5"
+    },
+    {
+      "path": ".local/wp4a1/san-build.log",
+      "bytes": 3250,
+      "sha256": "064e2ec8676b0125a50d21dbf08fdab31a0aeccdd7a6b871a65cad807dacc1bc"
+    },
+    {
+      "path": ".local/wp4a1/san-runtime.log",
+      "bytes": 1648,
+      "sha256": "fe33a4c716aa6e73ae88024aad277fbb1274f3e4f432bff43af6c2b6f5b735d3"
+    },
+    {
+      "path": ".local/wp4a1/asan-adapters-final.log",
+      "bytes": 760,
+      "sha256": "b5c1be82929b7bb405c32cf932f2295a58c8db14a9a85c10ce9375096e16889e"
+    },
+    {
+      "path": ".local/wp4a1/qemu-runtime.log",
+      "bytes": 3787,
+      "sha256": "a92e84e7af33fbd0ef2569ce41aa8e023f830e63f40f25a05cf896162d602f67"
+    },
+    {
+      "path": ".local/wp4a1/qemu-adapters-final.log",
+      "bytes": 1519,
+      "sha256": "81f02861a6cb56f2903ca2cf18bd826f4443ad2285d6207d37ea71396b9e04d8"
+    },
+    {
+      "path": ".local/wp4a1/lua-final.log",
+      "bytes": 760,
+      "sha256": "1dcd5a8405d58d13e4c52026c53188dde848a863b27bad75d8e4f17bdc6a8459"
+    },
+    {
+      "path": ".local/wp4a1/radio-regressions.log",
+      "bytes": 7408,
+      "sha256": "bbb9bc17b789219164a11fd6a32fc2e90e7fa0612dfaac538377020edd20003b"
+    },
+    {
+      "path": ".local/wp4a1/spotify-regressions.log",
+      "bytes": 204,
+      "sha256": "4456e715d81e1fb6373e41619f9fce7a9001963aa6bd69bb076efe6be85118d1"
+    },
+    {
+      "path": ".local/wp4a1/spotify-native.log",
+      "bytes": 170,
+      "sha256": "a802980dd17b3b39c7474d08dfb783dfa574cf7031181fca16d848f062fd1598"
+    },
+    {
+      "path": ".local/wp4a1/qobuz-lifecycle.log",
+      "bytes": 21,
+      "sha256": "cd3f5d7255367960ce639bd24ad540c151fcd3880cc9b7c1872749d58bccf400"
+    },
+    {
+      "path": ".local/wp4a1/qobuz-nowplaying.log",
+      "bytes": 26,
+      "sha256": "e3848ea6c41f837851cf4871992ebd9bd0ec99aefeea77347661a34cf9f4353e"
+    },
+    {
+      "path": ".local/wp4a1/qobuz-native.log",
+      "bytes": 6428,
+      "sha256": "d92dc91f0e6ee6b8713173030652f57141c86fbdebafa598211b7a82cf55c1b3"
+    },
+    {
+      "path": ".local/wp4a1/proxy-probe.log",
+      "bytes": 1260,
+      "sha256": "8f243417938d0fc9e3032d084454c2cf669a3293f7a97676e0d89d6a025bf0a1"
+    },
+    {
+      "path": ".local/wp4a1/measurements.json",
+      "bytes": 858,
+      "sha256": "1437d170dc986fc2c462e489e8ba66c333957092a05f1717424854a71653de39"
+    },
+    {
+      "path": ".local/wp4a1/size.log",
+      "bytes": 10,
+      "sha256": "9a53a26b0aaa77cbaf7cc0587235c3fdc4c232d832e8b586485486df5ba242c2"
+    },
+    {
+      "path": ".local/wp4a1/size-baby.log",
+      "bytes": 10,
+      "sha256": "f80f096ca778452d852d6a1040666bc0de66b3c9c2031b5e47f13a513f3379c2"
+    },
+    {
+      "path": ".local/wp4a1/size-fab4.log",
+      "bytes": 10,
+      "sha256": "f80f096ca778452d852d6a1040666bc0de66b3c9c2031b5e47f13a513f3379c2"
+    }
+  ],
+  "portable_artifacts": [
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_BRIDGE.md",
+      "bytes": 4273,
+      "sha256": "cfb1af1e2db6194759206b6f73a0fa5eaf5b33eb8d092c650a8c9ff4b784dde9"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_EVIDENCE.md",
+      "bytes": 3734,
+      "sha256": "a722e97ee0866863b0c25220c1bcce65704254fa4546aa3de0560981b84afdaf"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_HARDWARE_PLAN.md",
+      "bytes": 4587,
+      "sha256": "c3aeb3543d1ba07458ceda4695f52d0bdcbde4000b4bed8dcea1bbf72cc6a3d4"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_HOOK_LIFECYCLE.md",
+      "bytes": 3207,
+      "sha256": "7cf6e8717a3974581085169f820452d14e1068c357f3e73c799e0b7a5a83c493"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_MEASUREMENTS.json",
+      "bytes": 11763,
+      "sha256": "2ddcc0c6ab74fe8163c19f037bdda623b7c4222c795d6ed2eca64f1ca4d532e7"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_QOBUZ.md",
+      "bytes": 2420,
+      "sha256": "87ac31465df90afa22c635cb700dd74dc7ecbbda2a8be8a0073404f064c93cb8"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_RADIO.md",
+      "bytes": 2808,
+      "sha256": "cad33e1ccbad81602e50123c4db48fbd3d3f9babca41d8c4f5cf9d9c84408352"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_REPORT.md",
+      "bytes": 6468,
+      "sha256": "844cf51403c77b5063470c50ea6a226f2aeb6dccfb8c28447f4ca7dffd39e034"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_SPOTIFY.md",
+      "bytes": 2306,
+      "sha256": "25bef453e1f7e67c8681e085ac7b4f498d4cbb4096b53147dd5a32804b33a7df"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4A1_TEST_RESULTS.md",
+      "bytes": 5281,
+      "sha256": "44f85ee77fee0315f70735a14d354c736eea33effde0da80d8e3f41a254fc46a"
+    }
+  ],
+  "transcripts": {
+    "host-final.log": "Internal ctest changing into directory: /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests\nTest project /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests\n      Start  1: protocol\n 1/95 Test  #1: protocol .........................   Passed    0.00 sec\n      Start  2: nowplaying_unit\n 2/95 Test  #2: nowplaying_unit ..................   Passed    1.11 sec\n      Start  3: alarms_unit\n 3/95 Test  #3: alarms_unit ......................   Passed    0.02 sec\n      Start  4: sleep_unit\n 4/95 Test  #4: sleep_unit .......................   Passed    0.00 sec\n      Start  5: artwork_settings_defaults\n 5/95 Test  #5: artwork_settings_defaults ........   Passed    0.01 sec\n      Start  6: http_trace_native\n 6/95 Test  #6: http_trace_native ................   Passed    0.00 sec\n      Start  7: mongoose_clock_fallback\n 7/95 Test  #7: mongoose_clock_fallback ..........   Passed    0.00 sec\n      Start  8: squeezeplay_artwork_patch\n 8/95 Test  #8: squeezeplay_artwork_patch ........   Passed    0.11 sec\n      Start  9: storage\n 9/95 Test  #9: storage ..........................   Passed    0.21 sec\n      Start 10: storage_boothelper\n10/95 Test #10: storage_boothelper ...............   Passed    0.07 sec\n      Start 11: extended_storage\n11/95 Test #11: extended_storage .................   Passed   30.32 sec\n      Start 12: touch_bridge_lua\n12/95 Test #12: touch_bridge_lua .................   Passed    0.01 sec\n      Start 13: platform_identity\n13/95 Test #13: platform_identity ................   Passed    0.01 sec\n      Start 14: alarm_playback_lua\n14/95 Test #14: alarm_playback_lua ...............   Passed    0.02 sec\n      Start 15: firmware_physical_input\n15/95 Test #15: firmware_physical_input ..........   Passed    0.01 sec\n      Start 16: firmware_bridge_lua\n16/95 Test #16: firmware_bridge_lua ..............   Passed    0.01 sec\n      Start 17: storage_recovery_menu\n17/95 Test #17: storage_recovery_menu ............   Passed    0.01 sec\n      Start 18: storage_recovery_manager\n18/95 Test #18: storage_recovery_manager .........   Passed    0.01 sec\n      Start 19: artwork_lua\n19/95 Test #19: artwork_lua ......................   Passed    0.01 sec\n      Start 20: image_helper_lua\n20/95 Test #20: image_helper_lua .................   Passed    0.02 sec\n      Start 21: installer_compat_lua\n21/95 Test #21: installer_compat_lua .............   Passed    0.01 sec\n      Start 22: http_trace_lua\n22/95 Test #22: http_trace_lua ...................   Passed    0.01 sec\n      Start 23: extended_storage_lua_state\n23/95 Test #23: extended_storage_lua_state .......   Passed    0.02 sec\n      Start 24: server_migration_lua\n24/95 Test #24: server_migration_lua .............   Passed    0.01 sec\n      Start 25: network_address_lua\n25/95 Test #25: network_address_lua ..............   Passed    0.01 sec\n      Start 26: remote_pixel_decode\n26/95 Test #26: remote_pixel_decode ..............   Passed    0.12 sec\n      Start 27: process_monitor_frontend\n27/95 Test #27: process_monitor_frontend .........   Passed    0.12 sec\n      Start 28: storage_updater\n28/95 Test #28: storage_updater ..................   Passed    0.11 sec\n      Start 29: remote_framebuffer\n29/95 Test #29: remote_framebuffer ...............   Passed    0.00 sec\n      Start 30: applet_repository\n30/95 Test #30: applet_repository ................   Passed    1.19 sec\n      Start 31: nowplaying_metadata\n31/95 Test #31: nowplaying_metadata ..............   Passed    1.58 sec\n      Start 32: storage_firmware_recovery\n32/95 Test #32: storage_firmware_recovery ........   Passed    4.64 sec\n      Start 33: catalog_merge\n33/95 Test #33: catalog_merge ....................   Passed    0.30 sec\n      Start 34: firmware_image\n34/95 Test #34: firmware_image ...................   Passed    0.44 sec\n      Start 35: firmware_http\n35/95 Test #35: firmware_http ....................   Passed   46.35 sec\n      Start 36: firmware_upload\n36/95 Test #36: firmware_upload ..................   Passed    3.01 sec\n      Start 37: firmware_checksum_download\n37/95 Test #37: firmware_checksum_download .......   Passed    0.86 sec\n      Start 38: storage_native_boot\n38/95 Test #38: storage_native_boot ..............   Passed    0.95 sec\n      Start 39: catalog_sync\n39/95 Test #39: catalog_sync .....................   Passed    3.43 sec\n      Start 40: image_public_address\n40/95 Test #40: image_public_address .............   Passed    0.00 sec\n      Start 41: svg_renderer\n41/95 Test #41: svg_renderer .....................   Passed    0.53 sec\n      Start 42: raster_renderer\n42/95 Test #42: raster_renderer ..................   Passed    1.22 sec\n      Start 43: svg_image_http\n43/95 Test #43: svg_image_http ...................   Passed   22.37 sec\n      Start 44: comet_connections\n44/95 Test #44: comet_connections ................   Passed    2.35 sec\n      Start 45: alarms_comet\n45/95 Test #45: alarms_comet .....................   Passed    2.61 sec\n      Start 46: firmware_comet\n46/95 Test #46: firmware_comet ...................   Passed    3.01 sec\n      Start 47: comet_menustatus\n47/95 Test #47: comet_menustatus .................   Passed    0.31 sec\n      Start 48: comet_server_switch\n48/95 Test #48: comet_server_switch ..............   Passed    0.27 sec\n      Start 49: comet_catalog_targets\n49/95 Test #49: comet_catalog_targets ............   Passed    0.18 sec\n      Start 50: nowplaying_poc\n50/95 Test #50: nowplaying_poc ...................   Passed    2.21 sec\n      Start 51: nowplaying_api\n51/95 Test #51: nowplaying_api ...................   Passed    0.22 sec\n      Start 52: lpt_geometry\n52/95 Test #52: lpt_geometry .....................   Passed    0.10 sec\n      Start 53: superblock_patch\n53/95 Test #53: superblock_patch .................   Passed    0.55 sec\n      Start 54: remote_http\n54/95 Test #54: remote_http ......................   Passed   16.23 sec\n      Start 55: radio_management_http\n55/95 Test #55: radio_management_http ............   Passed    0.37 sec\n      Start 56: web_access_pairing\n56/95 Test #56: web_access_pairing ...............   Passed    0.26 sec\n      Start 57: configuration_backup\n57/95 Test #57: configuration_backup .............   Passed    0.39 sec\n      Start 58: system_log_viewer\n58/95 Test #58: system_log_viewer ................   Passed    0.35 sec\n      Start 59: process_monitor\n59/95 Test #59: process_monitor ..................   Passed    0.33 sec\n      Start 60: cpu_accounting_diagnostic\n60/95 Test #60: cpu_accounting_diagnostic ........   Passed    0.18 sec\n      Start 61: music_transport\n61/95 Test #61: music_transport ..................   Passed    0.05 sec\n      Start 62: music_transport_wire\n62/95 Test #62: music_transport_wire .............   Passed    0.20 sec\n      Start 63: base_backpressure\n63/95 Test #63: base_backpressure ................   Passed    1.17 sec\n      Start 64: base_partial_writes\n64/95 Test #64: base_partial_writes ..............   Passed    1.02 sec\n      Start 65: music_contracts\n65/95 Test #65: music_contracts ..................   Passed    0.00 sec\n      Start 66: music_commands\n66/95 Test #66: music_commands ...................   Passed    0.00 sec\n      Start 67: hls_id3\n67/95 Test #67: hls_id3 ..........................   Passed    0.01 sec\n      Start 68: hls_metadata_wait\n68/95 Test #68: hls_metadata_wait ................   Passed    1.00 sec\n      Start 69: music_dispatch_http\n69/95 Test #69: music_dispatch_http ..............   Passed    0.18 sec\n      Start 70: music_wire_fixtures\n70/95 Test #70: music_wire_fixtures ..............   Passed    0.29 sec\n      Start 71: music_fd_contract\n71/95 Test #71: music_fd_contract ................   Passed    0.12 sec\n      Start 72: music_scanner\n72/95 Test #72: music_scanner ....................   Passed    3.13 sec\n      Start 73: music_storage_foundation\n73/95 Test #73: music_storage_foundation .........   Passed    0.39 sec\n      Start 74: music_storage_lua\n74/95 Test #74: music_storage_lua ................   Passed    0.01 sec\n      Start 75: music_library_storage\n75/95 Test #75: music_library_storage ............   Passed    2.84 sec\n      Start 76: music_library_large\n76/95 Test #76: music_library_large ..............   Passed   23.33 sec\n      Start 77: music_queue\n77/95 Test #77: music_queue ......................   Passed    0.00 sec\n      Start 78: music_http_policy\n78/95 Test #78: music_http_policy ................   Passed    0.00 sec\n      Start 79: music_stream\n79/95 Test #79: music_stream .....................   Passed    0.01 sec\n      Start 80: music_playback\n80/95 Test #80: music_playback ...................   Passed    6.92 sec\n      Start 81: music_load\n81/95 Test #81: music_load .......................   Passed    0.46 sec\n      Start 82: music_ownership_lua\n82/95 Test #82: music_ownership_lua ..............   Passed    0.01 sec\n      Start 83: music_stream_http\n83/95 Test #83: music_stream_http ................   Passed    1.34 sec\n      Start 84: music_playback_http\n84/95 Test #84: music_playback_http ..............   Passed    1.03 sec\n      Start 85: music_playback_ownership\n85/95 Test #85: music_playback_ownership .........   Passed    1.67 sec\n      Start 86: music_browse_native\n86/95 Test #86: music_browse_native ..............   Passed    6.98 sec\n      Start 87: music_browse_http\n87/95 Test #87: music_browse_http ................   Passed    2.60 sec\n      Start 88: music_browse_partial\n88/95 Test #88: music_browse_partial .............   Passed    2.94 sec\n      Start 89: music_browse_empty\n89/95 Test #89: music_browse_empty ...............   Passed    1.72 sec\n      Start 90: music_browse_faults\n90/95 Test #90: music_browse_faults ..............   Passed    5.66 sec\n      Start 91: music_browse_disabled\n91/95 Test #91: music_browse_disabled ............   Passed    0.24 sec\n      Start 92: music_ownership_bridge\n92/95 Test #92: music_ownership_bridge ...........   Passed    0.09 sec\n      Start 93: music_ownership_http\n93/95 Test #93: music_ownership_http .............   Passed    0.29 sec\n      Start 94: music_ownership_firmware_edges\n94/95 Test #94: music_ownership_firmware_edges ...   Passed    0.01 sec\n      Start 95: music_firmware_adapters\n95/95 Test #95: music_firmware_adapters ..........   Passed    0.34 sec\n\n100% tests passed, 0 tests failed out of 95\n\nTotal Test time (real) = 215.88 sec\n",
+    "focused-final.log": "Internal ctest changing into directory: /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests\nTest project /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests\n    Start 82: music_ownership_lua\n1/5 Test #82: music_ownership_lua ..............   Passed    0.01 sec\n    Start 92: music_ownership_bridge\n2/5 Test #92: music_ownership_bridge ...........   Passed    0.09 sec\n    Start 93: music_ownership_http\n3/5 Test #93: music_ownership_http .............   Passed    0.27 sec\n    Start 94: music_ownership_firmware_edges\n4/5 Test #94: music_ownership_firmware_edges ...   Passed    0.03 sec\n    Start 95: music_firmware_adapters\n5/5 Test #95: music_firmware_adapters ..........   Passed    0.28 sec\n\n100% tests passed, 0 tests failed out of 5\n\nTotal Test time (real) =   0.81 sec\n",
+    "san-runtime.log": "{\"actual_scanner_files\":1000,\"concurrent_browse_queries\":2141,\"successful_queries\":2141,\"retryable_queries\":0,\"query_max_ms\":33,\"scan_ms\":7332,\"decoder\":\"mocked playing\"}\nMock decoder integration: 2 starts, 5 commands; real scoped opens/IPC, atomic queue, STAT metadata, next-connection and removal passed\n{\"http_bytes\": 1048576, \"http_seconds\": 0.7106617160025053, \"bytes_per_second\": 1475492.454973195, \"fds_before\": 5, \"fds_after\": 5, \"simultaneous_streams\": 4, \"buffer_bytes\": 16384}\n{\"native_starts\": 5, \"verified_encoded_bytes\": 9560, \"queue_entries_before_removal\": 3, \"audio_output\": \"mocked, not measured\"}\nAuthenticated-core typed protocol, six directed Music handoffs, incomplete proof, resource gate, stale request, alarm, reconnect, timeout and crash passed\n{\"production_auth\": \"pass\", \"health_ms\": 0.48421899919048883, \"fds\": 7, \"pending_limit\": 4, \"extra_public_ports\": 0}\n{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.17317855100191082, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 274.0380859375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 416.0859375, \"native_peak_rss_kib\": 9344, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\n",
+    "asan-adapters-final.log": "{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.17998902399995131, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 275.2568359375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 419.2265625, \"native_peak_rss_kib\": 9344, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\n",
+    "qemu-runtime.log": "Queue atomicity, identities, intent/audible, epochs, bounds and revocation passed; bytes=233608\nHTTP single-range 64-bit bounds and opaque token grammar passed (policy only)\nPrivate descriptor IPC, 64-bit pread, revocation, removal and shutdown passed\nPaginated 140-track/three-disc load: 485 ms; oversized album rollback passed\nAsync load identity, atomic commit, page bounds, cancellation and context guards passed\nMock decoder integration: 2 starts, 5 commands; real scoped opens/IPC, atomic queue, STAT metadata, next-connection and removal passed\n{\"http_bytes\": 1048576, \"http_seconds\": 0.6866629450014443, \"bytes_per_second\": 1527060.7037020097, \"fds_before\": 5, \"fds_after\": 5, \"simultaneous_streams\": 4, \"buffer_bytes\": 16384}\n{\"native_starts\": 5, \"verified_encoded_bytes\": 9560, \"queue_entries_before_removal\": 3, \"audio_output\": \"mocked, not measured\"}\nQueue atomicity, identities, intent/audible, epochs, bounds and revocation passed; bytes=233608\nHTTP single-range 64-bit bounds and opaque token grammar passed (policy only)\nPrivate descriptor IPC, 64-bit pread, revocation, removal and shutdown passed\nPaginated 140-track/three-disc load: 436 ms; oversized album rollback passed\nAsync load identity, atomic commit, page bounds, cancellation and context guards passed\nMock decoder integration: 2 starts, 5 commands; real scoped opens/IPC, atomic queue, STAT metadata, next-connection and removal passed\n{\"http_bytes\": 1048576, \"http_seconds\": 0.6742296010015707, \"bytes_per_second\": 1555220.9491282143, \"fds_before\": 5, \"fds_after\": 5, \"simultaneous_streams\": 4, \"buffer_bytes\": 16384}\n{\"native_starts\": 5, \"verified_encoded_bytes\": 9560, \"queue_entries_before_removal\": 3, \"audio_output\": \"mocked, not measured\"}\nAuthenticated-core typed protocol, six directed Music handoffs, incomplete proof, resource gate, stale request, alarm, reconnect, timeout and crash passed\n{\"production_auth\": \"pass\", \"health_ms\": 0.7411410006170627, \"fds\": 7, \"pending_limit\": 4, \"extra_public_ports\": 0}\n{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.2218446180013416, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 274.0380859375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 416.0859375, \"native_peak_rss_kib\": 8740, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\nAuthenticated-core typed protocol, six directed Music handoffs, incomplete proof, resource gate, stale request, alarm, reconnect, timeout and crash passed\n{\"production_auth\": \"pass\", \"health_ms\": 0.6425629981094971, \"fds\": 7, \"pending_limit\": 4, \"extra_public_ports\": 0}\n{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.20141499000237673, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 274.0380859375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 416.0859375, \"native_peak_rss_kib\": 8888, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\n",
+    "qemu-adapters-final.log": "{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.2096021679972182, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 275.2568359375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 419.2265625, \"native_peak_rss_kib\": 8616, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\n{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.20817666899893084, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 275.2568359375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 419.2265625, \"native_peak_rss_kib\": 8888, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\n",
+    "lua-final.log": "{\"lua_native_six_transitions\": [{\"from\": \"radio\", \"to\": \"music\", \"simulated_elapsed_ms\": 50}, {\"from\": \"music\", \"to\": \"radio\", \"simulated_elapsed_ms\": 100}, {\"from\": \"spotify\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"spotify\", \"simulated_elapsed_ms\": 100}, {\"from\": \"qobuz\", \"to\": \"music\", \"simulated_elapsed_ms\": 100}, {\"from\": \"music\", \"to\": \"qobuz\", \"simulated_elapsed_ms\": 100}], \"wire_messages\": 214, \"wall_seconds\": 0.15783972600183915, \"pending_subscriptions_max\": 4, \"idle_lua_heap_with_apps_kib\": 275.2568359375, \"idle_simulated_ms_without_new_messages\": 1000, \"lua_heap_kib\": 419.2265625, \"native_peak_rss_kib\": 1664, \"proof\": \"actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio\"}\n",
+    "radio-regressions.log": "\ufffd\ufffdP\u0000A\u0000S\u0000S\u0000 \u0000c\u0000u\u0000s\u0000t\u0000o\u0000m\u0000-\u0000o\u0000p\u0000m\u0000l\u0000-\u0000c\u0000l\u0000i\u0000e\u0000n\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000h\u0000a\u0000n\u0000d\u0000o\u0000f\u0000f\u0000-\u0000m\u0000o\u0000d\u0000u\u0000l\u0000e\u0000-\u0000e\u0000n\u0000v\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000h\u0000l\u0000s\u0000-\u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000h\u0000l\u0000s\u0000-\u0000p\u0000l\u0000a\u0000y\u0000e\u0000r\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000h\u0000t\u0000t\u0000p\u0000-\u0000r\u0000e\u0000d\u0000i\u0000r\u0000e\u0000c\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000-\u0000p\u0000l\u0000a\u0000y\u0000b\u0000a\u0000c\u0000k\u0000-\u0000o\u0000w\u0000n\u0000e\u0000r\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000l\u0000o\u0000g\u0000o\u0000-\u0000c\u0000a\u0000c\u0000h\u0000e\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000l\u0000o\u0000g\u0000o\u0000-\u0000f\u0000a\u0000l\u0000l\u0000b\u0000a\u0000c\u0000k\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000n\u0000a\u0000t\u0000i\u0000v\u0000e\u0000-\u0000n\u0000o\u0000w\u0000p\u0000l\u0000a\u0000y\u0000i\u0000n\u0000g\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000n\u0000o\u0000w\u0000p\u0000l\u0000a\u0000y\u0000i\u0000n\u0000g\u0000-\u0000c\u0000l\u0000i\u0000e\u0000n\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000o\u0000p\u0000m\u0000l\u0000-\u0000a\u0000p\u0000p\u0000l\u0000e\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000o\u0000p\u0000m\u0000l\u0000-\u0000n\u0000a\u0000v\u0000i\u0000g\u0000a\u0000t\u0000o\u0000r\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000o\u0000p\u0000m\u0000l\u0000-\u0000p\u0000a\u0000r\u0000s\u0000e\u0000r\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000C\u0000u\u0000s\u0000t\u0000o\u0000m\u0000 \u0000O\u0000P\u0000M\u0000L\u0000 \u0000r\u0000e\u0000a\u0000l\u0000 \u0000X\u0000M\u0000L\u0000,\u0000 \u0000r\u0000e\u0000l\u0000a\u0000t\u0000i\u0000v\u0000e\u0000/\u0000r\u0000e\u0000d\u0000i\u0000r\u0000e\u0000c\u0000t\u0000e\u0000d\u0000 \u0000l\u0000i\u0000n\u0000k\u0000s\u0000,\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000m\u0000a\u0000p\u0000p\u0000i\u0000n\u0000g\u0000,\u0000 \u0000t\u0000w\u0000o\u0000-\u0000p\u0000a\u0000g\u0000e\u0000 \u0000T\u0000T\u0000L\u0000 \u0000c\u0000a\u0000c\u0000h\u0000e\u0000,\u0000 \u0000c\u0000o\u0000a\u0000l\u0000e\u0000s\u0000c\u0000i\u0000n\u0000g\u0000,\u0000 \u0000e\u0000r\u0000r\u0000o\u0000r\u0000s\u0000 \u0000a\u0000n\u0000d\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000D\u0000i\u0000r\u0000e\u0000c\u0000t\u0000 \u0000R\u0000S\u0000S\u0000,\u0000 \u0000O\u0000P\u0000M\u0000L\u0000-\u0000t\u0000o\u0000-\u0000R\u0000S\u0000S\u0000 \u0000s\u0000h\u0000a\u0000r\u0000e\u0000d\u0000 \u0000f\u0000e\u0000t\u0000c\u0000h\u0000,\u0000 \u0000e\u0000p\u0000i\u0000s\u0000o\u0000d\u0000e\u0000 \u0000m\u0000a\u0000p\u0000p\u0000i\u0000n\u0000g\u0000 \u0000a\u0000n\u0000d\u0000 \u0000p\u0000a\u0000r\u0000t\u0000i\u0000a\u0000l\u0000-\u0000f\u0000e\u0000e\u0000d\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000I\u0000s\u0000o\u0000l\u0000a\u0000t\u0000e\u0000d\u0000 \u0000L\u0000u\u0000a\u0000 \u00005\u0000.\u00001\u0000 \u0000i\u0000m\u0000p\u0000o\u0000r\u0000t\u0000s\u0000 \u0000a\u0000n\u0000d\u0000 \u0000m\u0000a\u0000n\u0000a\u0000g\u0000e\u0000d\u0000 \u0000c\u0000h\u0000o\u0000o\u0000s\u0000e\u0000r\u0000 \u0000h\u0000a\u0000n\u0000d\u0000o\u0000f\u0000f\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000H\u0000L\u0000S\u0000 \u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000 \u0000t\u0000i\u0000m\u0000i\u0000n\u0000g\u0000,\u0000 \u0000g\u0000e\u0000n\u0000e\u0000r\u0000a\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000d\u0000u\u0000p\u0000l\u0000i\u0000c\u0000a\u0000t\u0000e\u0000 \u0000a\u0000n\u0000d\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000L\u0000o\u0000n\u0000g\u0000-\u0000p\u0000o\u0000l\u0000l\u0000 \u0000i\u0000d\u0000l\u0000e\u0000 \u0000t\u0000r\u0000a\u0000f\u0000f\u0000i\u0000c\u0000,\u0000 \u0000o\u0000n\u0000e\u0000-\u0000s\u0000h\u0000o\u0000t\u0000 \u0000s\u0000y\u0000n\u0000c\u0000h\u0000r\u0000o\u0000n\u0000i\u0000z\u0000a\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000r\u0000e\u0000s\u0000e\u0000t\u0000 \u0000a\u0000n\u0000d\u0000 \u0000l\u0000e\u0000g\u0000a\u0000c\u0000y\u0000 \u0000f\u0000a\u0000l\u0000l\u0000b\u0000a\u0000c\u0000k\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000H\u0000L\u0000S\u0000 \u0000c\u0000o\u0000d\u0000e\u0000c\u0000 \u0000p\u0000r\u0000o\u0000b\u0000i\u0000n\u0000g\u0000,\u0000 \u0000M\u0000I\u0000M\u0000E\u0000 \u0000d\u0000i\u0000s\u0000c\u0000o\u0000v\u0000e\u0000r\u0000y\u0000,\u0000 \u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000 \u0000a\u0000n\u0000d\u0000 \u0000d\u0000i\u0000r\u0000e\u0000c\u0000t\u0000o\u0000r\u0000y\u0000 \u0000c\u0000a\u0000c\u0000h\u0000e\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000E\u0000x\u0000p\u0000l\u0000i\u0000c\u0000i\u0000t\u0000 \u0000r\u0000e\u0000d\u0000i\u0000r\u0000e\u0000c\u0000t\u0000s\u0000:\u0000 \u0000s\u0000c\u0000h\u0000e\u0000m\u0000e\u0000s\u0000,\u0000 \u0000r\u0000e\u0000l\u0000a\u0000t\u0000i\u0000v\u0000e\u0000/\u0000q\u0000u\u0000e\u0000r\u0000y\u0000 \u0000U\u0000R\u0000L\u0000s\u0000,\u0000 \u0000e\u0000x\u0000a\u0000c\u0000t\u0000 \u0000I\u0000D\u0000R\u0000 \u0000c\u0000a\u0000s\u0000e\u0000s\u0000,\u0000 \u0000l\u0000o\u0000o\u0000p\u0000s\u0000/\u0000l\u0000i\u0000m\u0000i\u0000t\u0000,\u0000 \u0000m\u0000i\u0000s\u0000s\u0000i\u0000n\u0000g\u0000/\u0000u\u0000n\u0000s\u0000a\u0000f\u0000e\u0000 \u0000L\u0000o\u0000c\u0000a\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000e\u0000r\u0000r\u0000o\u0000r\u0000s\u0000,\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000t\u0000i\u0000m\u0000e\u0000o\u0000u\u0000t\u0000 \u0000a\u0000n\u0000d\u0000 \u0000o\u0000n\u0000c\u0000e\u0000-\u0000o\u0000n\u0000l\u0000y\u0000 \u0000c\u0000o\u0000m\u0000p\u0000l\u0000e\u0000t\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000E\u0000x\u0000p\u0000l\u0000i\u0000c\u0000i\u0000t\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000s\u0000t\u0000a\u0000r\u0000t\u0000 \u0000s\u0000e\u0000l\u0000e\u0000c\u0000t\u0000s\u0000 \u0000l\u0000o\u0000c\u0000a\u0000l\u0000 \u0000p\u0000l\u0000a\u0000y\u0000e\u0000r\u0000;\u0000 \u0000b\u0000a\u0000c\u0000k\u0000g\u0000r\u0000o\u0000u\u0000n\u0000d\u0000 \u0000r\u0000e\u0000c\u0000o\u0000v\u0000e\u0000r\u0000y\u0000 \u0000p\u0000r\u0000e\u0000s\u0000e\u0000r\u0000v\u0000e\u0000s\u0000 \u0000s\u0000e\u0000l\u0000e\u0000c\u0000t\u0000i\u0000o\u0000n\u0000\n\u0000\n\u0000L\u0000o\u0000g\u0000o\u0000C\u0000a\u0000c\u0000h\u0000e\u0000 \u0000P\u0000N\u0000G\u0000/\u0000J\u0000P\u0000E\u0000G\u0000,\u0000 \u0000S\u0000V\u0000G\u0000 \u0000M\u0000I\u0000M\u0000E\u0000 \u0000r\u0000e\u0000t\u0000r\u0000y\u0000 \u0000a\u0000n\u0000d\u0000 \u0000f\u0000a\u0000i\u0000l\u0000u\u0000r\u0000e\u0000/\u0000r\u0000e\u0000t\u0000r\u0000y\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000L\u0000o\u0000g\u0000o\u0000 \u0000f\u0000a\u0000l\u0000l\u0000b\u0000a\u0000c\u0000k\u0000 \u0000e\u0000x\u0000a\u0000c\u0000t\u0000 \u0000O\u0000P\u0000M\u0000L\u0000 \u0000m\u0000a\u0000t\u0000c\u0000h\u0000e\u0000s\u0000,\u0000 \u0000I\u0000C\u0000O\u0000 \u0000q\u0000u\u0000e\u0000r\u0000i\u0000e\u0000s\u0000,\u0000 \u0000p\u0000l\u0000a\u0000c\u0000e\u0000h\u0000o\u0000l\u0000d\u0000e\u0000r\u0000s\u0000,\u0000 \u0000a\u0000m\u0000b\u0000i\u0000g\u0000u\u0000i\u0000t\u0000y\u0000,\u0000 \u0000i\u0000d\u0000e\u0000n\u0000t\u0000i\u0000t\u0000y\u0000,\u0000 \u0000c\u0000a\u0000c\u0000h\u0000e\u0000 \u0000e\u0000x\u0000p\u0000i\u0000r\u0000y\u0000/\u0000e\u0000v\u0000i\u0000c\u0000t\u0000i\u0000o\u0000n\u0000 \u0000a\u0000n\u0000d\u0000 \u0000c\u0000o\u0000a\u0000l\u0000e\u0000s\u0000c\u0000i\u0000n\u0000g\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000L\u0000a\u0000z\u0000y\u0000 \u0000l\u0000o\u0000g\u0000o\u0000 \u0000l\u0000o\u0000o\u0000k\u0000u\u0000p\u0000 \u0000i\u0000m\u0000p\u0000o\u0000r\u0000t\u0000s\u0000 \u0000w\u0000o\u0000r\u0000k\u0000 \u0000i\u0000n\u0000 \u0000t\u0000h\u0000e\u0000 \u0000i\u0000s\u0000o\u0000l\u0000a\u0000t\u0000e\u0000d\u0000 \u0000J\u0000i\u0000v\u0000e\u0000 \u0000L\u0000u\u0000a\u0000 \u00005\u0000.\u00001\u0000 \u0000e\u0000n\u0000v\u0000i\u0000r\u0000o\u0000n\u0000m\u0000e\u0000n\u0000t\u0000\n\u0000\n\u0000F\u0000r\u0000e\u0000s\u0000h\u0000/\u0000c\u0000a\u0000c\u0000h\u0000e\u0000d\u0000/\u0000r\u0000e\u0000s\u0000t\u0000a\u0000r\u0000t\u0000e\u0000d\u0000 \u0000l\u0000o\u0000g\u0000o\u0000s\u0000 \u0000p\u0000u\u0000b\u0000l\u0000i\u0000s\u0000h\u0000 \u0000t\u0000o\u0000 \u0000n\u0000a\u0000t\u0000i\u0000v\u0000e\u0000 \u0000N\u0000o\u0000w\u0000 \u0000P\u0000l\u0000a\u0000y\u0000i\u0000n\u0000g\u0000 \u0000w\u0000i\u0000t\u0000h\u0000 \u0000c\u0000a\u0000p\u0000t\u0000u\u0000r\u0000e\u0000d\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000g\u0000e\u0000n\u0000e\u0000r\u0000a\u0000t\u0000i\u0000o\u0000n\u0000\n\u0000\n\u0000N\u0000a\u0000t\u0000i\u0000v\u0000e\u0000 \u0000N\u0000o\u0000w\u0000 \u0000P\u0000l\u0000a\u0000y\u0000i\u0000n\u0000g\u0000 \u0000n\u0000a\u0000v\u0000i\u0000g\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000N\u0000a\u0000t\u0000i\u0000v\u0000e\u0000 \u0000n\u0000a\u0000v\u0000i\u0000g\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000w\u0000a\u0000i\u0000t\u0000s\u0000 \u0000f\u0000o\u0000r\u0000 \u0000p\u0000u\u0000b\u0000l\u0000i\u0000s\u0000h\u0000e\u0000d\u0000 \u0000p\u0000l\u0000a\u0000y\u0000l\u0000i\u0000s\u0000t\u0000 \u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000 \u0000i\u0000n\u0000s\u0000t\u0000e\u0000a\u0000d\u0000 \u0000o\u0000f\u0000 \u0000o\u0000p\u0000e\u0000n\u0000i\u0000n\u0000g\u0000 \u0000a\u0000n\u0000 \u0000e\u0000m\u0000p\u0000t\u0000y\u0000 \u0000p\u0000l\u0000a\u0000y\u0000l\u0000i\u0000s\u0000t\u0000\n\u0000\n\u0000S\u0000t\u0000a\u0000n\u0000d\u0000a\u0000l\u0000o\u0000n\u0000e\u0000B\u0000a\u0000s\u0000e\u0000 \u0000N\u0000o\u0000w\u0000 \u0000P\u0000l\u0000a\u0000y\u0000i\u0000n\u0000g\u0000 \u0000c\u0000l\u0000i\u0000e\u0000n\u0000t\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000P\u0000o\u0000d\u0000c\u0000a\u0000s\u0000t\u0000 \u0000n\u0000o\u0000n\u0000-\u0000l\u0000i\u0000v\u0000e\u0000 \u0000N\u0000o\u0000w\u0000 \u0000P\u0000l\u0000a\u0000y\u0000i\u0000n\u0000g\u0000 \u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000,\u0000 \u0000d\u0000u\u0000r\u0000a\u0000t\u0000i\u0000o\u0000n\u0000/\u0000p\u0000o\u0000s\u0000i\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000a\u0000r\u0000t\u0000w\u0000o\u0000r\u0000k\u0000,\u0000 \u0000p\u0000a\u0000u\u0000s\u0000e\u0000/\u0000r\u0000e\u0000l\u0000e\u0000a\u0000s\u0000e\u0000 \u0000a\u0000n\u0000d\u0000 \u0000A\u0000P\u0000I\u0000 \u0000t\u0000e\u0000x\u0000t\u0000 \u0000b\u0000o\u0000u\u0000n\u0000d\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000A\u0000p\u0000p\u0000l\u0000e\u0000t\u0000 \u0000O\u0000P\u0000M\u0000L\u0000 \u0000U\u0000I\u0000 \u0000a\u0000d\u0000a\u0000p\u0000t\u0000e\u0000r\u0000:\u0000 \u0000s\u0000e\u0000a\u0000r\u0000c\u0000h\u0000 \u0000k\u0000e\u0000y\u0000b\u0000o\u0000a\u0000r\u0000d\u0000 \u0000l\u0000i\u0000f\u0000e\u0000t\u0000i\u0000m\u0000e\u0000,\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000a\u0000c\u0000t\u0000i\u0000o\u0000n\u0000s\u0000/\u0000p\u0000l\u0000a\u0000y\u0000b\u0000a\u0000c\u0000k\u0000 \u0000a\u0000n\u0000d\u0000 \u0000p\u0000r\u0000o\u0000v\u0000i\u0000d\u0000e\u0000r\u0000 \u0000s\u0000w\u0000i\u0000t\u0000c\u0000h\u0000i\u0000n\u0000g\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000M\u0000y\u0000 \u0000R\u0000a\u0000d\u0000i\u0000o\u0000 \u0000S\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000s\u0000 \u0000m\u0000i\u0000x\u0000e\u0000d\u0000 \u0000d\u0000i\u0000r\u0000e\u0000c\u0000t\u0000o\u0000r\u0000y\u0000/\u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000m\u0000e\u0000n\u0000u\u0000 \u0000o\u0000p\u0000e\u0000n\u0000s\u0000 \u0000g\u0000e\u0000n\u0000e\u0000r\u0000i\u0000c\u0000 \u0000O\u0000P\u0000M\u0000L\u0000 \u0000n\u0000a\u0000v\u0000i\u0000g\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000a\u0000n\u0000d\u0000 \u0000s\u0000h\u0000a\u0000r\u0000e\u0000d\u0000 \u0000p\u0000l\u0000a\u0000y\u0000b\u0000a\u0000c\u0000k\u0000\n\u0000\n\u0000G\u0000e\u0000n\u0000e\u0000r\u0000i\u0000c\u0000 \u0000n\u0000a\u0000v\u0000i\u0000g\u0000a\u0000t\u0000o\u0000r\u0000 \u0000R\u0000a\u0000d\u0000i\u0000o\u0000F\u0000e\u0000e\u0000d\u0000s\u0000 \u0000h\u0000i\u0000e\u0000r\u0000a\u0000r\u0000c\u0000h\u0000y\u0000/\u0000s\u0000e\u0000a\u0000r\u0000c\u0000h\u0000/\u0000p\u0000l\u0000a\u0000y\u0000b\u0000a\u0000c\u0000k\u0000,\u0000 \u0000r\u0000e\u0000t\u0000r\u0000y\u0000,\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000s\u0000t\u0000a\u0000l\u0000e\u0000 \u0000c\u0000a\u0000l\u0000l\u0000b\u0000a\u0000c\u0000k\u0000s\u0000 \u0000a\u0000n\u0000d\u0000 \u0000r\u0000e\u0000p\u0000e\u0000a\u0000t\u0000e\u0000d\u0000 \u0000l\u0000i\u0000f\u0000e\u0000c\u0000y\u0000c\u0000l\u0000e\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000O\u0000P\u0000M\u0000L\u0000 \u0000n\u0000a\u0000v\u0000i\u0000g\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000c\u0000y\u0000c\u0000l\u0000e\u0000s\u0000,\u0000 \u0000T\u0000T\u0000L\u0000 \u0000r\u0000e\u0000f\u0000r\u0000e\u0000s\u0000h\u0000 \u0000a\u0000n\u0000d\u0000 \u0000b\u0000o\u0000u\u0000n\u0000d\u0000e\u0000d\u0000 \u0000t\u0000r\u0000a\u0000v\u0000e\u0000r\u0000s\u0000a\u0000l\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000O\u0000P\u0000M\u0000L\u0000 \u0000r\u0000e\u0000a\u0000l\u0000 \u0000X\u0000M\u0000L\u0000,\u0000 \u0000U\u0000n\u0000i\u0000c\u0000o\u0000d\u0000e\u0000/\u0000e\u0000n\u0000t\u0000i\u0000t\u0000i\u0000e\u0000s\u0000,\u0000 \u0000n\u0000e\u0000s\u0000t\u0000i\u0000n\u0000g\u0000,\u0000 \u0000m\u0000i\u0000s\u0000s\u0000i\u0000n\u0000g\u0000 \u0000f\u0000i\u0000e\u0000l\u0000d\u0000s\u0000,\u0000 \u0000p\u0000r\u0000o\u0000v\u0000i\u0000d\u0000e\u0000r\u0000 \u0000f\u0000i\u0000x\u0000t\u0000u\u0000r\u0000e\u0000s\u0000,\u0000 \u0000m\u0000a\u0000l\u0000f\u0000o\u0000r\u0000m\u0000e\u0000d\u0000/\u0000a\u0000c\u0000c\u0000e\u0000s\u0000s\u0000 \u0000e\u0000r\u0000r\u0000o\u0000r\u0000s\u0000 \u0000a\u0000n\u0000d\u0000 \u0000a\u0000l\u0000l\u0000o\u0000c\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000l\u0000i\u0000m\u0000i\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000F\u0000i\u0000n\u0000i\u0000t\u0000e\u0000 \u0000e\u0000p\u0000i\u0000s\u0000o\u0000d\u0000e\u0000 \u0000p\u0000a\u0000u\u0000s\u0000e\u0000/\u0000r\u0000e\u0000s\u0000u\u0000m\u0000e\u0000,\u0000 \u0000d\u0000e\u0000c\u0000o\u0000d\u0000e\u0000r\u0000 \u0000p\u0000o\u0000s\u0000i\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000F\u0000I\u0000N\u0000/\u0000d\u0000r\u0000a\u0000i\u0000n\u0000i\u0000n\u0000g\u0000,\u0000 \u0000t\u0000e\u0000r\u0000m\u0000i\u0000n\u0000a\u0000l\u0000 \u0000e\u0000r\u0000r\u0000o\u0000r\u0000s\u0000,\u0000 \u0000n\u0000o\u0000 \u0000r\u0000e\u0000s\u0000t\u0000a\u0000r\u0000t\u0000 \u0000l\u0000o\u0000o\u0000p\u0000 \u0000a\u0000n\u0000d\u0000 \u0000l\u0000i\u0000v\u0000e\u0000-\u0000r\u0000a\u0000d\u0000i\u0000o\u0000 \u0000r\u0000e\u0000c\u0000o\u0000n\u0000n\u0000e\u0000c\u0000t\u0000 \u0000r\u0000e\u0000g\u0000r\u0000e\u0000s\u0000s\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000p\u0000o\u0000d\u0000c\u0000a\u0000s\u0000t\u0000-\u0000p\u0000l\u0000a\u0000y\u0000b\u0000a\u0000c\u0000k\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000p\u0000o\u0000d\u0000c\u0000a\u0000s\u0000t\u0000-\u0000r\u0000e\u0000a\u0000d\u0000-\u0000b\u0000u\u0000d\u0000g\u0000e\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000p\u0000o\u0000d\u0000c\u0000a\u0000s\u0000t\u0000-\u0000r\u0000s\u0000s\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000r\u0000a\u0000d\u0000i\u0000o\u0000f\u0000e\u0000e\u0000d\u0000s\u0000-\u0000e\u0000n\u0000t\u0000i\u0000t\u0000i\u0000e\u0000s\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000r\u0000a\u0000d\u0000i\u0000o\u0000f\u0000e\u0000e\u0000d\u0000s\u0000-\u0000p\u0000l\u0000a\u0000y\u0000l\u0000i\u0000s\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000r\u0000a\u0000d\u0000i\u0000o\u0000f\u0000e\u0000e\u0000d\u0000s\u0000-\u0000s\u0000e\u0000a\u0000r\u0000c\u0000h\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000-\u0000h\u0000a\u0000n\u0000d\u0000o\u0000f\u0000f\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000t\u0000u\u0000n\u0000e\u0000i\u0000n\u0000-\u0000p\u0000r\u0000o\u0000v\u0000i\u0000d\u0000e\u0000r\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000u\u0000r\u0000l\u0000-\u0000t\u0000r\u0000a\u0000n\u0000s\u0000p\u0000o\u0000r\u0000t\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u0000P\u0000A\u0000S\u0000S\u0000 \u0000u\u0000s\u0000e\u0000r\u0000-\u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000s\u0000-\u0000t\u0000e\u0000s\u0000t\u0000.\u0000l\u0000u\u0000a\u0000\n\u0000\n\u00002\u00003\u0000 \u0000L\u0000u\u0000a\u0000 \u0000s\u0000u\u0000i\u0000t\u0000e\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000R\u0000S\u0000S\u0000 \u0000b\u0000o\u0000u\u0000n\u0000d\u0000e\u0000d\u0000 \u0000r\u0000e\u0000a\u0000d\u0000 \u0000b\u0000u\u0000r\u0000s\u0000t\u0000s\u0000,\u0000 \u0000u\u0000n\u0000c\u0000h\u0000a\u0000n\u0000g\u0000e\u0000d\u0000 \u0000O\u0000P\u0000M\u0000L\u0000 \u0000s\u0000c\u0000h\u0000e\u0000d\u0000u\u0000l\u0000i\u0000n\u0000g\u0000,\u0000 \u0000o\u0000n\u0000e\u0000 \u0000t\u0000o\u0000t\u0000a\u0000l\u0000 \u0000R\u0000S\u0000S\u0000 \u0000d\u0000e\u0000a\u0000d\u0000l\u0000i\u0000n\u0000e\u0000 \u0000a\u0000n\u0000d\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000R\u0000S\u0000S\u0000 \u0000S\u0000A\u0000X\u0000 \u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000,\u0000 \u0000n\u0000a\u0000m\u0000e\u0000s\u0000p\u0000a\u0000c\u0000e\u0000s\u0000,\u0000 \u0000e\u0000n\u0000t\u0000i\u0000t\u0000i\u0000e\u0000s\u0000/\u0000C\u0000D\u0000A\u0000T\u0000A\u0000,\u0000 \u0000d\u0000a\u0000t\u0000e\u0000s\u0000,\u0000 \u0000e\u0000n\u0000c\u0000l\u0000o\u0000s\u0000u\u0000r\u0000e\u0000s\u0000,\u0000 \u0000o\u0000r\u0000d\u0000e\u0000r\u0000i\u0000n\u0000g\u0000,\u0000 \u0000a\u0000r\u0000t\u0000w\u0000o\u0000r\u0000k\u0000,\u0000 \u0000l\u0000i\u0000m\u0000i\u0000t\u0000s\u0000,\u0000 \u0000l\u0000a\u0000r\u0000g\u0000e\u0000 \u0000f\u0000e\u0000e\u0000d\u0000s\u0000,\u0000 \u0000u\u0000n\u0000s\u0000a\u0000f\u0000e\u0000/\u0000t\u0000r\u0000u\u0000n\u0000c\u0000a\u0000t\u0000e\u0000d\u0000 \u0000X\u0000M\u0000L\u0000 \u0000a\u0000n\u0000d\u0000 \u0000O\u0000P\u0000M\u0000L\u0000 \u0000d\u0000e\u0000l\u0000e\u0000g\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000R\u0000a\u0000d\u0000i\u0000o\u0000F\u0000e\u0000e\u0000d\u0000s\u0000 \u0000H\u0000T\u0000M\u0000L\u0000 \u0000e\u0000n\u0000t\u0000i\u0000t\u0000y\u0000 \u0000c\u0000h\u0000e\u0000c\u0000k\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000R\u0000a\u0000d\u0000i\u0000o\u0000F\u0000e\u0000e\u0000d\u0000s\u0000 \u0000m\u0000i\u0000s\u0000l\u0000a\u0000b\u0000e\u0000l\u0000e\u0000d\u0000 \u0000U\u0000T\u0000F\u0000-\u00008\u0000 \u0000t\u0000e\u0000x\u0000t\u0000 \u0000c\u0000h\u0000e\u0000c\u0000k\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000R\u0000a\u0000d\u0000i\u0000o\u0000F\u0000e\u0000e\u0000d\u0000s\u0000 \u0000p\u0000l\u0000a\u0000y\u0000l\u0000i\u0000s\u0000t\u0000,\u0000 \u0000H\u0000L\u0000S\u0000 \u0000r\u0000o\u0000u\u0000t\u0000i\u0000n\u0000g\u0000,\u0000 \u0000l\u0000o\u0000o\u0000p\u0000 \u0000a\u0000n\u0000d\u0000 \u0000c\u0000a\u0000l\u0000l\u0000b\u0000a\u0000c\u0000k\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000R\u0000a\u0000d\u0000i\u0000o\u0000F\u0000e\u0000e\u0000d\u0000s\u0000 \u0000k\u0000e\u0000y\u0000b\u0000o\u0000a\u0000r\u0000d\u0000 \u0000s\u0000e\u0000a\u0000r\u0000c\u0000h\u0000 \u0000e\u0000n\u0000c\u0000o\u0000d\u0000i\u0000n\u0000g\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000-\u0000h\u0000a\u0000n\u0000d\u0000o\u0000f\u0000f\u0000-\u0000t\u0000e\u0000s\u0000t\u0000s\u0000-\u0000o\u0000k\u0000\n\u0000\n\u0000T\u0000u\u0000n\u0000e\u0000I\u0000n\u0000 \u0000b\u0000r\u0000o\u0000w\u0000s\u0000e\u0000/\u0000s\u0000e\u0000a\u0000r\u0000c\u0000h\u0000,\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000m\u0000e\u0000t\u0000a\u0000d\u0000a\u0000t\u0000a\u0000,\u0000 \u0000f\u0000o\u0000r\u0000m\u0000a\u0000t\u0000 \u0000r\u0000e\u0000s\u0000o\u0000l\u0000u\u0000t\u0000i\u0000o\u0000n\u0000/\u0000f\u0000a\u0000l\u0000l\u0000b\u0000a\u0000c\u0000k\u0000,\u0000 \u0000b\u0000o\u0000u\u0000n\u0000d\u0000s\u0000,\u0000 \u0000c\u0000a\u0000n\u0000c\u0000e\u0000l\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000,\u0000 \u0000f\u0000a\u0000v\u0000o\u0000r\u0000i\u0000t\u0000e\u0000s\u0000 \u0000a\u0000n\u0000d\u0000 \u0000h\u0000a\u0000r\u0000d\u0000w\u0000a\u0000r\u0000e\u0000 \u0000p\u0000r\u0000e\u0000s\u0000e\u0000t\u0000 \u0000r\u0000e\u0000p\u0000l\u0000a\u0000y\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000U\u0000r\u0000l\u0000T\u0000r\u0000a\u0000n\u0000s\u0000p\u0000o\u0000r\u0000t\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000U\u0000s\u0000e\u0000r\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000l\u0000o\u0000a\u0000d\u0000e\u0000r\u0000 \u0000t\u0000e\u0000s\u0000t\u0000s\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000M\u0000i\u0000x\u0000e\u0000d\u0000 \u0000c\u0000u\u0000s\u0000t\u0000o\u0000m\u0000 \u0000s\u0000t\u0000a\u0000t\u0000i\u0000o\u0000n\u0000/\u0000d\u0000i\u0000r\u0000e\u0000c\u0000t\u0000o\u0000r\u0000y\u0000 \u0000s\u0000c\u0000h\u0000e\u0000m\u0000a\u0000,\u0000 \u0000d\u0000e\u0000f\u0000a\u0000u\u0000l\u0000t\u0000s\u0000,\u0000 \u0000o\u0000r\u0000d\u0000e\u0000r\u0000,\u0000 \u0000a\u0000r\u0000t\u0000w\u0000o\u0000r\u0000k\u0000 \u0000a\u0000n\u0000d\u0000 \u0000i\u0000n\u0000v\u0000a\u0000l\u0000i\u0000d\u0000-\u0000r\u0000o\u0000w\u0000 \u0000i\u0000s\u0000o\u0000l\u0000a\u0000t\u0000i\u0000o\u0000n\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000\n\u0000\n\u0000N\u0000a\u0000t\u0000i\u0000v\u0000e\u0000/\u0000l\u0000e\u0000g\u0000a\u0000c\u0000y\u0000 \u0000s\u0000t\u0000o\u0000r\u0000a\u0000g\u0000e\u0000 \u0000i\u0000d\u0000e\u0000n\u0000t\u0000i\u0000t\u0000i\u0000e\u0000s\u0000,\u0000 \u0000i\u0000n\u0000v\u0000a\u0000l\u0000i\u0000d\u0000 \u0000m\u0000o\u0000u\u0000n\u0000t\u0000s\u0000,\u0000 \u0000r\u0000e\u0000m\u0000o\u0000u\u0000n\u0000t\u0000s\u0000 \u0000a\u0000n\u0000d\u0000 \u0000u\u0000p\u0000l\u0000o\u0000a\u0000d\u0000e\u0000d\u0000-\u0000l\u0000o\u0000g\u0000o\u0000 \u0000r\u0000o\u0000o\u0000t\u0000s\u0000 \u0000f\u0000o\u0000l\u0000l\u0000o\u0000w\u0000 \u0000B\u0000a\u0000s\u0000e\u0000\n\u0000\n\u0000",
+    "spotify-regressions.log": "\ufffd\ufffd.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000.\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000[\u00001\u00000\u00000\u0000%\u0000]\u0000\n\u0000\n\u00002\u00005\u0000 \u0000p\u0000a\u0000s\u0000s\u0000e\u0000d\u0000 \u0000i\u0000n\u0000 \u00000\u0000.\u00001\u00005\u0000s\u0000\n\u0000\n\u0000",
+    "spotify-native.log": "\nrunning 1 test\ntest tests::status_extra_field_is_valid_json_shape ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+    "qobuz-lifecycle.log": "lifecycle policy: OK\n",
+    "qobuz-nowplaying.log": "qobuz-nowplaying-tests-ok\n",
+    "qobuz-native.log": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.26\n   Compiling quote v1.0.47\n   Compiling libc v0.2.190\n   Compiling cfg-if v1.0.5\n   Compiling futures-core v0.3.34\n   Compiling log v0.4.34\n   Compiling pin-project-lite v0.2.17\n   Compiling smallvec v1.16.2\n   Compiling scopeguard v1.2.0\n   Compiling bytes v1.12.1\n   Compiling itoa v1.0.18\n   Compiling lock_api v0.4.14\n   Compiling futures-sink v0.3.34\n   Compiling stable_deref_trait v1.2.1\n   Compiling parking_lot_core v0.9.12\n   Compiling find-msvc-tools v0.1.14\n   Compiling shlex v2.0.1\n   Compiling once_cell v1.21.4\n   Compiling slab v0.4.12\n   Compiling cc v1.5.1\n   Compiling tracing-core v0.1.36\n   Compiling http v1.5.0\n   Compiling vcpkg v0.2.15\n   Compiling pkg-config v0.3.34\n   Compiling futures-channel v0.3.34\n   Compiling memchr v2.8.3\n   Compiling futures-io v0.3.34\n   Compiling version_check v0.9.5\n   Compiling futures-task v0.3.34\n   Compiling litemap v0.8.3\n   Compiling writeable v0.6.4\n   Compiling httparse v1.10.1\n   Compiling openssl-src v300.6.1+3.6.3\n   Compiling http-body v1.1.0\n   Compiling generic-array v0.14.7\n   Compiling typenum v1.20.1\n   Compiling percent-encoding v2.3.2\n   Compiling icu_properties_data v2.3.0\n   Compiling foreign-types-shared v0.1.1\n   Compiling openssl v0.10.81\n   Compiling serde_core v1.0.229\n   Compiling utf8_iter v1.0.4\n   Compiling bitflags v2.13.2\n   Compiling icu_normalizer_data v2.3.0\n   Compiling syn v3.0.6\n   Compiling syn v2.0.119\n   Compiling socket2 v0.6.5\n   Compiling mio v1.2.3 (/mnt/c/Projects/QoBuz/native/qobuzconnectd/vendor/mio)\n   Compiling errno v0.3.14\n   Compiling signal-hook-registry v1.4.8\n   Compiling openssl-sys v0.9.117\n   Compiling parking_lot v0.12.5\n   Compiling foreign-types v0.3.2\n   Compiling zerocopy v0.8.59\n   Compiling hashbrown v0.17.1\n   Compiling native-tls v0.2.18\n   Compiling equivalent v1.0.2\n   Compiling tower-service v0.3.3\n   Compiling atomic-waker v1.1.2\n   Compiling openssl-probe v0.2.1\n   Compiling try-lock v0.2.5\n   Compiling indexmap v2.14.2\n   Compiling fnv v1.0.7\n   Compiling rustversion v1.0.23\n   Compiling want v0.3.1\n   Compiling block-buffer v0.10.4\n   Compiling crypto-common v0.1.7\n   Compiling getrandom v0.2.17\n   Compiling form_urlencoded v1.2.2\n   Compiling sync_wrapper v1.0.2\n   Compiling httpdate v1.0.3\n   Compiling serde v1.0.229\n   Compiling tower-layer v0.3.3\n   Compiling zmij v1.0.23\n   Compiling rand_core v0.6.4\n   Compiling digest v0.10.7\n   Compiling http-body-util v0.1.5\n   Compiling ipnet v2.12.2\n   Compiling thiserror v1.0.69\n   Compiling synstructure v0.14.0\n   Compiling base64 v0.23.1\n   Compiling serde_json v1.0.151\n   Compiling anyhow v1.0.104\n   Compiling either v1.18.0\n   Compiling cpufeatures v0.2.17\n   Compiling ryu v1.0.23\n   Compiling mime v0.3.17\n   Compiling itertools v0.14.0\n   Compiling sha1 v0.10.7\n   Compiling encoding_rs v0.8.42\n   Compiling spin v0.9.9\n   Compiling core_detect v1.0.0\n   Compiling data-encoding v2.11.1\n   Compiling tracing-attributes v0.1.31\n   Compiling openssl-macros v0.1.1\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.4\n   Compiling zerovec-derive v0.11.6\n   Compiling tokio-macros v2.7.2\n   Compiling displaydoc v0.2.7\n   Compiling futures-macro v0.3.34\n   Compiling ppv-lite86 v0.2.21\n   Compiling serde_derive v1.0.229\n   Compiling rand_chacha v0.3.1\n   Compiling thiserror-impl v1.0.69\n   Compiling rand v0.8.8\n   Compiling tracing v0.1.44\n   Compiling regex-syntax v0.8.11\n   Compiling zeroize v1.9.0\n   Compiling tokio v1.53.1\n   Compiling zerofrom v0.1.8\n   Compiling thiserror v2.0.21\n   Compiling futures-util v0.3.34\n   Compiling yoke v0.8.3\n   Compiling multiversion_no_op v1.0.0\n   Compiling utf-8 v0.7.6\n   Compiling byteorder v1.5.0\n   Compiling simdutf8 v0.1.5\n   Compiling zerovec v0.11.8\n   Compiling zerotrie v0.2.5\n   Compiling prost-derive v0.13.5\n   Compiling axum-core v0.5.6\n   Compiling regex-automata v0.4.18\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling icu_locale_core v2.3.0\n   Compiling rustls-pki-types v1.15.1\n   Compiling futures-executor v0.3.34\n   Compiling icu_provider v2.3.1\n   Compiling thiserror-impl v2.0.21\n   Compiling async-stream-impl v0.3.6\n   Compiling icu_properties v2.3.0\n   Compiling icu_normalizer v2.3.0\n   Compiling flume v0.11.1\n   Compiling serde_path_to_error v0.1.20\n   Compiling socket-pktinfo v0.3.2\n   Compiling serde_urlencoded v0.7.1\n   Compiling if-addrs v0.14.0\n   Compiling base64 v0.22.1\n   Compiling lazy_static v1.5.1\n   Compiling qonductor v0.1.0-alpha.6 (https://github.com/nickblt/qonductor.git?rev=50f24c928f290589a9220db39582ad5071f59b5c#50f24c92)\n   Compiling matchit v0.8.4\n   Compiling fastrand v2.5.0\n   Compiling sharded-slab v0.1.7\n   Compiling tokio-util v0.7.19\n   Compiling tower v0.5.3\n   Compiling idna_adapter v1.2.2\n   Compiling async-stream v0.3.6\n   Compiling mdns-sd v0.17.2 (/mnt/c/Projects/QoBuz/native/qobuzconnectd/vendor/mdns-sd)\n   Compiling idna v1.1.0\n   Compiling prost v0.13.5\n   Compiling futures v0.3.34\n   Compiling h2 v0.4.19\n   Compiling matchers v0.2.0\n   Compiling md-5 v0.10.6\n   Compiling tracing-log v0.2.0\n   Compiling thread_local v1.1.10\n   Compiling nu-ansi-term v0.50.3\n   Compiling uuid v1.26.1\n   Compiling md5 v0.7.0\n   Compiling url v2.5.8\n   Compiling tracing-subscriber v0.3.23\n   Compiling tower-http v0.6.11\n   Compiling hyper v1.11.1\n   Compiling hyper-util v0.1.21\n   Compiling axum v0.8.9\n   Compiling tokio-native-tls v0.3.1\n   Compiling tungstenite v0.24.0\n   Compiling hyper-tls v0.6.0\n   Compiling tokio-tungstenite v0.24.0\n   Compiling reqwest v0.12.28\n   Compiling qobuzconnectd v0.1.2 (/mnt/c/Projects/QoBuz/native/qobuzconnectd)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 6m 59s\n     Running unittests src/main.rs (.local/wp4a1/qobuz-target/debug/deps/qobuzconnectd-b7d8029365caef34)\n\nrunning 7 tests\ntest playback::tests::actual_state_mapping_is_truthful ... ok\ntest playback::tests::duplicate_identity_includes_queue_item ... ok\ntest playback::tests::applet_events_are_generation_scoped ... ok\ntest playback::tests::generations_reject_stale_work ... ok\ntest tests::stopped_is_truthful ... ok\ntest tests::identity_hex_round_trip ... ok\ntest playback::tests::optional_source_quality_uses_real_values_only ... ok\n\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n",
+    "proxy-probe.log": "-- The C compiler identification is GNU 13.3.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n-- Found Threads: TRUE\n-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version \"1.3\")\n-- Found PNG: /usr/lib/x86_64-linux-gnu/libpng.so (found version \"1.6.43\")\n-- Found JPEG: /usr/lib/x86_64-linux-gnu/libjpeg.so (found version \"80\")\nCMake Error at /mnt/c/Projects/SBHttpsProxy/build/toolchains/cmake-3.31.8-linux-x86_64/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cmake:233 (message):\n  Could NOT find CURL (missing: CURL_LIBRARY CURL_INCLUDE_DIR)\nCall Stack (most recent call first):\n  /mnt/c/Projects/SBHttpsProxy/build/toolchains/cmake-3.31.8-linux-x86_64/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cmake:603 (_FPHSA_FAILURE_MESSAGE)\n  /mnt/c/Projects/SBHttpsProxy/build/toolchains/cmake-3.31.8-linux-x86_64/share/cmake-3.31/Modules/FindCURL.cmake:203 (find_package_handle_standard_args)\n  native/sbproxy/CMakeLists.txt:3 (find_package)\n\n\n-- Configuring incomplete, errors occurred!\n",
+    "measurements.json": "{\"real_http_messages\": 100, \"request_p50_ms\": 0.24439900153083727, \"request_p95_ms\": 0.39113100137910806, \"request_p99_ms\": 0.812163001683075, \"base_before\": {\"rss_peak_kib\": 6528, \"cpu_ticks\": 0, \"fds\": 7}, \"base_after\": {\"rss_peak_kib\": 6528, \"cpu_ticks\": 1, \"fds\": 7}, \"idle_four_subscriptions_before\": {\"rss_peak_kib\": 6528, \"cpu_ticks\": 0, \"fds\": 11}, \"idle_four_subscriptions_after\": {\"rss_peak_kib\": 6528, \"cpu_ticks\": 0, \"fds\": 11}, \"idle_wall_seconds\": 0.5, \"clock_ticks_per_second\": 100, \"extra_public_ports\": 0, \"native_protocol\": {\"messages\": 5000, \"wall_seconds\": 0.46218141999997897, \"messages_per_second\": 10818.262664042677, \"before\": {\"rss_peak_kib\": 1664, \"cpu_ticks\": 0, \"fds\": 4}, \"after\": {\"rss_peak_kib\": 1664, \"cpu_ticks\": 16, \"fds\": 4}, \"scope\": \"includes Python JSON, pipe IPC and syscall costs; not pure native parser throughput\"}}\n",
+    "size.log": "7488 1440\n",
+    "size-baby.log": "7464 1440\n",
+    "size-fab4.log": "7464 1440\n"
+  },
+  "build_manifests": {
+    "build-arm/baby/ownership/manifest.txt": "flags=-Os -marm -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -D_FILE_OFFSET_BITS=64 -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -UNDEBUG\narm-buildroot-linux-musleabi-gcc.br_real (Buildroot 2020.02-00011-g7ea8a52) 8.4.0\nbd5fc1d11ed7e1b67e67b1012e19f996ad9e7ef8f02e6e4339f2891d2f79f110  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/ownership/test_ownership_driver\n74abb07f3ab0fb1af016a9061f71bd9af01c0104d1ed6942cc37eb687c9081d4  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/ownership/sbbase\n",
+    "build-arm/fab4/ownership/manifest.txt": "flags=-Os -marm -march=armv6 -mtune=arm1136jf-s -mfloat-abi=soft -DSB_TARGET_FAB4=1 -D_FILE_OFFSET_BITS=64 -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -UNDEBUG\narm-buildroot-linux-musleabi-gcc.br_real (Buildroot 2020.02-00011-g7ea8a52) 8.4.0\n428532684dcf5f924f69db42919d844216295c8586c2334b4101cea299b1b36c  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/ownership/test_ownership_driver\n5054fa039e6e7be99a4c3e53b2a6afb1edf40ab889c8d72d3eb3693e10dd6a8d  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/ownership/sbbase\n"
+  },
+  "development_tool": {
+    "path": ".local/wp4a1/wheels/lupa-2.8-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+    "bytes": 2368731,
+    "sha256": "8cf4f064a0e5531afce2d7d750120c10c10f9529139af6ca6150d13151034398"
+  }
+}

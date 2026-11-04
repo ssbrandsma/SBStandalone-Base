@@ -1,0 +1,241 @@
+{
+  "date": "2026-11-03",
+  "environment": "WSL Ubuntu 24.04 x86_64 host; no physical Squeezebox",
+  "decoder": "mocked; actual encoded HTTP bytes verified",
+  "benchmarks": [
+    {
+      "tracks": 1000,
+      "browse_ms": {
+        "p50": 4.439582000486553,
+        "p95": 14.553279001120245,
+        "p99": 16.28195999910531
+      },
+      "health_ms": {
+        "p50": 0.34653600050660316,
+        "p95": 1.1980270010099048,
+        "p99": 3.898590999597218
+      },
+      "stream_get_ms": {
+        "p50": 30.976006999480887,
+        "p95": 31.861730998571147,
+        "p99": 31.91065300052287
+      },
+      "stream_get_count": 29,
+      "browse_count": 120,
+      "wall_seconds": 0.8868876469987299,
+      "base": {
+        "peak_rss_kib": 9236,
+        "fds": 16,
+        "thread_cpu_seconds": {
+          "952": 0.06,
+          "954": 0.22,
+          "955": 0.02,
+          "956": 0.0
+        },
+        "cpu_seconds_total": 0.31
+      },
+      "web": {
+        "peak_rss_kib": 2304,
+        "fds": 6,
+        "thread_cpu_seconds": {
+          "951": 0.01,
+          "953": 0.0
+        },
+        "cpu_seconds_total": 0.01
+      },
+      "kind": "Mock decoder playing plus repeated real authorized HTTP GETs"
+    },
+    {
+      "tracks": 10000,
+      "browse_ms": {
+        "p50": 12.641932000406086,
+        "p95": 21.189529999901424,
+        "p99": 22.210434000953683
+      },
+      "health_ms": {
+        "p50": 0.33986600101343356,
+        "p95": 0.734076998924138,
+        "p99": 1.4652680001745466
+      },
+      "stream_get_ms": {
+        "p50": 30.8176070011541,
+        "p95": 31.66627599966887,
+        "p99": 32.13593100008438
+      },
+      "stream_get_count": 50,
+      "browse_count": 120,
+      "wall_seconds": 1.5171654530004162,
+      "base": {
+        "peak_rss_kib": 9236,
+        "fds": 16,
+        "thread_cpu_seconds": {
+          "980": 0.07,
+          "982": 0.63,
+          "983": 0.03,
+          "984": 0.0
+        },
+        "cpu_seconds_total": 0.75
+      },
+      "web": {
+        "peak_rss_kib": 2176,
+        "fds": 6,
+        "thread_cpu_seconds": {
+          "979": 0.01,
+          "981": 0.0
+        },
+        "cpu_seconds_total": 0.01
+      },
+      "kind": "Mock decoder playing plus repeated real authorized HTTP GETs"
+    },
+    {
+      "tracks": 50000,
+      "browse_ms": {
+        "p50": 18.631997001648415,
+        "p95": 63.35968799976399,
+        "p99": 67.29645499945036
+      },
+      "health_ms": {
+        "p50": 0.3891619999194518,
+        "p95": 0.800116999016609,
+        "p99": 1.1693249998643296
+      },
+      "stream_get_ms": {
+        "p50": 30.837391001114156,
+        "p95": 31.49320200100192,
+        "p99": 31.78635600124835
+      },
+      "stream_get_count": 116,
+      "browse_count": 120,
+      "wall_seconds": 3.472973882999213,
+      "base": {
+        "peak_rss_kib": 9364,
+        "fds": 16,
+        "thread_cpu_seconds": {
+          "1024": 0.13,
+          "1026": 2.59,
+          "1027": 0.02,
+          "1028": 0.0
+        },
+        "cpu_seconds_total": 2.77
+      },
+      "web": {
+        "peak_rss_kib": 2304,
+        "fds": 6,
+        "thread_cpu_seconds": {
+          "1023": 0.04,
+          "1025": 0.0
+        },
+        "cpu_seconds_total": 0.05
+      },
+      "kind": "Mock decoder playing plus repeated real authorized HTTP GETs"
+    }
+  ],
+  "stream": {
+    "http_bytes": 1048576,
+    "http_seconds": 0.6893497130004107,
+    "bytes_per_second": 1521108.9237073131,
+    "fds_before": 6,
+    "fds_after": 5,
+    "simultaneous_streams": 4,
+    "buffer_bytes": 16384
+  },
+  "queue_allocation_bytes": 233608,
+  "queue_test_peak_rss_kib": 1664,
+  "load_140_ms": 333,
+  "load_test_peak_rss_kib": 2816,
+  "sanitizer": [
+    {
+      "actual_scanner_files": 1000,
+      "concurrent_browse_queries": 2067,
+      "successful_queries": 2067,
+      "retryable_queries": 0,
+      "query_max_ms": 26,
+      "scan_ms": 7120,
+      "decoder": "mocked playing"
+    },
+    {
+      "http_bytes": 1048576,
+      "http_seconds": 0.9103290540006128,
+      "bytes_per_second": 1151864.8068979396,
+      "fds_before": 5,
+      "fds_after": 5,
+      "simultaneous_streams": 4,
+      "buffer_bytes": 16384
+    },
+    {
+      "native_starts": 5,
+      "verified_encoded_bytes": 9560,
+      "queue_entries_before_removal": 3,
+      "audio_output": "mocked, not measured"
+    }
+  ],
+  "qemu": {
+    "order": [
+      "baby arm926",
+      "fab4 arm1136"
+    ],
+    "observations": [
+      {
+        "http_bytes": 1048576,
+        "http_seconds": 0.6905435040007433,
+        "bytes_per_second": 1518479.2759977528,
+        "fds_before": 6,
+        "fds_after": 5,
+        "simultaneous_streams": 4,
+        "buffer_bytes": 16384
+      },
+      {
+        "native_starts": 5,
+        "verified_encoded_bytes": 9560,
+        "queue_entries_before_removal": 3,
+        "audio_output": "mocked, not measured"
+      },
+      {
+        "http_bytes": 1048576,
+        "http_seconds": 0.6925907829991047,
+        "bytes_per_second": 1513990.6936956097,
+        "fds_before": 5,
+        "fds_after": 5,
+        "simultaneous_streams": 4,
+        "buffer_bytes": 16384
+      },
+      {
+        "native_starts": 5,
+        "verified_encoded_bytes": 9560,
+        "queue_entries_before_removal": 3,
+        "audio_output": "mocked, not measured"
+      }
+    ]
+  },
+  "native_scanner_browse_observation": {
+    "files": 1000,
+    "successful_queries": 1785,
+    "retryable_queries": 0,
+    "query_max_ms": 24,
+    "scan_ms": 5694,
+    "note": "From full 91-test acceptance run before benchmark-only fixture correction; final rerun recorded separately."
+  },
+  "host_ctest": {
+    "passed": 91,
+    "total": 91,
+    "seconds": 194.36,
+    "baseline_passed": 82,
+    "baseline_seconds": 260.44
+  },
+  "final_native_scanner_observation": {
+    "actual_scanner_files": 1000,
+    "concurrent_browse_queries": 1750,
+    "successful_queries": 1750,
+    "retryable_queries": 0,
+    "query_max_ms": 38,
+    "scan_ms": 5580,
+    "decoder": "mocked playing"
+  },
+  "validation_transcripts": {
+    "ctest": "Internal ctest changing into directory: /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests\nTest project /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests\n      Start  1: protocol\n 1/91 Test  #1: protocol .........................   Passed    0.00 sec\n      Start  2: nowplaying_unit\n 2/91 Test  #2: nowplaying_unit ..................   Passed    1.10 sec\n      Start  3: alarms_unit\n 3/91 Test  #3: alarms_unit ......................   Passed    0.01 sec\n      Start  4: sleep_unit\n 4/91 Test  #4: sleep_unit .......................   Passed    0.00 sec\n      Start  5: artwork_settings_defaults\n 5/91 Test  #5: artwork_settings_defaults ........   Passed    0.01 sec\n      Start  6: http_trace_native\n 6/91 Test  #6: http_trace_native ................   Passed    0.00 sec\n      Start  7: mongoose_clock_fallback\n 7/91 Test  #7: mongoose_clock_fallback ..........   Passed    0.00 sec\n      Start  8: squeezeplay_artwork_patch\n 8/91 Test  #8: squeezeplay_artwork_patch ........   Passed    0.11 sec\n      Start  9: storage\n 9/91 Test  #9: storage ..........................   Passed    0.16 sec\n      Start 10: storage_boothelper\n10/91 Test #10: storage_boothelper ...............   Passed    0.06 sec\n      Start 11: extended_storage\n11/91 Test #11: extended_storage .................   Passed   22.32 sec\n      Start 12: touch_bridge_lua\n12/91 Test #12: touch_bridge_lua .................   Passed    0.01 sec\n      Start 13: platform_identity\n13/91 Test #13: platform_identity ................   Passed    0.00 sec\n      Start 14: alarm_playback_lua\n14/91 Test #14: alarm_playback_lua ...............   Passed    0.01 sec\n      Start 15: firmware_physical_input\n15/91 Test #15: firmware_physical_input ..........   Passed    0.01 sec\n      Start 16: firmware_bridge_lua\n16/91 Test #16: firmware_bridge_lua ..............   Passed    0.01 sec\n      Start 17: storage_recovery_menu\n17/91 Test #17: storage_recovery_menu ............   Passed    0.01 sec\n      Start 18: storage_recovery_manager\n18/91 Test #18: storage_recovery_manager .........   Passed    0.01 sec\n      Start 19: artwork_lua\n19/91 Test #19: artwork_lua ......................   Passed    0.01 sec\n      Start 20: image_helper_lua\n20/91 Test #20: image_helper_lua .................   Passed    0.01 sec\n      Start 21: installer_compat_lua\n21/91 Test #21: installer_compat_lua .............   Passed    0.01 sec\n      Start 22: http_trace_lua\n22/91 Test #22: http_trace_lua ...................   Passed    0.01 sec\n      Start 23: extended_storage_lua_state\n23/91 Test #23: extended_storage_lua_state .......   Passed    0.01 sec\n      Start 24: server_migration_lua\n24/91 Test #24: server_migration_lua .............   Passed    0.01 sec\n      Start 25: network_address_lua\n25/91 Test #25: network_address_lua ..............   Passed    0.01 sec\n      Start 26: remote_pixel_decode\n26/91 Test #26: remote_pixel_decode ..............   Passed    0.08 sec\n      Start 27: process_monitor_frontend\n27/91 Test #27: process_monitor_frontend .........   Passed    0.09 sec\n      Start 28: storage_updater\n28/91 Test #28: storage_updater ..................   Passed    0.08 sec\n      Start 29: remote_framebuffer\n29/91 Test #29: remote_framebuffer ...............   Passed    0.00 sec\n      Start 30: applet_repository\n30/91 Test #30: applet_repository ................   Passed    1.12 sec\n      Start 31: nowplaying_metadata\n31/91 Test #31: nowplaying_metadata ..............   Passed    1.49 sec\n      Start 32: storage_firmware_recovery\n32/91 Test #32: storage_firmware_recovery ........   Passed    3.10 sec\n      Start 33: catalog_merge\n33/91 Test #33: catalog_merge ....................   Passed    0.18 sec\n      Start 34: firmware_image\n34/91 Test #34: firmware_image ...................   Passed    0.29 sec\n      Start 35: firmware_http\n35/91 Test #35: firmware_http ....................   Passed   46.26 sec\n      Start 36: firmware_upload\n36/91 Test #36: firmware_upload ..................   Passed    2.89 sec\n      Start 37: firmware_checksum_download\n37/91 Test #37: firmware_checksum_download .......   Passed    0.75 sec\n      Start 38: storage_native_boot\n38/91 Test #38: storage_native_boot ..............   Passed    0.83 sec\n      Start 39: catalog_sync\n39/91 Test #39: catalog_sync .....................   Passed    3.38 sec\n      Start 40: image_public_address\n40/91 Test #40: image_public_address .............   Passed    0.00 sec\n      Start 41: svg_renderer\n41/91 Test #41: svg_renderer .....................   Passed    0.40 sec\n      Start 42: raster_renderer\n42/91 Test #42: raster_renderer ..................   Passed    1.01 sec\n      Start 43: svg_image_http\n43/91 Test #43: svg_image_http ...................   Passed   22.16 sec\n      Start 44: comet_connections\n44/91 Test #44: comet_connections ................   Passed    2.35 sec\n      Start 45: alarms_comet\n45/91 Test #45: alarms_comet .....................   Passed    2.61 sec\n      Start 46: firmware_comet\n46/91 Test #46: firmware_comet ...................   Passed    2.97 sec\n      Start 47: comet_menustatus\n47/91 Test #47: comet_menustatus .................   Passed    0.13 sec\n      Start 48: comet_server_switch\n48/91 Test #48: comet_server_switch ..............   Passed    0.19 sec\n      Start 49: comet_catalog_targets\n49/91 Test #49: comet_catalog_targets ............   Passed    0.16 sec\n      Start 50: nowplaying_poc\n50/91 Test #50: nowplaying_poc ...................   Passed    2.21 sec\n      Start 51: nowplaying_api\n51/91 Test #51: nowplaying_api ...................   Passed    0.23 sec\n      Start 52: lpt_geometry\n52/91 Test #52: lpt_geometry .....................   Passed    0.06 sec\n      Start 53: superblock_patch\n53/91 Test #53: superblock_patch .................   Passed    0.42 sec\n      Start 54: remote_http\n54/91 Test #54: remote_http ......................   Passed   16.23 sec\n      Start 55: radio_management_http\n55/91 Test #55: radio_management_http ............   Passed    0.29 sec\n      Start 56: web_access_pairing\n56/91 Test #56: web_access_pairing ...............   Passed    0.18 sec\n      Start 57: configuration_backup\n57/91 Test #57: configuration_backup .............   Passed    0.31 sec\n      Start 58: system_log_viewer\n58/91 Test #58: system_log_viewer ................   Passed    0.26 sec\n      Start 59: process_monitor\n59/91 Test #59: process_monitor ..................   Passed    0.27 sec\n      Start 60: cpu_accounting_diagnostic\n60/91 Test #60: cpu_accounting_diagnostic ........   Passed    0.09 sec\n      Start 61: music_transport\n61/91 Test #61: music_transport ..................   Passed    0.05 sec\n      Start 62: music_transport_wire\n62/91 Test #62: music_transport_wire .............   Passed    0.12 sec\n      Start 63: base_backpressure\n63/91 Test #63: base_backpressure ................   Passed    1.05 sec\n      Start 64: base_partial_writes\n64/91 Test #64: base_partial_writes ..............   Passed    0.83 sec\n      Start 65: music_contracts\n65/91 Test #65: music_contracts ..................   Passed    0.00 sec\n      Start 66: music_commands\n66/91 Test #66: music_commands ...................   Passed    0.01 sec\n      Start 67: hls_id3\n67/91 Test #67: hls_id3 ..........................   Passed    0.01 sec\n      Start 68: hls_metadata_wait\n68/91 Test #68: hls_metadata_wait ................   Passed    1.01 sec\n      Start 69: music_dispatch_http\n69/91 Test #69: music_dispatch_http ..............   Passed    0.16 sec\n      Start 70: music_wire_fixtures\n70/91 Test #70: music_wire_fixtures ..............   Passed    0.23 sec\n      Start 71: music_fd_contract\n71/91 Test #71: music_fd_contract ................   Passed    0.07 sec\n      Start 72: music_scanner\n72/91 Test #72: music_scanner ....................   Passed    2.68 sec\n      Start 73: music_storage_foundation\n73/91 Test #73: music_storage_foundation .........   Passed    0.33 sec\n      Start 74: music_storage_lua\n74/91 Test #74: music_storage_lua ................   Passed    0.01 sec\n      Start 75: music_library_storage\n75/91 Test #75: music_library_storage ............   Passed    2.29 sec\n      Start 76: music_library_large\n76/91 Test #76: music_library_large ..............   Passed   20.18 sec\n      Start 77: music_queue\n77/91 Test #77: music_queue ......................   Passed    0.00 sec\n      Start 78: music_http_policy\n78/91 Test #78: music_http_policy ................   Passed    0.00 sec\n      Start 79: music_stream\n79/91 Test #79: music_stream .....................   Passed    0.01 sec\n      Start 80: music_playback\n80/91 Test #80: music_playback ...................   Passed    5.74 sec\n      Start 81: music_load\n81/91 Test #81: music_load .......................   Passed    0.45 sec\n      Start 82: music_ownership_lua\n82/91 Test #82: music_ownership_lua ..............   Passed    0.01 sec\n      Start 83: music_stream_http\n83/91 Test #83: music_stream_http ................   Passed    1.29 sec\n      Start 84: music_playback_http\n84/91 Test #84: music_playback_http ..............   Passed    0.93 sec\n      Start 85: music_playback_ownership\n85/91 Test #85: music_playback_ownership .........   Passed    1.46 sec\n      Start 86: music_browse_native\n86/91 Test #86: music_browse_native ..............   Passed    5.88 sec\n      Start 87: music_browse_http\n87/91 Test #87: music_browse_http ................   Passed    2.40 sec\n      Start 88: music_browse_partial\n88/91 Test #88: music_browse_partial .............   Passed    2.42 sec\n      Start 89: music_browse_empty\n89/91 Test #89: music_browse_empty ...............   Passed    1.53 sec\n      Start 90: music_browse_faults\n90/91 Test #90: music_browse_faults ..............   Passed    5.56 sec\n      Start 91: music_browse_disabled\n91/91 Test #91: music_browse_disabled ............   Passed    0.19 sec\n\n100% tests passed, 0 tests failed out of 91\n\nTotal Test time (real) = 194.36 sec\n",
+    "arm_build_manifests": {
+      "build-arm/baby/playback/manifest.txt": "flags=-Os -marm -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -D_FILE_OFFSET_BITS=64 -ffunction-sections -fdata-sections -std=c99 -Wall -Wextra -Wpedantic -UNDEBUG\narm-buildroot-linux-musleabi-gcc.br_real (Buildroot 2020.02-00011-g7ea8a52) 8.4.0\n332477896a3a6021255d260b85e05383e861297daf76c524da3fc6feb7d56619  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/test_music_queue\nfced6dccf286cec9ff1a1bb93c9f910e1383323e133dfc5cfa2dc271c72efd43  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/test_music_http_policy\n890a7583eebb2b38892b1c05db5f9719e397b399d6dd3bb9eeef80a457102a92  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/test_music_stream\n58184f15ce5e2e33dbd71a35215ccdb5002f6641469a6c8a9337fe7f156305c0  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/test_music_load\n772a75e47dde1d868361d01100f81104cf573b30457b8b04c0f26fd7e85fe14d  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/test_music_playback\na8912b7a8b604560d2aa5f554e29719848e315d646feeb875d4d05a4c636961a  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/sbbase_music_test\n0615741c2155d12fc58030473856d995745d4830689b6049e4f60a8aeca14fcb  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/playback/sbwebserver_music_test\n",
+      "build-arm/fab4/playback/manifest.txt": "flags=-Os -marm -march=armv6 -mtune=arm1136jf-s -mfloat-abi=soft -DSB_TARGET_FAB4=1 -D_FILE_OFFSET_BITS=64 -ffunction-sections -fdata-sections -std=c99 -Wall -Wextra -Wpedantic -UNDEBUG\narm-buildroot-linux-musleabi-gcc.br_real (Buildroot 2020.02-00011-g7ea8a52) 8.4.0\n7a1c033ca5e0724c3ee4a52ff1efaf4444deadf00abd0474b935d313f028eb48  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/test_music_queue\nda52725f2b9dea3bf0a93dae9a5ea3f0eff83fd7cdba89f16658e303ab438b01  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/test_music_http_policy\n205bf43a4c232e07184f83b67638de341509450a77f291aa3ecdc99a86b9e453  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/test_music_stream\nd9dcc58bf6753018122d9146006ee38654483d8486ccad1371083ee02eca9b2c  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/test_music_load\nbd38eff53424d9f499a29256255c95fd9454b0ac5428bcc3d0c776de674f7544  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/test_music_playback\n8dd338259c8c6fe889f5c081dfba02d70ead6131c2cf65a990d99f3dbb3dba18  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/sbbase_music_test\n0420d4b8a604b680c9fef4361f830ccbf42a5c2ac49880a1b45fa0d064083b36  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/playback/sbwebserver_music_test\n"
+    }
+  }
+}

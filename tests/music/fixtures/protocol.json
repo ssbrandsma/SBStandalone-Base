@@ -1,0 +1,458 @@
+{
+  "provenance": {
+    "kind": "Source-derived reduced fixtures; invented IDs/text, never runtime captures",
+    "slimproto_sha256": "84797e840d274bc23384048655eb6084817a5b0eab3150d9f1aafa1dc34c4c00",
+    "slimproto_lines": {
+      "HELO": 108,
+      "STAT": 167,
+      "strm": 271
+    },
+    "browse_lines": {
+      "getJiveMenu": 604,
+      "artists": 1013,
+      "albums": 1288,
+      "tracks": 1487,
+      "genres": 1166,
+      "bmf": 1677
+    },
+    "xml_makeAction": 1614
+  },
+  "slimproto": [
+    {
+      "opcode": "HELO",
+      "hex": "48454c4f0000003607000011223344550000000000000000000000000000000040000000000000000000454e4d6f64656c3d666162342c666c632c6d7033",
+      "payload_bytes": 54,
+      "classification": "source-derived expected behavior",
+      "source": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua"
+    },
+    {
+      "opcode": "STAT",
+      "hex": "535441540000003353544d73000000000008000000040000000000000000640000000004d20000100000000800000000010000000004d200000000",
+      "payload_bytes": 51,
+      "classification": "source-derived expected behavior",
+      "source": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua"
+    },
+    {
+      "opcode": "RESP",
+      "hex": "5245535000000027485454502f312e3020323030204f4b0d0a436f6e74656e742d4c656e6774683a2031300d0a0d0a",
+      "payload_bytes": 39,
+      "classification": "source-derived expected behavior",
+      "source": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua"
+    },
+    {
+      "opcode": "DSCO",
+      "hex": "4453434f0000000100",
+      "payload_bytes": 1,
+      "classification": "source-derived expected behavior",
+      "source": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua"
+    },
+    {
+      "opcode": "strm",
+      "hex": "00427374726d73316d3f3f3f3f003000300000000000000000507f000001474554202f6d757369632f73747265616d2f6578616d706c6520485454502f312e300d0a0d0a",
+      "payload_bytes": 62,
+      "classification": "source-derived expected behavior",
+      "source": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua"
+    }
+  ],
+  "jive": [
+    {
+      "name": "Artists",
+      "request": [
+        "browselibrary",
+        "items",
+        0,
+        50,
+        "mode:artists",
+        "menu:1"
+      ],
+      "response": {
+        "count": 1,
+        "offset": 0,
+        "window": {
+          "text": "Artists"
+        },
+        "item_loop": [
+          {
+            "id": "12",
+            "text": "Example Artists",
+            "commonParams": {
+              "artist_id": "12"
+            }
+          }
+        ],
+        "base": {
+          "actions": {
+            "go": {
+              "cmd": [
+                "browselibrary",
+                "items"
+              ],
+              "params": {
+                "mode": "albums",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            },
+            "play": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "load",
+                "menu": 1
+              },
+              "itemsParams": "commonParams",
+              "nextWindow": "nowPlaying"
+            },
+            "add": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "add",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            }
+          }
+        }
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm"
+      ]
+    },
+    {
+      "name": "Albums",
+      "request": [
+        "browselibrary",
+        "items",
+        0,
+        50,
+        "mode:albums",
+        "menu:1"
+      ],
+      "response": {
+        "count": 1,
+        "offset": 0,
+        "window": {
+          "text": "Albums"
+        },
+        "item_loop": [
+          {
+            "id": "12",
+            "text": "Example Albums",
+            "commonParams": {
+              "album_id": "12"
+            }
+          }
+        ],
+        "base": {
+          "actions": {
+            "go": {
+              "cmd": [
+                "browselibrary",
+                "items"
+              ],
+              "params": {
+                "mode": "tracks",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            },
+            "play": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "load",
+                "menu": 1
+              },
+              "itemsParams": "commonParams",
+              "nextWindow": "nowPlaying"
+            },
+            "add": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "add",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            }
+          }
+        }
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm"
+      ]
+    },
+    {
+      "name": "Tracks",
+      "request": [
+        "browselibrary",
+        "items",
+        0,
+        50,
+        "mode:tracks",
+        "menu:1"
+      ],
+      "response": {
+        "count": 1,
+        "offset": 0,
+        "window": {
+          "text": "Tracks"
+        },
+        "item_loop": [
+          {
+            "id": "12",
+            "text": "Example Tracks",
+            "commonParams": {
+              "track_id": "12"
+            }
+          }
+        ],
+        "base": {
+          "actions": {
+            "go": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "load",
+                "menu": 1
+              },
+              "itemsParams": "commonParams",
+              "nextWindow": "nowPlaying"
+            },
+            "play": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "load",
+                "menu": 1
+              },
+              "itemsParams": "commonParams",
+              "nextWindow": "nowPlaying"
+            },
+            "add": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "add",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            }
+          }
+        }
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm"
+      ]
+    },
+    {
+      "name": "Genres",
+      "request": [
+        "browselibrary",
+        "items",
+        0,
+        50,
+        "mode:genres",
+        "menu:1"
+      ],
+      "response": {
+        "count": 1,
+        "offset": 0,
+        "window": {
+          "text": "Genres"
+        },
+        "item_loop": [
+          {
+            "id": "12",
+            "text": "Example Genres",
+            "commonParams": {
+              "genre_id": "12"
+            }
+          }
+        ],
+        "base": {
+          "actions": {
+            "go": {
+              "cmd": [
+                "browselibrary",
+                "items"
+              ],
+              "params": {
+                "mode": "artists",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            },
+            "play": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "load",
+                "menu": 1
+              },
+              "itemsParams": "commonParams",
+              "nextWindow": "nowPlaying"
+            },
+            "add": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "add",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            }
+          }
+        }
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm"
+      ]
+    },
+    {
+      "name": "Music Folder",
+      "request": [
+        "browselibrary",
+        "items",
+        0,
+        50,
+        "mode:bmf",
+        "menu:1"
+      ],
+      "response": {
+        "count": 1,
+        "offset": 0,
+        "window": {
+          "text": "Music Folder"
+        },
+        "item_loop": [
+          {
+            "id": "12",
+            "text": "Example Music Folder",
+            "commonParams": {
+              "folder_id": "12"
+            }
+          }
+        ],
+        "base": {
+          "actions": {
+            "go": {
+              "cmd": [
+                "browselibrary",
+                "items"
+              ],
+              "params": {
+                "mode": "bmf",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            },
+            "play": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "load",
+                "menu": 1
+              },
+              "itemsParams": "commonParams",
+              "nextWindow": "nowPlaying"
+            },
+            "add": {
+              "cmd": [
+                "playlistcontrol"
+              ],
+              "params": {
+                "cmd": "add",
+                "menu": 1
+              },
+              "itemsParams": "commonParams"
+            }
+          }
+        }
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm"
+      ]
+    },
+    {
+      "name": "My Music node",
+      "request": [
+        "menu",
+        0,
+        100
+      ],
+      "response": {
+        "id": "myMusicAlbums",
+        "node": "myMusic",
+        "text": "Albums",
+        "weight": 20,
+        "actions": {
+          "go": {
+            "cmd": [
+              "browselibrary",
+              "items"
+            ],
+            "params": {
+              "menu": 1,
+              "mode": "albums"
+            }
+          }
+        }
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm"
+      ]
+    },
+    {
+      "name": "Player playlist status",
+      "request": [
+        "status",
+        0,
+        50,
+        "tags:adKl"
+      ],
+      "response": {
+        "mode": "play",
+        "time": 1.234,
+        "duration": 200,
+        "playlist_cur_index": 0,
+        "playlist_tracks": 1,
+        "playlist_loop": [
+          {
+            "id": 34,
+            "title": "Example Track",
+            "duration": 200
+          }
+        ],
+        "playlist repeat": 0,
+        "playlist shuffle": 0
+      },
+      "classification": "source-derived expected behavior",
+      "sources": [
+        ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Queries.pm"
+      ]
+    }
+  ]
+}

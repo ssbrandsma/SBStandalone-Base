@@ -1,0 +1,634 @@
+{
+  "kind": "Observed disposable native host fixture responses, not device traffic",
+  "tracks": 1000,
+  "examples": [
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "1",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "menu",
+                0,
+                100,
+                "direct:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "1",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "1",
+          "channel": "/example/reply",
+          "data": {
+            "count": 6,
+            "offset": 0,
+            "item_loop": [
+              {
+                "id": "settingsAlarm",
+                "node": "settings",
+                "text": "Alarm Clock",
+                "weight": 29,
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "alarmsettings"
+                    ],
+                    "player": 0
+                  }
+                }
+              },
+              {
+                "id": "settingsSleep",
+                "node": "settings",
+                "text": "Sleep",
+                "weight": 65,
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "sleepsettings"
+                    ],
+                    "player": 0
+                  }
+                }
+              },
+              {
+                "id": "myMusicArtists",
+                "node": "myMusic",
+                "text": "Artists",
+                "weight": 10,
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "browselibrary",
+                      "items"
+                    ],
+                    "params": {
+                      "menu": 1,
+                      "mode": "artists"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "myMusicAlbums",
+                "node": "myMusic",
+                "text": "Albums",
+                "weight": 20,
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "browselibrary",
+                      "items"
+                    ],
+                    "params": {
+                      "menu": 1,
+                      "mode": "albums"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "myMusicGenres",
+                "node": "myMusic",
+                "text": "Genres",
+                "weight": 30,
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "browselibrary",
+                      "items"
+                    ],
+                    "params": {
+                      "menu": 1,
+                      "mode": "genres"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "myMusicMusicFolder",
+                "node": "myMusic",
+                "text": "Music Folder",
+                "weight": 70,
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "browselibrary",
+                      "items"
+                    ],
+                    "params": {
+                      "menu": 1,
+                      "mode": "bmf"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "2",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "browselibrary",
+                "items",
+                0,
+                2,
+                "mode:artists",
+                "menu:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "2",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "2",
+          "channel": "/example/reply",
+          "data": {
+            "count": 62,
+            "offset": 0,
+            "playlist_timestamp": 4,
+            "library_revision": 4,
+            "media_generation": 1,
+            "window": {
+              "text": "Artists"
+            },
+            "base": {
+              "actions": {
+                "go": {
+                  "cmd": [
+                    "browselibrary",
+                    "items"
+                  ],
+                  "itemsParams": "commonParams",
+                  "params": {
+                    "menu": 1,
+                    "mode": "albums"
+                  }
+                }
+              }
+            },
+            "item_loop": [
+              {
+                "id": "56",
+                "text": "Album Artist 00",
+                "name2": "",
+                "year": 0,
+                "commonParams": {
+                  "artist_id": "56"
+                }
+              },
+              {
+                "id": "13",
+                "text": "Album Artist 01",
+                "name2": "",
+                "year": 0,
+                "commonParams": {
+                  "artist_id": "13"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "3",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "browselibrary",
+                "items",
+                0,
+                2,
+                "mode:albums",
+                "menu:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "3",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "3",
+          "channel": "/example/reply",
+          "data": {
+            "count": 100,
+            "offset": 0,
+            "playlist_timestamp": 4,
+            "library_revision": 4,
+            "media_generation": 1,
+            "window": {
+              "text": "Albums"
+            },
+            "base": {
+              "actions": {
+                "go": {
+                  "cmd": [
+                    "browselibrary",
+                    "items"
+                  ],
+                  "itemsParams": "commonParams",
+                  "params": {
+                    "menu": 1,
+                    "mode": "tracks"
+                  }
+                }
+              }
+            },
+            "item_loop": [
+              {
+                "id": "1",
+                "text": "Album 00",
+                "name2": "Various Artists",
+                "year": 2000,
+                "commonParams": {
+                  "album_id": "1"
+                }
+              },
+              {
+                "id": "8",
+                "text": "Album 00",
+                "name2": "Album Artist 07",
+                "year": 2007,
+                "commonParams": {
+                  "album_id": "8"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "4",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "browselibrary",
+                "items",
+                7,
+                3,
+                "mode:tracks",
+                "album_id:1",
+                "menu:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "4",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "4",
+          "channel": "/example/reply",
+          "data": {
+            "count": 10,
+            "offset": 7,
+            "playlist_timestamp": 4,
+            "library_revision": 4,
+            "media_generation": 1,
+            "window": {
+              "text": "Tracks"
+            },
+            "base": {
+              "actions": {}
+            },
+            "item_loop": [
+              {
+                "id": "8",
+                "text": "Café 🎵",
+                "name2": "Album 00",
+                "action": "none",
+                "style": "itemNoAction",
+                "track_id": "8",
+                "artist": "Artist 07; Guest",
+                "album": "Album 00",
+                "disc": 2,
+                "tracknum": 3,
+                "year": 2000,
+                "duration": 180.007
+              },
+              {
+                "id": "9",
+                "text": "Quote \" and slash \\",
+                "name2": "Album 00",
+                "action": "none",
+                "style": "itemNoAction",
+                "track_id": "9",
+                "artist": "Artist 08",
+                "album": "Album 00",
+                "disc": 2,
+                "tracknum": 4,
+                "year": 2000,
+                "duration": 180.008
+              },
+              {
+                "id": "10",
+                "text": "Track 00009",
+                "name2": "Album 00",
+                "action": "none",
+                "style": "itemNoAction",
+                "track_id": "10",
+                "artist": "Artist 09",
+                "album": "Album 00",
+                "disc": 2,
+                "tracknum": 5,
+                "year": 2000,
+                "duration": 180.009
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "5",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "browselibrary",
+                "items",
+                0,
+                2,
+                "mode:genres",
+                "menu:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "5",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "5",
+          "channel": "/example/reply",
+          "data": {
+            "count": 8,
+            "offset": 0,
+            "playlist_timestamp": 4,
+            "library_revision": 4,
+            "media_generation": 1,
+            "window": {
+              "text": "Genres"
+            },
+            "base": {
+              "actions": {
+                "go": {
+                  "cmd": [
+                    "browselibrary",
+                    "items"
+                  ],
+                  "itemsParams": "commonParams",
+                  "params": {
+                    "menu": 1,
+                    "mode": "artists"
+                  }
+                }
+              }
+            },
+            "item_loop": [
+              {
+                "id": "1",
+                "text": "Genre 0",
+                "name2": "",
+                "year": 0,
+                "commonParams": {
+                  "genre_id": "1"
+                }
+              },
+              {
+                "id": "2",
+                "text": "Genre 1",
+                "name2": "",
+                "year": 0,
+                "commonParams": {
+                  "genre_id": "2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "6",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "browselibrary",
+                "items",
+                0,
+                2,
+                "mode:bmf",
+                "menu:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "6",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "6",
+          "channel": "/example/reply",
+          "data": {
+            "count": 100,
+            "offset": 0,
+            "playlist_timestamp": 4,
+            "library_revision": 4,
+            "media_generation": 1,
+            "window": {
+              "text": "Music Folder"
+            },
+            "base": {
+              "actions": {}
+            },
+            "item_loop": [
+              {
+                "id": "2",
+                "text": "folder00000",
+                "name2": "",
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "browselibrary",
+                      "items"
+                    ],
+                    "params": {
+                      "menu": 1,
+                      "mode": "bmf",
+                      "folder_id": "2"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "5",
+                "text": "folder00001",
+                "name2": "",
+                "actions": {
+                  "go": {
+                    "cmd": [
+                      "browselibrary",
+                      "items"
+                    ],
+                    "params": {
+                      "menu": 1,
+                      "mode": "bmf",
+                      "folder_id": "5"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "clientId": "example",
+          "id": "7",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "info",
+                "total",
+                "songs",
+                "?"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "7",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "7",
+          "channel": "/example/reply",
+          "data": {
+            "_songs": 1000,
+            "library_revision": 4,
+            "online": 1
+          }
+        }
+      ]
+    },
+    {
+      "request": [
+        {
+          "channel": "/slim/request",
+          "id": "offline",
+          "data": {
+            "request": [
+              "02:00:00:00:00:01",
+              [
+                "browselibrary",
+                "items",
+                0,
+                2,
+                "mode:albums",
+                "menu:1"
+              ]
+            ],
+            "response": "/example/reply"
+          }
+        }
+      ],
+      "response": [
+        {
+          "id": "offline",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "offline",
+          "channel": "/example/reply",
+          "data": {
+            "count": 0,
+            "offset": 0,
+            "item_loop": [],
+            "error": "library_offline"
+          }
+        }
+      ]
+    }
+  ]
+}

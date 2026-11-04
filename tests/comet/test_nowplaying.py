@@ -20,7 +20,7 @@ def verify_discovery_and_slimproto():
     assert response.startswith(b"EVERS\x097.999.999")
 
     slim = socket.create_connection(("127.0.0.1", 3483), timeout=2)
-    payload = bytes([0, 0, 2, 0, 0, 0, 0, 1])
+    payload = bytes([7, 0, 2, 0, 0, 0, 0, 1]) + bytes(26) + b"ENModel=baby,mp3,flc,ogg"
     slim.sendall(b"HELO" + len(payload).to_bytes(4, "big") + payload)
     reply = slim.recv(64)
     slim.close()

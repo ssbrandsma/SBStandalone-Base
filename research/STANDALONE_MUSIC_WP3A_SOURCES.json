@@ -1,0 +1,2435 @@
+{
+  "date": "2026-11-02",
+  "head": "0a4b50e836446bdaf03804fe1a5477a139742243",
+  "scope": "WP3a disabled native foundation; host fixture/QEMU only, no device/sibling edits",
+  "inputs": [
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_DIAGRAMS.md",
+      "sha256": "279a54896c48de7e523c36f561f324e33d02384cf40dd515c75ad3f2f753ca5e",
+      "bytes": 6895
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_EVIDENCE.md",
+      "sha256": "25a1ce1ddde78f0d734db8a4498a94316d2e7f0fd7949f671d4abc19aae5ac4c",
+      "bytes": 28030
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_GAPS.md",
+      "sha256": "69a46983463e83b84efa340dc88983245fd3da4ceac3bb490a24db278177bb0f",
+      "bytes": 10072
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_PROTOCOL.md",
+      "sha256": "20b96f0db1889d53cc8fa33764f84f3083a188ef0d0ffbfda321b42f766d03ae",
+      "bytes": 17455
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_REPORT.md",
+      "sha256": "ae2b3f537fadf9087ccab7ffe917a614906bef3ae5af39fff9ec433a45fe9353",
+      "bytes": 35067
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_ROADMAP.md",
+      "sha256": "dccc9e3a7039a33d1bae627bc1b5c8abc84e8768305dbce2f224e24192583327",
+      "bytes": 17797
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_CONTRACTS.md",
+      "sha256": "d9dba0af501417633783b78821f13bff3d9d6c1adeb7708945e437a232de2439",
+      "bytes": 10589
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_EVIDENCE.md",
+      "sha256": "a259f21e45a1bf2b5980b64b5fe6c7c2ea9c2e677817189d6a35a8dc92f9340a",
+      "bytes": 11147
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_PARSER_EVALUATION.md",
+      "sha256": "c470faa99c5b6980640ef197f7bc519e865310a000e3f0c1bab3afabdad26697",
+      "bytes": 9003
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_PROTOCOL_FIXTURES.md",
+      "sha256": "29d0053d61796922c4aeab517464c59bb3ff3dc9aa1561d1cb9b0baad9dfc420",
+      "bytes": 7041
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_REPORT.md",
+      "sha256": "64c120e2f970ea71d7df7e078e682339886f9bc4836ef8a2cadd5e95a5a05628",
+      "bytes": 9447
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_TEST_RESULTS.md",
+      "sha256": "4145db5ec3ae7456c4a391d815b903595cfb68fc1d3d2744631340f4427cf437",
+      "bytes": 7999
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_EVIDENCE.md",
+      "sha256": "3f868d310df9ff688039150a9268159db3fdac0d8d513e95cdc3d2514e9654ce",
+      "bytes": 9477
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_PERFORMANCE.md",
+      "sha256": "46aaebed06a48faa8f7f5bf46acdcdf3011d419a233ac00be74ebc51bf2f0264",
+      "bytes": 6379
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_REPORT.md",
+      "sha256": "7373ba4c2a179e4e76a4eac9218d08aeb2873614807fa0ceddf373297a20efd0",
+      "bytes": 7893
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_SCHEMA.md",
+      "sha256": "f5f2accb4434f5fc5583a423f4fa972325c501f6b95007c8eea5e67a79a65cb5",
+      "bytes": 11067
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_TEST_RESULTS.md",
+      "sha256": "416572dfba1e02d5420f09c239bd32348db215ea58cff97debc2a0df66e190fe",
+      "bytes": 6440
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_EVIDENCE.md",
+      "sha256": "85369671414a584f188796f717646a5c750fa34ef86d16e448354416fa0d0042",
+      "bytes": 5813
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_METADATA_FORMATS.md",
+      "sha256": "c015bd69920d6c6f40d5223a9d814ef4fa2eb33359cfa3df679b55eb6d89c1c4",
+      "bytes": 7736
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_PERFORMANCE.md",
+      "sha256": "5fcb885fa4f762bba21ba54c14c94a8a83bdabe7774a577c9c090c5fe5e88c65",
+      "bytes": 6976
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_REPORT.md",
+      "sha256": "406e117c9eb795e312ce1bf3fe368f45d05134c7560de14724bf1405f183e9c3",
+      "bytes": 8360
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_SCANNER_DESIGN.md",
+      "sha256": "623a99971e28d276854950b5b9f4277fae02d9820c435e69c27ecb740b2db178",
+      "bytes": 12501
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_TEST_RESULTS.md",
+      "sha256": "634f1d4aa0f6a2a972f213005247de2098dea06d373edee54013ddc447f77881",
+      "bytes": 7748
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_FILESYSTEM_COMPATIBILITY.md",
+      "sha256": "9947017564340b05c689d6a67c9554d88aca428d546b774a39b6e032e502e95e",
+      "bytes": 7447
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_FIRMWARE_INTEGRATION.md",
+      "sha256": "e555ed3aff01568726c0d8ef934974d1e6a3fef0d79f936de67307405cbe5868",
+      "bytes": 8315
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_REPORT.md",
+      "sha256": "5ff869e6bebe133196f9833acbe046ad7492bd638daa4e080c78d54267063e1c",
+      "bytes": 7408
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_STORAGE_CONTRACT.md",
+      "sha256": "41dd8210e9e6f19040f9efa39458145a1111d66ad3f57f79176ee25b8b610ea9",
+      "bytes": 12527
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_TEST_RESULTS.md",
+      "sha256": "7440784d2d2e4abff14cfc89be5a3759d4868a6d651d91338d8f2064496000d3",
+      "bytes": 10062
+    },
+    {
+      "path": "native/sbbase/src/main.c",
+      "sha256": "5c9d251945a5f07a1012537e1ebae3ff3a2b4c6e1fe4853947da7f81bdba2a07",
+      "bytes": 51685
+    },
+    {
+      "path": "native/sbbase/src/protocol.c",
+      "sha256": "398c2386f88e7f8051811959b5c9abf0dabe34fd7803fa9af4e68c294aeb599a",
+      "bytes": 4863
+    }
+  ],
+  "files": [
+    {
+      "path": "native/sbbase/include/slim_controller.h",
+      "bytes": 5826,
+      "sha256": "798dbc6c02c2424fbd9bbea5d43cd42c05cf9ee649027016939d1058115556fe",
+      "anchors": [
+        {
+          "line": 2,
+          "text": "#define SB_SLIM_CONTROLLER_H"
+        },
+        {
+          "line": 8,
+          "text": "#define SB_SLIM_CAPS_MAX 1024"
+        },
+        {
+          "line": 9,
+          "text": "#define SB_SLIM_HTTP_MAX 4096"
+        },
+        {
+          "line": 10,
+          "text": "#define SB_SLIM_CODEC_MP3 1u"
+        },
+        {
+          "line": 11,
+          "text": "#define SB_SLIM_CODEC_FLAC 2u"
+        },
+        {
+          "line": 12,
+          "text": "#define SB_SLIM_CODEC_VORBIS 4u"
+        },
+        {
+          "line": 14,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 24,
+          "text": "typedef enum {"
+        },
+        {
+          "line": 32,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 45,
+          "text": "int sb_slim_parse(const char opcode[4],"
+        },
+        {
+          "line": 51,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 58,
+          "text": "size_t sb_slim_strm(char command,"
+        },
+        {
+          "line": 63,
+          "text": "size_t sb_slim_audg(uint32_t left,"
+        },
+        {
+          "line": 68,
+          "text": "size_t sb_slim_aude(unsigned enabled, unsigned char *, size_t);"
+        },
+        {
+          "line": 69,
+          "text": "size_t sb_slim_cont(unsigned char *, size_t); /* no ICY/loop/GUID */"
+        },
+        {
+          "line": 71,
+          "text": "typedef enum {"
+        },
+        {
+          "line": 86,
+          "text": "typedef enum {"
+        },
+        {
+          "line": 96,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 111,
+          "text": "int sb_transport_init(sb_transport *, int enabled);"
+        },
+        {
+          "line": 112,
+          "text": "int sb_transport_attach(sb_transport *,"
+        },
+        {
+          "line": 115,
+          "text": "void sb_transport_detach(sb_transport *, uint64_t connection);"
+        },
+        {
+          "line": 116,
+          "text": "int sb_transport_quiescent(sb_transport *,"
+        },
+        {
+          "line": 119,
+          "text": "int sb_transport_prepare(sb_transport *,"
+        },
+        {
+          "line": 123,
+          "text": "int sb_transport_command(sb_transport *,"
+        },
+        {
+          "line": 127,
+          "text": "int sb_transport_stopped(sb_transport *,"
+        },
+        {
+          "line": 130,
+          "text": "int sb_transport_event(sb_transport *,"
+        },
+        {
+          "line": 135,
+          "text": "int sb_transport_tick(sb_transport *, uint64_t now);"
+        },
+        {
+          "line": 139,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 145,
+          "text": "int sb_owner_init(sb_physical_owner *, int enabled);"
+        },
+        {
+          "line": 146,
+          "text": "int sb_owner_register(sb_physical_owner *,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/slim_controller.c",
+      "bytes": 21717,
+      "sha256": "be8deea76335e0d2b4c5935a748cb2542c4bab60707ff23d61991229b6d20b4d",
+      "anchors": [
+        {
+          "line": 17,
+          "text": "static void put32(unsigned char *p, uint32_t n)"
+        },
+        {
+          "line": 25,
+          "text": "static int field(char *out, size_t cap, const char *p, size_t n)"
+        },
+        {
+          "line": 35,
+          "text": "static int hello(const unsigned char *p, size_t n, sb_slim_hello *h)"
+        },
+        {
+          "line": 93,
+          "text": "int sb_slim_parse(const char op[4],"
+        },
+        {
+          "line": 164,
+          "text": "size_t sb_slim_strm(char cmd,"
+        },
+        {
+          "line": 212,
+          "text": "size_t sb_slim_audg("
+        },
+        {
+          "line": 226,
+          "text": "size_t sb_slim_aude(unsigned enabled, unsigned char *out, size_t cap)"
+        },
+        {
+          "line": 235,
+          "text": "size_t sb_slim_cont(unsigned char *out, size_t cap)"
+        },
+        {
+          "line": 241,
+          "text": "static int id_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)"
+        },
+        {
+          "line": 251,
+          "text": "static void"
+        },
+        {
+          "line": 263,
+          "text": "int sb_transport_init(sb_transport *t, int enabled)"
+        },
+        {
+          "line": 273,
+          "text": "int sb_transport_attach(sb_transport *t, uint64_t c, const sb_slim_hello *h)"
+        },
+        {
+          "line": 293,
+          "text": "void sb_transport_detach(sb_transport *t, uint64_t c)"
+        },
+        {
+          "line": 305,
+          "text": "int sb_transport_quiescent(sb_transport *t, uint64_t c, uint64_t owner)"
+        },
+        {
+          "line": 317,
+          "text": "int sb_transport_prepare(sb_transport *t,"
+        },
+        {
+          "line": 349,
+          "text": "int sb_transport_command(sb_transport *t,"
+        },
+        {
+          "line": 373,
+          "text": "int sb_transport_event(sb_transport *t,"
+        },
+        {
+          "line": 525,
+          "text": "int sb_transport_stopped(sb_transport *t,"
+        },
+        {
+          "line": 537,
+          "text": "int sb_transport_tick(sb_transport *t, uint64_t now)"
+        },
+        {
+          "line": 546,
+          "text": "static int owner_valid(sb_music_owner o)"
+        },
+        {
+          "line": 551,
+          "text": "static int advance(sb_physical_owner *o)"
+        },
+        {
+          "line": 560,
+          "text": "int sb_owner_init(sb_physical_owner *o, int enabled)"
+        },
+        {
+          "line": 571,
+          "text": "int sb_owner_register(sb_physical_owner *o,"
+        },
+        {
+          "line": 584,
+          "text": "int sb_owner_connect(sb_physical_owner *o, uint64_t c, int idle)"
+        },
+        {
+          "line": 598,
+          "text": "void sb_owner_disconnect(sb_physical_owner *o, uint64_t c)"
+        },
+        {
+          "line": 610,
+          "text": "int sb_owner_request(sb_physical_owner *o,"
+        },
+        {
+          "line": 645,
+          "text": "int sb_owner_ack(sb_physical_owner *o,"
+        },
+        {
+          "line": 681,
+          "text": "int sb_owner_release(sb_physical_owner *o,"
+        },
+        {
+          "line": 703,
+          "text": "int sb_owner_crashed(sb_physical_owner *o, sb_music_owner who, uint64_t adapter)"
+        },
+        {
+          "line": 723,
+          "text": "int sb_owner_tick(sb_physical_owner *o, uint64_t now)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/include/output_queue.h",
+      "bytes": 1271,
+      "sha256": "04b170394692589d77f541687fd17071ef7ec48f40b15a7c3987c533b750a687",
+      "anchors": [
+        {
+          "line": 2,
+          "text": "#define SB_OUTPUT_QUEUE_H"
+        },
+        {
+          "line": 6,
+          "text": "#define SB_OUTPUT_CAPACITY 65536u"
+        },
+        {
+          "line": 7,
+          "text": "#define SB_OUTPUT_BUDGET 16384u"
+        },
+        {
+          "line": 8,
+          "text": "#define SB_OUTPUT_TIMEOUT_MS 15000u"
+        },
+        {
+          "line": 10,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 18,
+          "text": "int sb_output_enqueue("
+        },
+        {
+          "line": 21,
+          "text": "int sb_output_flush(sb_output *, int fd, uint64_t now_ms);"
+        },
+        {
+          "line": 22,
+          "text": "int sb_output_expired(const sb_output *, uint64_t now_ms);"
+        },
+        {
+          "line": 23,
+          "text": "void sb_output_clear(sb_output *);"
+        },
+        {
+          "line": 27,
+          "text": "int sb_output_scope(sb_output *,"
+        },
+        {
+          "line": 31,
+          "text": "int sb_output_scoped(sb_output *,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/output_queue.c",
+      "bytes": 2614,
+      "sha256": "cebbefa99ecb8381c040116dcc14c75867df37d003e05a7329d0e9be048249bc",
+      "anchors": [
+        {
+          "line": 8,
+          "text": "void sb_output_clear(sb_output *q)"
+        },
+        {
+          "line": 16,
+          "text": "int sb_output_expired(const sb_output *q, uint64_t now)"
+        },
+        {
+          "line": 22,
+          "text": "int sb_output_flush(sb_output *q, int fd, uint64_t now)"
+        },
+        {
+          "line": 54,
+          "text": "int sb_output_enqueue("
+        },
+        {
+          "line": 90,
+          "text": "int sb_output_scope(sb_output *q, uint64_t c, uint64_t o, uint64_t e)"
+        },
+        {
+          "line": 100,
+          "text": "int sb_output_scoped(sb_output *q,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/main.c",
+      "bytes": 51038,
+      "sha256": "b736777817588ce6fbec0ea28bdc655dc1b52c4e72bb6738c15ac9da72f90886",
+      "anchors": [
+        {
+          "line": 57,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 69,
+          "text": "static int player_connected;"
+        },
+        {
+          "line": 70,
+          "text": "static int test_nowplaying;"
+        },
+        {
+          "line": 85,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 98,
+          "text": "static size_t catalog_entry_count;"
+        },
+        {
+          "line": 105,
+          "text": "static int"
+        },
+        {
+          "line": 112,
+          "text": "static void stop(int sig)"
+        },
+        {
+          "line": 122,
+          "text": "static void reload(int sig)"
+        },
+        {
+          "line": 133,
+          "text": "static int nonblock(int fd)"
+        },
+        {
+          "line": 145,
+          "text": "static int listener(int type, unsigned port)"
+        },
+        {
+          "line": 174,
+          "text": "static void close_client(client *c)"
+        },
+        {
+          "line": 194,
+          "text": "static int send_data(client *c, const char *data, size_t size)"
+        },
+        {
+          "line": 212,
+          "text": "static void"
+        },
+        {
+          "line": 242,
+          "text": "static void stream_start(client *c, const char *body)"
+        },
+        {
+          "line": 267,
+          "text": "static void stream_heartbeat(client *c)"
+        },
+        {
+          "line": 278,
+          "text": "static void stream_event(client *c, const char *body)"
+        },
+        {
+          "line": 293,
+          "text": "static void player_status_json(char *out, size_t cap)"
+        },
+        {
+          "line": 309,
+          "text": "static int split_playerstatus_path(const char *path,"
+        },
+        {
+          "line": 350,
+          "text": "static void publish_playerstatus(void)"
+        },
+        {
+          "line": 395,
+          "text": "static void register_playerstatus(const char *path)"
+        },
+        {
+          "line": 421,
+          "text": "static void firmware_payload(const char *version,"
+        },
+        {
+          "line": 439,
+          "text": "static void firmware_parameter(const char *message,"
+        },
+        {
+          "line": 460,
+          "text": "static void firmware_subscribe(const char *path,"
+        },
+        {
+          "line": 500,
+          "text": "static void firmware_publish(const char *reconnected)"
+        },
+        {
+          "line": 533,
+          "text": "static void unregister_playerstatus(const char *body)"
+        },
+        {
+          "line": 558,
+          "text": "static void publish_player(void)"
+        },
+        {
+          "line": 604,
+          "text": "static void token(char out[9])"
+        },
+        {
+          "line": 616,
+          "text": "static void json_unescape_slashes(char *s)"
+        },
+        {
+          "line": 632,
+          "text": "static int valid_player_id(const char *id)"
+        },
+        {
+          "line": 657,
+          "text": "static int json_string(const char *body, const char *key, char *out, size_t cap)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/protocol.c",
+      "bytes": 4863,
+      "sha256": "398c2386f88e7f8051811959b5c9abf0dabe34fd7803fa9af4e68c294aeb599a",
+      "anchors": [
+        {
+          "line": 44,
+          "text": "size_t sb_discovery_response(const unsigned char *r,"
+        },
+        {
+          "line": 103,
+          "text": "int sb_parse_client_frame(const unsigned char *d,"
+        },
+        {
+          "line": 136,
+          "text": "size_t sb_server_frame("
+        },
+        {
+          "line": 151,
+          "text": "* before this function by catalog.c; this routine deliberately accepts no"
+        },
+        {
+          "line": 159,
+          "text": "int sb_catalog_valid(const char *j, size_t n)"
+        }
+      ]
+    },
+    {
+      "path": "native/common/music_contracts.h",
+      "bytes": 6091,
+      "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d",
+      "anchors": [
+        {
+          "line": 2,
+          "text": "#define SB_MUSIC_CONTRACTS_H"
+        },
+        {
+          "line": 7,
+          "text": "#define SB_MUSIC_ENABLED 0"
+        },
+        {
+          "line": 8,
+          "text": "#define SB_MUSIC_PAGE_MAX 50u"
+        },
+        {
+          "line": 9,
+          "text": "#define SB_MUSIC_QUEUE_MAX 10000u"
+        },
+        {
+          "line": 10,
+          "text": "#define SB_MUSIC_RESOURCE_MAX 8u"
+        },
+        {
+          "line": 11,
+          "text": "#define SB_MUSIC_QUERY_BYTES_MAX 16384u"
+        },
+        {
+          "line": 12,
+          "text": "#define SB_MUSIC_TOKEN_BYTES 32u /* entropy bytes, not an encoded string */"
+        },
+        {
+          "line": 14,
+          "text": "typedef struct { unsigned char bytes[16]; } sb_music_source_id;"
+        },
+        {
+          "line": 15,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 20,
+          "text": "typedef struct { sb_music_source_id source; uint64_t track_id; } sb_music_track_id;"
+        },
+        {
+          "line": 21,
+          "text": "typedef enum { SB_OWNER_NONE, SB_OWNER_RADIO, SB_OWNER_SPOTIFY,"
+        },
+        {
+          "line": 23,
+          "text": "typedef enum { SB_YIELD_IDLE, SB_YIELD_REQUESTED, SB_YIELD_ACKNOWLEDGED,"
+        },
+        {
+          "line": 25,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 31,
+          "text": "typedef enum { SB_STREAM_NEW, SB_STREAM_CONNECTED, SB_STREAM_DECODER_READY,"
+        },
+        {
+          "line": 34,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 38,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 44,
+          "text": "typedef enum { SB_EVENT_CONNECTED, SB_EVENT_DECODER_READY, SB_EVENT_AUDIBLE,"
+        },
+        {
+          "line": 46,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 51,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 56,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 60,
+          "text": "typedef enum { SB_QUERY_ARTISTS, SB_QUERY_ALBUMS, SB_QUERY_TRACKS,"
+        },
+        {
+          "line": 62,
+          "text": "typedef enum { SB_SORT_NAME, SB_SORT_ALBUM_TRACK, SB_SORT_RECENT } sb_music_sort;"
+        },
+        {
+          "line": 63,
+          "text": "typedef enum { SB_SEARCH_ANY, SB_SEARCH_TITLE, SB_SEARCH_ARTIST, SB_SEARCH_ALBUM } sb_music_search_field;"
+        },
+        {
+          "line": 64,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 73,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 78,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 83,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 89,
+          "text": "typedef enum { SB_RESOURCE_AUDIO, SB_RESOURCE_ARTWORK } sb_music_resource_kind;"
+        },
+        {
+          "line": 91,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 100,
+          "text": "typedef struct { uint64_t first, length; } sb_music_byte_range;"
+        }
+      ]
+    },
+    {
+      "path": "native/common/music_contracts.c",
+      "bytes": 4193,
+      "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6",
+      "anchors": [
+        {
+          "line": 4,
+          "text": "int sb_music_source_equal(const sb_music_source_id *a, const sb_music_source_id *b)"
+        },
+        {
+          "line": 9,
+          "text": "int sb_music_media_current(const sb_music_media *a, const sb_music_media *b)"
+        },
+        {
+          "line": 14,
+          "text": "int sb_music_yield_ack(sb_music_ownership *o, uint64_t request, uint64_t generation,"
+        },
+        {
+          "line": 25,
+          "text": "int sb_music_can_commit_owner(const sb_music_ownership *o, uint64_t now)"
+        },
+        {
+          "line": 31,
+          "text": "static int stream_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)"
+        },
+        {
+          "line": 38,
+          "text": "int sb_music_stream_event(sb_music_stream_guard *s, const sb_music_stream_id *id, sb_music_event event)"
+        },
+        {
+          "line": 51,
+          "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *s, const sb_music_queue_update *u)"
+        },
+        {
+          "line": 58,
+          "text": "int sb_music_query_valid(const sb_music_query *q)"
+        },
+        {
+          "line": 66,
+          "text": "int sb_music_resource_current(const sb_music_resource *r, const sb_music_media *m,"
+        },
+        {
+          "line": 78,
+          "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *r)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/nowplaying.c",
+      "bytes": 59745,
+      "sha256": "30eb6c674b92043d9a014c71b33f34fc1e7fc901349b647255b474d82e54a54b",
+      "anchors": [
+        {
+          "line": 24,
+          "text": "typedef enum { J_UNDEF, J_OBJECT, J_ARRAY, J_STRING, J_PRIMITIVE } jtype;"
+        },
+        {
+          "line": 26,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 31,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 43,
+          "text": "static int"
+        },
+        {
+          "line": 50,
+          "text": "uint64_t np_monotonic_ms(void)"
+        },
+        {
+          "line": 62,
+          "text": "static void reset_status(np_manager *m)"
+        },
+        {
+          "line": 93,
+          "text": "void np_destroy(np_manager *m)"
+        },
+        {
+          "line": 113,
+          "text": "uint64_t np_position(np_manager *m)"
+        },
+        {
+          "line": 131,
+          "text": "int np_expire(np_manager *m)"
+        },
+        {
+          "line": 147,
+          "text": "static int alloc_token(char out[NP_TOKEN_MAX])"
+        },
+        {
+          "line": 171,
+          "text": "static int parse_json(const char *js, size_t len, jtok *t, unsigned cap)"
+        },
+        {
+          "line": 263,
+          "text": "static int eq(const char *j, const jtok *t, const char *s)"
+        },
+        {
+          "line": 277,
+          "text": "static int subtree(jtok *t, int n, int i)"
+        },
+        {
+          "line": 295,
+          "text": "static int member(const char *j, jtok *t, int n, int obj, const char *key)"
+        },
+        {
+          "line": 316,
+          "text": "static int hex4(const char *s)"
+        },
+        {
+          "line": 342,
+          "text": "static size_t put_utf8(char *o, size_t cap, size_t n, unsigned v)"
+        },
+        {
+          "line": 377,
+          "text": "static int string_value(const char *j, const jtok *t, char *o, size_t cap)"
+        },
+        {
+          "line": 439,
+          "text": "static int boolean(const char *j, const jtok *t, int *d)"
+        },
+        {
+          "line": 462,
+          "text": "static int number(const char *j, const jtok *t, uint64_t *d)"
+        },
+        {
+          "line": 484,
+          "text": "static int valid_utf8(const char *s)"
+        },
+        {
+          "line": 516,
+          "text": "static size_t esc(char *o, size_t cap, const char *s)"
+        },
+        {
+          "line": 574,
+          "text": "int np_public_json(np_manager *m, char *out, size_t cap)"
+        },
+        {
+          "line": 621,
+          "text": "int np_playerstatus_json(np_manager *m, char *out, size_t cap)"
+        },
+        {
+          "line": 712,
+          "text": "static int getstr(const char *j,"
+        },
+        {
+          "line": 739,
+          "text": "static int"
+        },
+        {
+          "line": 756,
+          "text": "static int"
+        },
+        {
+          "line": 772,
+          "text": "static int has_member(const char *j, jtok *t, int n, int obj, const char *k)"
+        },
+        {
+          "line": 778,
+          "text": "static int metadata_uint(const char *j,"
+        },
+        {
+          "line": 794,
+          "text": "static int audio_read(const char *j,"
+        },
+        {
+          "line": 876,
+          "text": "static int station_read(const char *j, jtok *t, int n, np_station *station)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/include/nowplaying.h",
+      "bytes": 3467,
+      "sha256": "7de072f858667d6edac17234efd99ff43662de81b24669e387c794081509384c",
+      "anchors": [
+        {
+          "line": 15,
+          "text": "typedef enum {"
+        },
+        {
+          "line": 32,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 38,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 44,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 51,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 62,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 76,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 82,
+          "text": "typedef struct np_manager np_manager;"
+        },
+        {
+          "line": 85,
+          "text": "void np_destroy(np_manager *m);"
+        },
+        {
+          "line": 86,
+          "text": "uint64_t np_monotonic_ms(void);"
+        },
+        {
+          "line": 88,
+          "text": "uint64_t np_position(np_manager *m);"
+        },
+        {
+          "line": 89,
+          "text": "int np_expire(np_manager *m);"
+        },
+        {
+          "line": 90,
+          "text": "int np_demo(np_manager *m);"
+        },
+        {
+          "line": 91,
+          "text": "int np_demo_next(np_manager *m);"
+        },
+        {
+          "line": 92,
+          "text": "int np_playerstatus_json(np_manager *m, char *out, size_t cap);"
+        },
+        {
+          "line": 93,
+          "text": "int np_public_json(np_manager *m, char *out, size_t cap);"
+        },
+        {
+          "line": 95,
+          "text": "int np_lms_query_json("
+        },
+        {
+          "line": 98,
+          "text": "int np_lms_arguments(const char *json,"
+        },
+        {
+          "line": 107,
+          "text": "int np_api(np_manager *m,"
+        },
+        {
+          "line": 117,
+          "text": "int np_queue_command(np_manager *m, const char *command, int64_t value);"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/alarms.c",
+      "bytes": 28444,
+      "sha256": "b3908a1ef2758edde1ec5fe0d8ff0ea96c2efe50a509e7dbdbe0a4161dee235b",
+      "anchors": [
+        {
+          "line": 22,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 39,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 46,
+          "text": "static void emit(writer *w, const char *format, ...)"
+        },
+        {
+          "line": 62,
+          "text": "static int number(const char *s, long low, long high, long *value)"
+        },
+        {
+          "line": 87,
+          "text": "static int valid_source(const char *source)"
+        },
+        {
+          "line": 106,
+          "text": "static int persist(sb_alarms *a)"
+        },
+        {
+          "line": 191,
+          "text": "static void plan(sb_alarms *a, time_t now)"
+        },
+        {
+          "line": 334,
+          "text": "void sb_alarms_close(sb_alarms *a)"
+        },
+        {
+          "line": 341,
+          "text": "int sb_alarms_active(const sb_alarms *a)"
+        },
+        {
+          "line": 347,
+          "text": "int sb_alarms_prepare_restore(const char *path)"
+        },
+        {
+          "line": 369,
+          "text": "static void"
+        },
+        {
+          "line": 396,
+          "text": "int sb_alarms_tick(sb_alarms *a, time_t wall, uint64_t mono, int connected)"
+        },
+        {
+          "line": 468,
+          "text": "void sb_alarms_menu(char *out,"
+        },
+        {
+          "line": 492,
+          "text": "int sb_alarms_status(sb_alarms *a, char *json, size_t capacity, time_t now)"
+        },
+        {
+          "line": 543,
+          "text": "static void time_item(writer *w, const char *text, unsigned id, long seconds)"
+        },
+        {
+          "line": 562,
+          "text": "static void toggle(writer *w,"
+        },
+        {
+          "line": 589,
+          "text": "static void menu(sb_alarms *a, const char *command, alarm_entry *e, writer *w)"
+        },
+        {
+          "line": 758,
+          "text": "int sb_alarms_request(sb_alarms *a,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/src/sleep.c",
+      "bytes": 4119,
+      "sha256": "c083c1531d4155484c46eccca9f26c06e0624b0fcab75b949bfd125a4fd39725",
+      "anchors": [
+        {
+          "line": 13,
+          "text": "static uint64_t deadline;"
+        },
+        {
+          "line": 17,
+          "text": "int sb_sleep_cancel(void)"
+        },
+        {
+          "line": 26,
+          "text": "int sb_sleep_tick(uint64_t now, int connected)"
+        },
+        {
+          "line": 42,
+          "text": "int sb_sleep_status(char *json, size_t capacity, uint64_t now)"
+        },
+        {
+          "line": 65,
+          "text": "int sb_sleep_request(const char *json,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/CMakeLists.txt",
+      "bytes": 1033,
+      "sha256": "14c95d6cf90a9c4cb3e5448ea66938052bbe7739354b42d2d86f85414484285c",
+      "anchors": [
+        {
+          "line": 3,
+          "text": "add_executable(sbbase src/main.c src/protocol.c src/nowplaying.c src/alarms.c src/sleep.c src/lms_command.c src/output_queue.c src/slim_controller.c ../common/m"
+        },
+        {
+          "line": 17,
+          "text": "add_library(sbtransport STATIC src/slim_controller.c src/output_queue.c src/protocol.c ../common/music_contracts.c)"
+        }
+      ]
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "bytes": 20278,
+      "sha256": "89af6ebd08a43a4a1afaea8f2099047249d0a7884126209ec7cbd8f58c330153",
+      "anchors": [
+        {
+          "line": 1,
+          "text": "add_executable(test_protocol protocol/test_protocol.c ../native/sbbase/src/protocol.c)"
+        },
+        {
+          "line": 3,
+          "text": "add_test(NAME protocol COMMAND test_protocol)"
+        },
+        {
+          "line": 4,
+          "text": "add_executable(test_nowplaying nowplaying/test_nowplaying.c ../native/sbbase/src/nowplaying.c)"
+        },
+        {
+          "line": 6,
+          "text": "add_test(NAME nowplaying_unit COMMAND test_nowplaying)"
+        },
+        {
+          "line": 7,
+          "text": "add_executable(test_alarms alarms/test_alarms.c"
+        },
+        {
+          "line": 10,
+          "text": "add_test(NAME alarms_unit COMMAND test_alarms)"
+        },
+        {
+          "line": 11,
+          "text": "add_executable(test_sleep alarms/test_sleep.c ../native/sbbase/src/sleep.c ../native/sbbase/src/nowplaying.c)"
+        },
+        {
+          "line": 13,
+          "text": "add_test(NAME sleep_unit COMMAND test_sleep)"
+        },
+        {
+          "line": 34,
+          "text": "add_test(NAME squeezeplay_artwork_patch COMMAND sh"
+        },
+        {
+          "line": 37,
+          "text": "add_test(NAME storage COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/storage/test_storage.sh $<TARGET_FILE:sb-storage-helper>)"
+        },
+        {
+          "line": 38,
+          "text": "add_test(NAME storage_boothelper COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/storage/test_boothelper.sh ${CMAKE_SOURCE_DIR}/scripts/sbdata-boot.sh)"
+        },
+        {
+          "line": 39,
+          "text": "add_test(NAME extended_storage COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/storage/test_extended_storage.sh"
+        },
+        {
+          "line": 86,
+          "text": "add_test(NAME storage_updater COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/storage/test_updater.sh $<TARGET_FILE:sb-storage-updater>)"
+        },
+        {
+          "line": 87,
+          "text": "add_executable(test_remote_framebuffer remote/test_framebuffer.c ../native/sbwebserver/src/remote_framebuffer.c)"
+        },
+        {
+          "line": 89,
+          "text": "add_test(NAME remote_framebuffer COMMAND test_remote_framebuffer)"
+        },
+        {
+          "line": 215,
+          "text": "add_executable(test_music_transport music/test_transport.c)"
+        },
+        {
+          "line": 218,
+          "text": "add_test(NAME music_transport COMMAND test_music_transport)"
+        },
+        {
+          "line": 229,
+          "text": "add_executable(test_music_contracts music/test_contracts.c ../native/common/music_contracts.c ../native/sbbase/src/nowplaying.c)"
+        },
+        {
+          "line": 231,
+          "text": "add_test(NAME music_contracts COMMAND test_music_contracts)"
+        },
+        {
+          "line": 232,
+          "text": "add_executable(test_music_commands music/test_commands.c"
+        },
+        {
+          "line": 235,
+          "text": "add_test(NAME music_commands COMMAND test_music_commands)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build-arm.sh",
+      "bytes": 6295,
+      "sha256": "80858160f38192cfbd4b4e528a4e0f04f42bf2764a5e368843b6816e272391c7",
+      "anchors": []
+    },
+    {
+      "path": "scripts/build-transport-arm.sh",
+      "bytes": 1662,
+      "sha256": "8fad207a43fd2bd1a00b179f9293ebb0425b02ee165d5b278a6f3da5c8577e40",
+      "anchors": []
+    },
+    {
+      "path": "packaging/build-package.sh",
+      "bytes": 5640,
+      "sha256": "3f048fcdc5b3530a889744cc49379126d195276e396bd709e729a2ed25f0f1a6",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/test_transport.c",
+      "bytes": 18037,
+      "sha256": "62e4118e36c29ebd952d691c9b744ac714f541228e0a4c461c0038900c42edfa",
+      "anchors": [
+        {
+          "line": 15,
+          "text": "static uint64_t nanos(void)"
+        },
+        {
+          "line": 22,
+          "text": "static void put(unsigned char *p, uint32_t n)"
+        },
+        {
+          "line": 58,
+          "text": "static void parsing(void)"
+        },
+        {
+          "line": 153,
+          "text": "static void begin(sb_transport *t)"
+        },
+        {
+          "line": 164,
+          "text": "static int ev(sb_transport *t, const char *code, unsigned j)"
+        },
+        {
+          "line": 170,
+          "text": "static void transport(void)"
+        },
+        {
+          "line": 262,
+          "text": "static void setup_owner(sb_physical_owner *o, sb_music_owner first)"
+        },
+        {
+          "line": 271,
+          "text": "static void ownership(void)"
+        },
+        {
+          "line": 445,
+          "text": "static void outputs(void)"
+        },
+        {
+          "line": 487,
+          "text": "static void hex(const char *name, const unsigned char *p, size_t n)"
+        },
+        {
+          "line": 495,
+          "text": "static void wire(void)"
+        },
+        {
+          "line": 532,
+          "text": "int main(int argc, char **argv)"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/test_transport_wire.py",
+      "bytes": 2009,
+      "sha256": "bcd3ef3a09a3645a12f7a466b4cb581b28e8a2db10353596274a36d3e7e65356",
+      "anchors": [
+        {
+          "line": 8,
+          "text": "def frame(op, payload):"
+        },
+        {
+          "line": 11,
+          "text": "def strm(command, argument=0, start=False):"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/fixtures/protocol.json",
+      "bytes": 12262,
+      "sha256": "cf224d2758584e8b946ac2cd529e19e6f55a21f106aea2c1574bb9c998ae3d23",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/fixtures/transport.json",
+      "bytes": 1126,
+      "sha256": "e86e5f8c8fd92da7c133ad232c0f254dc27caa507b72ab2773275ebd2ffca1f8",
+      "anchors": []
+    },
+    {
+      "path": "tests/comet/socket_fault.c",
+      "bytes": 962,
+      "sha256": "4f9713eb2659327d5de52d28bd91fbdcbe37662c418038f1da203e3951ef4446",
+      "anchors": [
+        {
+          "line": 8,
+          "text": "int accept(int fd, struct sockaddr *address, socklen_t *length)"
+        },
+        {
+          "line": 19,
+          "text": "ssize_t send(int fd, const void *buffer, size_t length, int flags)"
+        }
+      ]
+    },
+    {
+      "path": "tests/comet/test_backpressure.py",
+      "bytes": 7549,
+      "sha256": "b813bc6787d07efc63de772d11af07540ce721498233d9b71d7d80cf8d876086",
+      "anchors": [
+        {
+          "line": 24,
+          "text": "def request(method, path, payload=None):"
+        },
+        {
+          "line": 30,
+          "text": "def comet(payload):"
+        },
+        {
+          "line": 33,
+          "text": "def open_stream(slow=False):"
+        },
+        {
+          "line": 48,
+          "text": "def process_info(pid):"
+        }
+      ]
+    },
+    {
+      "path": "tests/comet/test_nowplaying.py",
+      "bytes": 14619,
+      "sha256": "d8ef82dc9d0c74d1b07b290f777c0335562c773818fab81528074bfdb7471dee",
+      "anchors": [
+        {
+          "line": 14,
+          "text": "def verify_discovery_and_slimproto():"
+        },
+        {
+          "line": 30,
+          "text": "def post(payload, path=\"/cometd\"):"
+        },
+        {
+          "line": 41,
+          "text": "def api(method, path, payload=None):"
+        },
+        {
+          "line": 52,
+          "text": "def handshake():"
+        },
+        {
+          "line": 58,
+          "text": "class EventStream:"
+        },
+        {
+          "line": 118,
+          "text": "def subscribe(client_id):"
+        },
+        {
+          "line": 134,
+          "text": "def request_serverstatus(client_id):"
+        },
+        {
+          "line": 145,
+          "text": "def wait_ready():"
+        },
+        {
+          "line": 160,
+          "text": "def run_server(binary, demo):"
+        },
+        {
+          "line": 167,
+          "text": "def stop_server(process):"
+        }
+      ]
+    },
+    {
+      "path": "tests/comet/test_server_switch.py",
+      "bytes": 3478,
+      "sha256": "1138cdd9803c086f7cfc1b3c3490b411c0c9f08312eb4fb526ccea4c94753b3c",
+      "anchors": [
+        {
+          "line": 15,
+          "text": "def post(command, player=PLAYER, background=False):"
+        },
+        {
+          "line": 33,
+          "text": "def exact(sock, length):"
+        },
+        {
+          "line": 42,
+          "text": "def frame(sock):"
+        }
+      ]
+    },
+    {
+      "path": "tests/alarms/test_comet.py",
+      "bytes": 3862,
+      "sha256": "36806f33639130e0ddad5f778a59cf0586edf4edfe06d482560ee062a4127fc3",
+      "anchors": [
+        {
+          "line": 17,
+          "text": "def command(*arguments, player=PLAYER):"
+        },
+        {
+          "line": 29,
+          "text": "def validate_menu(menu):"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/net/SlimProto.lua",
+      "bytes": 17751,
+      "sha256": "84797e840d274bc23384048655eb6084817a5b0eab3150d9f1aafa1dc34c4c00",
+      "anchors": [
+        {
+          "line": 60,
+          "text": "local function packNumber(v, len)"
+        },
+        {
+          "line": 72,
+          "text": "local function unpackNumber(str, pos, len)"
+        },
+        {
+          "line": 81,
+          "text": "function _ipstring(ip)"
+        },
+        {
+          "line": 92,
+          "text": "local function _hexDump(msg, str)"
+        },
+        {
+          "line": 340,
+          "text": "function __init(self, jnt, heloPacket)"
+        },
+        {
+          "line": 413,
+          "text": "function getServerIp(self)"
+        },
+        {
+          "line": 419,
+          "text": "function getId(self)"
+        },
+        {
+          "line": 426,
+          "text": "function connectIp(self, serverip, slimserverip)"
+        },
+        {
+          "line": 456,
+          "text": "function connect(self, server)"
+        },
+        {
+          "line": 473,
+          "text": "function _connectToAddr(self, serverip)"
+        },
+        {
+          "line": 478,
+          "text": "function connectTask(self, serverip)"
+        },
+        {
+          "line": 619,
+          "text": "function _setGeekmode( self, geekmode)"
+        },
+        {
+          "line": 624,
+          "text": "function setGeekmodeTask( self, geekmode)"
+        },
+        {
+          "line": 635,
+          "text": "function _blastIR( self, irstr)"
+        },
+        {
+          "line": 640,
+          "text": "function blastIRTask( self, irstr)"
+        },
+        {
+          "line": 649,
+          "text": "function disconnect(self)"
+        },
+        {
+          "line": 662,
+          "text": "function isConnected(self)"
+        },
+        {
+          "line": 667,
+          "text": "function hasConnectionFailed(self)"
+        },
+        {
+          "line": 672,
+          "text": "function statusPacketCallback(self, callback)"
+        },
+        {
+          "line": 678,
+          "text": "function capability(self, key, value)"
+        },
+        {
+          "line": 686,
+          "text": "-- Subscribe subscription function to a slimproto opocde."
+        },
+        {
+          "line": 687,
+          "text": "function subscribe(self, opcode, subscription)"
+        },
+        {
+          "line": 697,
+          "text": "-- function was subscribe to opcode, otherwise returns false."
+        },
+        {
+          "line": 698,
+          "text": "function unsubscribe(self, opcode, subscription)"
+        },
+        {
+          "line": 709,
+          "text": "function send(self, packet, force)"
+        },
+        {
+          "line": 745,
+          "text": "function sendStatus(self, event, serverTimestamp)"
+        },
+        {
+          "line": 751,
+          "text": "function _defaultStatusCallback(self, event, serverTimestamp)"
+        },
+        {
+          "line": 766,
+          "text": "function _handleDisconnect(self, reason)"
+        },
+        {
+          "line": 779,
+          "text": "function _handleTimer(self)"
+        },
+        {
+          "line": 789,
+          "text": "function notify_networkConnected(self)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/audio/Playback.lua",
+      "bytes": 34910,
+      "sha256": "8e06a00174707449858615e5a02452297420da4956864e19f03c0e9b3a1bea2c",
+      "anchors": [
+        {
+          "line": 60,
+          "text": "function __init(self, jnt, slimproto)"
+        },
+        {
+          "line": 175,
+          "text": "function setDecodeThreshold(self, threshold)"
+        },
+        {
+          "line": 180,
+          "text": "function stop(self)"
+        },
+        {
+          "line": 188,
+          "text": "function _setSource(self, source)"
+        },
+        {
+          "line": 214,
+          "text": "function playFileInLoop(self, file)"
+        },
+        {
+          "line": 244,
+          "text": "function setSignalStrength(self, signalStrength)"
+        },
+        {
+          "line": 249,
+          "text": "function sendStatus(self, status, event, serverTimestamp)"
+        },
+        {
+          "line": 260,
+          "text": "function _timerCallback(self)"
+        },
+        {
+          "line": 461,
+          "text": "function _ipstring(ip)"
+        },
+        {
+          "line": 475,
+          "text": "function _streamConnect(self, serverIp, serverPort, reader, writer, slaves)"
+        },
+        {
+          "line": 527,
+          "text": "function _proxyQueueSegment(self, chunk)"
+        },
+        {
+          "line": 533,
+          "text": "function _proxyConnClose(self, conn, err, leaveConnectionTable)"
+        },
+        {
+          "line": 549,
+          "text": "function _proxyWrite(self, conn, networkErr)"
+        },
+        {
+          "line": 580,
+          "text": "function _proxyRead(self, conn, networkErr)"
+        },
+        {
+          "line": 599,
+          "text": "function _proxyAccept(self, networkErr)"
+        },
+        {
+          "line": 618,
+          "text": "function (self, networkErr) self:_proxyWrite(conn, networkErr) end,"
+        },
+        {
+          "line": 621,
+          "text": "function (self, networkErr) self:_proxyRead(conn, networkErr) end,"
+        },
+        {
+          "line": 650,
+          "text": "function _proxyCleanup(self)"
+        },
+        {
+          "line": 664,
+          "text": "function _proxyInit(self, expected, stream)"
+        },
+        {
+          "line": 697,
+          "text": "function _proxyAndStream(self, canRead)"
+        },
+        {
+          "line": 740,
+          "text": "function _streamDisconnect(self, reason, flush)"
+        },
+        {
+          "line": 785,
+          "text": "function _streamWrite(self, networkErr)"
+        },
+        {
+          "line": 801,
+          "text": "function _streamRead(self, networkErr)"
+        },
+        {
+          "line": 824,
+          "text": "function _streamHttpHeaders(self, headers)"
+        },
+        {
+          "line": 835,
+          "text": "function _reconnect(self)"
+        },
+        {
+          "line": 852,
+          "text": "function _strm(self, data)"
+        },
+        {
+          "line": 1007,
+          "text": "function stopInternal(self)"
+        },
+        {
+          "line": 1022,
+          "text": "function pause(self)"
+        },
+        {
+          "line": 1027,
+          "text": "function _pauseInternal(self, interval_ms)"
+        },
+        {
+          "line": 1035,
+          "text": "function _cont(self, data)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/LocalPlayer.lua",
+      "bytes": 10088,
+      "sha256": "5f72349475aeebfe75cc9c550850d4531bf01f762a13d98c40b3556ef4fc9b76",
+      "anchors": [
+        {
+          "line": 35,
+          "text": "function setDeviceType(self, model, name)"
+        },
+        {
+          "line": 43,
+          "text": "function getDeviceType(self)"
+        },
+        {
+          "line": 49,
+          "text": "function disconnectServerAndPreserveLocalPlayer(self)"
+        },
+        {
+          "line": 66,
+          "text": "function getLastSqueezeCenter(self)"
+        },
+        {
+          "line": 71,
+          "text": "function setLastSqueezeCenter(self, server)"
+        },
+        {
+          "line": 78,
+          "text": "function __init(self, jnt, playerId, uuid)"
+        },
+        {
+          "line": 102,
+          "text": "function destroy(self, server)"
+        },
+        {
+          "line": 118,
+          "text": "function playFileInLoop(self, file)"
+        },
+        {
+          "line": 123,
+          "text": "function updateInit(self, server, init)"
+        },
+        {
+          "line": 132,
+          "text": "function incrementSequenceNumber(self)"
+        },
+        {
+          "line": 136,
+          "text": "function getCurrentSequenceNumber(self)"
+        },
+        {
+          "line": 140,
+          "text": "function isSequenceNumberInSync(self, serverSequenceNumber)"
+        },
+        {
+          "line": 144,
+          "text": "function isStreaming(self)"
+        },
+        {
+          "line": 153,
+          "text": "function refreshLocallyMaintainedParameters(self)"
+        },
+        {
+          "line": 166,
+          "text": "function isLocal(self)"
+        },
+        {
+          "line": 171,
+          "text": "function needsNetworkConfig(self)"
+        },
+        {
+          "line": 176,
+          "text": "function needsMusicSource(self)"
+        },
+        {
+          "line": 185,
+          "text": "function canConnectToServer(self)"
+        },
+        {
+          "line": 190,
+          "text": "function connectToServer(self, server)"
+        },
+        {
+          "line": 221,
+          "text": "function connectIp(self, serverip, slimserverip)"
+        },
+        {
+          "line": 231,
+          "text": "function disconnectFromServer(self)"
+        },
+        {
+          "line": 241,
+          "text": "function getLastSeen(self)"
+        },
+        {
+          "line": 258,
+          "text": "function isConnected(self)"
+        },
+        {
+          "line": 268,
+          "text": "function hasConnectionFailed(self)"
+        },
+        {
+          "line": 276,
+          "text": "function setSignalStrength(self, signalStrength)"
+        },
+        {
+          "line": 281,
+          "text": "function getEffectivePlayMode(self)"
+        },
+        {
+          "line": 293,
+          "text": "function getCapturePlayMode(self)"
+        },
+        {
+          "line": 298,
+          "text": "function setCapturePlayMode(self, capturePlayMode)"
+        },
+        {
+          "line": 303,
+          "text": "function captureVolume(self, volume)"
+        },
+        {
+          "line": 308,
+          "text": "function getCaptureVolume(self)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Networking/Slimproto.pm",
+      "bytes": 39841,
+      "sha256": "4220262733c265d6a8d4fc91ff7da5e236db1a8e13b1b521d58dfadbe04e8d4f",
+      "anchors": [
+        {
+          "line": 503,
+          "text": "sub _ir_handler {"
+        },
+        {
+          "line": 530,
+          "text": "sub _raw_ir_handler {"
+        },
+        {
+          "line": 547,
+          "text": "sub _ambient_light_sensor_handler {"
+        },
+        {
+          "line": 555,
+          "text": "sub _http_response_handler {"
+        },
+        {
+          "line": 572,
+          "text": "sub _debug_handler {"
+        },
+        {
+          "line": 581,
+          "text": "sub _disco_handler {"
+        },
+        {
+          "line": 670,
+          "text": "sub _http_body_handler {"
+        },
+        {
+          "line": 681,
+          "text": "sub _stat_handler {"
+        },
+        {
+          "line": 884,
+          "text": "sub _update_request_handler {"
+        },
+        {
+          "line": 915,
+          "text": "sub _animation_complete_handler {"
+        },
+        {
+          "line": 922,
+          "text": "sub _http_metadata_handler {"
+        },
+        {
+          "line": 935,
+          "text": "sub _bye_handler {"
+        },
+        {
+          "line": 953,
+          "text": "sub _proxy_handler {"
+        },
+        {
+          "line": 967,
+          "text": "sub _shut_handler {"
+        },
+        {
+          "line": 974,
+          "text": "sub _hello_handler {"
+        },
+        {
+          "line": 1357,
+          "text": "sub _button_handler {"
+        },
+        {
+          "line": 1369,
+          "text": "sub _knob_handler {"
+        },
+        {
+          "line": 1407,
+          "text": "sub _settings_handler {"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Player/Squeezebox.pm",
+      "bytes": 34416,
+      "sha256": "0984f9359daa36e8fdb232d0eeb4179f114d090385cdcffafe1374ef8d48468f",
+      "anchors": [
+        {
+          "line": 1177,
+          "text": "# This function generates random strings of a given length"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Player/Squeezebox2.pm",
+      "bytes": 30309,
+      "sha256": "d6a393e7a026f326e4c94a365b96149a60f757a94adef901b9cb782fcc490c34",
+      "anchors": []
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "bytes": 36565,
+      "sha256": "054b8ee6e75b53b8fa71949e2adb8d31d3ce9278359f952e7c177eaa923201b8",
+      "anchors": [
+        {
+          "line": 51,
+          "text": "local function decoderFor(station)"
+        },
+        {
+          "line": 58,
+          "text": "local function localPlayback()"
+        },
+        {
+          "line": 70,
+          "text": "function new(options)"
+        },
+        {
+          "line": 94,
+          "text": "function StreamPlayer:_isCurrent(generation, station)"
+        },
+        {
+          "line": 99,
+          "text": "function StreamPlayer:_notifyState(station, state, show)"
+        },
+        {
+          "line": 105,
+          "text": "function StreamPlayer:_resetWatchdog()"
+        },
+        {
+          "line": 111,
+          "text": "function StreamPlayer:_resetAudioRecovery()"
+        },
+        {
+          "line": 116,
+          "text": "local function redirectedStation(station, location)"
+        },
+        {
+          "line": 133,
+          "text": "local function transportStation(station, log)"
+        },
+        {
+          "line": 147,
+          "text": "local function responseLocation(headers)"
+        },
+        {
+          "line": 157,
+          "text": "function StreamPlayer:_startPowerKeepalive()"
+        },
+        {
+          "line": 169,
+          "text": "function StreamPlayer:_powerKeepaliveTick()"
+        },
+        {
+          "line": 180,
+          "text": "function StreamPlayer:_startWatchdog()"
+        },
+        {
+          "line": 192,
+          "text": "function StreamPlayer:_startAudioRecovery()"
+        },
+        {
+          "line": 204,
+          "text": "function StreamPlayer:_audioRecoveryTick()"
+        },
+        {
+          "line": 251,
+          "text": "function StreamPlayer:_watchdogTick()"
+        },
+        {
+          "line": 300,
+          "text": "function StreamPlayer:_cancelReconnect()"
+        },
+        {
+          "line": 308,
+          "text": "function StreamPlayer:_stopPlayback()"
+        },
+        {
+          "line": 320,
+          "text": "function StreamPlayer:_handleMetadata(data)"
+        },
+        {
+          "line": 350,
+          "text": "function StreamPlayer:_scheduleReconnect(station, generation, redirect)"
+        },
+        {
+          "line": 373,
+          "text": "function StreamPlayer:_handleDisconnect(reason, flush)"
+        },
+        {
+          "line": 399,
+          "text": "function StreamPlayer:_finishRedirectProbe(token, station, callback, failed)"
+        },
+        {
+          "line": 410,
+          "text": "function StreamPlayer:_probeStreamRedirect(station, generation, redirectCount, token, callback)"
+        },
+        {
+          "line": 553,
+          "text": "function StreamPlayer:_resolveStreamRedirect(station, generation, callback)"
+        },
+        {
+          "line": 564,
+          "text": "function StreamPlayer:_startHlsMetadata(session)"
+        },
+        {
+          "line": 584,
+          "text": "function StreamPlayer:_installHooks(playback)"
+        },
+        {
+          "line": 592,
+          "text": "local function handoff(player, server)"
+        },
+        {
+          "line": 602,
+          "text": "local function patchChooser(chooser)"
+        },
+        {
+          "line": 781,
+          "text": "function StreamPlayer:_begin(station, reconnect)"
+        },
+        {
+          "line": 910,
+          "text": "function StreamPlayer:start(station)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StandaloneBaseNowPlaying.lua",
+      "bytes": 23235,
+      "sha256": "42e74cf0cd8d06739d1bfabd43c9443d0eaa8cb01e2bbbc30e709674667baba1",
+      "anchors": [
+        {
+          "line": 30,
+          "text": "local function trim(value)"
+        },
+        {
+          "line": 34,
+          "text": "local function metadataText(value, maximum)"
+        },
+        {
+          "line": 40,
+          "text": "local function bounded(value)"
+        },
+        {
+          "line": 52,
+          "text": "local function safeStationId(station)"
+        },
+        {
+          "line": 69,
+          "text": "local function stationName(station)"
+        },
+        {
+          "line": 73,
+          "text": "local function falseCapabilities()"
+        },
+        {
+          "line": 77,
+          "text": "function new(options)"
+        },
+        {
+          "line": 97,
+          "text": "function Client:_log(level, ...)"
+        },
+        {
+          "line": 101,
+          "text": "function Client:_debug(...)"
+        },
+        {
+          "line": 105,
+          "text": "function Client:_timer(delay, callback, once)"
+        },
+        {
+          "line": 111,
+          "text": "function Client:_stopTimer(name)"
+        },
+        {
+          "line": 117,
+          "text": "function Client:_bump()"
+        },
+        {
+          "line": 121,
+          "text": "function Client:_snapshot()"
+        },
+        {
+          "line": 170,
+          "text": "function Client:_nativeRequest(method, path, payload, callback)"
+        },
+        {
+          "line": 178,
+          "text": "local function finish(status, response, err)"
+        },
+        {
+          "line": 212,
+          "text": "function Client:_request(method, path, payload, callback)"
+        },
+        {
+          "line": 217,
+          "text": "function Client:_scheduleRetry(reason)"
+        },
+        {
+          "line": 230,
+          "text": "function Client:_startHeartbeat()"
+        },
+        {
+          "line": 238,
+          "text": "function Client:_invalidateSession()"
+        },
+        {
+          "line": 245,
+          "text": "function Client:_send(kind, method, path, payload, handler)"
+        },
+        {
+          "line": 278,
+          "text": "function Client:_claim()"
+        },
+        {
+          "line": 299,
+          "text": "function Client:_probeOwnership()"
+        },
+        {
+          "line": 317,
+          "text": "function Client:_sessionLost()"
+        },
+        {
+          "line": 328,
+          "text": "function Client:_update()"
+        },
+        {
+          "line": 357,
+          "text": "function Client:_heartbeat()"
+        },
+        {
+          "line": 367,
+          "text": "function Client:_release()"
+        },
+        {
+          "line": 383,
+          "text": "function Client:_sync()"
+        },
+        {
+          "line": 395,
+          "text": "function Client:activate(station, stationGeneration)"
+        },
+        {
+          "line": 418,
+          "text": "function Client:updateStation(station, stationGeneration)"
+        },
+        {
+          "line": 432,
+          "text": "function Client:updateState(state, station, stationGeneration)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "bytes": 3129,
+      "sha256": "3e28389acb9c3cad8255dfb3f4b0f5cba99c56d7e5fd359851e377b1b318456d",
+      "anchors": [
+        {
+          "line": 11,
+          "text": "function init(self, applet)"
+        },
+        {
+          "line": 17,
+          "text": "function start(self, host, port, path)"
+        },
+        {
+          "line": 48,
+          "text": "function setRemoteVolume(self, percent)"
+        },
+        {
+          "line": 62,
+          "text": "function stop(self)"
+        },
+        {
+          "line": 67,
+          "text": "function pause(self)"
+        },
+        {
+          "line": 76,
+          "text": "function resume(self)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyStandaloneNowPlaying.lua",
+      "bytes": 12205,
+      "sha256": "f27ae074d8aa2589ea9b2b29547a07601173329c54840566570263e40a94f051",
+      "anchors": [
+        {
+          "line": 17,
+          "text": "local function capabilities()"
+        },
+        {
+          "line": 22,
+          "text": "local function text(v) return tostring(v or \"\"):gsub(\"^%s*(.-)%s*$\", \"%1\") end"
+        },
+        {
+          "line": 24,
+          "text": "local function sameAudio(a,b)"
+        },
+        {
+          "line": 32,
+          "text": "local function trackId(data)"
+        },
+        {
+          "line": 39,
+          "text": "function new(options)"
+        },
+        {
+          "line": 45,
+          "text": "function Client:_timer(delay, callback, once)"
+        },
+        {
+          "line": 49,
+          "text": "function Client:_stopTimer(name)"
+        },
+        {
+          "line": 52,
+          "text": "function Client:_log(level, ...)"
+        },
+        {
+          "line": 55,
+          "text": "function Client:_nativeRequest(method, path, payload, callback)"
+        },
+        {
+          "line": 58,
+          "text": "local function finish(status,response,err) if completed then return end; completed=true; callback(status,response,err) end"
+        },
+        {
+          "line": 73,
+          "text": "function Client:_request(method,path,payload,callback)"
+        },
+        {
+          "line": 77,
+          "text": "function Client:_send(kind,method,path,payload,handler)"
+        },
+        {
+          "line": 94,
+          "text": "function Client:_retry(reason)"
+        },
+        {
+          "line": 102,
+          "text": "function Client:_snapshot()"
+        },
+        {
+          "line": 115,
+          "text": "function Client:_invalidate()"
+        },
+        {
+          "line": 118,
+          "text": "function Client:_heartbeatTimer()"
+        },
+        {
+          "line": 124,
+          "text": "function Client:_claim()"
+        },
+        {
+          "line": 132,
+          "text": "function Client:_lost()"
+        },
+        {
+          "line": 142,
+          "text": "function Client:_update()"
+        },
+        {
+          "line": 151,
+          "text": "function Client:_heartbeat()"
+        },
+        {
+          "line": 159,
+          "text": "function Client:_release()"
+        },
+        {
+          "line": 168,
+          "text": "function Client:_sync()"
+        },
+        {
+          "line": 174,
+          "text": "function Client:activate(data,generation)"
+        },
+        {
+          "line": 180,
+          "text": "function Client:update(data,generation)"
+        },
+        {
+          "line": 191,
+          "text": "function Client:release()"
+        },
+        {
+          "line": 194,
+          "text": "function Client:shutdown()"
+        },
+        {
+          "line": 198,
+          "text": "function Client:status() return {activeIntent=self.activeIntent==true,hasSession=self.sessionId~=nil,generation=self.sessionGeneration,revision=self.revision,st"
+        },
+        {
+          "line": 199,
+          "text": "function normalizeTrackId(data) return trackId(data) end"
+        },
+        {
+          "line": 200,
+          "text": "function advertisedCapabilities() return capabilities() end"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/native/bridge/bridge.rs",
+      "bytes": 12953,
+      "sha256": "9b2844be840275805f74ba2c38d4f847fab16d713da784395e0829dc58f568df",
+      "anchors": []
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "bytes": 6071,
+      "sha256": "1e3c594f5ddda5521c6b052e4448dff733009a33524a7adaafb8ff7d3cf2bfae",
+      "anchors": [
+        {
+          "line": 18,
+          "text": "local function parseHttp(url)"
+        },
+        {
+          "line": 24,
+          "text": "function init(self, log, report)"
+        },
+        {
+          "line": 32,
+          "text": "function _monitorPlayback(self)"
+        },
+        {
+          "line": 61,
+          "text": "function start(self, url, generation, codec)"
+        },
+        {
+          "line": 105,
+          "text": "function pause(self, generation)"
+        },
+        {
+          "line": 112,
+          "text": "function resume(self)"
+        },
+        {
+          "line": 119,
+          "text": "function setVolume(self, value)"
+        },
+        {
+          "line": 131,
+          "text": "function stop(self, report, generation)"
+        }
+      ]
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzNowPlaying.lua",
+      "bytes": 5207,
+      "sha256": "f7fe06c7daf9f084e6a7e76f145ca0714d4f907ac5085ea2bf8dd8981c4a0da3",
+      "anchors": [
+        {
+          "line": 14,
+          "text": "function Client.new()"
+        },
+        {
+          "line": 18,
+          "text": "function Client:play(command)"
+        },
+        {
+          "line": 27,
+          "text": "function Client:state(generation, state, position)"
+        },
+        {
+          "line": 41,
+          "text": "function Client:release()"
+        },
+        {
+          "line": 45,
+          "text": "function Client:_send(action, payload, callback)"
+        },
+        {
+          "line": 51,
+          "text": "local function finish(response, err)"
+        },
+        {
+          "line": 95,
+          "text": "function Client:tick()"
+        }
+      ]
+    }
+  ]
+}

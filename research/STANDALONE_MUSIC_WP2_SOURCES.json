@@ -1,0 +1,1382 @@
+{
+  "date": "2026-11-02",
+  "head": "0a4b50e836446bdaf03804fe1a5477a139742243",
+  "scope": "WP2 host fixtures, source review, static ARM and host-kernel QEMU; no device access",
+  "inputs": [
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_DIAGRAMS.md",
+      "bytes": 6895,
+      "sha256": "279a54896c48de7e523c36f561f324e33d02384cf40dd515c75ad3f2f753ca5e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_EVIDENCE.md",
+      "bytes": 28030,
+      "sha256": "25a1ce1ddde78f0d734db8a4498a94316d2e7f0fd7949f671d4abc19aae5ac4c"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_GAPS.md",
+      "bytes": 10072,
+      "sha256": "69a46983463e83b84efa340dc88983245fd3da4ceac3bb490a24db278177bb0f"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_PROTOCOL.md",
+      "bytes": 17455,
+      "sha256": "20b96f0db1889d53cc8fa33764f84f3083a188ef0d0ffbfda321b42f766d03ae"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_REPORT.md",
+      "bytes": 35067,
+      "sha256": "ae2b3f537fadf9087ccab7ffe917a614906bef3ae5af39fff9ec433a45fe9353"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_ROADMAP.md",
+      "bytes": 17797,
+      "sha256": "dccc9e3a7039a33d1bae627bc1b5c8abc84e8768305dbce2f224e24192583327"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_SOURCES.json",
+      "bytes": 38684,
+      "sha256": "ff9f2fd8f355c1b69ed6023e1cc61fa5bf9412f48264ad0d6438190c9da49801"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_CONTRACTS.md",
+      "bytes": 10589,
+      "sha256": "d9dba0af501417633783b78821f13bff3d9d6c1adeb7708945e437a232de2439"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_EVIDENCE.md",
+      "bytes": 11147,
+      "sha256": "a259f21e45a1bf2b5980b64b5fe6c7c2ea9c2e677817189d6a35a8dc92f9340a"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_MEASUREMENTS.json",
+      "bytes": 61736,
+      "sha256": "d5b316d8bed51e41f21cb484d3454017ce7e85b46538e9af433d65576121501a"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_PARSER_EVALUATION.md",
+      "bytes": 9003,
+      "sha256": "c470faa99c5b6980640ef197f7bc519e865310a000e3f0c1bab3afabdad26697"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_PROTOCOL_FIXTURES.md",
+      "bytes": 7041,
+      "sha256": "29d0053d61796922c4aeab517464c59bb3ff3dc9aa1561d1cb9b0baad9dfc420"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_REPORT.md",
+      "bytes": 9447,
+      "sha256": "64c120e2f970ea71d7df7e078e682339886f9bc4836ef8a2cadd5e95a5a05628"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_SOURCES.json",
+      "bytes": 22570,
+      "sha256": "300b50c70a7a22fc89e3204bff5000709e2b3a836c57512625cd2304ba2f6332"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_TEST_RESULTS.md",
+      "bytes": 7999,
+      "sha256": "4145db5ec3ae7456c4a391d815b903595cfb68fc1d3d2744631340f4427cf437"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_EVIDENCE.md",
+      "bytes": 9477,
+      "sha256": "3f868d310df9ff688039150a9268159db3fdac0d8d513e95cdc3d2514e9654ce"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_MEASUREMENTS.json",
+      "bytes": 13464,
+      "sha256": "d5b3659b88616cef9c0f08a68913bd59e4beed1968d241ef836cbfe01fd3e299"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_PERFORMANCE.md",
+      "bytes": 6379,
+      "sha256": "46aaebed06a48faa8f7f5bf46acdcdf3011d419a233ac00be74ebc51bf2f0264"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_REPORT.md",
+      "bytes": 7893,
+      "sha256": "7373ba4c2a179e4e76a4eac9218d08aeb2873614807fa0ceddf373297a20efd0"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_SCHEMA.md",
+      "bytes": 11067,
+      "sha256": "f5f2accb4434f5fc5583a423f4fa972325c501f6b95007c8eea5e67a79a65cb5"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_SOURCES.json",
+      "bytes": 15098,
+      "sha256": "715215a8fbd56a8f8405448c97f6d2366fdf4fb4c26a7138de7ecce2ba309dc0"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_TEST_RESULTS.md",
+      "bytes": 6440,
+      "sha256": "416572dfba1e02d5420f09c239bd32348db215ea58cff97debc2a0df66e190fe"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_FILESYSTEM_COMPATIBILITY.md",
+      "bytes": 7447,
+      "sha256": "9947017564340b05c689d6a67c9554d88aca428d546b774a39b6e032e502e95e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_FIRMWARE_INTEGRATION.md",
+      "bytes": 8315,
+      "sha256": "e555ed3aff01568726c0d8ef934974d1e6a3fef0d79f936de67307405cbe5868"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_MEASUREMENTS.json",
+      "bytes": 7263,
+      "sha256": "f795c11c42b4605de17648383e90ad6d187525ce19951a6f6b697e4486974592"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_REPORT.md",
+      "bytes": 7408,
+      "sha256": "5ff869e6bebe133196f9833acbe046ad7492bd638daa4e080c78d54267063e1c"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_SOURCES.json",
+      "bytes": 35849,
+      "sha256": "60f726a95f7b77d1c72cbe55aada71c31b6591aca2feb128207b932dfa1354ae"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_STORAGE_CONTRACT.md",
+      "bytes": 12527,
+      "sha256": "41dd8210e9e6f19040f9efa39458145a1111d66ad3f57f79176ee25b8b610ea9"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_TEST_RESULTS.md",
+      "bytes": 10062,
+      "sha256": "7440784d2d2e4abff14cfc89be5a3759d4868a6d651d91338d8f2064496000d3"
+    }
+  ],
+  "files": [
+    {
+      "path": "native/sbmusic/music_scanner.h",
+      "bytes": 2444,
+      "sha256": "1304da91937cbe39da0fc70e7cbc21143a9cecba60ccf4b29d39bca8563e15e6",
+      "anchors": [
+        {
+          "line": 5,
+          "text": "#define SB_SCAN_DEPTH 16"
+        },
+        {
+          "line": 51,
+          "text": "sb_music_scanner *sb_music_scan_create(const sb_scan_options *, sb_scan_code *);"
+        },
+        {
+          "line": 52,
+          "text": "sb_scan_code sb_music_scan_request(sb_music_scanner *, uint64_t request_id, int initial);"
+        },
+        {
+          "line": 53,
+          "text": "sb_scan_code sb_music_scan_cancel(sb_music_scanner *, uint64_t request_id);"
+        },
+        {
+          "line": 54,
+          "text": "sb_scan_code sb_music_scan_media(sb_music_scanner *, const sb_music_media *current);"
+        },
+        {
+          "line": 55,
+          "text": "sb_scan_code sb_music_scan_status(sb_music_scanner *, sb_scan_status *);"
+        },
+        {
+          "line": 56,
+          "text": "int sb_music_scan_fd(const sb_music_scanner *); /* coalesced progress/terminal wakeup */"
+        },
+        {
+          "line": 57,
+          "text": "sb_scan_code sb_music_scan_stop(sb_music_scanner *);"
+        },
+        {
+          "line": 58,
+          "text": "sb_scan_code sb_music_scan_destroy(sb_music_scanner *); /* exited only */"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_scanner.c",
+      "bytes": 33277,
+      "sha256": "e4feafe8e52c32a6b70994b8fddcef9861e09754a8a091e1201c0c4c37aa5ac0",
+      "anchors": [
+        {
+          "line": 36,
+          "text": "directory stack[SB_SCAN_DEPTH];"
+        },
+        {
+          "line": 42,
+          "text": "static uint64_t now_ms(void) {"
+        },
+        {
+          "line": 47,
+          "text": "static void notify_fd(int fd) {"
+        },
+        {
+          "line": 54,
+          "text": "static int make_pipe(int fds[2]) {"
+        },
+        {
+          "line": 65,
+          "text": "static int cancelled(sb_music_scanner *s) {"
+        },
+        {
+          "line": 72,
+          "text": "static int root_current(sb_music_scanner *s) {"
+        },
+        {
+          "line": 82,
+          "text": "static void publish(sb_music_scanner *s, int force) {"
+        },
+        {
+          "line": 93,
+          "text": "static void error(sb_music_scanner *s, const char *path, int code, const char *message) {"
+        },
+        {
+          "line": 102,
+          "text": "static sb_ml_status db(sb_music_scanner *s, sb_ml_request *request, sb_ml_result *result) {"
+        },
+        {
+          "line": 114,
+          "text": "static void identity(sb_music_scanner *s, sb_ml_track *t) {"
+        },
+        {
+          "line": 119,
+          "text": "static uint64_t hash_bytes(uint64_t h, const void *p, size_t n) {"
+        },
+        {
+          "line": 127,
+          "text": "static int fingerprint(int fd, const struct stat *st, const char *cover, char out[128]) {"
+        },
+        {
+          "line": 148,
+          "text": "static int metadata(sb_music_scanner *s, int fd, sb_metadata_result *result) {"
+        },
+        {
+          "line": 168,
+          "text": "posix_spawn_file_actions_t actions;"
+        },
+        {
+          "line": 169,
+          "text": "posix_spawn_file_actions_init(&actions);"
+        },
+        {
+          "line": 170,
+          "text": "posix_spawn_file_actions_adddup2(&actions, input, 3);"
+        },
+        {
+          "line": 171,
+          "text": "posix_spawn_file_actions_adddup2(&actions, output, 1);"
+        },
+        {
+          "line": 174,
+          "text": "int rc = posix_spawn(&pid, s->options.helper, &actions, NULL, argv, environ);"
+        },
+        {
+          "line": 175,
+          "text": "posix_spawn_file_actions_destroy(&actions);"
+        },
+        {
+          "line": 263,
+          "text": "static int ignored(const char *name) {"
+        },
+        {
+          "line": 275,
+          "text": "static int audio_name(const char *name) {"
+        },
+        {
+          "line": 280,
+          "text": "static int safe_open(sb_music_scanner *s, const char *path, int dir, int *fd) {"
+        },
+        {
+          "line": 285,
+          "text": "static void cover(sb_music_scanner *s, directory *d) {"
+        },
+        {
+          "line": 329,
+          "text": "static int flush(sb_music_scanner *s) {"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_metadata.h",
+      "bytes": 781,
+      "sha256": "f67a9400e9f3d1364f50d4196dbe77d57933f53d13c3198ea62cd441746c2b40",
+      "anchors": [
+        {
+          "line": 4,
+          "text": "#define SB_META_MAX (256u * 1024u)"
+        },
+        {
+          "line": 24,
+          "text": "void sb_music_metadata(int fd, sb_metadata_result *);"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_metadata.c",
+      "bytes": 34634,
+      "sha256": "c076a16ee1644eccc8e9ce1bafc419c4832d2301ee3d51505b52ca221f26d3bf",
+      "anchors": [
+        {
+          "line": 18,
+          "text": "static uint32_t be(const unsigned char *p) {"
+        },
+        {
+          "line": 21,
+          "text": "static uint32_t le(const unsigned char *p) {"
+        },
+        {
+          "line": 24,
+          "text": "static uint32_t sync32(const unsigned char *p) {"
+        },
+        {
+          "line": 29,
+          "text": "static int fail(reader *r, sb_meta_status s, const char *message) {"
+        },
+        {
+          "line": 34,
+          "text": "static int read_at(reader *r, uint64_t at, void *buffer, size_t bytes) {"
+        },
+        {
+          "line": 51,
+          "text": "static int decoded(reader *r, char *out, size_t cap, unsigned encoding, const unsigned char *p,"
+        },
+        {
+          "line": 65,
+          "text": "static void number(const char *s, unsigned *value, unsigned *total) {"
+        },
+        {
+          "line": 74,
+          "text": "static const char *genre(unsigned n) {"
+        },
+        {
+          "line": 157,
+          "text": "static int field(reader *r, const char *key, const unsigned char *p, size_t n, unsigned enc) {"
+        },
+        {
+          "line": 228,
+          "text": "static void artwork(reader *r, const char *kind, uint64_t offset, uint64_t length, const char *mime,"
+        },
+        {
+          "line": 240,
+          "text": "static const char *image_type(const unsigned char *p, size_t n) {"
+        },
+        {
+          "line": 254,
+          "text": "static int picture(reader *r, const unsigned char *p, size_t n, uint64_t base, const char *kind,"
+        },
+        {
+          "line": 283,
+          "text": "static int comments(reader *r, const unsigned char *p, size_t n, int ogg) {"
+        },
+        {
+          "line": 316,
+          "text": "if (bytes > SB_META_MAX)"
+        },
+        {
+          "line": 367,
+          "text": "static int flac(reader *r) {"
+        },
+        {
+          "line": 386,
+          "text": "if (n > SB_META_MAX)"
+        },
+        {
+          "line": 445,
+          "text": "static int id3(reader *r, uint64_t *audio) {"
+        },
+        {
+          "line": 457,
+          "text": "if (size > SB_META_MAX)"
+        },
+        {
+          "line": 577,
+          "text": "static int mpeg(const unsigned char *p, mp3_frame *f) {"
+        },
+        {
+          "line": 595,
+          "text": "static int mp3(reader *r) {"
+        },
+        {
+          "line": 680,
+          "text": "static uint32_t crc32_ogg(const unsigned char *p, size_t n) {"
+        },
+        {
+          "line": 689,
+          "text": "static int ogg(reader *r) {"
+        },
+        {
+          "line": 690,
+          "text": "unsigned char *packet = malloc(SB_META_MAX), *page = malloc(65536 + 512);"
+        },
+        {
+          "line": 735,
+          "text": "if (count > SB_META_MAX - used) {"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_metadata_helper.c",
+      "bytes": 1792,
+      "sha256": "754cf39a31b912255a859f3690686f86290bdbf4c7f53fe09ed14d5bb327aaaf",
+      "anchors": [
+        {
+          "line": 9,
+          "text": "int main(int argc, char **argv) {"
+        },
+        {
+          "line": 18,
+          "text": "if (setrlimit(RLIMIT_AS, &memory) || setrlimit(RLIMIT_CPU, &cpu) ||"
+        },
+        {
+          "line": 19,
+          "text": "setrlimit(RLIMIT_CORE, &core) || setrlimit(RLIMIT_STACK, &stack) ||"
+        },
+        {
+          "line": 20,
+          "text": "setrlimit(RLIMIT_NOFILE, &files))"
+        }
+      ]
+    },
+    {
+      "path": "native/common/metadata_text.h",
+      "bytes": 3065,
+      "sha256": "8bdd310aacc6834413f19bde5067f09a84193ea6b1ab8b4c4592d1e5ed22a410",
+      "anchors": [
+        {
+          "line": 6,
+          "text": "static inline void sb_metadata_scalar(char *out, size_t capacity, size_t *n, unsigned c) {"
+        },
+        {
+          "line": 28,
+          "text": "static inline void sb_metadata_text(char *out, size_t capacity, unsigned enc,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbproxy/hls_id3.c",
+      "bytes": 10500,
+      "sha256": "aecc5f2f87825c035e0527c090210fb17c3ea19205fe90ece6a0632d88ced5eb",
+      "anchors": [
+        {
+          "line": 19,
+          "text": "static void text(char out[HLS_TEXT_MAX], unsigned enc, const unsigned char *p, size_t size)"
+        },
+        {
+          "line": 33,
+          "text": "static int image(const unsigned char *p, size_t n, unsigned type)"
+        },
+        {
+          "line": 102,
+          "text": "static void frame(hls_id3 *s)"
+        },
+        {
+          "line": 214,
+          "text": "void hls_id3_reset(hls_id3 *s)"
+        },
+        {
+          "line": 226,
+          "text": "void hls_id3_init(hls_id3 *s, hls_metadata_output output, void *opaque)"
+        },
+        {
+          "line": 234,
+          "text": "void hls_id3_feed(hls_id3 *s, const unsigned char *p, size_t n)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_library.h",
+      "bytes": 4146,
+      "sha256": "444f36c3c8a552ee36acf6360dba4dfa69a26ad793f68ea8f38bad5e2a55c4ff",
+      "anchors": [
+        {
+          "line": 4,
+          "text": "#define SB_ML_SCHEMA_VERSION 3"
+        },
+        {
+          "line": 36,
+          "text": "SB_ML_SCAN_TOUCH, SB_ML_SCAN_FINISH, SB_ML_SCAN_ABORT, SB_ML_CLOSE } sb_ml_operation;"
+        },
+        {
+          "line": 65,
+          "text": "sb_music_library *sb_music_library_start(const sb_ml_options *);"
+        },
+        {
+          "line": 66,
+          "text": "int sb_music_library_fd(const sb_music_library *);"
+        },
+        {
+          "line": 69,
+          "text": "sb_ml_status sb_music_library_submit(sb_music_library *, const sb_ml_request *);"
+        },
+        {
+          "line": 70,
+          "text": "sb_ml_status sb_music_library_receive(sb_music_library *, sb_ml_result *);"
+        },
+        {
+          "line": 71,
+          "text": "sb_ml_status sb_music_library_cancel(sb_music_library *, uint64_t request_id); /* cooperative, identity checked */"
+        },
+        {
+          "line": 72,
+          "text": "sb_music_library_provider sb_music_library_queries(sb_music_library *);"
+        },
+        {
+          "line": 75,
+          "text": "sb_ml_status sb_music_library_destroy(sb_music_library *);"
+        },
+        {
+          "line": 76,
+          "text": "const char *sb_music_library_status(sb_ml_status);"
+        },
+        {
+          "line": 81,
+          "text": "sb_ml_status sb_music_library_exchange(sb_music_library *,sb_ml_request *,sb_ml_result *);"
+        },
+        {
+          "line": 82,
+          "text": "sb_ml_status sb_music_library_cancel_scan(sb_music_library *,uint64_t scan_token);"
+        },
+        {
+          "line": 83,
+          "text": "int sb_music_library_track_valid(const sb_ml_track *);"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_library.c",
+      "bytes": 45478,
+      "sha256": "71af451c94a0435cdb4bbe166cd63d83ee496461f2a88f21799b1a69bb408f30",
+      "anchors": [
+        {
+          "line": 24,
+          "text": "static void memory_policy(void)"
+        },
+        {
+          "line": 49,
+          "text": "static uint64_t milliseconds(void)"
+        },
+        {
+          "line": 55,
+          "text": "static sb_ml_status failure(sb_music_library *h,sb_ml_status status,const char *message)"
+        },
+        {
+          "line": 61,
+          "text": "static int sql_error(sb_music_library *h,int rc)"
+        },
+        {
+          "line": 95,
+          "text": "static int execute(sb_music_library *h,const char *sql,const binding *values,unsigned count)"
+        },
+        {
+          "line": 106,
+          "text": "static int script(sb_music_library *h,const char *sql)"
+        },
+        {
+          "line": 121,
+          "text": "static int scalar(sb_music_library *,const char *,const binding *,unsigned,sqlite3_int64 *);"
+        },
+        {
+          "line": 122,
+          "text": "static int refresh_revision(sb_music_library *h)"
+        },
+        {
+          "line": 134,
+          "text": "static int bump_revision(sb_music_library *h)"
+        },
+        {
+          "line": 141,
+          "text": "static void revision_committed(sb_music_library *h)"
+        },
+        {
+          "line": 145,
+          "text": "static int name_id(sb_music_library *h,const char *table,sqlite3_int64 media,const char *name,sqlite3_int64 *id)"
+        },
+        {
+          "line": 154,
+          "text": "static int folder_id(sb_music_library *h,sqlite3_int64 media,const char *path,sqlite3_int64 *id)"
+        },
+        {
+          "line": 180,
+          "text": "static int source_update(sb_music_library *h,const sb_music_media *media)"
+        },
+        {
+          "line": 236,
+          "text": "static int upsert_track(sb_music_library *h,const sb_ml_track *track,sqlite3_int64 media)"
+        },
+        {
+          "line": 292,
+          "text": "static int scalar(sb_music_library *h,const char *sql,const binding *values,unsigned count,sqlite3_int64 *out)"
+        },
+        {
+          "line": 304,
+          "text": "static int text_valid(const char *s,size_t capacity)"
+        },
+        {
+          "line": 321,
+          "text": "static int path_valid(const char *path)"
+        },
+        {
+          "line": 336,
+          "text": "int sb_music_library_track_valid(const sb_ml_track *t)"
+        },
+        {
+          "line": 363,
+          "text": "static int progress(void *context)"
+        },
+        {
+          "line": 372,
+          "text": "static int open_database(sb_music_library *h)"
+        },
+        {
+          "line": 386,
+          "text": "if(version>SB_ML_SCHEMA_VERSION){failure(h,SB_ML_NEW_SCHEMA,\"Newer schema preserved; downgrade refused\");"
+        },
+        {
+          "line": 445,
+          "text": "static void add_filter(char *sql,binding *v,unsigned *n,const sb_music_query *q,const char *alias)"
+        },
+        {
+          "line": 465,
+          "text": "static void prefix_pattern(char out[514],const char *input)"
+        },
+        {
+          "line": 473,
+          "text": "static void search_filter(char *sql,binding *v,unsigned *n,const sb_music_query *q,const char *pattern)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_library_scan.inc",
+      "bytes": 6244,
+      "sha256": "710b6bce620e038b09b516e8d6634226ab7c73737252802653cfc7c7488de9d9",
+      "anchors": [
+        {
+          "line": 2,
+          "text": "static int scan_current(sb_music_library *h, const sb_ml_request *r) {"
+        },
+        {
+          "line": 17,
+          "text": "static void scan_request(sb_music_library *h) {"
+        },
+        {
+          "line": 130,
+          "text": "if (r->operation == SB_ML_SCAN_FINISH) {"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/schema.h",
+      "bytes": 3317,
+      "sha256": "c7f094fa72724930fe26613b40c958891e24f9cedc24aa72234d8975c34b2222",
+      "anchors": []
+    },
+    {
+      "path": "native/sbmusic/music_storage.h",
+      "bytes": 5844,
+      "sha256": "58cd1fbecef223560258351445059221ba95a586cbb37d4ef13db451427a0bf6",
+      "anchors": [
+        {
+          "line": 61,
+          "text": "void sb_storage_init(sb_storage_model *, int enabled, int fab4, uint64_t incarnation);"
+        },
+        {
+          "line": 62,
+          "text": "sb_storage_status sb_storage_apply(sb_storage_model *, const sb_storage_event *, sb_storage_change *);"
+        },
+        {
+          "line": 63,
+          "text": "int sb_storage_current(const sb_storage_model *, unsigned slot, const sb_music_media *);"
+        },
+        {
+          "line": 64,
+          "text": "sb_storage_status sb_storage_import_identity(sb_storage_model *, const sb_storage_identity *);"
+        },
+        {
+          "line": 65,
+          "text": "sb_storage_status sb_storage_associate_library(sb_storage_model *,unsigned slot,const sb_music_media *,uint64_t library_id);"
+        },
+        {
+          "line": 68,
+          "text": "sb_storage_status sb_storage_parse(const char *, size_t, int mountinfo, sb_storage_mounts *);"
+        },
+        {
+          "line": 69,
+          "text": "sb_storage_status sb_storage_read_mounts(void *unused, sb_storage_mounts *);"
+        },
+        {
+          "line": 80,
+          "text": "sb_storage_status sb_storage_validate(const char *approved_parent, const sb_storage_mount *,"
+        },
+        {
+          "line": 82,
+          "text": "sb_storage_status sb_storage_root_check(const sb_storage_root *, const sb_music_media *,"
+        },
+        {
+          "line": 84,
+          "text": "sb_storage_status sb_storage_open_relative(const sb_storage_root *, const sb_music_media *,"
+        },
+        {
+          "line": 86,
+          "text": "void sb_storage_root_close(sb_storage_root *);"
+        },
+        {
+          "line": 87,
+          "text": "sb_storage_status sb_storage_root_child(const sb_storage_root *,const sb_music_media *,const char *relative,"
+        },
+        {
+          "line": 89,
+          "text": "sb_storage_status sb_storage_identity_linux(const sb_storage_mount *, sb_storage_evidence *);"
+        },
+        {
+          "line": 106,
+          "text": "sb_storage_worker *sb_storage_worker_start(const sb_storage_worker_options *);"
+        },
+        {
+          "line": 107,
+          "text": "int sb_storage_worker_fd(const sb_storage_worker *);"
+        },
+        {
+          "line": 108,
+          "text": "sb_storage_status sb_storage_worker_submit(sb_storage_worker *, uint64_t request_id);"
+        },
+        {
+          "line": 109,
+          "text": "sb_storage_status sb_storage_worker_receive(sb_storage_worker *, sb_storage_discovery *);"
+        },
+        {
+          "line": 110,
+          "text": "sb_storage_status sb_storage_worker_stop(sb_storage_worker *); /* async */"
+        },
+        {
+          "line": 111,
+          "text": "sb_storage_status sb_storage_worker_destroy(sb_storage_worker *); /* only exited */"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage_linux.c",
+      "bytes": 16931,
+      "sha256": "385911ce595d7dd60c879f708a224ebc3c85bba281be566ad986189fceb20ffa",
+      "anchors": [
+        {
+          "line": 14,
+          "text": "static int decode(const char *in,char *out,size_t cap)"
+        },
+        {
+          "line": 32,
+          "text": "static int option(const char *options,const char *key)"
+        },
+        {
+          "line": 41,
+          "text": "sb_storage_status sb_storage_parse(const char *input,size_t bytes,int info,sb_storage_mounts *out)"
+        },
+        {
+          "line": 76,
+          "text": "sb_storage_status sb_storage_read_mounts(void *unused,sb_storage_mounts *out)"
+        },
+        {
+          "line": 85,
+          "text": "static int canonical(const char *path,int absolute)"
+        },
+        {
+          "line": 96,
+          "text": "static int beneath(const char *parent,const char *path)"
+        },
+        {
+          "line": 99,
+          "text": "static int walk(int fd,const char *relative,int directory,dev_t expected,int enforce)"
+        },
+        {
+          "line": 112,
+          "text": "static int same_mount(const sb_storage_mount *a,const sb_storage_mount *b)"
+        },
+        {
+          "line": 115,
+          "text": "static sb_storage_status present(const sb_storage_root *r,sb_storage_mount_reader read,void *context,const char *relative)"
+        },
+        {
+          "line": 132,
+          "text": "static int supported(const char *fs)"
+        },
+        {
+          "line": 134,
+          "text": "sb_storage_status sb_storage_validate(const char *parent,const sb_storage_mount *mount,const sb_music_media *media,"
+        },
+        {
+          "line": 157,
+          "text": "sb_storage_status sb_storage_root_check(const sb_storage_root *r,const sb_music_media *current,sb_storage_mount_reader read,void *context)"
+        },
+        {
+          "line": 174,
+          "text": "sb_storage_status sb_storage_open_relative(const sb_storage_root *r,const sb_music_media *current,const char *relative,int directory,"
+        },
+        {
+          "line": 191,
+          "text": "void sb_storage_root_close(sb_storage_root *r){if(r&&r->fd>=0){close(r->fd);r->fd=-1;}}"
+        },
+        {
+          "line": 192,
+          "text": "sb_storage_status sb_storage_root_child(const sb_storage_root *r,const sb_music_media *media,const char *relative,"
+        },
+        {
+          "line": 208,
+          "text": "static int link_identity(const char *dir,const struct stat *device,char *out,size_t cap)"
+        },
+        {
+          "line": 218,
+          "text": "sb_storage_status sb_storage_identity_linux(const sb_storage_mount *m,sb_storage_evidence *out)"
+        },
+        {
+          "line": 234,
+          "text": "static void *worker(void *context)"
+        },
+        {
+          "line": 262,
+          "text": "sb_storage_worker *sb_storage_worker_start(const sb_storage_worker_options *options)"
+        },
+        {
+          "line": 276,
+          "text": "int sb_storage_worker_fd(const sb_storage_worker *w){return w?w->pipe[0]:-1;}"
+        },
+        {
+          "line": 277,
+          "text": "sb_storage_status sb_storage_worker_submit(sb_storage_worker *w,uint64_t id)"
+        },
+        {
+          "line": 285,
+          "text": "sb_storage_status sb_storage_worker_receive(sb_storage_worker *w,sb_storage_discovery *out)"
+        },
+        {
+          "line": 294,
+          "text": "sb_storage_status sb_storage_worker_stop(sb_storage_worker *w)"
+        },
+        {
+          "line": 298,
+          "text": "sb_storage_status sb_storage_worker_destroy(sb_storage_worker *w)"
+        }
+      ]
+    },
+    {
+      "path": "native/common/music_contracts.h",
+      "bytes": 6091,
+      "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d",
+      "anchors": [
+        {
+          "line": 119,
+          "text": "int sb_music_source_equal(const sb_music_source_id *, const sb_music_source_id *);"
+        },
+        {
+          "line": 120,
+          "text": "int sb_music_media_current(const sb_music_media *, const sb_music_media *);"
+        },
+        {
+          "line": 121,
+          "text": "int sb_music_yield_ack(sb_music_ownership *, uint64_t request_id,"
+        },
+        {
+          "line": 123,
+          "text": "int sb_music_can_commit_owner(const sb_music_ownership *, uint64_t now_ms);"
+        },
+        {
+          "line": 124,
+          "text": "int sb_music_stream_event(sb_music_stream_guard *, const sb_music_stream_id *, sb_music_event);"
+        },
+        {
+          "line": 125,
+          "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *, const sb_music_queue_update *);"
+        },
+        {
+          "line": 126,
+          "text": "int sb_music_query_valid(const sb_music_query *);"
+        },
+        {
+          "line": 127,
+          "text": "int sb_music_resource_current(const sb_music_resource *, const sb_music_media *,"
+        },
+        {
+          "line": 129,
+          "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *);"
+        }
+      ]
+    },
+    {
+      "path": "native/common/music_contracts.c",
+      "bytes": 4193,
+      "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6",
+      "anchors": [
+        {
+          "line": 4,
+          "text": "int sb_music_source_equal(const sb_music_source_id *a, const sb_music_source_id *b)"
+        },
+        {
+          "line": 9,
+          "text": "int sb_music_media_current(const sb_music_media *a, const sb_music_media *b)"
+        },
+        {
+          "line": 14,
+          "text": "int sb_music_yield_ack(sb_music_ownership *o, uint64_t request, uint64_t generation,"
+        },
+        {
+          "line": 25,
+          "text": "int sb_music_can_commit_owner(const sb_music_ownership *o, uint64_t now)"
+        },
+        {
+          "line": 31,
+          "text": "static int stream_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)"
+        },
+        {
+          "line": 38,
+          "text": "int sb_music_stream_event(sb_music_stream_guard *s, const sb_music_stream_id *id, sb_music_event event)"
+        },
+        {
+          "line": 51,
+          "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *s, const sb_music_queue_update *u)"
+        },
+        {
+          "line": 58,
+          "text": "int sb_music_query_valid(const sb_music_query *q)"
+        },
+        {
+          "line": 66,
+          "text": "int sb_music_resource_current(const sb_music_resource *r, const sb_music_media *m,"
+        },
+        {
+          "line": 78,
+          "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *r)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbbase/include/nowplaying.h",
+      "bytes": 3467,
+      "sha256": "7de072f858667d6edac17234efd99ff43662de81b24669e387c794081509384c",
+      "anchors": [
+        {
+          "line": 85,
+          "text": "void np_destroy(np_manager *m);"
+        },
+        {
+          "line": 86,
+          "text": "uint64_t np_monotonic_ms(void);"
+        },
+        {
+          "line": 88,
+          "text": "uint64_t np_position(np_manager *m);"
+        },
+        {
+          "line": 89,
+          "text": "int np_expire(np_manager *m);"
+        },
+        {
+          "line": 90,
+          "text": "int np_demo(np_manager *m);"
+        },
+        {
+          "line": 91,
+          "text": "int np_demo_next(np_manager *m);"
+        },
+        {
+          "line": 92,
+          "text": "int np_playerstatus_json(np_manager *m, char *out, size_t cap);"
+        },
+        {
+          "line": 93,
+          "text": "int np_public_json(np_manager *m, char *out, size_t cap);"
+        },
+        {
+          "line": 95,
+          "text": "int np_lms_query_json("
+        },
+        {
+          "line": 98,
+          "text": "int np_lms_arguments(const char *json,"
+        },
+        {
+          "line": 107,
+          "text": "int np_api(np_manager *m,"
+        },
+        {
+          "line": 117,
+          "text": "int np_queue_command(np_manager *m, const char *command, int64_t value);"
+        }
+      ]
+    },
+    {
+      "path": "native/sbwebserver/src/image_render.c",
+      "bytes": 42898,
+      "sha256": "c72ef9a92a1875c3758260bc2394112c2ebca02bb3983ef00b700542f5aa594b",
+      "anchors": [
+        {
+          "line": 72,
+          "text": "static int equal(struct mg_str s, const char *text)"
+        },
+        {
+          "line": 95,
+          "text": "static void image_error(struct mg_connection *c, unsigned code)"
+        },
+        {
+          "line": 120,
+          "text": "static int parse_url(const char *text, ImageUrl *u)"
+        },
+        {
+          "line": 174,
+          "text": "static int resolve_public(const ImageUrl *u, char ip[INET_ADDRSTRLEN])"
+        },
+        {
+          "line": 222,
+          "text": "static void stream_body(struct mg_connection *c, Fetch *f)"
+        },
+        {
+          "line": 277,
+          "text": "static void fetch_event(struct mg_connection *c, int event, void *data)"
+        },
+        {
+          "line": 495,
+          "text": "int sb_fetch_public_url_valid(const char *url)"
+        },
+        {
+          "line": 505,
+          "text": "int sb_fetch_firmware_file(const char *url, const char *path, unsigned *received,"
+        },
+        {
+          "line": 524,
+          "text": "static int cache_directory(char *path, size_t capacity)"
+        },
+        {
+          "line": 605,
+          "text": "static int oldest_first(const void *a, const void *b)"
+        },
+        {
+          "line": 613,
+          "text": "static void cache_publish(const char *directory,"
+        },
+        {
+          "line": 684,
+          "text": "static int write_all(int fd, const void *data, size_t size)"
+        },
+        {
+          "line": 760,
+          "text": "static int fallback_source_safe(const ImageUrl *source, const ImageUrl *service) {"
+        },
+        {
+          "line": 788,
+          "text": "static int fallback_url(const ImageUrl *source, const Settings *settings, int width, int height, ImageUrl *out) {"
+        },
+        {
+          "line": 812,
+          "text": "static int rejected_xml(const char *file) {"
+        },
+        {
+          "line": 819,
+          "text": "static int raster_signature(const char *file) {"
+        },
+        {
+          "line": 828,
+          "text": "static void worker(int pipe_fd,"
+        },
+        {
+          "line": 959,
+          "text": "static int local_artwork(struct mg_connection *c, struct mg_http_message *m)"
+        },
+        {
+          "line": 978,
+          "text": "int image_render_headers(struct mg_connection *c, struct mg_http_message *m)"
+        },
+        {
+          "line": 996,
+          "text": "int image_render_handle(struct mg_connection *c, struct mg_http_message *m)"
+        },
+        {
+          "line": 1136,
+          "text": "if (setrlimit(RLIMIT_AS, &limit) ||"
+        },
+        {
+          "line": 1137,
+          "text": "setrlimit(RLIMIT_CORE, &core))"
+        },
+        {
+          "line": 1172,
+          "text": "void image_render_tick(struct mg_mgr *mgr)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/CMakeLists.txt",
+      "bytes": 1780,
+      "sha256": "4a375616f353c94046cb89a131ef0371870739846aa693e1359c5f6fa290219f",
+      "anchors": [
+        {
+          "line": 3,
+          "text": "add_library(sbmusic_sqlite STATIC third_party/sqlite/sqlite3.c)"
+        },
+        {
+          "line": 7,
+          "text": "add_library(sbmusic STATIC music_library.c ../common/music_contracts.c)"
+        },
+        {
+          "line": 12,
+          "text": "add_library(sbmusic_storage STATIC music_storage.c music_storage_linux.c music_storage_library.c music_storage_adapter.c)"
+        },
+        {
+          "line": 16,
+          "text": "add_library(sbmusic_metadata STATIC music_metadata.c)"
+        },
+        {
+          "line": 20,
+          "text": "add_executable(sbmusic_metadata_helper music_metadata_helper.c)"
+        },
+        {
+          "line": 22,
+          "text": "add_library(sbmusic_scanner STATIC music_scanner.c)"
+        }
+      ]
+    },
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 807,
+      "sha256": "11256202f20453fbd3ae6db4cb7238b89a372975d31293e9bd88da811ff164e3",
+      "anchors": []
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "bytes": 19248,
+      "sha256": "b8900056912d777bf8da4b45016f6592ede1ad95af49f6e53c8e7e5ddec12f1c",
+      "anchors": [
+        {
+          "line": 1,
+          "text": "add_executable(test_protocol protocol/test_protocol.c ../native/sbbase/src/protocol.c)"
+        },
+        {
+          "line": 4,
+          "text": "add_executable(test_nowplaying nowplaying/test_nowplaying.c ../native/sbbase/src/nowplaying.c)"
+        },
+        {
+          "line": 7,
+          "text": "add_executable(test_alarms alarms/test_alarms.c"
+        },
+        {
+          "line": 11,
+          "text": "add_executable(test_sleep alarms/test_sleep.c ../native/sbbase/src/sleep.c ../native/sbbase/src/nowplaying.c)"
+        },
+        {
+          "line": 15,
+          "text": "add_library(backup_rename_fault SHARED backup/fault_rename.c)"
+        },
+        {
+          "line": 17,
+          "text": "add_executable(test_artwork_settings images/test_artwork_settings.c"
+        },
+        {
+          "line": 22,
+          "text": "add_executable(test_http_trace images/test_http_trace.c)"
+        },
+        {
+          "line": 25,
+          "text": "add_executable(test_mongoose_clock protocol/test_mongoose_clock.c"
+        },
+        {
+          "line": 87,
+          "text": "add_executable(test_remote_framebuffer remote/test_framebuffer.c ../native/sbwebserver/src/remote_framebuffer.c)"
+        },
+        {
+          "line": 106,
+          "text": "add_executable(test_catalog_merge repository/test_catalog_merge.c"
+        },
+        {
+          "line": 119,
+          "text": "add_executable(sbwebserver_catalog_test ${CATALOG_TEST_SOURCES})"
+        },
+        {
+          "line": 126,
+          "text": "add_executable(test_firmware_image firmware/image_check.c"
+        },
+        {
+          "line": 149,
+          "text": "add_executable(test_public_address images/test_public_address.c)"
+        },
+        {
+          "line": 161,
+          "text": "add_executable(test_tls_diagnostics tls/test_tls_diagnostics.c)"
+        },
+        {
+          "line": 164,
+          "text": "add_executable(sbproxy_test ../native/sbproxy/sbproxy.c"
+        },
+        {
+          "line": 171,
+          "text": "add_executable(test_hls images/test_hls.c ../native/sbproxy/hls_playlist.c ../native/sbproxy/hls_audio.c ../native/sbproxy/hls_id3.c)"
+        },
+        {
+          "line": 172,
+          "text": "add_executable(test_hls_id3 images/test_hls_id3.c ../native/sbproxy/hls_id3.c)"
+        },
+        {
+          "line": 174,
+          "text": "add_executable(test_hls_wait images/test_hls_wait.c)"
+        },
+        {
+          "line": 215,
+          "text": "add_executable(test_music_contracts music/test_contracts.c ../native/common/music_contracts.c ../native/sbbase/src/nowplaying.c)"
+        },
+        {
+          "line": 218,
+          "text": "add_executable(test_music_commands music/test_commands.c"
+        },
+        {
+          "line": 223,
+          "text": "add_executable(test_hls_id3 ../tests/images/test_hls_id3.c ../native/sbproxy/hls_id3.c)"
+        },
+        {
+          "line": 227,
+          "text": "add_executable(test_hls_wait images/test_hls_wait.c)"
+        },
+        {
+          "line": 245,
+          "text": "add_executable(test_music_scanner music/test_scanner.c)"
+        },
+        {
+          "line": 248,
+          "text": "add_executable(music_metadata_fault music/metadata_fault.c)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build-arm.sh",
+      "bytes": 6206,
+      "sha256": "09302d35c77414b14bcc64e3874e58e16087f356a526e1d4fa327fd3dd87bf3d",
+      "anchors": []
+    },
+    {
+      "path": "scripts/build-music-arm.sh",
+      "bytes": 4203,
+      "sha256": "71faa0557951e3972e5c163b0a3075835685f3db93d6a54b8c6f75359a42b42d",
+      "anchors": []
+    },
+    {
+      "path": "packaging/build-package.sh",
+      "bytes": 5640,
+      "sha256": "3f048fcdc5b3530a889744cc49379126d195276e396bd709e729a2ed25f0f1a6",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/test_scanner.c",
+      "bytes": 15252,
+      "sha256": "aef017e89795e33e6b9582426b0ac21db07f3518264e0764938e3f1c9131dc6d",
+      "anchors": [
+        {
+          "line": 17,
+          "text": "static uint64_t clock_ms(void) {"
+        },
+        {
+          "line": 44,
+          "text": "static sb_storage_status readonly_mounts(void *context, sb_storage_mounts *table) {"
+        },
+        {
+          "line": 53,
+          "text": "static uint64_t write_bytes(void) {"
+        },
+        {
+          "line": 76,
+          "text": "static void pause_ms(unsigned ms) {"
+        },
+        {
+          "line": 80,
+          "text": "static sb_scan_code request_scan(sb_music_scanner *s, uint64_t id, int initial) {"
+        },
+        {
+          "line": 86,
+          "text": "static void json(const char *s) {"
+        },
+        {
+          "line": 97,
+          "text": "static sb_ml_result wait_db(sb_music_library *h) {"
+        },
+        {
+          "line": 108,
+          "text": "static sb_ml_result exchange(sb_music_library *h, sb_ml_request *r) {"
+        },
+        {
+          "line": 125,
+          "text": "static void *queries(void *context) {"
+        },
+        {
+          "line": 160,
+          "text": "static int compare(const void *a, const void *b) {"
+        },
+        {
+          "line": 164,
+          "text": "int main(int argc, char **argv) {"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/test_scanner.py",
+      "bytes": 11039,
+      "sha256": "2c4a3a5add82648e4bc6698a5e949105902455980e0b673fb4cd1ffc4ff9bf9f",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/wp2_fixtures.py",
+      "bytes": 4072,
+      "sha256": "a9e2e103ba34a8271050b43f6f681c7d52e557319d48d5b155f97446cedb3091",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/metadata_fault.c",
+      "bytes": 1065,
+      "sha256": "5e74fc568f90b346df3c01a67ebf74b08d84ae7c1ab3abac2dac57a4f27f7612",
+      "anchors": [
+        {
+          "line": 8,
+          "text": "int main(int argc, char **argv) {"
+        },
+        {
+          "line": 11,
+          "text": "setrlimit(RLIMIT_CORE, &core);"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/benchmark_scanner.py",
+      "bytes": 3035,
+      "sha256": "4aa40856d851891f62550b26aa9f5ecf4cdd571eda50bbe0a66f507da0967634",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/test_scanner_qemu.py",
+      "bytes": 1096,
+      "sha256": "b4abfcf55ad0527e9e9db624463e8aaf642857e07ea01f3bacde1b5da4c79cd1",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/test_library_storage.py",
+      "bytes": 5218,
+      "sha256": "eb9b3c93ee5eb2aebbcd8b641e214694459f59c1bbbe19319f1ea9a10b50ff70",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/fixtures/media/manifest.json",
+      "bytes": 504,
+      "sha256": "720ca74332ea7a9e78355d57e663393447ecd047b51c142022c98bec6a71363f",
+      "anchors": []
+    },
+    {
+      "path": "native/sbmusic/third_party/sqlite/PROVENANCE.json",
+      "bytes": 566,
+      "sha256": "bf87f42dc33275057c28b999c1e23bf6e1d506455e47b8d9a48525f335f4abaa",
+      "anchors": []
+    }
+  ],
+  "primary_references": [
+    "https://id3.org/id3v2.3.0",
+    "https://id3.org/id3v2.4.0-structure",
+    "https://www.rfc-editor.org/rfc/rfc9639.html",
+    "https://www.xiph.org/vorbis/doc/Vorbis_I_spec.html",
+    "https://xiph.org/ogg/doc/framing.html",
+    "https://raw.githubusercontent.com/FFmpeg/FFmpeg/master/libavformat/mp3dec.c",
+    "https://man7.org/linux/man-pages/man2/getrlimit.2.html",
+    "https://man7.org/linux/man-pages/man2/setpriority.2.html",
+    "https://www.sqlite.org/lockingv3.html",
+    "https://www.sqlite.org/wal.html"
+  ]
+}

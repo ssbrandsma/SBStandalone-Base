@@ -6,3 +6,21 @@ target_compile_definitions(sbwebserver PRIVATE _GNU_SOURCE _POSIX_C_SOURCE=20080
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 target_link_libraries(sbwebserver PRIVATE Threads::Threads ZLIB::ZLIB)
+
+if(BUILD_TESTING)
+  get_target_property(SB_WEB_MUSIC_TEST_SOURCES sbwebserver SOURCES)
+  add_executable(sbwebserver_music_test ${SB_WEB_MUSIC_TEST_SOURCES}
+    src/music_stream.c src/music_stream_http.c ../common/music_resource_ipc.c ../common/music_http.c)
+  target_include_directories(sbwebserver_music_test PRIVATE src third_party ../sbbase/include)
+  target_compile_definitions(sbwebserver_music_test PRIVATE _GNU_SOURCE _POSIX_C_SOURCE=200809L
+    _FILE_OFFSET_BITS=64 SB_MUSIC_PLAYBACK_TESTING=1 MG_ENABLE_EPOLL=0 MG_ENABLE_POLL=1 MG_ENABLE_DIRLIST=0 MG_ENABLE_SSI=0)
+  target_link_libraries(sbwebserver_music_test PRIVATE Threads::Threads ZLIB::ZLIB)
+endif()
+
+if(SB_BUILD_MUSIC_SESSION)
+ get_target_property(SB_WEB_RUNTIME_SOURCES sbwebserver SOURCES)
+ add_executable(sbwebserver_music ${SB_WEB_RUNTIME_SOURCES} src/music_stream.c src/music_stream_http.c ../common/music_resource_ipc.c ../common/music_http.c)
+ target_include_directories(sbwebserver_music PRIVATE src third_party ../sbbase/include)
+ target_compile_definitions(sbwebserver_music PRIVATE _GNU_SOURCE _POSIX_C_SOURCE=200809L _FILE_OFFSET_BITS=64 SB_MUSIC_RUNTIME=1 MG_ENABLE_EPOLL=0 MG_ENABLE_POLL=1 MG_ENABLE_DIRLIST=0 MG_ENABLE_SSI=0)
+ target_link_libraries(sbwebserver_music PRIVATE Threads::Threads ZLIB::ZLIB)
+endif()

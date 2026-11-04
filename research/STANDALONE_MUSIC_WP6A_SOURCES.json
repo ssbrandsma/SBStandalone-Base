@@ -1,0 +1,1088 @@
+{
+  "date": "2026-11-02",
+  "base_head": "0a4b50e836446bdaf03804fe1a5477a139742243",
+  "scope": "WP6a source inspection and host fixtures; no device connection",
+  "inputs": [
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_REPORT.md",
+      "sha256": "ae2b3f537fadf9087ccab7ffe917a614906bef3ae5af39fff9ec433a45fe9353"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_GAPS.md",
+      "sha256": "69a46983463e83b84efa340dc88983245fd3da4ceac3bb490a24db278177bb0f"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_ROADMAP.md",
+      "sha256": "dccc9e3a7039a33d1bae627bc1b5c8abc84e8768305dbce2f224e24192583327"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_DIAGRAMS.md",
+      "sha256": "279a54896c48de7e523c36f561f324e33d02384cf40dd515c75ad3f2f753ca5e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_EVIDENCE.md",
+      "sha256": "25a1ce1ddde78f0d734db8a4498a94316d2e7f0fd7949f671d4abc19aae5ac4c"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_CONTRACTS.md",
+      "sha256": "d9dba0af501417633783b78821f13bff3d9d6c1adeb7708945e437a232de2439"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_REPORT.md",
+      "sha256": "7373ba4c2a179e4e76a4eac9218d08aeb2873614807fa0ceddf373297a20efd0"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_SCHEMA.md",
+      "sha256": "f5f2accb4434f5fc5583a423f4fa972325c501f6b95007c8eea5e67a79a65cb5"
+    }
+  ],
+  "files": [
+    {
+      "path": "native/sbmusic/music_storage.h",
+      "bytes": 5595,
+      "sha256": "cc5b2a3e86840032bdd449959be42ea2835dd9e65407b37f67278f4a7402d95f",
+      "anchors": [
+        {
+          "line": 61,
+          "text": "void sb_storage_init(sb_storage_model *, int enabled, int fab4, uint64_t incarnation);"
+        },
+        {
+          "line": 62,
+          "text": "sb_storage_status sb_storage_apply(sb_storage_model *, const sb_storage_event *, sb_storage_change *);"
+        },
+        {
+          "line": 63,
+          "text": "int sb_storage_current(const sb_storage_model *, unsigned slot, const sb_music_media *);"
+        },
+        {
+          "line": 64,
+          "text": "sb_storage_status sb_storage_import_identity(sb_storage_model *, const sb_storage_identity *);"
+        },
+        {
+          "line": 65,
+          "text": "sb_storage_status sb_storage_associate_library(sb_storage_model *,unsigned slot,const sb_music_media *,uint64_t library_id);"
+        },
+        {
+          "line": 68,
+          "text": "sb_storage_status sb_storage_parse(const char *, size_t, int mountinfo, sb_storage_mounts *);"
+        },
+        {
+          "line": 69,
+          "text": "sb_storage_status sb_storage_read_mounts(void *unused, sb_storage_mounts *);"
+        },
+        {
+          "line": 79,
+          "text": "sb_storage_status sb_storage_validate(const char *approved_parent, const sb_storage_mount *,"
+        },
+        {
+          "line": 81,
+          "text": "sb_storage_status sb_storage_root_check(const sb_storage_root *, const sb_music_media *,"
+        },
+        {
+          "line": 83,
+          "text": "sb_storage_status sb_storage_open_relative(const sb_storage_root *, const sb_music_media *,"
+        },
+        {
+          "line": 85,
+          "text": "void sb_storage_root_close(sb_storage_root *);"
+        },
+        {
+          "line": 86,
+          "text": "sb_storage_status sb_storage_identity_linux(const sb_storage_mount *, sb_storage_evidence *);"
+        },
+        {
+          "line": 103,
+          "text": "sb_storage_worker *sb_storage_worker_start(const sb_storage_worker_options *);"
+        },
+        {
+          "line": 104,
+          "text": "int sb_storage_worker_fd(const sb_storage_worker *);"
+        },
+        {
+          "line": 105,
+          "text": "sb_storage_status sb_storage_worker_submit(sb_storage_worker *, uint64_t request_id);"
+        },
+        {
+          "line": 106,
+          "text": "sb_storage_status sb_storage_worker_receive(sb_storage_worker *, sb_storage_discovery *);"
+        },
+        {
+          "line": 107,
+          "text": "sb_storage_status sb_storage_worker_stop(sb_storage_worker *); /* async */"
+        },
+        {
+          "line": 108,
+          "text": "sb_storage_status sb_storage_worker_destroy(sb_storage_worker *); /* only exited */"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage.c",
+      "bytes": 7668,
+      "sha256": "4f8aac1291ea114241d7a96273c54c4bab18aee8cabfed23fcaf1f2ca869915a",
+      "anchors": [
+        {
+          "line": 12,
+          "text": "void sb_storage_init(sb_storage_model *m,int enabled,int fab4,uint64_t incarnation)"
+        },
+        {
+          "line": 26,
+          "text": "sb_storage_status sb_storage_import_identity(sb_storage_model *m,const sb_storage_identity *id)"
+        },
+        {
+          "line": 35,
+          "text": "int sb_storage_current(const sb_storage_model *m,unsigned slot,const sb_music_media *media)"
+        },
+        {
+          "line": 37,
+          "text": "sb_storage_status sb_storage_associate_library(sb_storage_model *m,unsigned slot,const sb_music_media *media,uint64_t library_id)"
+        },
+        {
+          "line": 39,
+          "text": "if(!sb_storage_current(m,slot,media))return SB_STORAGE_STALE;"
+        },
+        {
+          "line": 58,
+          "text": "sb_storage_status sb_storage_apply(sb_storage_model *m,const sb_storage_event *e,sb_storage_change *change)"
+        },
+        {
+          "line": 95,
+          "text": "case SB_STORAGE_VALIDATED:"
+        },
+        {
+          "line": 102,
+          "text": "case SB_STORAGE_REMOVE:s->media.online=0;s->mounted=0;s->writable=0;s->state=SB_STORAGE_OFFLINE;break;"
+        },
+        {
+          "line": 103,
+          "text": "case SB_STORAGE_EJECT_REQUEST:s->media.online=0;s->writable=0;s->state=SB_STORAGE_QUIESCING;break;"
+        },
+        {
+          "line": 104,
+          "text": "case SB_STORAGE_UNMOUNT_OBSERVED:s->media.online=0;s->mounted=0;s->writable=0;s->state=SB_STORAGE_UNMOUNTED;break;"
+        },
+        {
+          "line": 105,
+          "text": "case SB_STORAGE_FAILURE:s->media.online=0;s->writable=0;s->state=SB_STORAGE_UNAVAILABLE;s->error=e->error;break;"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage_linux.c",
+      "bytes": 15797,
+      "sha256": "3bbf95e602c5316e6db8c43583af63e059791b12d91ac50a1ce4cb714730ce0b",
+      "anchors": [
+        {
+          "line": 41,
+          "text": "sb_storage_status sb_storage_parse(const char *input,size_t bytes,int info,sb_storage_mounts *out)"
+        },
+        {
+          "line": 76,
+          "text": "sb_storage_status sb_storage_read_mounts(void *unused,sb_storage_mounts *out)"
+        },
+        {
+          "line": 83,
+          "text": "sb_storage_status rc=error?SB_STORAGE_IO:sb_storage_parse(buffer,n,info,out);free(buffer);return rc;"
+        },
+        {
+          "line": 134,
+          "text": "sb_storage_status sb_storage_validate(const char *parent,const sb_storage_mount *mount,const sb_music_media *media,"
+        },
+        {
+          "line": 154,
+          "text": "rc=sb_storage_root_check(out,media,read,context);if(rc!=SB_STORAGE_OK)sb_storage_root_close(out);"
+        },
+        {
+          "line": 157,
+          "text": "sb_storage_status sb_storage_root_check(const sb_storage_root *r,const sb_music_media *current,sb_storage_mount_reader read,void *context)"
+        },
+        {
+          "line": 173,
+          "text": "sb_storage_status sb_storage_open_relative(const sb_storage_root *r,const sb_music_media *current,const char *relative,int directory,"
+        },
+        {
+          "line": 180,
+          "text": "sb_storage_status rc=sb_storage_root_check(r,current,read,context);if(rc!=SB_STORAGE_OK)return rc;"
+        },
+        {
+          "line": 184,
+          "text": "rc=sb_storage_root_check(r,current,read,context);"
+        },
+        {
+          "line": 188,
+          "text": "void sb_storage_root_close(sb_storage_root *r){if(r&&r->fd>=0){close(r->fd);r->fd=-1;}}"
+        },
+        {
+          "line": 203,
+          "text": "sb_storage_status sb_storage_identity_linux(const sb_storage_mount *m,sb_storage_evidence *out)"
+        },
+        {
+          "line": 235,
+          "text": "w->result.validation[i]=sb_storage_validate(w->options.approved_parent,&w->result.mounts.rows[i],&provisional,w->options.reader,w->options.reader_context,&root);"
+        },
+        {
+          "line": 236,
+          "text": "if(w->result.validation[i]==SB_STORAGE_OK)sb_storage_root_close(&root);"
+        },
+        {
+          "line": 239,
+          "text": "w->result.validation[i]=sb_storage_identity_linux(&w->result.mounts.rows[i],&w->result.evidence[i]);"
+        },
+        {
+          "line": 247,
+          "text": "sb_storage_worker *sb_storage_worker_start(const sb_storage_worker_options *options)"
+        },
+        {
+          "line": 261,
+          "text": "int sb_storage_worker_fd(const sb_storage_worker *w){return w?w->pipe[0]:-1;}"
+        },
+        {
+          "line": 262,
+          "text": "sb_storage_status sb_storage_worker_submit(sb_storage_worker *w,uint64_t id)"
+        },
+        {
+          "line": 270,
+          "text": "sb_storage_status sb_storage_worker_receive(sb_storage_worker *w,sb_storage_discovery *out)"
+        },
+        {
+          "line": 279,
+          "text": "sb_storage_status sb_storage_worker_stop(sb_storage_worker *w)"
+        },
+        {
+          "line": 283,
+          "text": "sb_storage_status sb_storage_worker_destroy(sb_storage_worker *w)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage_adapter.h",
+      "bytes": 1549,
+      "sha256": "88fd1f54e240fbc4492fbfbc3289e268db2fae54b21a70608d7535ec9e5a411c",
+      "anchors": [
+        {
+          "line": 6,
+          "text": "sb_storage_adapter *sb_storage_adapter_start(const sb_storage_worker_options *,uint64_t random_incarnation);"
+        },
+        {
+          "line": 10,
+          "text": "sb_storage_status sb_storage_adapter_hint(sb_storage_adapter *,uint64_t sequence,const char *action,const char *device_basename);"
+        },
+        {
+          "line": 13,
+          "text": "sb_storage_status sb_storage_adapter_eject(sb_storage_adapter *,unsigned slot,const sb_music_media *);"
+        },
+        {
+          "line": 16,
+          "text": "sb_storage_status sb_storage_adapter_pump(sb_storage_adapter *,uint64_t now_ms);"
+        },
+        {
+          "line": 17,
+          "text": "uint64_t sb_storage_adapter_deadline(const sb_storage_adapter *);"
+        },
+        {
+          "line": 18,
+          "text": "int sb_storage_adapter_fd(const sb_storage_adapter *);"
+        },
+        {
+          "line": 19,
+          "text": "const sb_storage_model *sb_storage_adapter_state(const sb_storage_adapter *);"
+        },
+        {
+          "line": 20,
+          "text": "sb_storage_status sb_storage_adapter_stop(sb_storage_adapter *);"
+        },
+        {
+          "line": 21,
+          "text": "sb_storage_status sb_storage_adapter_destroy(sb_storage_adapter *);"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage_adapter.c",
+      "bytes": 6845,
+      "sha256": "e03809b36916834f8bb5725d519642707c64ddf997c2ce23b7e980351509e198",
+      "anchors": [
+        {
+          "line": 10,
+          "text": "sb_storage_adapter *sb_storage_adapter_start(const sb_storage_worker_options *o,uint64_t incarnation)"
+        },
+        {
+          "line": 14,
+          "text": "a->worker=sb_storage_worker_start(o);if(!a->worker){free(a);return NULL;}"
+        },
+        {
+          "line": 15,
+          "text": "sb_storage_init(&a->model,1,1,incarnation);a->dirty=1;return a;"
+        },
+        {
+          "line": 22,
+          "text": "(void)sb_storage_apply(&a->model,&e,&change);"
+        },
+        {
+          "line": 32,
+          "text": "sb_storage_status sb_storage_adapter_eject(sb_storage_adapter *a,unsigned slot,const sb_music_media *media)"
+        },
+        {
+          "line": 39,
+          "text": "if(!sb_storage_current(&a->model,slot,media))return SB_STORAGE_STALE;"
+        },
+        {
+          "line": 42,
+          "text": "sb_storage_status sb_storage_adapter_hint(sb_storage_adapter *a,uint64_t sequence,const char *action,const char *dev)"
+        },
+        {
+          "line": 81,
+          "text": "if(sb_storage_apply(&a->model,&e,&change)!=SB_STORAGE_OK)continue;"
+        },
+        {
+          "line": 85,
+          "text": "e.expected_generation=s->media.generation;e.mount=*m;e.now_ms=now;(void)sb_storage_apply(&a->model,&e,&change);"
+        },
+        {
+          "line": 90,
+          "text": "sb_storage_status sb_storage_adapter_pump(sb_storage_adapter *a,uint64_t now)"
+        },
+        {
+          "line": 95,
+          "text": "if(a->inflight&&sb_storage_worker_receive(a->worker,&a->discovery)==SB_STORAGE_OK){"
+        },
+        {
+          "line": 105,
+          "text": "sb_storage_status rc=sb_storage_worker_submit(a->worker,++a->request);"
+        },
+        {
+          "line": 110,
+          "text": "uint64_t sb_storage_adapter_deadline(const sb_storage_adapter *a){return a?a->deadline:0;}"
+        },
+        {
+          "line": 111,
+          "text": "int sb_storage_adapter_fd(const sb_storage_adapter *a){return a?sb_storage_worker_fd(a->worker):-1;}"
+        },
+        {
+          "line": 112,
+          "text": "const sb_storage_model *sb_storage_adapter_state(const sb_storage_adapter *a){return a?&a->model:NULL;}"
+        },
+        {
+          "line": 113,
+          "text": "sb_storage_status sb_storage_adapter_stop(sb_storage_adapter *a)"
+        },
+        {
+          "line": 116,
+          "text": "sb_storage_status rc=sb_storage_worker_stop(a->worker);if(rc!=SB_STORAGE_OK)return rc;"
+        },
+        {
+          "line": 119,
+          "text": "sb_storage_status sb_storage_adapter_destroy(sb_storage_adapter *a)"
+        },
+        {
+          "line": 122,
+          "text": "sb_storage_status rc=sb_storage_worker_destroy(a->worker);if(rc==SB_STORAGE_OK)free(a);return rc;}"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage_library.h",
+      "bytes": 1004,
+      "sha256": "34def66800ef99cc49f05d13c7f1703c57c8eff8bfdc481ec159517aa296dedf",
+      "anchors": [
+        {
+          "line": 8,
+          "text": "sb_ml_status sb_storage_library_publish(sb_music_library *, const sb_music_media *,"
+        },
+        {
+          "line": 10,
+          "text": "int sb_storage_library_result_current(const sb_storage_model *,unsigned slot,"
+        },
+        {
+          "line": 15,
+          "text": "void sb_storage_revoke_resources(const sb_music_resource_provider *,const sb_music_media *previous,"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/music_storage_library.c",
+      "bytes": 1516,
+      "sha256": "f54a2627eb4b784fbe411af662a9309283c833a35794cddde34bb4f939aceae0",
+      "anchors": [
+        {
+          "line": 3,
+          "text": "sb_ml_status sb_storage_library_publish(sb_music_library *library,const sb_music_media *media,"
+        },
+        {
+          "line": 14,
+          "text": "int sb_storage_library_result_current(const sb_storage_model *model,unsigned slot,const sb_music_media *submitted,const sb_ml_result *result)"
+        },
+        {
+          "line": 16,
+          "text": "if(!result||result->status!=SB_ML_OK||!sb_storage_current(model,slot,submitted))return 0;"
+        },
+        {
+          "line": 21,
+          "text": "void sb_storage_revoke_resources(const sb_music_resource_provider *provider,const sb_music_media *previous,const sb_music_media *current)"
+        }
+      ]
+    },
+    {
+      "path": "native/sbmusic/CMakeLists.txt",
+      "bytes": 1094,
+      "sha256": "ff7088251e0b675439adf009678921375505425856e6e72985a4b9c7dfb19862",
+      "anchors": []
+    },
+    {
+      "path": "native/common/music_contracts.h",
+      "bytes": 6091,
+      "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d",
+      "anchors": []
+    },
+    {
+      "path": "native/common/music_contracts.c",
+      "bytes": 4193,
+      "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6",
+      "anchors": []
+    },
+    {
+      "path": "native/sbmusic/music_library.h",
+      "bytes": 3410,
+      "sha256": "62f40bc7df75bc9f199260f1b64ac9438b115410f3cc90260a14605283dfdf1e",
+      "anchors": []
+    },
+    {
+      "path": "native/sbmusic/music_library.c",
+      "bytes": 42953,
+      "sha256": "a99b8269bf66f276256db8c5867cfbb9e3d09df3f1a2ea7b3dba89d20050fd54",
+      "anchors": []
+    },
+    {
+      "path": "native/sbmusic/schema.h",
+      "bytes": 3001,
+      "sha256": "6580c54b49baef6f8742e7df7e1f30180c1c4afda76825266253ee3703130f29",
+      "anchors": []
+    },
+    {
+      "path": "applet/MusicStorage.lua",
+      "bytes": 2054,
+      "sha256": "67f9c56fe2c6d53ba25f59a7169d06c9fe02b81a0b157c4736dd2b2de67aaa94",
+      "anchors": [
+        {
+          "line": 5,
+          "text": "function M.start(options)"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/test_storage.c",
+      "bytes": 25657,
+      "sha256": "19bd795c9f1c274e4227b5d6b4f0d0c4a0fdaaad9dbc3352c9ac384d05809b4b",
+      "anchors": [
+        {
+          "line": 37,
+          "text": "{sb_storage_change c;assert(sb_storage_apply(m,e,&c)==SB_STORAGE_OK);return c;}"
+        },
+        {
+          "line": 47,
+          "text": "sb_storage_model m;sb_storage_init(&m,1,1,0x12345678);assert(m.count==0);"
+        },
+        {
+          "line": 53,
+          "text": "assert(sb_storage_current(&m,0,&first));assert(m.media[0].type==SB_STORAGE_USB&&m.media[0].writable);"
+        },
+        {
+          "line": 54,
+          "text": "assert(sb_storage_associate_library(&m,0,&first,42)==SB_STORAGE_OK);"
+        },
+        {
+          "line": 56,
+          "text": "sb_storage_change c;assert(sb_storage_apply(&m,&dup,&c)==SB_STORAGE_STALE);"
+        },
+        {
+          "line": 58,
+          "text": "sb_storage_event e=event(&m,0,SB_STORAGE_REMOVE);c=apply(&m,&e);assert(c.revoked&&!sb_storage_current(&m,0,&first));"
+        },
+        {
+          "line": 59,
+          "text": "e=event(&m,0,SB_STORAGE_VALIDATED);assert(sb_storage_apply(&m,&e,&c)==SB_STORAGE_STALE);"
+        },
+        {
+          "line": 62,
+          "text": "assert(m.media[0].library_id==42&&sb_storage_associate_library(&m,0,&first,99)==SB_STORAGE_STALE);"
+        },
+        {
+          "line": 63,
+          "text": "e=event(&m,0,SB_STORAGE_REMOVE);e.expected_generation=first.generation;assert(sb_storage_apply(&m,&e,&c)==SB_STORAGE_STALE);"
+        },
+        {
+          "line": 72,
+          "text": "sb_storage_init(&m,1,1,22);insert(&m,0,1,1);validate(&m,0);"
+        },
+        {
+          "line": 79,
+          "text": "sb_storage_init(&m,1,1,23);insert(&m,0,0,0);validate(&m,0);first=m.media[0].media;"
+        },
+        {
+          "line": 83,
+          "text": "sb_storage_init(&m,1,1,24);insert(&m,0,4,1);sb_storage_identity id=m.identities[0];"
+        },
+        {
+          "line": 84,
+          "text": "sb_storage_init(&m,1,1,25);assert(sb_storage_import_identity(&m,&id)==SB_STORAGE_OK);assert(sb_storage_import_identity(&m,&id)==SB_STORAGE_AMBIGUOUS);insert(&m,0,4,1);assert(sb_mus"
+        },
+        {
+          "line": 85,
+          "text": "sb_storage_init(&m,0,1,26);e=event(&m,0,SB_STORAGE_INSERT);assert(sb_storage_apply(&m,&e,&c)==SB_STORAGE_DISABLED&&m.count==0);"
+        },
+        {
+          "line": 86,
+          "text": "sb_storage_init(&m,1,0,27);assert(sb_storage_apply(&m,&e,&c)==SB_STORAGE_DISABLED&&m.count==0);"
+        },
+        {
+          "line": 87,
+          "text": "sb_storage_init(&m,1,1,28);for(unsigned i=0;i<SB_STORAGE_MAX;i++)insert(&m,i,i,1);"
+        },
+        {
+          "line": 88,
+          "text": "e=event(&m,SB_STORAGE_MAX,SB_STORAGE_INSERT);assert(sb_storage_apply(&m,&e,&c)==SB_STORAGE_INVALID);"
+        },
+        {
+          "line": 89,
+          "text": "m.next_generation=INT64_MAX;e=event(&m,0,SB_STORAGE_INSERT);e.mount.mount_id++;assert(sb_storage_apply(&m,&e,&c)==SB_STORAGE_LIMIT);"
+        },
+        {
+          "line": 98,
+          "text": "assert(sb_storage_parse(b,n,!i,t)==SB_STORAGE_OK);assert(t->count==3);assert(t->rows[1].read_only);assert(!strcmp(t->rows[1].path,\"/media/My Music\"));"
+        },
+        {
+          "line": 99,
+          "text": "assert(sb_storage_parse(b,n-1,!i,t)==SB_STORAGE_INVALID);"
+        }
+      ]
+    },
+    {
+      "path": "tests/music/test_storage.py",
+      "bytes": 288,
+      "sha256": "4a5be739e33dee6061012aa4290ba1a4f5a4a85c55dd89bd31c5b66b05cb8336",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/test_storage_lua.lua",
+      "bytes": 1665,
+      "sha256": "59b6c840c69b66642bd2bc773b82c4f56ff73a48e868654fbb8bc5022bd5d664",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/test_storage_qemu.py",
+      "bytes": 599,
+      "sha256": "759ab8cb594578c4923d8db24ac82b553a08bb77a0fcc3138c3aa58e3d924c68",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/fixtures/mountinfo.txt",
+      "bytes": 180,
+      "sha256": "836cc2db61d2863c1d093d3785027717e6dd73c43db02b94982bf8520705f9be",
+      "anchors": []
+    },
+    {
+      "path": "tests/music/fixtures/mounts.txt",
+      "bytes": 141,
+      "sha256": "2b708c822e5d1380fb01125cc9c59594c94c605bf02f871e75e70ed1dd8e19b1",
+      "anchors": []
+    },
+    {
+      "path": "scripts/build-music-arm.sh",
+      "bytes": 3126,
+      "sha256": "1d4616ea9d0a153ad53333f7624155096dd06f07cd74c595790d49df08815d67",
+      "anchors": [
+        {
+          "line": 9,
+          "text": "case \"$platform\" in"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build-arm.sh",
+      "bytes": 6207,
+      "sha256": "3035434da463eedb85813ea720c288fce554950251dbd1b13c4ec4973f972f45",
+      "anchors": [
+        {
+          "line": 6,
+          "text": "case \"$(uname -s)\" in"
+        },
+        {
+          "line": 34,
+          "text": "case \"$platform\" in"
+        }
+      ]
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "bytes": 18595,
+      "sha256": "8b1ca4a5b8a20dd72b68b7c1dd5efe987539e1fb8e429e85582ceda04ce6975d",
+      "anchors": []
+    },
+    {
+      "path": ".local/fab4-music-research/device/etc/udev/scripts/mount.sh",
+      "bytes": 2024,
+      "sha256": "9d1cb3fc5c547f5665609ef7f681a01e25e3b9881a9484c152514347d577fbda",
+      "anchors": [
+        {
+          "line": 8,
+          "text": "MOUNT=\"/bin/mount -t auto\""
+        },
+        {
+          "line": 9,
+          "text": "PMOUNT=\"/usr/bin/pmount\""
+        },
+        {
+          "line": 10,
+          "text": "UMOUNT=\"/bin/umount\""
+        },
+        {
+          "line": 29,
+          "text": "MOUNT=\"/usr/bin/ntfs-3g\""
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/etc/udev/rules.d/local.rules",
+      "bytes": 1460,
+      "sha256": "fbb2957e270aa4b4be974e9976eec100d07449b832c0b3d9b8cdd04ada157f9b",
+      "anchors": [
+        {
+          "line": 17,
+          "text": "SUBSYSTEM==\"block\", ACTION==\"add\"    RUN+=\"/etc/udev/scripts/mount.sh\""
+        },
+        {
+          "line": 18,
+          "text": "SUBSYSTEM==\"block\", ACTION==\"remove\" RUN+=\"/etc/udev/scripts/mount.sh\""
+        },
+        {
+          "line": 21,
+          "text": "SUBSYSTEM==\"net\", ACTION==\"add\" RUN+=\"/etc/udev/scripts/network.sh\""
+        },
+        {
+          "line": 22,
+          "text": "SUBSYSTEM==\"net\", ACTION==\"remove\" RUN+=\"/etc/udev/scripts/network.sh\""
+        },
+        {
+          "line": 31,
+          "text": "SUBSYSTEM==\"input\", KERNEL==\"event[0-9]*\", SYSFS{modalias}==\"input:*-e0*,3,*a0,1,*18,*\", SYMLINK+=\"input/touchscreen0\""
+        },
+        {
+          "line": 34,
+          "text": "SUBSYSTEM==\"tty\", KERNEL==\"ttyUSB?\", ACTION==\"add\", RUN+=\"/etc/udev/scripts/usbserial.sh\""
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/etc/udev/rules.d/60-persistent-storage.rules",
+      "bytes": 4080,
+      "sha256": "b0f4adcde21faccc2fc6af5553bc5dc4c5d4364d267b674d070e8fee381ff9d3",
+      "anchors": []
+    },
+    {
+      "path": ".local/fab4-music-research/device/etc/udev/mount.blacklist",
+      "bytes": 33,
+      "sha256": "961274d50f9d5d130c0b8d488c66a92b2fbf1df2d313692e7e4de4cd492b2572",
+      "anchors": []
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/MediaManager/MediaManagerApplet.lua",
+      "bytes": 25112,
+      "sha256": "731d8b698a10cd0728101b35597317e7c01962ccf4852f8f629f7b6fd219a67f",
+      "anchors": [
+        {
+          "line": 31,
+          "text": "function init(self)"
+        },
+        {
+          "line": 35,
+          "text": "self.supportedFormats         = {\"FAT16\",\"FAT32\",\"NTFS\",\"ext2\",\"ext3\"}"
+        },
+        {
+          "line": 45,
+          "text": "function mmStartupCheck(self)"
+        },
+        {
+          "line": 74,
+          "text": "function addMountedDevice(self, devName)"
+        },
+        {
+          "line": 114,
+          "text": "function showMediaManagerWindow(self, devName)"
+        },
+        {
+          "line": 172,
+          "text": "function udevEventHandler(self, evt, msg)"
+        },
+        {
+          "line": 207,
+          "text": "function mmGetMountedDevices(self)"
+        },
+        {
+          "line": 217,
+          "text": "function mediaType(self, devName)"
+        },
+        {
+          "line": 231,
+          "text": "function mmRegisterMenuItem(self, options)"
+        },
+        {
+          "line": 270,
+          "text": "function mmRegisterOnEjectHandler(self, options)"
+        },
+        {
+          "line": 286,
+          "text": "function mmRegisterOnMountHandler(self, options)"
+        },
+        {
+          "line": 298,
+          "text": "function getKey(self, ...)"
+        },
+        {
+          "line": 307,
+          "text": "function _mountingDrive(self, devName)"
+        },
+        {
+          "line": 355,
+          "text": "function _deviceRemoval(self, devName)"
+        },
+        {
+          "line": 407,
+          "text": "function _unmountActions(self, devName, silent, force)"
+        },
+        {
+          "line": 419,
+          "text": "function _runOnEjectHandlers(self, devName)"
+        },
+        {
+          "line": 431,
+          "text": "function _unmountDrive(self, devName, force)"
+        },
+        {
+          "line": 492,
+          "text": "function _mountingDriveTimer(self, devName)"
+        },
+        {
+          "line": 527,
+          "text": "function _unmountingDriveTimer(self, devName)"
+        },
+        {
+          "line": 571,
+          "text": "function _unmountSuccess(self, devName)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/MediaManager/MediaManagerMeta.lua",
+      "bytes": 1675,
+      "sha256": "db8f081d0c91e818b9aa05c3c8ab334b38888a32849b7a494c9473ca853c954d",
+      "anchors": [
+        {
+          "line": 13,
+          "text": "function jiveVersion(meta)"
+        },
+        {
+          "line": 18,
+          "text": "function defaultSettings(self)"
+        },
+        {
+          "line": 25,
+          "text": "function registerApplet(meta)"
+        },
+        {
+          "line": 37,
+          "text": "function configureApplet(meta)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SqueezeCenter/SqueezeCenterApplet.lua",
+      "bytes": 25400,
+      "sha256": "526973a57d2587cd86359dd0eded3a42744d142f2dbff3a1b199f5a77fec9dc6",
+      "anchors": [
+        {
+          "line": 35,
+          "text": "function init(self)"
+        },
+        {
+          "line": 66,
+          "text": "function squeezecenterStartupCheck(self)"
+        },
+        {
+          "line": 140,
+          "text": "function _firstTableElement(self, t)"
+        },
+        {
+          "line": 147,
+          "text": "function mmSqueezeCenterMenu(self, devName)"
+        },
+        {
+          "line": 173,
+          "text": "function switchServerToDifferentMedia(self, devName)"
+        },
+        {
+          "line": 217,
+          "text": "function settingsShow(self)"
+        },
+        {
+          "line": 243,
+          "text": "function _updateSettingsMenu(self)"
+        },
+        {
+          "line": 274,
+          "text": "function _squeezecenterAction(self, icon, text, subtext, time, action, silent)"
+        },
+        {
+          "line": 349,
+          "text": "function _getStatusText(self)"
+        },
+        {
+          "line": 380,
+          "text": "function _updateStatus(self)"
+        },
+        {
+          "line": 388,
+          "text": "function udevEventHandler(self, evt, msg)"
+        },
+        {
+          "line": 422,
+          "text": "function mediaType(self, devName)"
+        },
+        {
+          "line": 432,
+          "text": "function mmStopSqueezeCenter(self, devName)"
+        },
+        {
+          "line": 445,
+          "text": "function _stopServer(self, silent)"
+        },
+        {
+          "line": 454,
+          "text": "function stopSqueezeCenter(self)"
+        },
+        {
+          "line": 459,
+          "text": "function startSqueezeCenter(self)"
+        },
+        {
+          "line": 463,
+          "text": "function _confirmWipeRescan(self)"
+        },
+        {
+          "line": 474,
+          "text": "function _confirmStopServer(self)"
+        },
+        {
+          "line": 485,
+          "text": "function _wipeRescan(self)"
+        },
+        {
+          "line": 524,
+          "text": "function _wipeTimer(self, scDrive)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SqueezeCenter/SqueezeCenterMeta.lua",
+      "bytes": 1721,
+      "sha256": "35db0ea936bb1d0c278853fc3dac767ddd0d7dab1b2e85fb7c43a9debebf9985",
+      "anchors": [
+        {
+          "line": 14,
+          "text": "function jiveVersion(meta)"
+        },
+        {
+          "line": 19,
+          "text": "function defaultSettings(meta)"
+        },
+        {
+          "line": 26,
+          "text": "function registerApplet(meta)"
+        },
+        {
+          "line": 37,
+          "text": "function configureApplet(meta)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SqueezeboxFab4/SqueezeboxFab4Applet.lua",
+      "bytes": 23037,
+      "sha256": "c2724ead476ed48e3e1821b2110d20e3fa158f984d800e883082152087681a5d",
+      "anchors": [
+        {
+          "line": 106,
+          "text": "function init(self)"
+        },
+        {
+          "line": 177,
+          "text": "function addUeventListener(self, pattern, listener)"
+        },
+        {
+          "line": 181,
+          "text": "function ourUeventHandler(evt, msg)"
+        },
+        {
+          "line": 192,
+          "text": "function initBrightness(self)"
+        },
+        {
+          "line": 249,
+          "text": "function doBrightnessRamping(self, target)"
+        },
+        {
+          "line": 279,
+          "text": "function getSmoothedLux()"
+        },
+        {
+          "line": 328,
+          "text": "function doAutomaticBrightnessTimer(self)"
+        },
+        {
+          "line": 401,
+          "text": "function isScreenOff(self)"
+        },
+        {
+          "line": 406,
+          "text": "function getBrightness (self)"
+        },
+        {
+          "line": 420,
+          "text": "function setBrightness (self, level)"
+        },
+        {
+          "line": 435,
+          "text": "function _setBrightness(self, level)"
+        },
+        {
+          "line": 474,
+          "text": "function _softResetAction(self, event)"
+        },
+        {
+          "line": 480,
+          "text": "function notify_playerCurrent(self, player)"
+        },
+        {
+          "line": 512,
+          "text": "function notify_playerDelete(self, player)"
+        },
+        {
+          "line": 523,
+          "text": "function setDate(self, epoch)"
+        },
+        {
+          "line": 583,
+          "text": "function _updateTask(self)"
+        },
+        {
+          "line": 598,
+          "text": "function settingsMinBrightnessShow (self, menuItem)"
+        },
+        {
+          "line": 684,
+          "text": "function settingsBrightnessShow (self, menuItem)"
+        },
+        {
+          "line": 772,
+          "text": "function settingsBrightnessControlShow(self, menuItem)"
+        },
+        {
+          "line": 812,
+          "text": "function SCGuardianTimer(self, action)"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/etc/init.d/squeezecenter",
+      "bytes": 2173,
+      "sha256": "ae913ec4ba84d7b5003f08fddc2c3df15a453071784482e35f0dae2faf335c0d",
+      "anchors": [
+        {
+          "line": 14,
+          "text": "case \"$1\" in"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/device/etc/init.d/squeezeplay",
+      "bytes": 1220,
+      "sha256": "8c412da36a2b0404a923fd70e6413eda4bced055fdeea444bb24c4a64dd9694c",
+      "anchors": [
+        {
+          "line": 3,
+          "text": "case \"$1\" in"
+        }
+      ]
+    },
+    {
+      "path": ".local/fab4-music-research/initial-inventory.txt",
+      "bytes": 11663,
+      "sha256": "7b363cac1e05adb119861d7a04ef4b5c7c50e9086da533ecfe4161c9b46402ba",
+      "anchors": []
+    },
+    {
+      "path": ".local/fab4-music-research/storage-inventory.txt",
+      "bytes": 3016,
+      "sha256": "9ea7e68b64baf921fb6d035f183db288c498bd5ac2557790361f0dd3d91eb194",
+      "anchors": [
+        {
+          "line": 19,
+          "text": "SUBSYSTEM==\"block\", ACTION==\"add\"    RUN+=\"/etc/udev/scripts/mount.sh\""
+        },
+        {
+          "line": 20,
+          "text": "SUBSYSTEM==\"block\", ACTION==\"remove\" RUN+=\"/etc/udev/scripts/mount.sh\""
+        },
+        {
+          "line": 23,
+          "text": "SUBSYSTEM==\"net\", ACTION==\"add\" RUN+=\"/etc/udev/scripts/network.sh\""
+        },
+        {
+          "line": 24,
+          "text": "SUBSYSTEM==\"net\", ACTION==\"remove\" RUN+=\"/etc/udev/scripts/network.sh\""
+        },
+        {
+          "line": 33,
+          "text": "SUBSYSTEM==\"input\", KERNEL==\"event[0-9]*\", SYSFS{modalias}==\"input:*-e0*,3,*a0,1,*18,*\", SYMLINK+=\"input/touchscreen0\""
+        },
+        {
+          "line": 36,
+          "text": "SUBSYSTEM==\"tty\", KERNEL==\"ttyUSB?\", ACTION==\"add\", RUN+=\"/etc/udev/scripts/usbserial.sh\""
+        }
+      ]
+    }
+  ],
+  "external_references": [
+    {
+      "url": "https://www.kernel.org/pub/linux/docs/man-pages/book/man-pages-6.16.pdf",
+      "supports": "mountinfo introduction Linux 2.6.26; API reference, not actual device observation"
+    },
+    {
+      "url": "https://www.kernel.org/doc/html/v6.5/filesystems/proc.html",
+      "supports": "mountinfo identity fields and proc semantics"
+    },
+    {
+      "url": "https://kernel.org/doc/html/v5.17/filesystems/vfat.html",
+      "supports": "VFAT mount name/encoding/time options; historical installed script authoritative"
+    },
+    {
+      "url": "https://android.googlesource.com/kernel/common/+/d3601e56cf64a3f2df6f6380cccb3644274406e2/fs/fat/inode.c",
+      "supports": "FAT maximum file size 0xffffffff"
+    },
+    {
+      "url": "https://github.com/tuxera/ntfs-3g/wiki/Manual",
+      "supports": "NTFS-3G option-dependent behavior"
+    },
+    {
+      "url": "https://www.sqlite.org/lockingv3.html",
+      "supports": "SQLite locking and hot-journal recovery"
+    },
+    {
+      "url": "https://www.sqlite.org/wal.html",
+      "supports": "WAL same-host shared memory, sidecars and read-only conditions"
+    },
+    {
+      "url": "https://www.sqlite.org/howtocorrupt.html",
+      "supports": "locking/fsync and removal corruption caveats"
+    }
+  ]
+}

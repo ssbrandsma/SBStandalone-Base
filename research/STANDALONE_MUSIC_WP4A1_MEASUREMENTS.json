@@ -1,0 +1,454 @@
+{
+  "date": "2026-11-03",
+  "scope": "Host WSL x86_64 and user-mode QEMU; instrumented producer/decoder; no device/audio measurements",
+  "host_ctest": {
+    "passed": 95,
+    "total": 95,
+    "seconds": 215.88
+  },
+  "final_focused": {
+    "passed": 5,
+    "total": 5
+  },
+  "http_and_protocol": {
+    "real_http_messages": 100,
+    "request_p50_ms": 0.24439900153083727,
+    "request_p95_ms": 0.39113100137910806,
+    "request_p99_ms": 0.812163001683075,
+    "base_before": {
+      "rss_peak_kib": 6528,
+      "cpu_ticks": 0,
+      "fds": 7
+    },
+    "base_after": {
+      "rss_peak_kib": 6528,
+      "cpu_ticks": 1,
+      "fds": 7
+    },
+    "idle_four_subscriptions_before": {
+      "rss_peak_kib": 6528,
+      "cpu_ticks": 0,
+      "fds": 11
+    },
+    "idle_four_subscriptions_after": {
+      "rss_peak_kib": 6528,
+      "cpu_ticks": 0,
+      "fds": 11
+    },
+    "idle_wall_seconds": 0.5,
+    "clock_ticks_per_second": 100,
+    "extra_public_ports": 0,
+    "native_protocol": {
+      "messages": 5000,
+      "wall_seconds": 0.46218141999997897,
+      "messages_per_second": 10818.262664042677,
+      "before": {
+        "rss_peak_kib": 1664,
+        "cpu_ticks": 0,
+        "fds": 4
+      },
+      "after": {
+        "rss_peak_kib": 1664,
+        "cpu_ticks": 16,
+        "fds": 4
+      },
+      "scope": "includes Python JSON, pipe IPC and syscall costs; not pure native parser throughput"
+    }
+  },
+  "lua_native": {
+    "lua_native_six_transitions": [
+      {
+        "from": "radio",
+        "to": "music",
+        "simulated_elapsed_ms": 50
+      },
+      {
+        "from": "music",
+        "to": "radio",
+        "simulated_elapsed_ms": 100
+      },
+      {
+        "from": "spotify",
+        "to": "music",
+        "simulated_elapsed_ms": 100
+      },
+      {
+        "from": "music",
+        "to": "spotify",
+        "simulated_elapsed_ms": 100
+      },
+      {
+        "from": "qobuz",
+        "to": "music",
+        "simulated_elapsed_ms": 100
+      },
+      {
+        "from": "music",
+        "to": "qobuz",
+        "simulated_elapsed_ms": 100
+      }
+    ],
+    "wire_messages": 214,
+    "wall_seconds": 0.15783972600183915,
+    "pending_subscriptions_max": 4,
+    "idle_lua_heap_with_apps_kib": 275.2568359375,
+    "idle_simulated_ms_without_new_messages": 1000,
+    "lua_heap_kib": 419.2265625,
+    "native_peak_rss_kib": 1664,
+    "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+  },
+  "sanitizer_observations": [
+    {
+      "actual_scanner_files": 1000,
+      "concurrent_browse_queries": 2141,
+      "successful_queries": 2141,
+      "retryable_queries": 0,
+      "query_max_ms": 33,
+      "scan_ms": 7332,
+      "decoder": "mocked playing"
+    },
+    {
+      "http_bytes": 1048576,
+      "http_seconds": 0.7106617160025053,
+      "bytes_per_second": 1475492.454973195,
+      "fds_before": 5,
+      "fds_after": 5,
+      "simultaneous_streams": 4,
+      "buffer_bytes": 16384
+    },
+    {
+      "native_starts": 5,
+      "verified_encoded_bytes": 9560,
+      "queue_entries_before_removal": 3,
+      "audio_output": "mocked, not measured"
+    },
+    {
+      "production_auth": "pass",
+      "health_ms": 0.48421899919048883,
+      "fds": 7,
+      "pending_limit": 4,
+      "extra_public_ports": 0
+    },
+    {
+      "lua_native_six_transitions": [
+        {
+          "from": "radio",
+          "to": "music",
+          "simulated_elapsed_ms": 50
+        },
+        {
+          "from": "music",
+          "to": "radio",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "spotify",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "spotify",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "qobuz",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "qobuz",
+          "simulated_elapsed_ms": 100
+        }
+      ],
+      "wire_messages": 214,
+      "wall_seconds": 0.17317855100191082,
+      "pending_subscriptions_max": 4,
+      "idle_lua_heap_with_apps_kib": 274.0380859375,
+      "idle_simulated_ms_without_new_messages": 1000,
+      "lua_heap_kib": 416.0859375,
+      "native_peak_rss_kib": 9344,
+      "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+    }
+  ],
+  "final_asan_lua": [
+    {
+      "lua_native_six_transitions": [
+        {
+          "from": "radio",
+          "to": "music",
+          "simulated_elapsed_ms": 50
+        },
+        {
+          "from": "music",
+          "to": "radio",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "spotify",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "spotify",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "qobuz",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "qobuz",
+          "simulated_elapsed_ms": 100
+        }
+      ],
+      "wire_messages": 214,
+      "wall_seconds": 0.17998902399995131,
+      "pending_subscriptions_max": 4,
+      "idle_lua_heap_with_apps_kib": 275.2568359375,
+      "idle_simulated_ms_without_new_messages": 1000,
+      "lua_heap_kib": 419.2265625,
+      "native_peak_rss_kib": 9344,
+      "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+    }
+  ],
+  "qemu_observations": [
+    {
+      "http_bytes": 1048576,
+      "http_seconds": 0.6866629450014443,
+      "bytes_per_second": 1527060.7037020097,
+      "fds_before": 5,
+      "fds_after": 5,
+      "simultaneous_streams": 4,
+      "buffer_bytes": 16384
+    },
+    {
+      "native_starts": 5,
+      "verified_encoded_bytes": 9560,
+      "queue_entries_before_removal": 3,
+      "audio_output": "mocked, not measured"
+    },
+    {
+      "http_bytes": 1048576,
+      "http_seconds": 0.6742296010015707,
+      "bytes_per_second": 1555220.9491282143,
+      "fds_before": 5,
+      "fds_after": 5,
+      "simultaneous_streams": 4,
+      "buffer_bytes": 16384
+    },
+    {
+      "native_starts": 5,
+      "verified_encoded_bytes": 9560,
+      "queue_entries_before_removal": 3,
+      "audio_output": "mocked, not measured"
+    },
+    {
+      "production_auth": "pass",
+      "health_ms": 0.7411410006170627,
+      "fds": 7,
+      "pending_limit": 4,
+      "extra_public_ports": 0
+    },
+    {
+      "lua_native_six_transitions": [
+        {
+          "from": "radio",
+          "to": "music",
+          "simulated_elapsed_ms": 50
+        },
+        {
+          "from": "music",
+          "to": "radio",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "spotify",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "spotify",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "qobuz",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "qobuz",
+          "simulated_elapsed_ms": 100
+        }
+      ],
+      "wire_messages": 214,
+      "wall_seconds": 0.2218446180013416,
+      "pending_subscriptions_max": 4,
+      "idle_lua_heap_with_apps_kib": 274.0380859375,
+      "idle_simulated_ms_without_new_messages": 1000,
+      "lua_heap_kib": 416.0859375,
+      "native_peak_rss_kib": 8740,
+      "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+    },
+    {
+      "production_auth": "pass",
+      "health_ms": 0.6425629981094971,
+      "fds": 7,
+      "pending_limit": 4,
+      "extra_public_ports": 0
+    },
+    {
+      "lua_native_six_transitions": [
+        {
+          "from": "radio",
+          "to": "music",
+          "simulated_elapsed_ms": 50
+        },
+        {
+          "from": "music",
+          "to": "radio",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "spotify",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "spotify",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "qobuz",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "qobuz",
+          "simulated_elapsed_ms": 100
+        }
+      ],
+      "wire_messages": 214,
+      "wall_seconds": 0.20141499000237673,
+      "pending_subscriptions_max": 4,
+      "idle_lua_heap_with_apps_kib": 274.0380859375,
+      "idle_simulated_ms_without_new_messages": 1000,
+      "lua_heap_kib": 416.0859375,
+      "native_peak_rss_kib": 8888,
+      "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+    }
+  ],
+  "final_qemu_lua": [
+    {
+      "lua_native_six_transitions": [
+        {
+          "from": "radio",
+          "to": "music",
+          "simulated_elapsed_ms": 50
+        },
+        {
+          "from": "music",
+          "to": "radio",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "spotify",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "spotify",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "qobuz",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "qobuz",
+          "simulated_elapsed_ms": 100
+        }
+      ],
+      "wire_messages": 214,
+      "wall_seconds": 0.2096021679972182,
+      "pending_subscriptions_max": 4,
+      "idle_lua_heap_with_apps_kib": 275.2568359375,
+      "idle_simulated_ms_without_new_messages": 1000,
+      "lua_heap_kib": 419.2265625,
+      "native_peak_rss_kib": 8616,
+      "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+    },
+    {
+      "lua_native_six_transitions": [
+        {
+          "from": "radio",
+          "to": "music",
+          "simulated_elapsed_ms": 50
+        },
+        {
+          "from": "music",
+          "to": "radio",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "spotify",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "spotify",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "qobuz",
+          "to": "music",
+          "simulated_elapsed_ms": 100
+        },
+        {
+          "from": "music",
+          "to": "qobuz",
+          "simulated_elapsed_ms": 100
+        }
+      ],
+      "wire_messages": 214,
+      "wall_seconds": 0.20817666899893084,
+      "pending_subscriptions_max": 4,
+      "idle_lua_heap_with_apps_kib": 275.2568359375,
+      "idle_simulated_ms_without_new_messages": 1000,
+      "lua_heap_kib": 419.2265625,
+      "native_peak_rss_kib": 8888,
+      "proof": "actual app/adapters and native protocol; instrumented producer/decoder; no hardware audio"
+    }
+  ],
+  "abi_structure_bytes": {
+    "host": 7488,
+    "baby": 7464,
+    "fab4": 7464
+  },
+  "sibling_tests": {
+    "radio_lua_suites": 23,
+    "spotify_pytest": 25,
+    "spotify_supervisor_rust": 1,
+    "qobuz_lua_suites": 2,
+    "qobuz_native_rust": 7
+  },
+  "activation_gates": [
+    "Qualified native producer shutdown/restart-fence drivers",
+    "HLS producer acknowledgement",
+    "Exact firmware/probe semantics including ALSA/analogue limits",
+    "Disabled production Music bootstrap assembly",
+    "Explicit approval before hardware qualification"
+  ]
+}

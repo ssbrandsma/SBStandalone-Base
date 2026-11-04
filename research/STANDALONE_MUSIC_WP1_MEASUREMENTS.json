@@ -1,0 +1,345 @@
+{
+  "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "cache_note": "first connection queries after reopen/quick_check; OS page cache uncontrolled; warm mean of 20",
+  "query_order": [
+    "artists",
+    "albums",
+    "track_page",
+    "search"
+  ],
+  "runs": [
+    {
+      "tracks": 1000,
+      "db_bytes": 483328,
+      "index_bytes": 253952,
+      "import_seconds": 0.782022,
+      "incremental_10_ms": 35.331445,
+      "cpu_seconds": 0.862235,
+      "peak_rss_kib": 3428,
+      "sqlite_memory_bytes": 600696,
+      "sqlite_memory_high": 674464,
+      "sqlite_memory_before": 600696,
+      "fds_before_after": [
+        6,
+        6
+      ],
+      "connection_first_ms": [
+        1.001689,
+        1.094534,
+        0.518989,
+        1.535357
+      ],
+      "warm_mean_ms": [
+        1.111254,
+        0.979024,
+        0.606777,
+        1.328394
+      ],
+      "warm_p95_ms": [
+        1.115626,
+        1.2878,
+        0.779262,
+        1.671845
+      ],
+      "plans": [
+        [
+          "SEARCH c USING COVERING INDEX sqlite_autoindex_contributors_1 (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH tc USING COVERING INDEX contributor_tracks (contributor_id=?)",
+          "SEARCH t USING INTEGER PRIMARY KEY (rowid=?)",
+          "USE TEMP B-TREE FOR ORDER BY"
+        ],
+        [
+          "SEARCH a USING INDEX album_name (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 3",
+          "SEARCH t USING COVERING INDEX track_album (media_id=? AND album_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH contributors USING INTEGER PRIMARY KEY (rowid=?)",
+          "CORRELATED SCALAR SUBQUERY 2",
+          "SEARCH tracks USING INDEX track_album (media_id=? AND album_id=?)"
+        ],
+        [
+          "SEARCH t USING INDEX track_name (media_id=?)",
+          "SEARCH a USING INTEGER PRIMARY KEY (rowid=?)"
+        ],
+        [
+          "SEARCH t USING INDEX track_name (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH z USING INTEGER PRIMARY KEY (rowid=?)",
+          "CORRELATED SCALAR SUBQUERY 2",
+          "SEARCH x USING PRIMARY KEY (track_id=?)",
+          "SEARCH z USING INTEGER PRIMARY KEY (rowid=?)",
+          "SEARCH a USING INTEGER PRIMARY KEY (rowid=?)"
+        ]
+      ]
+    },
+    {
+      "tracks": 10000,
+      "db_bytes": 4001792,
+      "index_bytes": 2166784,
+      "import_seconds": 8.134926,
+      "incremental_10_ms": 25.161849,
+      "cpu_seconds": 8.038337,
+      "peak_rss_kib": 3328,
+      "sqlite_memory_bytes": 618168,
+      "sqlite_memory_high": 712768,
+      "sqlite_memory_before": 618168,
+      "fds_before_after": [
+        6,
+        6
+      ],
+      "connection_first_ms": [
+        1.232615,
+        1.844901,
+        1.163987,
+        15.693233
+      ],
+      "warm_mean_ms": [
+        0.762414,
+        1.424698,
+        1.320861,
+        18.989645
+      ],
+      "warm_p95_ms": [
+        1.066181,
+        2.084453,
+        2.309769,
+        27.00132
+      ],
+      "plans": [
+        [
+          "SEARCH c USING COVERING INDEX sqlite_autoindex_contributors_1 (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH tc USING COVERING INDEX contributor_tracks (contributor_id=?)",
+          "SEARCH t USING INTEGER PRIMARY KEY (rowid=?)",
+          "USE TEMP B-TREE FOR ORDER BY"
+        ],
+        [
+          "SEARCH a USING INDEX album_name (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 3",
+          "SEARCH t USING COVERING INDEX track_album (media_id=? AND album_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH contributors USING INTEGER PRIMARY KEY (rowid=?)",
+          "CORRELATED SCALAR SUBQUERY 2",
+          "SEARCH tracks USING INDEX track_album (media_id=? AND album_id=?)"
+        ],
+        [
+          "SEARCH t USING INDEX track_name (media_id=?)",
+          "SEARCH a USING INTEGER PRIMARY KEY (rowid=?)"
+        ],
+        [
+          "SEARCH t USING INDEX track_name (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH z USING INTEGER PRIMARY KEY (rowid=?)",
+          "CORRELATED SCALAR SUBQUERY 2",
+          "SEARCH x USING PRIMARY KEY (track_id=?)",
+          "SEARCH z USING INTEGER PRIMARY KEY (rowid=?)",
+          "SEARCH a USING INTEGER PRIMARY KEY (rowid=?)"
+        ]
+      ]
+    },
+    {
+      "tracks": 50000,
+      "db_bytes": 20127744,
+      "index_bytes": 10977280,
+      "import_seconds": 47.911817,
+      "incremental_10_ms": 43.113287,
+      "cpu_seconds": 47.745677,
+      "peak_rss_kib": 3220,
+      "sqlite_memory_bytes": 618168,
+      "sqlite_memory_high": 728832,
+      "sqlite_memory_before": 618168,
+      "fds_before_after": [
+        6,
+        6
+      ],
+      "connection_first_ms": [
+        1.416944,
+        5.620201,
+        10.273774,
+        167.840024
+      ],
+      "warm_mean_ms": [
+        1.143321,
+        7.49203,
+        7.905658,
+        108.256136
+      ],
+      "warm_p95_ms": [
+        2.614864,
+        12.266091,
+        10.814752,
+        123.442168
+      ],
+      "plans": [
+        [
+          "SEARCH c USING COVERING INDEX sqlite_autoindex_contributors_1 (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH tc USING COVERING INDEX contributor_tracks (contributor_id=?)",
+          "SEARCH t USING INTEGER PRIMARY KEY (rowid=?)",
+          "USE TEMP B-TREE FOR ORDER BY"
+        ],
+        [
+          "SEARCH a USING INDEX album_name (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 3",
+          "SEARCH t USING COVERING INDEX track_album (media_id=? AND album_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH contributors USING INTEGER PRIMARY KEY (rowid=?)",
+          "CORRELATED SCALAR SUBQUERY 2",
+          "SEARCH tracks USING INDEX track_album (media_id=? AND album_id=?)"
+        ],
+        [
+          "SEARCH t USING INDEX track_name (media_id=?)",
+          "SEARCH a USING INTEGER PRIMARY KEY (rowid=?)"
+        ],
+        [
+          "SEARCH t USING INDEX track_name (media_id=?)",
+          "CORRELATED SCALAR SUBQUERY 1",
+          "SEARCH z USING INTEGER PRIMARY KEY (rowid=?)",
+          "CORRELATED SCALAR SUBQUERY 2",
+          "SEARCH x USING PRIMARY KEY (track_id=?)",
+          "SEARCH z USING INTEGER PRIMARY KEY (rowid=?)",
+          "SEARCH a USING INTEGER PRIMARY KEY (rowid=?)"
+        ]
+      ]
+    }
+  ],
+  "date": "2026-11-02",
+  "scope": "Host WSL measurements and QEMU functionality only; no device measurements",
+  "tests": {
+    "baseline": {
+      "passed": 67,
+      "seconds": 159.98
+    },
+    "final": {
+      "passed": 69,
+      "seconds": 267.18
+    }
+  },
+  "arm": {
+    "baby": {
+      "normal_runtime": {
+        "sb-storage-helper": {
+          "bytes": 66620,
+          "delta_bytes": 0,
+          "sha256": "61ad37b017505b06d78c14d3211fb6227fff69caf60487a9b6caa264be34ff16",
+          "matches_wp0_sha256": true
+        },
+        "sb-storage-updater": {
+          "bytes": 33852,
+          "delta_bytes": 0,
+          "sha256": "90d85d72700fd5c6ad528994f6b0e371dfcc4717969aa785e852ad34f71f7287",
+          "matches_wp0_sha256": true
+        },
+        "sbbase": {
+          "bytes": 136272,
+          "delta_bytes": 0,
+          "sha256": "410fc13c349eaf0c664593ea8b71132d80baf89c821a242a107029110294619c",
+          "matches_wp0_sha256": true
+        },
+        "sbproxy": {
+          "bytes": 874644,
+          "delta_bytes": 0,
+          "sha256": "8ec063ec36993918cb17c7a7eaf1e07dd6f1316fd6d576cfcec7c88cd3ff5ebf",
+          "matches_wp0_sha256": true
+        },
+        "sbwebserver": {
+          "bytes": 291976,
+          "delta_bytes": 0,
+          "sha256": "8f5bdc7c3d0f2747e328193e470b220806143c58ed8d248680ba8514490b1b7f",
+          "matches_wp0_sha256": false
+        },
+        "svgpngrenderer": {
+          "bytes": 497800,
+          "delta_bytes": 0,
+          "sha256": "f10238868af03f411e1ee5586d7085b5d7f5c52ae28492fdf0bc2956e4ff57c0",
+          "matches_wp0_sha256": true
+        }
+      },
+      "isolated_music": {
+        "libsbmusic.a": {
+          "bytes": 44874,
+          "sha256": "731ce18e47e7a6f1663307215fed0be9a88a63772fdd0912d7696ab4b42ca975"
+        },
+        "libsbmusic-sqlite.a": {
+          "bytes": 1186162,
+          "sha256": "9f6f490db6442792356998aa001403df9c74982705f3f7b65a6e628ee67cd1a9"
+        },
+        "test_music_library": {
+          "bytes": 757756,
+          "sha256": "0f54a13d9dfb21d6e694f3a5bfaa9836b6567fcd852dec0805f76169a776e753"
+        }
+      },
+      "music_manifest": "flags=-Os -marm -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -ffunction-sections -fdata-sections -D_FILE_OFFSET_BITS=64\nsqlite_flags=-DSQLITE_THREADSAFE=1 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_DQS=0\nsqlite_input=28fd777737c356ecff5f380ae82571578950414b6845e98ded6e74361ce454f7\n731ce18e47e7a6f1663307215fed0be9a88a63772fdd0912d7696ab4b42ca975  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/music/libsbmusic.a\n9f6f490db6442792356998aa001403df9c74982705f3f7b65a6e628ee67cd1a9  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/music/libsbmusic-sqlite.a\n0f54a13d9dfb21d6e694f3a5bfaa9836b6567fcd852dec0805f76169a776e753  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/baby/music/test_music_library\n"
+    },
+    "fab4": {
+      "normal_runtime": {
+        "sb-storage-helper": {
+          "bytes": 66620,
+          "delta_bytes": 0,
+          "sha256": "99813a6173d31377c8a6d5c82f2f7f9afe781a6020e97fb40ceaef66c4979918",
+          "matches_wp0_sha256": true
+        },
+        "sb-storage-updater": {
+          "bytes": 33852,
+          "delta_bytes": 0,
+          "sha256": "8e31e531afb42120b1831e2e1b0e3761636bfb025b5252b8edfe79ea7cb5728b",
+          "matches_wp0_sha256": true
+        },
+        "sbbase": {
+          "bytes": 136272,
+          "delta_bytes": 0,
+          "sha256": "90c6226ca0e6c136b25610a5d94b7c05beef4cb6636a9d68e1161934a480576b",
+          "matches_wp0_sha256": true
+        },
+        "sbproxy": {
+          "bytes": 874644,
+          "delta_bytes": 0,
+          "sha256": "79d7634f9619ba44be80b608981f5917464c738d0cd30b717effadb67f8ff4a4",
+          "matches_wp0_sha256": true
+        },
+        "sbwebserver": {
+          "bytes": 291976,
+          "delta_bytes": 0,
+          "sha256": "2fe0ef047487f071146a25d9cfcf39cbf450561667c88f0900b6435702ec541d",
+          "matches_wp0_sha256": false
+        },
+        "svgpngrenderer": {
+          "bytes": 497800,
+          "delta_bytes": 0,
+          "sha256": "590883469b3772d8b51d41f2a5ae2a707a78d717bc628d1d07dcc6953296ca58",
+          "matches_wp0_sha256": true
+        }
+      },
+      "isolated_music": {
+        "libsbmusic.a": {
+          "bytes": 44830,
+          "sha256": "e31656dc356cb1da833fdf7b62cda5aa2ac0c9f933692b86d7c64f97c8a8473e"
+        },
+        "libsbmusic-sqlite.a": {
+          "bytes": 1180314,
+          "sha256": "becdea196bfe5d070d04dff61de503f178351a5f413ab7815af3edb9aa4a1d17"
+        },
+        "test_music_library": {
+          "bytes": 749564,
+          "sha256": "e59d0864bbed0c7933232a04e1e60d4c42e94767139e6e9f8c4558a6447a2645"
+        }
+      },
+      "music_manifest": "flags=-Os -marm -march=armv6 -mtune=arm1136jf-s -mfloat-abi=soft -DSB_TARGET_FAB4=1 -ffunction-sections -fdata-sections -D_FILE_OFFSET_BITS=64\nsqlite_flags=-DSQLITE_THREADSAFE=1 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_DQS=0\nsqlite_input=eab2fa5fc8e18e76c1f2c3a02985ee1c3f6b991277bf23cb03258df130276a9e\ne31656dc356cb1da833fdf7b62cda5aa2ac0c9f933692b86d7c64f97c8a8473e  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/music/libsbmusic.a\nbecdea196bfe5d070d04dff61de503f178351a5f413ab7815af3edb9aa4a1d17  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/music/libsbmusic-sqlite.a\ne59d0864bbed0c7933232a04e1e60d4c42e94767139e6e9f8c4558a6447a2645  /mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-arm/fab4/music/test_music_library\n"
+    }
+  },
+  "log_sha256": {
+    "baseline-tests.log": "3f61dfa6574d72b0c21a4bbf9cd6162538e6d5691adf29c0efab3935a7e4d736",
+    "final-tests.log": "d58d65ea768711912a6e74e5f88e7cd09b794ded27be49123e377f4b86ecf9bf",
+    "storage-tests.log": "7f8e3b75161b56d88e09f5a2af8e1041e40ebc6cd61fcfdae487e224dddc1ff6",
+    "large-tests.log": "c9113e9e950554af88c5460468105153ebeb06fcab40d46dd0007890529805ad",
+    "sanitizers.log": "7f8e3b75161b56d88e09f5a2af8e1041e40ebc6cd61fcfdae487e224dddc1ff6",
+    "build-arm.log": "ca07950c0a8d39660d9b7729d76d92595d4fceceaab75e190e58cb17b7c1ad2b",
+    "music-arm-final.log": "410006808293a562b2f4259afe7f815a5de3e8c2ccbef07f168c7ed1d897570b",
+    "qemu-tests.log": "369d51881fec69b55a76f19e9f946995c02839af4a4fb5f1ae5fdcff9381f23b",
+    "cross-contracts.log": "9b0153b4efce4be74063c0811173b09597207508e683303b32900d85b173d684",
+    "proxy-probe.log": "8f243417938d0fc9e3032d084454c2cf669a3293f7a97676e0d89d6a025bf0a1",
+    "library-final-tests.log": "b628077f68ea6ef6a77f35a369a3f284ea8dd4f0f3e83801d035a4d2b22ff017",
+    "music-elf.log": "07f0c1cd5b5bd7ca92faf64c2df7e2446352dd30ad1c662d3a85af72ed8d04af"
+  }
+}

@@ -1,0 +1,468 @@
+[
+  {
+    "path": "CMakeLists.txt",
+    "sha256": "11256202f20453fbd3ae6db4cb7238b89a372975d31293e9bd88da811ff164e3",
+    "anchors": []
+  },
+  {
+    "path": "native/common/music_contracts.h",
+    "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d",
+    "anchors": [
+      {
+        "line": 119,
+        "text": "int sb_music_source_equal(const sb_music_source_id *, const sb_music_source_id *);"
+      },
+      {
+        "line": 120,
+        "text": "int sb_music_media_current(const sb_music_media *, const sb_music_media *);"
+      },
+      {
+        "line": 121,
+        "text": "int sb_music_yield_ack(sb_music_ownership *, uint64_t request_id,"
+      },
+      {
+        "line": 123,
+        "text": "int sb_music_can_commit_owner(const sb_music_ownership *, uint64_t now_ms);"
+      },
+      {
+        "line": 124,
+        "text": "int sb_music_stream_event(sb_music_stream_guard *, const sb_music_stream_id *, sb_music_event);"
+      },
+      {
+        "line": 125,
+        "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *, const sb_music_queue_update *);"
+      },
+      {
+        "line": 126,
+        "text": "int sb_music_query_valid(const sb_music_query *);"
+      },
+      {
+        "line": 127,
+        "text": "int sb_music_resource_current(const sb_music_resource *, const sb_music_media *,"
+      },
+      {
+        "line": 129,
+        "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *);"
+      }
+    ]
+  },
+  {
+    "path": "native/common/music_contracts.c",
+    "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6",
+    "anchors": [
+      {
+        "line": 4,
+        "text": "int sb_music_source_equal(const sb_music_source_id *a, const sb_music_source_id *b)"
+      },
+      {
+        "line": 9,
+        "text": "int sb_music_media_current(const sb_music_media *a, const sb_music_media *b)"
+      },
+      {
+        "line": 14,
+        "text": "int sb_music_yield_ack(sb_music_ownership *o, uint64_t request, uint64_t generation,"
+      },
+      {
+        "line": 25,
+        "text": "int sb_music_can_commit_owner(const sb_music_ownership *o, uint64_t now)"
+      },
+      {
+        "line": 31,
+        "text": "static int stream_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)"
+      },
+      {
+        "line": 38,
+        "text": "int sb_music_stream_event(sb_music_stream_guard *s, const sb_music_stream_id *id, sb_music_event event)"
+      },
+      {
+        "line": 51,
+        "text": "int sb_music_queue_update_valid(const sb_music_queue_snapshot *s, const sb_music_queue_update *u)"
+      },
+      {
+        "line": 58,
+        "text": "int sb_music_query_valid(const sb_music_query *q)"
+      },
+      {
+        "line": 66,
+        "text": "int sb_music_resource_current(const sb_music_resource *r, const sb_music_media *m,"
+      },
+      {
+        "line": 78,
+        "text": "int sb_music_range_valid(uint64_t size, const sb_music_byte_range *r)"
+      }
+    ]
+  },
+  {
+    "path": "native/sbmusic/music_library.h",
+    "sha256": "62f40bc7df75bc9f199260f1b64ac9438b115410f3cc90260a14605283dfdf1e",
+    "anchors": [
+      {
+        "line": 4,
+        "text": "#define SB_ML_SCHEMA_VERSION 2"
+      },
+      {
+        "line": 62,
+        "text": "sb_music_library *sb_music_library_start(const sb_ml_options *);"
+      },
+      {
+        "line": 63,
+        "text": "int sb_music_library_fd(const sb_music_library *);"
+      },
+      {
+        "line": 66,
+        "text": "sb_ml_status sb_music_library_submit(sb_music_library *, const sb_ml_request *);"
+      },
+      {
+        "line": 67,
+        "text": "sb_ml_status sb_music_library_receive(sb_music_library *, sb_ml_result *);"
+      },
+      {
+        "line": 68,
+        "text": "sb_ml_status sb_music_library_cancel(sb_music_library *, uint64_t request_id); /* cooperative, identity checked */"
+      },
+      {
+        "line": 69,
+        "text": "sb_music_library_provider sb_music_library_queries(sb_music_library *);"
+      },
+      {
+        "line": 72,
+        "text": "sb_ml_status sb_music_library_destroy(sb_music_library *);"
+      }
+    ]
+  },
+  {
+    "path": "native/sbmusic/music_library.c",
+    "sha256": "a99b8269bf66f276256db8c5867cfbb9e3d09df3f1a2ea7b3dba89d20050fd54",
+    "anchors": [
+      {
+        "line": 22,
+        "text": "static pthread_once_t memory_policy_once=PTHREAD_ONCE_INIT;"
+      },
+      {
+        "line": 23,
+        "text": "static void memory_policy(void)"
+      },
+      {
+        "line": 53,
+        "text": "static sb_ml_status failure(sb_music_library *h,sb_ml_status status,const char *message)"
+      },
+      {
+        "line": 59,
+        "text": "static int sql_error(sb_music_library *h,int rc)"
+      },
+      {
+        "line": 93,
+        "text": "static int execute(sb_music_library *h,const char *sql,const binding *values,unsigned count)"
+      },
+      {
+        "line": 104,
+        "text": "static int script(sb_music_library *h,const char *sql)"
+      },
+      {
+        "line": 119,
+        "text": "static int scalar(sb_music_library *,const char *,const binding *,unsigned,sqlite3_int64 *);"
+      },
+      {
+        "line": 120,
+        "text": "static int refresh_revision(sb_music_library *h)"
+      },
+      {
+        "line": 132,
+        "text": "static int bump_revision(sb_music_library *h)"
+      },
+      {
+        "line": 139,
+        "text": "static void revision_committed(sb_music_library *h)"
+      },
+      {
+        "line": 143,
+        "text": "static int name_id(sb_music_library *h,const char *table,sqlite3_int64 media,const char *name,sqlite3_int64 *id)"
+      },
+      {
+        "line": 152,
+        "text": "static int folder_id(sb_music_library *h,sqlite3_int64 media,const char *path,sqlite3_int64 *id)"
+      },
+      {
+        "line": 178,
+        "text": "static int source_update(sb_music_library *h,const sb_music_media *media)"
+      },
+      {
+        "line": 221,
+        "text": "if(!execute(h,\"BEGIN IMMEDIATE\",NULL,0))return 0;"
+      },
+      {
+        "line": 234,
+        "text": "static int upsert_track(sb_music_library *h,const sb_ml_track *track,sqlite3_int64 media)"
+      },
+      {
+        "line": 290,
+        "text": "static int scalar(sb_music_library *h,const char *sql,const binding *values,unsigned count,sqlite3_int64 *out)"
+      },
+      {
+        "line": 302,
+        "text": "static int text_valid(const char *s,size_t capacity)"
+      },
+      {
+        "line": 319,
+        "text": "static int path_valid(const char *path)"
+      },
+      {
+        "line": 334,
+        "text": "static int track_valid(const sb_ml_track *t)"
+      },
+      {
+        "line": 360,
+        "text": "static int progress(void *context)"
+      },
+      {
+        "line": 369,
+        "text": "static int open_database(sb_music_library *h)"
+      },
+      {
+        "line": 371,
+        "text": "pthread_once(&memory_policy_once,memory_policy);"
+      },
+      {
+        "line": 383,
+        "text": "if(version>SB_ML_SCHEMA_VERSION){failure(h,SB_ML_NEW_SCHEMA,\"Newer schema preserved; downgrade refused\");"
+      },
+      {
+        "line": 394,
+        "text": "if(!execute(h,\"BEGIN IMMEDIATE\",NULL,0))return 0;"
+      },
+      {
+        "line": 400,
+        "text": "if(!script(h,\"BEGIN IMMEDIATE;ALTER TABLE tracks ADD COLUMN fingerprint TEXT NOT NULL DEFAULT '';ALTER TABLE tracks ADD COLUMN scan_epoch INTEGER NOT NULL DEFAULT 0;PRAGMA user_version=2;COMMIT;\"))return 0;"
+      },
+      {
+        "line": 436,
+        "text": "static void add_filter(char *sql,binding *v,unsigned *n,const sb_music_query *q,const char *alias)"
+      },
+      {
+        "line": 456,
+        "text": "static void prefix_pattern(char out[514],const char *input)"
+      },
+      {
+        "line": 464,
+        "text": "static void search_filter(char *sql,binding *v,unsigned *n,const sb_music_query *q,const char *pattern)"
+      },
+      {
+        "line": 485,
+        "text": "static int query_sql(sb_music_library *h,const sb_music_query *q,sqlite3_int64 media,char sql[8192],binding v[32],unsigned *count,char pattern[514])"
+      },
+      {
+        "line": 537,
+        "text": "static void column_text(sqlite3_stmt *s,int index,char *out,size_t capacity)"
+      },
+      {
+        "line": 550,
+        "text": "static int query_library(sb_music_library *h,const sb_music_query *q,int explain)"
+      },
+      {
+        "line": 608,
+        "text": "static int track_detail(sb_music_library *h,const sb_music_track_id *id,uint64_t generation)"
+      },
+      {
+        "line": 662,
+        "text": "static int statistics(sb_music_library *h)"
+      },
+      {
+        "line": 684,
+        "text": "out->schema_version=SB_ML_SCHEMA_VERSION;"
+      },
+      {
+        "line": 687,
+        "text": "static void rollback_preserving_error(sb_music_library *h)"
+      },
+      {
+        "line": 700,
+        "text": "static void process_request(sb_music_library *h)"
+      },
+      {
+        "line": 754,
+        "text": "if(execute(h,\"BEGIN IMMEDIATE\",NULL,0)){h->transaction=r->transaction;"
+      },
+      {
+        "line": 790,
+        "text": "if(automatic&&!execute(h,\"BEGIN IMMEDIATE\",NULL,0))return;"
+      },
+      {
+        "line": 804,
+        "text": "static void *database_worker(void *context)"
+      },
+      {
+        "line": 839,
+        "text": "sb_music_library *sb_music_library_start(const sb_ml_options *options)"
+      },
+      {
+        "line": 881,
+        "text": "int sb_music_library_fd(const sb_music_library *h){return h?h->pipe[0]:-1;"
+      },
+      {
+        "line": 883,
+        "text": "sb_ml_status sb_music_library_submit(sb_music_library *h,const sb_ml_request *request)"
+      },
+      {
+        "line": 896,
+        "text": "sb_ml_status sb_music_library_receive(sb_music_library *h,sb_ml_result *result)"
+      },
+      {
+        "line": 910,
+        "text": "sb_ml_status sb_music_library_cancel(sb_music_library *h,uint64_t request_id)"
+      },
+      {
+        "line": 919,
+        "text": "sb_ml_status sb_music_library_destroy(sb_music_library *h)"
+      },
+      {
+        "line": 935,
+        "text": "static int provider_submit(void *context,uint64_t request_id,const sb_music_query *query)"
+      },
+      {
+        "line": 942,
+        "text": "static void provider_cancel(void *context,uint64_t request_id)"
+      },
+      {
+        "line": 946,
+        "text": "sb_music_library_provider sb_music_library_queries(sb_music_library *h)"
+      }
+    ]
+  },
+  {
+    "path": "native/sbmusic/schema.h",
+    "sha256": "6580c54b49baef6f8742e7df7e1f30180c1c4afda76825266253ee3703130f29",
+    "anchors": []
+  },
+  {
+    "path": "native/sbmusic/CMakeLists.txt",
+    "sha256": "833351fcef6b67b5719ca8fdfde4c2a4314fe65316e5838e36b8255e8fcbb936",
+    "anchors": [
+      {
+        "line": 4,
+        "text": "target_compile_definitions(sbmusic_sqlite PRIVATE SQLITE_THREADSAFE=1 SQLITE_OMIT_LOAD_EXTENSION SQLITE_ENABLE_DBSTAT_VTAB SQLITE_DQS=0 _FILE_OFFSET_BITS=64)"
+      }
+    ]
+  },
+  {
+    "path": "native/sbmusic/third_party/sqlite/PROVENANCE.json",
+    "sha256": "bf87f42dc33275057c28b999c1e23bf6e1d506455e47b8d9a48525f335f4abaa",
+    "anchors": []
+  },
+  {
+    "path": "scripts/build-arm.sh",
+    "sha256": "b4734666932a91270fb3afe61d9024669858a42c08114e23b19b7ddd12c86a28",
+    "anchors": []
+  },
+  {
+    "path": "scripts/build-music-arm.sh",
+    "sha256": "80d97a9ced08b605018e0b19c4a3cd878af71266903c2f175d8153b86c4d2668",
+    "anchors": [
+      {
+        "line": 18,
+        "text": "sqlite_flags='-DSQLITE_THREADSAFE=1 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_DQS=0'"
+      }
+    ]
+  },
+  {
+    "path": "tests/CMakeLists.txt",
+    "sha256": "10f4075f060f1e6132a07da1394c09beef7adda28fced0ec5824cfbb650ee3dc",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/test_library.c",
+    "sha256": "4d83bc3dc280ae8c03b7e73242b52c40da986adfa27b8fc6f10ea0422588697c",
+    "anchors": [
+      {
+        "line": 51,
+        "text": "static sb_music_library *open_library(const char *path,int create,int readonly,int wal)"
+      },
+      {
+        "line": 70,
+        "text": "static void close_library(sb_music_library *h){sb_ml_request r={0};"
+      },
+      {
+        "line": 75,
+        "text": "static void source(sb_music_library *h){sb_ml_request r={0};"
+      },
+      {
+        "line": 80,
+        "text": "static void transaction(sb_music_library *h,sb_ml_operation operation,uint64_t id){sb_ml_request r={0};"
+      },
+      {
+        "line": 85,
+        "text": "static void fixture(sb_ml_track *t,unsigned i)"
+      },
+      {
+        "line": 143,
+        "text": "static int compare_names(const char *a,const char *b)"
+      },
+      {
+        "line": 159,
+        "text": "static void raw(sqlite3 *db,const char *sql){char *error=NULL;"
+      },
+      {
+        "line": 160,
+        "text": "int rc=sqlite3_exec(db,sql,NULL,NULL,&error);"
+      },
+      {
+        "line": 165,
+        "text": "static void correctness(const char *path,unsigned n,int wal)"
+      },
+      {
+        "line": 340,
+        "text": "raw(other,\"BEGIN IMMEDIATE\");"
+      },
+      {
+        "line": 380,
+        "text": "static int compare_double(const void *a,const void *b){double x=*(const double *)a,y=*(const double *)b;return (x>y)-(x<y);}"
+      },
+      {
+        "line": 381,
+        "text": "static void benchmark(const char *path,unsigned n)"
+      },
+      {
+        "line": 453,
+        "text": "int main(int argc,char **argv)"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/test_library_storage.py",
+    "sha256": "ea6fcd6b68436efd8b0f2988df1f954308b1116796424031c2374de2c142a2ff",
+    "anchors": [
+      {
+        "line": 14,
+        "text": "def run(*args):"
+      },
+      {
+        "line": 21,
+        "text": "def digest(path):"
+      }
+    ]
+  },
+  {
+    "path": "tests/music/test_library_large.py",
+    "sha256": "22efdad7dca7a48d71581a27552fb253924e1dba706fba1fd13eeac290cb3b68",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/test_library_qemu.py",
+    "sha256": "2b71cbf4dbe472049e0074a453359b849588546ca6fafd7e3112b9f2a6d53974",
+    "anchors": []
+  },
+  {
+    "path": "tests/music/benchmark_library.py",
+    "sha256": "fc69ba5e4b9d0c1e8b71c66bbc7988f9ddc80dde1d8808cb229ee6cc4fd74382",
+    "anchors": []
+  },
+  {
+    "path": "native/sbmusic/third_party/sqlite/sqlite3.c",
+    "sha256": "0c657666d819f261cc4007526ad57e1669de9949df7a8ea847aa284a2bf0ee52",
+    "anchors": []
+  },
+  {
+    "path": "native/sbmusic/third_party/sqlite/sqlite3.h",
+    "sha256": "d6c84557261893439b341d2e6c35187ae3ea24fbfd843ad94616f72d89242b8c",
+    "anchors": []
+  }
+]

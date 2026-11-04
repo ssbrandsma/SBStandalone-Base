@@ -1,0 +1,1227 @@
+{
+  "date": "2026-11-03",
+  "kind": "WP4 source, references and build/test evidence; no hardware audio",
+  "sources": [
+    {
+      "path": "native/sbbase/include/alarms.h",
+      "bytes": 3038,
+      "sha256": "1d4624a037c75e211a97938be553e9ad9e317ea4fa644f8e0d4c14eda6704e82"
+    },
+    {
+      "path": "native/sbbase/include/lms_command.h",
+      "bytes": 838,
+      "sha256": "4f54a783d64c0025887bbbaffb805bc000a13852b7437da4baf1f1c9fa131cf6"
+    },
+    {
+      "path": "native/sbbase/include/music_browse.h",
+      "bytes": 1908,
+      "sha256": "f2838901e7384ee8bfe392f84a5056793ac789438a76ea82b6d36520f38046b0"
+    },
+    {
+      "path": "native/sbbase/include/music_file.h",
+      "bytes": 1005,
+      "sha256": "0aba41ed76baf85f995f35c39fc9ccacfa8e8ad3520a3f704afda5b9beecbbc8"
+    },
+    {
+      "path": "native/sbbase/include/music_load.h",
+      "bytes": 1232,
+      "sha256": "5f132fa1dda8df5759269a9a39f9faba3be5e9ccfde9b5c01d6f0d6f83a6998a"
+    },
+    {
+      "path": "native/sbbase/include/music_playback.h",
+      "bytes": 3206,
+      "sha256": "dd2e79a06a10cce906c7195d63dbeee15539f484f0b74911e57a687d8c2e9a33"
+    },
+    {
+      "path": "native/sbbase/include/music_queue.h",
+      "bytes": 3641,
+      "sha256": "6801e6e6d95a05a4ed75966f4d3f4040e5ed1f28f920a04dcbdf420f5c532b9a"
+    },
+    {
+      "path": "native/sbbase/include/nowplaying.h",
+      "bytes": 4007,
+      "sha256": "a1aff3a464ef1cd05740b9b970b8fba684135ecbf20cd225f15c3bc5736da1b2"
+    },
+    {
+      "path": "native/sbbase/include/output_queue.h",
+      "bytes": 1271,
+      "sha256": "04b170394692589d77f541687fd17071ef7ec48f40b15a7c3987c533b750a687"
+    },
+    {
+      "path": "native/sbbase/include/sbbase.h",
+      "bytes": 1074,
+      "sha256": "e3f2001023a5b36005aaab5b4bc6044495ca91e11db2f6ab22a7d0269d999b06"
+    },
+    {
+      "path": "native/sbbase/include/sleep.h",
+      "bytes": 696,
+      "sha256": "5a29879c1bffd3d287f98ca1e813036bb57f761f6175e66cae504deca898796b"
+    },
+    {
+      "path": "native/sbbase/include/slim_controller.h",
+      "bytes": 5826,
+      "sha256": "798dbc6c02c2424fbd9bbea5d43cd42c05cf9ee649027016939d1058115556fe"
+    },
+    {
+      "path": "native/sbbase/src/alarms.c",
+      "bytes": 28444,
+      "sha256": "b3908a1ef2758edde1ec5fe0d8ff0ea96c2efe50a509e7dbdbe0a4161dee235b"
+    },
+    {
+      "path": "native/sbbase/src/lms_command.c",
+      "bytes": 6042,
+      "sha256": "922a8ec6b07f32d6c990b5f6b38bdbc55a2413bb9dcd5fd3234b37195f339e4c"
+    },
+    {
+      "path": "native/sbbase/src/main.c",
+      "bytes": 61673,
+      "sha256": "1d36dd0c7cb2f8b7ee030dd874432e0604f39a361b07027d667af1d6c4c8f04c"
+    },
+    {
+      "path": "native/sbbase/src/music_browse.c",
+      "bytes": 18748,
+      "sha256": "91d4047ae89bb6cee645f448ddf684f69559d7f25d5a0c016783afc4108a2784"
+    },
+    {
+      "path": "native/sbbase/src/music_browse_http.inc",
+      "bytes": 16091,
+      "sha256": "09686f07baa70b4d1c6af846c65ce1d7548e85eb021c26a0d24af6372282c573"
+    },
+    {
+      "path": "native/sbbase/src/music_file.c",
+      "bytes": 6500,
+      "sha256": "a6a18d9844f73dddfb50f8f2885a67cc31fe38cc1a215cc7a1b6f780ba43812a"
+    },
+    {
+      "path": "native/sbbase/src/music_load.c",
+      "bytes": 6565,
+      "sha256": "8971d72d0e7047568dd6bc25524c5cc176a226ffee4e92549e90537625c67bf1"
+    },
+    {
+      "path": "native/sbbase/src/music_playback.c",
+      "bytes": 31475,
+      "sha256": "8e3a67afbc9bab67b0b571a7ba2444d03a119e0d4b87a1e93054aafea7a8665c"
+    },
+    {
+      "path": "native/sbbase/src/music_playback_test.inc",
+      "bytes": 13630,
+      "sha256": "57fe777c2df3044a9ea97d2f558bee9912d1a05e94538a2dad226c6c5a795722"
+    },
+    {
+      "path": "native/sbbase/src/music_queue.c",
+      "bytes": 10685,
+      "sha256": "b29e0af86692abf1335591d063e0a44663641ce3979311de3d7a38e604020b9e"
+    },
+    {
+      "path": "native/sbbase/src/nowplaying.c",
+      "bytes": 60452,
+      "sha256": "1b9a9612acb4b9afba78b306656d5c2f0500cf39613c3e455fd86b9e06e1c86e"
+    },
+    {
+      "path": "native/sbbase/src/output_queue.c",
+      "bytes": 2614,
+      "sha256": "cebbefa99ecb8381c040116dcc14c75867df37d003e05a7329d0e9be048249bc"
+    },
+    {
+      "path": "native/sbbase/src/protocol.c",
+      "bytes": 4863,
+      "sha256": "398c2386f88e7f8051811959b5c9abf0dabe34fd7803fa9af4e68c294aeb599a"
+    },
+    {
+      "path": "native/sbbase/src/sleep.c",
+      "bytes": 4119,
+      "sha256": "c083c1531d4155484c46eccca9f26c06e0624b0fcab75b949bfd125a4fd39725"
+    },
+    {
+      "path": "native/sbbase/src/slim_controller.c",
+      "bytes": 21717,
+      "sha256": "be8deea76335e0d2b4c5935a748cb2542c4bab60707ff23d61991229b6d20b4d"
+    },
+    {
+      "path": "native/sbmusic/music_async.c",
+      "bytes": 7674,
+      "sha256": "221e56b6bc63a8b59305474a4fafbd18577e77b0d3e928dedc4130046e459454"
+    },
+    {
+      "path": "native/sbmusic/music_async.h",
+      "bytes": 787,
+      "sha256": "e2284ff8da4321918f32f3ecd46839104cd8290dd830eb5312c2921ced76afb4"
+    },
+    {
+      "path": "native/sbmusic/music_library.c",
+      "bytes": 51863,
+      "sha256": "a3d1d2125200e1d336d7ae1ffdf58d3d17296b4081b6226058345a4d3fa17fa3"
+    },
+    {
+      "path": "native/sbmusic/music_library.h",
+      "bytes": 4843,
+      "sha256": "64b49ec15849558ea5d084c9ae73701402b17f5868cf770f7af864af1334d735"
+    },
+    {
+      "path": "native/sbmusic/music_library_scan.inc",
+      "bytes": 6244,
+      "sha256": "710b6bce620e038b09b516e8d6634226ab7c73737252802653cfc7c7488de9d9"
+    },
+    {
+      "path": "native/sbmusic/music_metadata.c",
+      "bytes": 34634,
+      "sha256": "c076a16ee1644eccc8e9ce1bafc419c4832d2301ee3d51505b52ca221f26d3bf"
+    },
+    {
+      "path": "native/sbmusic/music_metadata.h",
+      "bytes": 781,
+      "sha256": "f67a9400e9f3d1364f50d4196dbe77d57933f53d13c3198ea62cd441746c2b40"
+    },
+    {
+      "path": "native/sbmusic/music_metadata_helper.c",
+      "bytes": 1792,
+      "sha256": "754cf39a31b912255a859f3690686f86290bdbf4c7f53fe09ed14d5bb327aaaf"
+    },
+    {
+      "path": "native/sbmusic/music_scanner.c",
+      "bytes": 33277,
+      "sha256": "e4feafe8e52c32a6b70994b8fddcef9861e09754a8a091e1201c0c4c37aa5ac0"
+    },
+    {
+      "path": "native/sbmusic/music_scanner.h",
+      "bytes": 2444,
+      "sha256": "1304da91937cbe39da0fc70e7cbc21143a9cecba60ccf4b29d39bca8563e15e6"
+    },
+    {
+      "path": "native/sbmusic/music_storage.c",
+      "bytes": 7668,
+      "sha256": "4f8aac1291ea114241d7a96273c54c4bab18aee8cabfed23fcaf1f2ca869915a"
+    },
+    {
+      "path": "native/sbmusic/music_storage.h",
+      "bytes": 5844,
+      "sha256": "58cd1fbecef223560258351445059221ba95a586cbb37d4ef13db451427a0bf6"
+    },
+    {
+      "path": "native/sbmusic/music_storage_adapter.c",
+      "bytes": 6845,
+      "sha256": "e03809b36916834f8bb5725d519642707c64ddf997c2ce23b7e980351509e198"
+    },
+    {
+      "path": "native/sbmusic/music_storage_adapter.h",
+      "bytes": 1549,
+      "sha256": "88fd1f54e240fbc4492fbfbc3289e268db2fae54b21a70608d7535ec9e5a411c"
+    },
+    {
+      "path": "native/sbmusic/music_storage_library.c",
+      "bytes": 1516,
+      "sha256": "f54a2627eb4b784fbe411af662a9309283c833a35794cddde34bb4f939aceae0"
+    },
+    {
+      "path": "native/sbmusic/music_storage_library.h",
+      "bytes": 1004,
+      "sha256": "34def66800ef99cc49f05d13c7f1703c57c8eff8bfdc481ec159517aa296dedf"
+    },
+    {
+      "path": "native/sbmusic/music_storage_linux.c",
+      "bytes": 16931,
+      "sha256": "385911ce595d7dd60c879f708a224ebc3c85bba281be566ad986189fceb20ffa"
+    },
+    {
+      "path": "native/sbmusic/schema.h",
+      "bytes": 3317,
+      "sha256": "c7f094fa72724930fe26613b40c958891e24f9cedc24aa72234d8975c34b2222"
+    },
+    {
+      "path": "native/sbmusic/third_party/sqlite/sqlite3.c",
+      "bytes": 9582521,
+      "sha256": "0c657666d819f261cc4007526ad57e1669de9949df7a8ea847aa284a2bf0ee52"
+    },
+    {
+      "path": "native/sbmusic/third_party/sqlite/sqlite3.h",
+      "bytes": 695729,
+      "sha256": "d6c84557261893439b341d2e6c35187ae3ea24fbfd843ad94616f72d89242b8c"
+    },
+    {
+      "path": "native/common/firmware_state.h",
+      "bytes": 1861,
+      "sha256": "1390db75f5d27cab297dc7757707136c074cf62deeef73337bd7f960e81216f5"
+    },
+    {
+      "path": "native/common/http_trace.h",
+      "bytes": 4159,
+      "sha256": "8b073833d4442201f59bc2e0cce6a226756c13a18d501a727c72f047c338d449"
+    },
+    {
+      "path": "native/common/metadata_text.h",
+      "bytes": 3065,
+      "sha256": "8bdd310aacc6834413f19bde5067f09a84193ea6b1ab8b4c4592d1e5ed22a410"
+    },
+    {
+      "path": "native/common/music_contracts.c",
+      "bytes": 4193,
+      "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6"
+    },
+    {
+      "path": "native/common/music_contracts.h",
+      "bytes": 6091,
+      "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d"
+    },
+    {
+      "path": "native/common/music_http.c",
+      "bytes": 2196,
+      "sha256": "5d0936392dcd5ce2c89d86d04260edca938c1f56a38f6d6ff7a1e32b25f03d59"
+    },
+    {
+      "path": "native/common/music_http.h",
+      "bytes": 617,
+      "sha256": "e7b88e67a1df259262ffbb1f71094813c1d7beb2e4940f6c62e031d92a21265b"
+    },
+    {
+      "path": "native/common/music_resource_ipc.c",
+      "bytes": 6742,
+      "sha256": "6883eeb6aaad71ece8558f9b3d89614b998e9457aeb3da74f78f2c486a889b98"
+    },
+    {
+      "path": "native/common/music_resource_ipc.h",
+      "bytes": 1226,
+      "sha256": "9a9c1913fa758792acb931860203b5b5660fed6fa35619c410b71a45d0532723"
+    },
+    {
+      "path": "native/common/public_address.h",
+      "bytes": 789,
+      "sha256": "bcbda06a2ad403670333c53e395752c2069c3b7791c8d58fc2b712e904e028c8"
+    },
+    {
+      "path": "native/sbwebserver/src/applets.c",
+      "bytes": 3952,
+      "sha256": "b64ec82fa237fb00cc1f164ee3d6a742c5363764f1d34ab7b998230c40d087cd"
+    },
+    {
+      "path": "native/sbwebserver/src/applets.h",
+      "bytes": 114,
+      "sha256": "34f2c41ac0a5cb85c9f4f3c7873572e0d97f510efd445631ecb4e657c665a42f"
+    },
+    {
+      "path": "native/sbwebserver/src/auth.c",
+      "bytes": 15174,
+      "sha256": "6ee119140b949dedc0bac6e80aa3c08385d9a5e006fafc34f642c50b72e0f8ea"
+    },
+    {
+      "path": "native/sbwebserver/src/auth.h",
+      "bytes": 451,
+      "sha256": "500994cb36d67a2155364a6315e422fcddbc54c5e9763b14f34fd3b3bcff125d"
+    },
+    {
+      "path": "native/sbwebserver/src/backup.c",
+      "bytes": 26705,
+      "sha256": "35ed393490f17ca11dba53fd7e48488e4bab1c051d546c0944f64ed9e0b93b44"
+    },
+    {
+      "path": "native/sbwebserver/src/backup.h",
+      "bytes": 436,
+      "sha256": "11030e5239631bf9f14e8403fd66085901e75527528ea2c59d45933c9879db12"
+    },
+    {
+      "path": "native/sbwebserver/src/catalog_sync.c",
+      "bytes": 8271,
+      "sha256": "35e4a26da20ba0228ace0e3a899f2c239dd2bfa3e91caa4c14aca68375094ad1"
+    },
+    {
+      "path": "native/sbwebserver/src/catalog_sync.h",
+      "bytes": 212,
+      "sha256": "e43ecbed8cb0d7810852dbad26246efde866b91f19849402cc2c41d46a7779ec"
+    },
+    {
+      "path": "native/sbwebserver/src/firmware.c",
+      "bytes": 41157,
+      "sha256": "1659f0a39e4a67fe672c0aee7ed36e774603e39c5b10c7cdef84ef12cd409095"
+    },
+    {
+      "path": "native/sbwebserver/src/firmware.h",
+      "bytes": 542,
+      "sha256": "1554be2828afbf0173715da11da41ac2f16d91cd7c7fa5e3532a50c26e2f40aa"
+    },
+    {
+      "path": "native/sbwebserver/src/firmware_image.c",
+      "bytes": 12662,
+      "sha256": "1b3917e04735284e61deec57a2450d3ed4eebd37177a9bdeb272609bba6bef51"
+    },
+    {
+      "path": "native/sbwebserver/src/firmware_image.h",
+      "bytes": 730,
+      "sha256": "fd4956e856689a5d76c6656763b5c4b3178dbde17a717ab95a41e8fab7896e29"
+    },
+    {
+      "path": "native/sbwebserver/src/http_server.c",
+      "bytes": 21731,
+      "sha256": "8bac7f6b76f3564a306079f23014390aea4555ddbc426c0e0f92e3d89d5fc9fb"
+    },
+    {
+      "path": "native/sbwebserver/src/http_server.h",
+      "bytes": 96,
+      "sha256": "4141b464a132399c80026101c80bb9ba6552a9a86eb2d894f543ae17753d5db5"
+    },
+    {
+      "path": "native/sbwebserver/src/image_render.c",
+      "bytes": 42898,
+      "sha256": "c72ef9a92a1875c3758260bc2394112c2ebca02bb3983ef00b700542f5aa594b"
+    },
+    {
+      "path": "native/sbwebserver/src/image_render.h",
+      "bytes": 542,
+      "sha256": "2d75fee71bf1e289df597d5a5b228849291c839da894ddf9ce28c7e13937f5da"
+    },
+    {
+      "path": "native/sbwebserver/src/logs.c",
+      "bytes": 23086,
+      "sha256": "c30b85e9cefdec06562fc92528f8ff0c098f83f63f6549f65b326e56e0a4cef0"
+    },
+    {
+      "path": "native/sbwebserver/src/logs.h",
+      "bytes": 218,
+      "sha256": "dbd4a531ad15db21aa8d7f2948e3d66bd59b46a976b2b7a3dc6a26707973f4e6"
+    },
+    {
+      "path": "native/sbwebserver/src/main.c",
+      "bytes": 1777,
+      "sha256": "cf0251cb497f5f8def6355f10731822c5fa4a0e7e0f18f5c0802a3013c873149"
+    },
+    {
+      "path": "native/sbwebserver/src/monitor.c",
+      "bytes": 13716,
+      "sha256": "a3bbf14faa0d3d285635a870c7a5502a759b62d4c71fcff4e3d93d3fd24d7896"
+    },
+    {
+      "path": "native/sbwebserver/src/monitor.h",
+      "bytes": 256,
+      "sha256": "e46be0e18bf3a7e35b2c5b79e466923eb44beb6d499c5db77f44e3edf1383404"
+    },
+    {
+      "path": "native/sbwebserver/src/music_stream.c",
+      "bytes": 11276,
+      "sha256": "0f953b25fa255833045038268d18eb97f59391be2072863764e970ae43bdd2e1"
+    },
+    {
+      "path": "native/sbwebserver/src/music_stream.h",
+      "bytes": 1509,
+      "sha256": "8bf29504f1a559fe32873eff5790184b3dd8d2412f589d5939390264b9855418"
+    },
+    {
+      "path": "native/sbwebserver/src/music_stream_http.c",
+      "bytes": 7003,
+      "sha256": "edf245eecf7bf5c95634eebd63c17d85b2cfb84e28f4f640136eab64a5d4cec7"
+    },
+    {
+      "path": "native/sbwebserver/src/music_stream_http.h",
+      "bytes": 264,
+      "sha256": "d70adbedb7912684443994a59a9d0fbd4cc5abecb1c4c904c1f3dbe5d0356c30"
+    },
+    {
+      "path": "native/sbwebserver/src/radio_stations.c",
+      "bytes": 41321,
+      "sha256": "3efb27d9046b27d7800bab60c014d66661b0093030f94567b208f2ca1eba7a13"
+    },
+    {
+      "path": "native/sbwebserver/src/radio_stations.h",
+      "bytes": 529,
+      "sha256": "0f6fcbd1990dc72eae8256c27e927f0ac44da7eb075a214e1a20b7fc7c39b1de"
+    },
+    {
+      "path": "native/sbwebserver/src/remote.c",
+      "bytes": 19923,
+      "sha256": "5990fca2266be6ead6be4a7bf00e328fc0d1d1c14dad201e512bf87ca8c28bf7"
+    },
+    {
+      "path": "native/sbwebserver/src/remote.h",
+      "bytes": 358,
+      "sha256": "0705787d5a4c5e512a924dfea97982bdef93e2b913939f35bfe6bf2a328cbde6"
+    },
+    {
+      "path": "native/sbwebserver/src/remote_framebuffer.c",
+      "bytes": 10648,
+      "sha256": "ad78ee017672cdbe583e78bb59c27eadc1c1a69c6302713205cc2c0b686e1319"
+    },
+    {
+      "path": "native/sbwebserver/src/remote_framebuffer.h",
+      "bytes": 1383,
+      "sha256": "9933207f1e7549614be918acc987b0abd5aaa1ed1ca85d6cef78ed890671c223"
+    },
+    {
+      "path": "native/sbwebserver/src/repository.c",
+      "bytes": 43643,
+      "sha256": "4bb9bef89a72703a50538be9fa9613889108e25b1ab91dcd1f9ea39fee136baf"
+    },
+    {
+      "path": "native/sbwebserver/src/repository.h",
+      "bytes": 1649,
+      "sha256": "ba03e92ece15759e572135bfb07b0640b383f0f44ab49fa812ab4a6db500d536"
+    },
+    {
+      "path": "native/sbwebserver/src/settings.c",
+      "bytes": 3845,
+      "sha256": "1d2992e93fb80c0090c32eaf92b6c5be1536cbb2ff0bdaaf7a4c96dc5a9bbf6a"
+    },
+    {
+      "path": "native/sbwebserver/src/settings.h",
+      "bytes": 402,
+      "sha256": "42a3d5be9b93c0fb6fc7c0014f6e48a960edabb96835a96d4fcb27643eb1d2cc"
+    },
+    {
+      "path": "native/sbwebserver/src/system_info.c",
+      "bytes": 10883,
+      "sha256": "4104a0c4ef27107103f2f65a82244502048e56f3393d5976d2050e1d21cad32f"
+    },
+    {
+      "path": "native/sbwebserver/src/system_info.h",
+      "bytes": 116,
+      "sha256": "7686bb4b7c6ba1d882696b119be8b80379b9d9306d6a79c5a29e77d350f67448"
+    },
+    {
+      "path": "tests/music/benchmark_base.py",
+      "bytes": 3999,
+      "sha256": "3b30eb6a784d4225b215bf24567cad42a149d5af12edd6602091b90d1c587b72"
+    },
+    {
+      "path": "tests/music/benchmark_browse.py",
+      "bytes": 134,
+      "sha256": "5942dd1d62318d9b5e2f22940c312f7b81c8b220a9d18e44a047393a553e2d91"
+    },
+    {
+      "path": "tests/music/benchmark_library.py",
+      "bytes": 1323,
+      "sha256": "fc69ba5e4b9d0c1e8b71c66bbc7988f9ddc80dde1d8808cb229ee6cc4fd74382"
+    },
+    {
+      "path": "tests/music/benchmark_parsers.py",
+      "bytes": 2609,
+      "sha256": "f7b2a432b0dd5655a3e2471ab269efa81f3233fdf01d49082595ec427c47e4fb"
+    },
+    {
+      "path": "tests/music/benchmark_scanner.py",
+      "bytes": 3035,
+      "sha256": "4aa40856d851891f62550b26aa9f5ecf4cdd571eda50bbe0a66f507da0967634"
+    },
+    {
+      "path": "tests/music/make_corpus.py",
+      "bytes": 4358,
+      "sha256": "4823bbd80b2eb6bac1544564bfad4b75d24640f287941c1fa04c8e1e7136fda7"
+    },
+    {
+      "path": "tests/music/metadata_fault.c",
+      "bytes": 1065,
+      "sha256": "5e74fc568f90b346df3c01a67ebf74b08d84ae7c1ab3abac2dac57a4f27f7612"
+    },
+    {
+      "path": "tests/music/parser_hls.c",
+      "bytes": 1494,
+      "sha256": "3e3f2d7bd59ee49d0a79594e87c898525be5da81f9db8cb2dcef85a19d8c8922"
+    },
+    {
+      "path": "tests/music/test_browse.c",
+      "bytes": 13108,
+      "sha256": "228319f8cca970b759ad399483b064c2f2cac0047d50e2e8ec6a87b8ea2c003c"
+    },
+    {
+      "path": "tests/music/test_browse.py",
+      "bytes": 1089,
+      "sha256": "cde3fbf93a7901d5cbff85a398456843262a75261183e435bd641f2b8a2665cd"
+    },
+    {
+      "path": "tests/music/test_browse_disabled.py",
+      "bytes": 1369,
+      "sha256": "670ddd02a49e369f4cdba89a275360056410452839722df8f90f3af2535f184a"
+    },
+    {
+      "path": "tests/music/test_browse_empty.py",
+      "bytes": 119,
+      "sha256": "be6b5c6bde91770a4bfd3581b7d220845d2ce1e084c1a97dd5f1f688632e2092"
+    },
+    {
+      "path": "tests/music/test_browse_faults.py",
+      "bytes": 4094,
+      "sha256": "af9a4caf49f77e673fb0aac9fafe3a506e968310ed0691bd9f659361678a8241"
+    },
+    {
+      "path": "tests/music/test_browse_http.py",
+      "bytes": 16811,
+      "sha256": "87bd54f63e9bda63610fd158d76e95b5c3c2bb007a13185d01a65af518ce72d7"
+    },
+    {
+      "path": "tests/music/test_commands.c",
+      "bytes": 1872,
+      "sha256": "337ab6274eb5d6de7896bc992ccceb3e85ab5e42eb0837e1a246b8ec7e4a3f43"
+    },
+    {
+      "path": "tests/music/test_contracts.c",
+      "bytes": 4451,
+      "sha256": "4de7d38d53b69f527cbe586f9582844e3a0b592bb6d82154ed14035318998d87"
+    },
+    {
+      "path": "tests/music/test_dispatch_http.py",
+      "bytes": 3780,
+      "sha256": "f959528df2a8526f6ae7f33339c914c46856fbf031419fefe1ad93559e5913ca"
+    },
+    {
+      "path": "tests/music/test_fd_contract.py",
+      "bytes": 1379,
+      "sha256": "17fdd8f9901035a81010eb486ea311cb9cddd52b2ee0938a7148795073f03cd3"
+    },
+    {
+      "path": "tests/music/test_library.c",
+      "bytes": 22274,
+      "sha256": "4d83bc3dc280ae8c03b7e73242b52c40da986adfa27b8fc6f10ea0422588697c"
+    },
+    {
+      "path": "tests/music/test_library_large.py",
+      "bytes": 368,
+      "sha256": "22efdad7dca7a48d71581a27552fb253924e1dba706fba1fd13eeac290cb3b68"
+    },
+    {
+      "path": "tests/music/test_library_qemu.py",
+      "bytes": 691,
+      "sha256": "2b71cbf4dbe472049e0074a453359b849588546ca6fafd7e3112b9f2a6d53974"
+    },
+    {
+      "path": "tests/music/test_library_storage.py",
+      "bytes": 5218,
+      "sha256": "eb9b3c93ee5eb2aebbcd8b641e214694459f59c1bbbe19319f1ea9a10b50ff70"
+    },
+    {
+      "path": "tests/music/test_load.c",
+      "bytes": 4598,
+      "sha256": "8ed9858fefbc76b51a19529cdc0a4e45e0a0c8ee7a6d6fdb9ca412565e2e4efa"
+    },
+    {
+      "path": "tests/music/test_music_http.c",
+      "bytes": 1938,
+      "sha256": "002e56383480ea11d6a2229926818f7bf0918706dfaef63712d2c3cc70212ce7"
+    },
+    {
+      "path": "tests/music/test_ownership_lua.lua",
+      "bytes": 2401,
+      "sha256": "fbb79e5a0415effb8d41c79dfbd377abd907bf054145c8ab361bda80314a0ca2"
+    },
+    {
+      "path": "tests/music/test_playback.c",
+      "bytes": 16212,
+      "sha256": "82debfc49b99e0f41eed3e62f8df3c40677ab94ab2c5f7aadad48e00ba965b72"
+    },
+    {
+      "path": "tests/music/test_playback_http.py",
+      "bytes": 26966,
+      "sha256": "869d7c3532153f59ff1f971cf4df4a51c5b3fee45db55a103dc5b5d367a26f36"
+    },
+    {
+      "path": "tests/music/test_queue.c",
+      "bytes": 4093,
+      "sha256": "750930f4b54f45b43d9558d7b56a20f788468aea5b0645b29867fa3e3c18cb82"
+    },
+    {
+      "path": "tests/music/test_scanner.c",
+      "bytes": 15252,
+      "sha256": "aef017e89795e33e6b9582426b0ac21db07f3518264e0764938e3f1c9131dc6d"
+    },
+    {
+      "path": "tests/music/test_scanner.py",
+      "bytes": 11039,
+      "sha256": "2c4a3a5add82648e4bc6698a5e949105902455980e0b673fb4cd1ffc4ff9bf9f"
+    },
+    {
+      "path": "tests/music/test_scanner_qemu.py",
+      "bytes": 1096,
+      "sha256": "b4abfcf55ad0527e9e9db624463e8aaf642857e07ea01f3bacde1b5da4c79cd1"
+    },
+    {
+      "path": "tests/music/test_storage.c",
+      "bytes": 25657,
+      "sha256": "19bd795c9f1c274e4227b5d6b4f0d0c4a0fdaaad9dbc3352c9ac384d05809b4b"
+    },
+    {
+      "path": "tests/music/test_storage.py",
+      "bytes": 288,
+      "sha256": "4a5be739e33dee6061012aa4290ba1a4f5a4a85c55dd89bd31c5b66b05cb8336"
+    },
+    {
+      "path": "tests/music/test_storage_lua.lua",
+      "bytes": 1665,
+      "sha256": "59b6c840c69b66642bd2bc773b82c4f56ff73a48e868654fbb8bc5022bd5d664"
+    },
+    {
+      "path": "tests/music/test_storage_qemu.py",
+      "bytes": 599,
+      "sha256": "759ab8cb594578c4923d8db24ac82b553a08bb77a0fcc3138c3aa58e3d924c68"
+    },
+    {
+      "path": "tests/music/test_stream.c",
+      "bytes": 4276,
+      "sha256": "97f012b34b8681914046ee13a9803c74407d38b24adc6baba73d76b0092b4b64"
+    },
+    {
+      "path": "tests/music/test_stream_http.py",
+      "bytes": 7628,
+      "sha256": "e19c5745557dcc49284f44ebfb4a7883746775633b0df582cdbdb795a61b6090"
+    },
+    {
+      "path": "tests/music/test_transport.c",
+      "bytes": 18037,
+      "sha256": "62e4118e36c29ebd952d691c9b744ac714f541228e0a4c461c0038900c42edfa"
+    },
+    {
+      "path": "tests/music/test_transport_wire.py",
+      "bytes": 2009,
+      "sha256": "bcd3ef3a09a3645a12f7a466b4cb581b28e8a2db10353596274a36d3e7e65356"
+    },
+    {
+      "path": "tests/music/test_wire_fixtures.py",
+      "bytes": 3130,
+      "sha256": "7b845b1834da4a0ef7f3106ed8888a2c3be2ba4d784a1fc9a88ca45c9f4b56c7"
+    },
+    {
+      "path": "tests/music/wp2_fixtures.py",
+      "bytes": 4072,
+      "sha256": "a9e2e103ba34a8271050b43f6f681c7d52e557319d48d5b155f97446cedb3091"
+    },
+    {
+      "path": "native/sbbase/CMakeLists.txt",
+      "bytes": 3058,
+      "sha256": "50ab23567e84bf82bdb42abdd48342defc67c3d8df605a2fef7a47c22fbe56b5"
+    },
+    {
+      "path": "native/sbwebserver/CMakeLists.txt",
+      "bytes": 1488,
+      "sha256": "4960c728eef8a8249cd6fdecf299b994250474f11e9035184bc6073c343698c9"
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "bytes": 24592,
+      "sha256": "73ff8393fb49cf02d7cdab12d279cb324b7b2627e2cbfe57d351222350083ac3"
+    },
+    {
+      "path": "scripts/build-playback-arm.sh",
+      "bytes": 4111,
+      "sha256": "443346fca20fd3882c3dfe129800a3c6e6e8e33d4d0f3fe522b217a4d43b3de2"
+    },
+    {
+      "path": "applet/MusicOwnership.lua",
+      "bytes": 5455,
+      "sha256": "6763bb90ce4492378fbac56c8c14404a976bdbbb64d1a2926a52256d94da2c18"
+    }
+  ],
+  "prior_reports_unchanged": [
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_DIAGRAMS.md",
+      "bytes": 6895,
+      "sha256": "279a54896c48de7e523c36f561f324e33d02384cf40dd515c75ad3f2f753ca5e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_EVIDENCE.md",
+      "bytes": 28030,
+      "sha256": "25a1ce1ddde78f0d734db8a4498a94316d2e7f0fd7949f671d4abc19aae5ac4c"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_GAPS.md",
+      "bytes": 10072,
+      "sha256": "69a46983463e83b84efa340dc88983245fd3da4ceac3bb490a24db278177bb0f"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_PROTOCOL.md",
+      "bytes": 17455,
+      "sha256": "20b96f0db1889d53cc8fa33764f84f3083a188ef0d0ffbfda321b42f766d03ae"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_REPORT.md",
+      "bytes": 35067,
+      "sha256": "ae2b3f537fadf9087ccab7ffe917a614906bef3ae5af39fff9ec433a45fe9353"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_PHASE0_ROADMAP.md",
+      "bytes": 17797,
+      "sha256": "dccc9e3a7039a33d1bae627bc1b5c8abc84e8768305dbce2f224e24192583327"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_CONTRACTS.md",
+      "bytes": 10589,
+      "sha256": "d9dba0af501417633783b78821f13bff3d9d6c1adeb7708945e437a232de2439"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_EVIDENCE.md",
+      "bytes": 11147,
+      "sha256": "a259f21e45a1bf2b5980b64b5fe6c7c2ea9c2e677817189d6a35a8dc92f9340a"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_PARSER_EVALUATION.md",
+      "bytes": 9003,
+      "sha256": "c470faa99c5b6980640ef197f7bc519e865310a000e3f0c1bab3afabdad26697"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_PROTOCOL_FIXTURES.md",
+      "bytes": 7041,
+      "sha256": "29d0053d61796922c4aeab517464c59bb3ff3dc9aa1561d1cb9b0baad9dfc420"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_REPORT.md",
+      "bytes": 9447,
+      "sha256": "64c120e2f970ea71d7df7e078e682339886f9bc4836ef8a2cadd5e95a5a05628"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP0_TEST_RESULTS.md",
+      "bytes": 7999,
+      "sha256": "4145db5ec3ae7456c4a391d815b903595cfb68fc1d3d2744631340f4427cf437"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_EVIDENCE.md",
+      "bytes": 9477,
+      "sha256": "3f868d310df9ff688039150a9268159db3fdac0d8d513e95cdc3d2514e9654ce"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_PERFORMANCE.md",
+      "bytes": 6379,
+      "sha256": "46aaebed06a48faa8f7f5bf46acdcdf3011d419a233ac00be74ebc51bf2f0264"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_REPORT.md",
+      "bytes": 7893,
+      "sha256": "7373ba4c2a179e4e76a4eac9218d08aeb2873614807fa0ceddf373297a20efd0"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_SCHEMA.md",
+      "bytes": 11067,
+      "sha256": "f5f2accb4434f5fc5583a423f4fa972325c501f6b95007c8eea5e67a79a65cb5"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP1_TEST_RESULTS.md",
+      "bytes": 6440,
+      "sha256": "416572dfba1e02d5420f09c239bd32348db215ea58cff97debc2a0df66e190fe"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_EVIDENCE.md",
+      "bytes": 5813,
+      "sha256": "85369671414a584f188796f717646a5c750fa34ef86d16e448354416fa0d0042"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_METADATA_FORMATS.md",
+      "bytes": 7736,
+      "sha256": "c015bd69920d6c6f40d5223a9d814ef4fa2eb33359cfa3df679b55eb6d89c1c4"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_PERFORMANCE.md",
+      "bytes": 6976,
+      "sha256": "5fcb885fa4f762bba21ba54c14c94a8a83bdabe7774a577c9c090c5fe5e88c65"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_REPORT.md",
+      "bytes": 8360,
+      "sha256": "406e117c9eb795e312ce1bf3fe368f45d05134c7560de14724bf1405f183e9c3"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_SCANNER_DESIGN.md",
+      "bytes": 12501,
+      "sha256": "623a99971e28d276854950b5b9f4277fae02d9820c435e69c27ecb740b2db178"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP2_TEST_RESULTS.md",
+      "bytes": 7748,
+      "sha256": "634f1d4aa0f6a2a972f213005247de2098dea06d373edee54013ddc447f77881"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_EVIDENCE.md",
+      "bytes": 5434,
+      "sha256": "2c969dc4664ac6c8bbf1df9dd0228fcf6de77d484c054d1e0c4037bd7b21e7c2"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_OWNERSHIP.md",
+      "bytes": 5850,
+      "sha256": "ec03c4b12d6d680028183d545c8828c42689d207c49d7b3b58dd008edca991de"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_PERFORMANCE.md",
+      "bytes": 6271,
+      "sha256": "3d13ab61676e240458aa33276af738fe5a99fac608c168c02e4db94eb8ab84fe"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_REPORT.md",
+      "bytes": 9639,
+      "sha256": "9d0a693200111d25de9a6c0b28811e606df4724a6fcb4d7a72a1fa6d74bd0aa8"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_SLIMPROTO.md",
+      "bytes": 9335,
+      "sha256": "5aa133fa99fde7de590e7d0625c3f38f9cd6da268d19640279a16fbb191c0e0a"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_SOCKET_IO.md",
+      "bytes": 4222,
+      "sha256": "e9f5a62c6276c1a776692cc3e997fdae033a856635ec07f5bc92fe6d8ba93d73"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3A_TEST_RESULTS.md",
+      "bytes": 7265,
+      "sha256": "44ae729923b1e8538bb9348bb538dc7e1e6531c53d02b08ba827f0937651c228"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_ASYNC_DISPATCH.md",
+      "bytes": 4515,
+      "sha256": "9059cce9f16b7972b7dc91b000f4ae5dc328984573eb485c79de7117ca5bdc33"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_BROWSE_API.md",
+      "bytes": 5204,
+      "sha256": "9136797f44901c4339e29c7d9e6b01f79c1f45351295b0025577a8afac24f803"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_EVIDENCE.md",
+      "bytes": 4971,
+      "sha256": "8e335f7774ccd23aa579903b5cf1e10198ac6a052249d276267e384a3173e1bb"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_PERFORMANCE.md",
+      "bytes": 4128,
+      "sha256": "c7d412e90430a38d734b1336a74c165fb04721237b909e6228c470148b775a0e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_PROTOCOL.md",
+      "bytes": 5510,
+      "sha256": "c1559e1ca05d32fd9c317aa8b30a925068a86189ca3c2d33bafb564820595cb4"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_REPORT.md",
+      "bytes": 6736,
+      "sha256": "a4bb790af084eb765a98619bcca9d72feca25789c6ced068c8612020b69c4e35"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP3B_TEST_RESULTS.md",
+      "bytes": 5109,
+      "sha256": "542a7bdc5cc2029198284f725e267640fa61ad1c247b06fc4065cdd081c57581"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_FILESYSTEM_COMPATIBILITY.md",
+      "bytes": 7447,
+      "sha256": "9947017564340b05c689d6a67c9554d88aca428d546b774a39b6e032e502e95e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_FIRMWARE_INTEGRATION.md",
+      "bytes": 8315,
+      "sha256": "e555ed3aff01568726c0d8ef934974d1e6a3fef0d79f936de67307405cbe5868"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_REPORT.md",
+      "bytes": 7408,
+      "sha256": "5ff869e6bebe133196f9833acbe046ad7492bd638daa4e080c78d54267063e1c"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_STORAGE_CONTRACT.md",
+      "bytes": 12527,
+      "sha256": "41dd8210e9e6f19040f9efa39458145a1111d66ad3f57f79176ee25b8b610ea9"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP6A_TEST_RESULTS.md",
+      "bytes": 10062,
+      "sha256": "7440784d2d2e4abff14cfc89be5a3759d4868a6d651d91338d8f2064496000d3"
+    }
+  ],
+  "references": [
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SlimBrowser/SlimBrowserApplet.lua",
+      "bytes": 107254,
+      "sha256": "0d85ade9be0d47488378afa29dd78f87dee2f2718a5892868a57e945f9191e40"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SlimBrowser/DB.lua",
+      "bytes": 9427,
+      "sha256": "d85db7083689401ee058d5485f632f998884506914edbac7395bd38f5db1eaee"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/LocalPlayer.lua",
+      "bytes": 10088,
+      "sha256": "5f72349475aeebfe75cc9c550850d4531bf01f762a13d98c40b3556ef4fc9b76"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/NowPlaying/NowPlayingApplet.lua",
+      "bytes": 54477,
+      "sha256": "eab17c7e30d533160dad360015ada4e83496823f638142272a97e14c65a9f21b"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/MediaManager/MediaManagerApplet.lua",
+      "bytes": 25112,
+      "sha256": "731d8b698a10cd0728101b35597317e7c01962ccf4852f8f629f7b6fd219a67f"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SqueezeCenter/SqueezeCenterApplet.lua",
+      "bytes": 25400,
+      "sha256": "526973a57d2587cd86359dd0eded3a42744d142f2dbff3a1b199f5a77fec9dc6"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+      "bytes": 53144,
+      "sha256": "a86c71f0485f2916ae9f66cda998a562f45ab62ba25d9ded5a37cb6f023255f2"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Jive.pm",
+      "bytes": 76918,
+      "sha256": "ec095df1d924fba0ed5f8aed24c18393df9106d5bb0f3d257221f9b979c36434"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Queries.pm",
+      "bytes": 157179,
+      "sha256": "823fc8e096ba30d97a92aa54462796fa630fde807333dbcb583c83335b306f90"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Commands.pm",
+      "bytes": 88247,
+      "sha256": "de73dd1ec21e259a3ee44e4c8f8538b09586bb7ca4a728c50f1b2ca4133afe6c"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Buttons/XMLBrowser.pm",
+      "bytes": 40390,
+      "sha256": "e017ff61a00f1fcbea60b7f4d8be31ec54edcc09da39e70ce212ec83c81bff59"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm",
+      "bytes": 57354,
+      "sha256": "fed655006d68991dbf47e90815834ae5418fb65dc684585c124acf578e7d6508"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Web/XMLBrowser.pm",
+      "bytes": 41035,
+      "sha256": "c62b9aab17a97eb3533553fc91b3f18077baccffd3c13bfc1ce65c85c951f388"
+    },
+    {
+      "path": ".local/wp3b/SlimMenusApplet.lua",
+      "bytes": 41444,
+      "sha256": "6e2db5b9ab17c14fe2702bda9407f226d3a49f1438241a242b4bd54a3b9e63a8"
+    },
+    {
+      "path": "C:/Projects/squeezebox/applet/StandaloneRadio/StreamPlayer.lua",
+      "bytes": 36565,
+      "sha256": "054b8ee6e75b53b8fa71949e2adb8d31d3ce9278359f952e7c177eaa923201b8"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyPlayback.lua",
+      "bytes": 3129,
+      "sha256": "3e28389acb9c3cad8255dfb3f4b0f5cba99c56d7e5fd359851e377b1b318456d"
+    },
+    {
+      "path": "C:/Projects/SBSpotifyConnect/applet/SpotifyService.lua",
+      "bytes": 12746,
+      "sha256": "c6354f55cfda8518a3cd2cc8a66980418ccc953b74acd9c2d7b64be2ac43701d"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzPlayback.lua",
+      "bytes": 6071,
+      "sha256": "1e3c594f5ddda5521c6b052e4448dff733009a33524a7adaafb8ff7d3cf2bfae"
+    },
+    {
+      "path": "C:/Projects/QoBuz/applet/QobuzConnect/QobuzService.lua",
+      "bytes": 8990,
+      "sha256": "06f680308bbc0cf73232e9a488923960bf9e77f032e912eeeb5f89f29f9caad3"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/Player.lua",
+      "bytes": 48812,
+      "sha256": "2f72cca9167e6b6acecf133995260a5efc24c4eb99a1d8456814715621befb64"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build-arm/baby/playback/manifest.txt",
+      "bytes": 1351,
+      "sha256": "a36a733c8690eac04526a3ce5692ed2c7c4c4ddd761f471cdc12edf5fa54006d"
+    },
+    {
+      "path": "build-arm/baby/playback/sbbase_music_test",
+      "bytes": 888828,
+      "sha256": "a8912b7a8b604560d2aa5f554e29719848e315d646feeb875d4d05a4c636961a"
+    },
+    {
+      "path": "build-arm/baby/playback/sbwebserver_music_test",
+      "bytes": 308364,
+      "sha256": "0615741c2155d12fc58030473856d995745d4830689b6049e4f60a8aeca14fcb"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_http_policy",
+      "bytes": 25660,
+      "sha256": "fced6dccf286cec9ff1a1bb93c9f910e1383323e133dfc5cfa2dc271c72efd43"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_load",
+      "bytes": 737236,
+      "sha256": "58184f15ce5e2e33dbd71a35215ccdb5002f6641469a6c8a9337fe7f156305c0"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_playback",
+      "bytes": 819188,
+      "sha256": "772a75e47dde1d868361d01100f81104cf573b30457b8b04c0f26fd7e85fe14d"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_queue",
+      "bytes": 37948,
+      "sha256": "332477896a3a6021255d260b85e05383e861297daf76c524da3fc6feb7d56619"
+    },
+    {
+      "path": "build-arm/baby/playback/test_music_stream",
+      "bytes": 46148,
+      "sha256": "890a7583eebb2b38892b1c05db5f9719e397b399d6dd3bb9eeef80a457102a92"
+    },
+    {
+      "path": "build-arm/fab4/playback/manifest.txt",
+      "bytes": 1369,
+      "sha256": "865aa3ce67f2942fcb04394bbfee80be96e7251256df694f80483d03a883da47"
+    },
+    {
+      "path": "build-arm/fab4/playback/sbbase_music_test",
+      "bytes": 880636,
+      "sha256": "8dd338259c8c6fe889f5c081dfba02d70ead6131c2cf65a990d99f3dbb3dba18"
+    },
+    {
+      "path": "build-arm/fab4/playback/sbwebserver_music_test",
+      "bytes": 308364,
+      "sha256": "0420d4b8a604b680c9fef4361f830ccbf42a5c2ac49880a1b45fa0d064083b36"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_http_policy",
+      "bytes": 25660,
+      "sha256": "da52725f2b9dea3bf0a93dae9a5ea3f0eff83fd7cdba89f16658e303ab438b01"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_load",
+      "bytes": 729044,
+      "sha256": "d9dcc58bf6753018122d9146006ee38654483d8486ccad1371083ee02eca9b2c"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_playback",
+      "bytes": 810996,
+      "sha256": "bd38eff53424d9f499a29256255c95fd9454b0ac5428bcc3d0c776de674f7544"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_queue",
+      "bytes": 37948,
+      "sha256": "7a1c033ca5e0724c3ee4a52ff1efaf4444deadf00abd0474b935d313f028eb48"
+    },
+    {
+      "path": "build-arm/fab4/playback/test_music_stream",
+      "bytes": 46148,
+      "sha256": "205bf43a4c232e07184f83b67638de341509450a77f291aa3ecdc99a86b9e453"
+    }
+  ],
+  "private_logs": [
+    {
+      "path": ".local/wp4/baseline.log",
+      "bytes": 8981,
+      "sha256": "83f3a54eddaf98d536ca4ee377a8694074101fa69d02a587cf72845dd882c748"
+    },
+    {
+      "path": ".local/wp4/focused.log",
+      "bytes": 1068,
+      "sha256": "d9891f411b9fe8da9fd0303d7b6d0d482657f5ccfb3efd2d62aa8abdba888aaa"
+    },
+    {
+      "path": ".local/wp4/full-tests.log",
+      "bytes": 9925,
+      "sha256": "82e52751590bf9aac2ecee7ae916a1c1cab2737a8d26d109b452ce5a8d2a4478"
+    },
+    {
+      "path": ".local/wp4/build-final.log",
+      "bytes": 2070,
+      "sha256": "7684a93805e6e0c0127077bfb5d1b4ef061b53c436ac8be10f5b54ad35d29eb2"
+    },
+    {
+      "path": ".local/wp4/arm-final.log",
+      "bytes": 4116,
+      "sha256": "373e1e6a99fa0134c9e7b46370661c5c3af8b41a817479021d5748b6314878c5"
+    },
+    {
+      "path": ".local/wp4/arm-normal.log",
+      "bytes": 7998,
+      "sha256": "526248d977bf6ff05d126683e5d9c70a28ec6fde6a4e4347ac1a45b65274eefb"
+    },
+    {
+      "path": ".local/wp4/san-build-final.log",
+      "bytes": 3250,
+      "sha256": "064e2ec8676b0125a50d21dbf08fdab31a0aeccdd7a6b871a65cad807dacc1bc"
+    },
+    {
+      "path": ".local/wp4/san-runtime.log",
+      "bytes": 617,
+      "sha256": "103968b06b491539f4d02b6a10a64aa3d89ce5bff785c06c07110d88267add40"
+    },
+    {
+      "path": ".local/wp4/qemu-runtime.log",
+      "bytes": 1726,
+      "sha256": "7f84b0e16a1933d04ed0183d3e67c7b38980a040f15843b92c1bf00af6bde1c9"
+    },
+    {
+      "path": ".local/wp4/queue-memory.log",
+      "bytes": 849,
+      "sha256": "f2ba2c3ecad0398e91cd2b65f1d0b0cb5c14d7fa50a85ff521b778de48af00d5"
+    },
+    {
+      "path": ".local/wp4/load-memory.log",
+      "bytes": 925,
+      "sha256": "9118898ecf2925c6451d6177a582598aca28b7c4eb0d2a829f7ee1f6daa97fb5"
+    },
+    {
+      "path": ".local/wp4/benchmarks.jsonl",
+      "bytes": 2168,
+      "sha256": "33cdd25c7dd278bca1c8b39a78f156748b5afb2f7af30d7d514eb14365aa9ed5"
+    },
+    {
+      "path": ".local/wp4/proxy-probe.log",
+      "bytes": 1260,
+      "sha256": "8f243417938d0fc9e3032d084454c2cf669a3293f7a97676e0d89d6a025bf0a1"
+    }
+  ],
+  "portable_artifacts": [
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_EVIDENCE.md",
+      "bytes": 4466,
+      "sha256": "594a24bf29a05f57c76d419d7b751bcecfc4e7c39456ae64feccc12f3de3db2e"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_EXAMPLES.json",
+      "bytes": 78883,
+      "sha256": "7c42ae96340daceb596f93ba5822b9f4e109c8e87583a7a5c95cdb3e3942221c"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_HTTP_STREAMING.md",
+      "bytes": 5220,
+      "sha256": "f6f8887ca20248547d1f2d1bda2176febd72c410138309648d20475be03a8d4b"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_MEASUREMENTS.json",
+      "bytes": 19031,
+      "sha256": "647bffd61b7e0df79c4126d88f98f3df2601e5ca12a3bd5ffd804e626662a30d"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_OWNERSHIP.md",
+      "bytes": 5583,
+      "sha256": "6eb8ff2bfea327d0066dc082f84d396f792e262bdfc3039dbf1a3039592b42b3"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_PERFORMANCE.md",
+      "bytes": 4954,
+      "sha256": "1a00ba8775ea5ecdc40c6aaf211deb6fb6ed543ef521ff318a0ac7c62d42ca6a"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_QUEUE.md",
+      "bytes": 4829,
+      "sha256": "3b757cdcf65a786c765e3f8385b1a0b80126666bab14ce8cdbdf1f4723ccb1c9"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_REPORT.md",
+      "bytes": 5120,
+      "sha256": "1f2c982da723300d2fd7539dd32605df23522c1cd23b6a95ba89a300d3e1a5a2"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_SLIMPROTO.md",
+      "bytes": 5091,
+      "sha256": "22edef5df51e4dc985e371941f9ecf3eb2666e96e91e455569854110cf0ca5b3"
+    },
+    {
+      "path": "research/STANDALONE_MUSIC_WP4_TEST_RESULTS.md",
+      "bytes": 4808,
+      "sha256": "783368093f9e73e6f4d560fa81e18c559714ccb7a23594de962eac8ec4dcbcbe"
+    }
+  ],
+  "transcripts": {
+    "san-runtime.log": "{\"actual_scanner_files\":1000,\"concurrent_browse_queries\":2067,\"successful_queries\":2067,\"retryable_queries\":0,\"query_max_ms\":26,\"scan_ms\":7120,\"decoder\":\"mocked playing\"}\nMock decoder integration: 2 starts, 5 commands; real scoped opens/IPC, atomic queue, STAT metadata, next-connection and removal passed\n{\"http_bytes\": 1048576, \"http_seconds\": 0.9103290540006128, \"bytes_per_second\": 1151864.8068979396, \"fds_before\": 5, \"fds_after\": 5, \"simultaneous_streams\": 4, \"buffer_bytes\": 16384}\n{\"native_starts\": 5, \"verified_encoded_bytes\": 9560, \"queue_entries_before_removal\": 3, \"audio_output\": \"mocked, not measured\"}\n",
+    "qemu-runtime.log": "Queue atomicity, identities, intent/audible, epochs, bounds and revocation passed; bytes=233608\nHTTP single-range 64-bit bounds and opaque token grammar passed (policy only)\nPrivate descriptor IPC, 64-bit pread, revocation, removal and shutdown passed\nPaginated 140-track/three-disc load: 538 ms; oversized album rollback passed\nAsync load identity, atomic commit, page bounds, cancellation and context guards passed\nMock decoder integration: 2 starts, 5 commands; real scoped opens/IPC, atomic queue, STAT metadata, next-connection and removal passed\n{\"http_bytes\": 1048576, \"http_seconds\": 0.6905435040007433, \"bytes_per_second\": 1518479.2759977528, \"fds_before\": 6, \"fds_after\": 5, \"simultaneous_streams\": 4, \"buffer_bytes\": 16384}\n{\"native_starts\": 5, \"verified_encoded_bytes\": 9560, \"queue_entries_before_removal\": 3, \"audio_output\": \"mocked, not measured\"}\nQueue atomicity, identities, intent/audible, epochs, bounds and revocation passed; bytes=233608\nHTTP single-range 64-bit bounds and opaque token grammar passed (policy only)\nPrivate descriptor IPC, 64-bit pread, revocation, removal and shutdown passed\nPaginated 140-track/three-disc load: 455 ms; oversized album rollback passed\nAsync load identity, atomic commit, page bounds, cancellation and context guards passed\nMock decoder integration: 2 starts, 5 commands; real scoped opens/IPC, atomic queue, STAT metadata, next-connection and removal passed\n{\"http_bytes\": 1048576, \"http_seconds\": 0.6925907829991047, \"bytes_per_second\": 1513990.6936956097, \"fds_before\": 5, \"fds_after\": 5, \"simultaneous_streams\": 4, \"buffer_bytes\": 16384}\n{\"native_starts\": 5, \"verified_encoded_bytes\": 9560, \"queue_entries_before_removal\": 3, \"audio_output\": \"mocked, not measured\"}\n",
+    "queue-memory.log": "Queue atomicity, identities, intent/audible, epochs, bounds and revocation passed; bytes=233608\n\tCommand being timed: \"build-dual-tests/tests/test_music_queue\"\n\tUser time (seconds): 0.00\n\tSystem time (seconds): 0.00\n\tPercent of CPU this job got: 0%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.00\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 1664\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 2\n\tMinor (reclaiming a frame) page faults: 130\n\tVoluntary context switches: 20\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 64\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+    "load-memory.log": "Paginated 140-track/three-disc load: 333 ms; oversized album rollback passed\nAsync load identity, atomic commit, page bounds, cancellation and context guards passed\n\tCommand being timed: \"build-dual-tests/tests/test_music_load\"\n\tUser time (seconds): 0.06\n\tSystem time (seconds): 0.05\n\tPercent of CPU this job got: 26%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.44\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 2816\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 24\n\tMinor (reclaiming a frame) page faults: 299\n\tVoluntary context switches: 1648\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 1656\n\tFile system outputs: 848\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n"
+  }
+}

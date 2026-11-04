@@ -1,0 +1,68 @@
+{
+  "sample_duration_host_seconds": 23.638369600012084,
+  "cpu_total_ticks_delta": 2373,
+  "system_busy_pct": 27.349346818373366,
+  "iowait_pct": 0.0,
+  "mem_start": {
+    "MemTotal": 125848,
+    "MemFree": 39240,
+    "Buffers": 11860,
+    "Cached": 38880
+  },
+  "mem_end": {
+    "MemTotal": 125848,
+    "MemFree": 39220,
+    "Buffers": 11860,
+    "Cached": 38888
+  },
+  "processes": [
+    {
+      "pid": 32558,
+      "name": "jive",
+      "ppid": 1,
+      "cpu_pct": 10.282343025705858,
+      "rss_kib": 21084,
+      "io_delta": {}
+    },
+    {
+      "pid": 32568,
+      "name": "jive_alsa",
+      "ppid": 32558,
+      "cpu_pct": 4.382638010956595,
+      "rss_kib": 6824,
+      "io_delta": {}
+    },
+    {
+      "pid": 32569,
+      "name": "jive_alsa",
+      "ppid": 32558,
+      "cpu_pct": 3.5819637589549096,
+      "rss_kib": 6828,
+      "io_delta": {}
+    },
+    {
+      "pid": 915,
+      "name": "sbproxy",
+      "ppid": 1,
+      "cpu_pct": 0.0,
+      "rss_kib": 996,
+      "io_delta": {}
+    },
+    {
+      "pid": 924,
+      "name": "sbbase",
+      "ppid": 1,
+      "cpu_pct": 0.04214075010535188,
+      "rss_kib": 340,
+      "io_delta": {}
+    },
+    {
+      "pid": 934,
+      "name": "sbwebserver",
+      "ppid": 1,
+      "cpu_pct": 0.2949852507374631,
+      "rss_kib": 1640,
+      "io_delta": {}
+    }
+  ]
+}

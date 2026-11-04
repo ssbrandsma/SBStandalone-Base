@@ -1,0 +1,457 @@
+[
+  {
+    "id": "D01",
+    "device_path": "/etc/init.d/squeezecenter",
+    "sha256": "ae913ec4ba84d7b5003f08fddc2c3df15a453071784482e35f0dae2faf335c0d",
+    "anchors": [
+      3,
+      14,
+      28,
+      53
+    ]
+  },
+  {
+    "id": "D02",
+    "device_path": "/etc/udev/rules.d/local.rules",
+    "sha256": "fbb2957e270aa4b4be974e9976eec100d07449b832c0b3d9b8cdd04ada157f9b",
+    "anchors": [
+      17,
+      18
+    ]
+  },
+  {
+    "id": "D03",
+    "device_path": "/etc/udev/scripts/mount.sh",
+    "sha256": "9d1cb3fc5c547f5665609ef7f681a01e25e3b9881a9484c152514347d577fbda",
+    "anchors": [
+      22,
+      28,
+      29,
+      55,
+      66,
+      71,
+      82
+    ]
+  },
+  {
+    "id": "D04",
+    "device_path": "/usr/share/jive/applets/MediaManager/MediaManagerMeta.lua",
+    "sha256": "db8f081d0c91e818b9aa05c3c8ab334b38888a32849b7a494c9473ca853c954d",
+    "anchors": [
+      37,
+      53
+    ]
+  },
+  {
+    "id": "D05",
+    "device_path": "/usr/share/jive/applets/MediaManager/MediaManagerApplet.lua",
+    "sha256": "731d8b698a10cd0728101b35597317e7c01962ccf4852f8f629f7b6fd219a67f",
+    "anchors": [
+      31,
+      172,
+      286,
+      492,
+      895
+    ]
+  },
+  {
+    "id": "D06",
+    "device_path": "/usr/share/jive/applets/SqueezeCenter/SqueezeCenterMeta.lua",
+    "sha256": "35db0ea936bb1d0c278853fc3dac767ddd0d7dab1b2e85fb7c43a9debebf9985",
+    "anchors": [
+      26,
+      37
+    ]
+  },
+  {
+    "id": "D07",
+    "device_path": "/usr/share/jive/applets/SqueezeCenter/SqueezeCenterApplet.lua",
+    "sha256": "526973a57d2587cd86359dd0eded3a42744d142f2dbff3a1b199f5a77fec9dc6",
+    "anchors": [
+      66,
+      173,
+      274,
+      485,
+      555,
+      795
+    ]
+  },
+  {
+    "id": "D08",
+    "device_path": "/usr/squeezecenter/Slim/Utils/OS/SqueezeOS.pm",
+    "sha256": "646f321a068c1e58ee9162fafb66cea1bb9bfc4baf453b14e84fa0a76cc7d0e3",
+    "anchors": [
+      67,
+      130,
+      224,
+      302,
+      320,
+      377,
+      396
+    ]
+  },
+  {
+    "id": "D09",
+    "device_path": "/usr/squeezecenter/Slim/Utils/AutoRescan.pm",
+    "sha256": "a6397c78b2f2532a2de8169662e60d8d800ed3c4c06d30336277ab865c931e8e",
+    "anchors": [
+      24,
+      33,
+      157,
+      160
+    ]
+  },
+  {
+    "id": "D10",
+    "device_path": "/usr/squeezecenter/Slim/Utils/AutoRescan/Linux.pm",
+    "sha256": "4c1975ebaad3eb05085e531193f2310f2cb4c839174735fa798ebc62d7ce003c",
+    "anchors": [
+      37,
+      80,
+      103,
+      189,
+      225
+    ]
+  },
+  {
+    "id": "D11",
+    "device_path": "/usr/squeezecenter/Slim/Utils/Scanner/Local.pm",
+    "sha256": "b9befe3769fdc1beda3fad9c715dd79d9efdb01dbf6c5bf414fe04017ebaea1e",
+    "anchors": [
+      114,
+      231
+    ]
+  },
+  {
+    "id": "D12",
+    "device_path": "/usr/squeezecenter/Slim/Music/Import.pm",
+    "sha256": "1fae039354c469ad2256b17b4771d26942859973f92e47606ff79e83a1cac68c",
+    "anchors": [
+      127,
+      129,
+      131,
+      132,
+      135,
+      136,
+      144
+    ]
+  },
+  {
+    "id": "D13",
+    "device_path": "/usr/squeezecenter/Slim/Formats/MP3.pm",
+    "sha256": "3041fac1c65bd042095d7b5caa3955f499161a43668991d57e93adbefce21f22",
+    "anchors": [
+      29,
+      108
+    ]
+  },
+  {
+    "id": "D14",
+    "device_path": "/usr/squeezecenter/Slim/Utils/SQLiteHelper.pm",
+    "sha256": "52ff7a2da4da14bfd1450d7124651456d0081453d3d4e45df0a9c5038c737b9a",
+    "anchors": [
+      94,
+      106,
+      117,
+      297
+    ]
+  },
+  {
+    "id": "D15",
+    "device_path": "/usr/squeezecenter/Slim/Schema.pm",
+    "sha256": "4150a8c15c99c3ad8c48a6e35cb6e3119f1cc1ee218c7bcceb08af07d5786065",
+    "anchors": [
+      464,
+      652
+    ]
+  },
+  {
+    "id": "D16",
+    "device_path": "/usr/squeezecenter/SQL/SQLite/schema_1_up.sql",
+    "sha256": "c98b12d354b96e3fded33171804731cbfbc13bab2669993452f824114afdc9cf",
+    "anchors": [
+      35,
+      96,
+      112,
+      152,
+      219
+    ]
+  },
+  {
+    "id": "D17",
+    "device_path": "/usr/squeezecenter/SQL/SQLite/schema_10_up.sql",
+    "sha256": "482f5dc9338bb1a3d3fa839a26af44541b6779a1248f01056c7628b047ed1986",
+    "anchors": [
+      6
+    ]
+  },
+  {
+    "id": "D18",
+    "device_path": "/usr/squeezecenter/SQL/SQLite/schema_16_up.sql",
+    "sha256": "e0853e58eeeaba6fa88bccc9567cdd393e2f8f94f438f57213826a13d133e18a",
+    "anchors": [
+      4,
+      6,
+      43
+    ]
+  },
+  {
+    "id": "D19",
+    "device_path": "/usr/squeezecenter/SQL/SQLite/schema_18_up.sql",
+    "sha256": "c8b0c87d9a7a3ade6f16a1276b9d0198693a12f07e79381f625cbd832a8f1932",
+    "anchors": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": "D20",
+    "device_path": "/usr/squeezecenter/Slim/Utils/ArtworkCache.pm",
+    "sha256": "c2e7f94d84ffdcba5165e98ee7fda5e427b17bb9fc57200d42f03954b24d5cf4",
+    "anchors": [
+      26,
+      38,
+      40,
+      45
+    ]
+  },
+  {
+    "id": "D21",
+    "device_path": "/usr/squeezecenter/Slim/Utils/DbCache.pm",
+    "sha256": "00342eb28a399e5a6a1d6f7e55749b38d247e4a05d69951aa99bf5f79e3db1b8",
+    "anchors": [
+      180,
+      197,
+      240
+    ]
+  },
+  {
+    "id": "D22",
+    "device_path": "/usr/squeezecenter/gdresized.pl",
+    "sha256": "4aead3097c249517ab361c530ff8925b16e5ddfb824d34d165d80d5a64afcf24",
+    "anchors": [
+      19,
+      92,
+      93,
+      97,
+      99,
+      106,
+      107,
+      113
+    ]
+  },
+  {
+    "id": "D23",
+    "device_path": "/usr/squeezecenter/Slim/Utils/GDResizer.pm",
+    "sha256": "1cddcf948899e4ff0b89ccd10cb4a8d5ea51e6be034ff7c79ef0fa5ffacfbe5d",
+    "anchors": [
+      5,
+      105,
+      106,
+      199
+    ]
+  },
+  {
+    "id": "D24",
+    "device_path": "/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+    "sha256": "a86c71f0485f2916ae9f66cda998a562f45ab62ba25d9ded5a37cb6f023255f2",
+    "anchors": [
+      604,
+      1288,
+      1444,
+      1487
+    ]
+  },
+  {
+    "id": "D25",
+    "device_path": "/usr/share/jive/applets/SlimBrowser/SlimBrowserApplet.lua",
+    "sha256": "0d85ade9be0d47488378afa29dd78f87dee2f2718a5892868a57e945f9191e40",
+    "anchors": [
+      704,
+      817,
+      852
+    ]
+  },
+  {
+    "id": "D26",
+    "device_path": "/usr/share/jive/jive/slim/SlimServer.lua",
+    "sha256": "8c6cc761c2bea423cff361b7a3516b400084e3eddea5fa5b2ae91b762ef8d90e",
+    "anchors": [
+      1401,
+      1435
+    ]
+  },
+  {
+    "id": "D27",
+    "device_path": "/usr/share/jive/jive/slim/LocalPlayer.lua",
+    "sha256": "5f72349475aeebfe75cc9c550850d4531bf01f762a13d98c40b3556ef4fc9b76",
+    "anchors": [
+      81,
+      90,
+      190
+    ]
+  },
+  {
+    "id": "D28",
+    "device_path": "/usr/share/jive/jive/audio/Playback.lua",
+    "sha256": "8e06a00174707449858615e5a02452297420da4956864e19f03c0e9b3a1bea2c",
+    "anchors": [
+      115,
+      475,
+      852,
+      947
+    ]
+  },
+  {
+    "id": "D29",
+    "device_path": "/usr/squeezecenter/Slim/Networking/Slimproto.pm",
+    "sha256": "4220262733c265d6a8d4fc91ff7da5e236db1a8e13b1b521d58dfadbe04e8d4f",
+    "anchors": [
+      30,
+      108,
+      112,
+      125,
+      126
+    ]
+  },
+  {
+    "id": "D30",
+    "device_path": "/usr/squeezecenter/Slim/Player/Protocols/File.pm",
+    "sha256": "1af47d1d772513b892a04d47a1e2f4ebca117750f116dc906a157030c93e1552",
+    "anchors": [
+      50,
+      63,
+      101,
+      133,
+      320
+    ]
+  },
+  {
+    "id": "D31",
+    "device_path": "/usr/squeezecenter/Slim/Player/StreamingController.pm",
+    "sha256": "6c7ab2360fef8e5f96c583d05dee1d492fd8573b3a69f3ce398a12e70817360f",
+    "anchors": [
+      333,
+      395,
+      579,
+      647,
+      957,
+      995,
+      1383,
+      1397,
+      1568
+    ]
+  },
+  {
+    "id": "D32",
+    "device_path": "/usr/squeezecenter/Slim/Player/Playlist.pm",
+    "sha256": "032736ffda68f167dd400429ceaa2a577b22799d3cf169633cf983b729572ba7",
+    "anchors": [
+      43,
+      165,
+      181,
+      273,
+      298
+    ]
+  },
+  {
+    "id": "D33",
+    "device_path": "/usr/squeezecenter/Slim/Web/HTTP.pm",
+    "sha256": "4fce1f3740c3877851cb5387dd423be0867d34387ee99ef164ff0bd95ea5d763",
+    "anchors": [
+      118,
+      145,
+      243,
+      817,
+      1148,
+      1263,
+      1269,
+      1275,
+      2599,
+      2604,
+      2609,
+      2614
+    ]
+  },
+  {
+    "id": "D34",
+    "device_path": "/usr/squeezecenter/Slim/Web/JSONRPC.pm",
+    "sha256": "480f57f850aee14af88761db0a5ca1b44889b3fea2925a3a3672181da5e93e1d",
+    "anchors": [
+      41
+    ]
+  },
+  {
+    "id": "D35",
+    "device_path": "/usr/squeezecenter/Slim/Web/Cometd.pm",
+    "sha256": "fd19b8d6f0f383277b99763160409b1d9392f31e03f8961c50022296bacdcaa8",
+    "anchors": [
+      56
+    ]
+  },
+  {
+    "id": "D36",
+    "device_path": "/usr/squeezecenter/Slim/Plugin/CLI/Plugin.pm",
+    "sha256": "6d36404a2a8b471953ff5a245cfabeadd52e07a07142657a25661955c94446f3",
+    "anchors": [
+      71,
+      159
+    ]
+  },
+  {
+    "id": "D37",
+    "device_path": "/usr/share/jive/applets/NowPlaying/NowPlayingApplet.lua",
+    "sha256": "eab17c7e30d533160dad360015ada4e83496823f638142272a97e14c65a9f21b",
+    "anchors": [
+      386,
+      390,
+      395,
+      399,
+      404,
+      408,
+      469,
+      473,
+      477,
+      481,
+      504,
+      508,
+      547,
+      551
+    ]
+  },
+  {
+    "id": "D38",
+    "device_path": "/usr/share/jive/applets/SqueezeboxFab4/SqueezeboxFab4Meta.lua",
+    "sha256": "03b785a5f77982e4eb28d40f9446faab6fc974b0b4ef689c12953b12dcf02a6c",
+    "anchors": [
+      29,
+      32,
+      62
+    ]
+  },
+  {
+    "id": "D39",
+    "device_path": "/etc/asound.conf",
+    "sha256": "5cfab7210ac08e506a36bd6b42f2ba5308f2ff4c0ca42c65a3750d9e2c0f517b",
+    "anchors": [
+      5,
+      16,
+      27,
+      88
+    ]
+  },
+  {
+    "id": "D40",
+    "device_path": "/usr/squeezecenter/slimserver.pl",
+    "sha256": "9f713a83e59be6b387667b1c6b3fbaf9ef53435b4ac1ed811866ca2dc20d7eb2",
+    "anchors": [
+      20,
+      26,
+      313,
+      724,
+      766,
+      810,
+      828
+    ]
+  }
+]

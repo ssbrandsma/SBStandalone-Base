@@ -1,0 +1,23 @@
+#!/bin/sh
+# Opt-in overlay prototype. No original launch payload is reachable here.
+# A missing runtime marker/policy file cannot enable startup.
+stop_one() {
+ role=$1
+ pidfile=$2
+ test -s "$pidfile" || return 0
+ IFS= read -r pid < "$pidfile"
+ case "$pid" in ''|*[!0-9]*|0|1) echo 'Invalid TinySC PID' >&2; return 1;; esac
+ test -f "/proc/$pid/status" || return 0
+ grep -q "^Name:[[:space:]]*$role$" "/proc/$pid/status" || return 1
+ kill -TERM "$pid" || return 1
+ rm -f "$pidfile"
+}
+case "${1-}" in
+ stop) stop_one 'scanner[.]pl' /var/run/scanner.pid &&
+       stop_one 'slimserver[.]pl' /var/run/squeezecenter.pid &&
+       stop_one 'gdresized[.]pl' /var/run/gdresized.pid ;;
+ stopscan) stop_one 'scanner[.]pl' /var/run/scanner.pid ;;
+ stopserver) stop_one 'slimserver[.]pl' /var/run/squeezecenter.pid ;;
+ stopresizer) stop_one 'gdresized[.]pl' /var/run/gdresized.pid ;;
+ *) echo 'SB_TINYSC_INHIBIT: launch denied' >&2; exit 77 ;;
+esac

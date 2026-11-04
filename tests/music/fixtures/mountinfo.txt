@@ -1,0 +1,3 @@
+20 1 8:1 / /media/sda1 rw,nosuid - vfat /dev/sda1 rw,utf8=1
+21 1 179:1 / /media/My\040Music ro - ext3 /dev/mmcblk0p1 rw
+22 1 0:30 / /media/ntfs rw - fuseblk /dev/sdb1 rw,user_id=0

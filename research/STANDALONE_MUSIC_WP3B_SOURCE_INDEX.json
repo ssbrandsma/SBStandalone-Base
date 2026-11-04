@@ -1,0 +1,444 @@
+{
+  "date": "2026-11-03",
+  "kind": "WP3b source, reference and local validation artifact hashes",
+  "sources": [
+    {
+      "path": "native/sbmusic/music_async.h",
+      "bytes": 787,
+      "sha256": "e2284ff8da4321918f32f3ecd46839104cd8290dd830eb5312c2921ced76afb4"
+    },
+    {
+      "path": "native/sbmusic/music_async.c",
+      "bytes": 7630,
+      "sha256": "ffb020cc4f9eb921c92999818f1df1c8a3904f066f7aee2b285654adbd280ad1"
+    },
+    {
+      "path": "native/sbmusic/music_library.h",
+      "bytes": 4831,
+      "sha256": "c7315f1fe65fb81403737a25137831b5199e361fec261c7badf2c92ca460ed89"
+    },
+    {
+      "path": "native/sbmusic/music_library.c",
+      "bytes": 51330,
+      "sha256": "2ca5f720d24421eb0e4e9930d8be4a2e32b90a04df38154656932ecf39b12858"
+    },
+    {
+      "path": "native/sbmusic/CMakeLists.txt",
+      "bytes": 1955,
+      "sha256": "40a97b9930184b9514a22345862e322ed9b206a95e7596b4a63c15a419747fea"
+    },
+    {
+      "path": "native/sbmusic/schema.h",
+      "bytes": 3317,
+      "sha256": "c7f094fa72724930fe26613b40c958891e24f9cedc24aa72234d8975c34b2222"
+    },
+    {
+      "path": "native/sbbase/include/music_browse.h",
+      "bytes": 1488,
+      "sha256": "97b102aa543519814819a617765cbe2fd2a44310fb583ddf4dc19f36d88a54ba"
+    },
+    {
+      "path": "native/sbbase/src/music_browse.c",
+      "bytes": 16802,
+      "sha256": "6a000008cc497b45c677c19aa492e12b9f7b85ea72e18fe7848e01e4c02b21d1"
+    },
+    {
+      "path": "native/sbbase/src/music_browse_http.inc",
+      "bytes": 14910,
+      "sha256": "72ba286c6d9705a84f81b3a6da449c500a870896f94043cf306bd6cb96e615e2"
+    },
+    {
+      "path": "native/sbbase/include/nowplaying.h",
+      "bytes": 3772,
+      "sha256": "57d94a8144941a33a75b6df5bfae055c3e7fcaadb1f5c657443d4b69da5dfce4"
+    },
+    {
+      "path": "native/sbbase/src/nowplaying.c",
+      "bytes": 59130,
+      "sha256": "a3c30af4b2a285637821d1083fc926acb8351d0a4f931610189c3d2cb39632a5"
+    },
+    {
+      "path": "native/sbbase/src/main.c",
+      "bytes": 57414,
+      "sha256": "b8f7426a41c6a22bab10b6ee075db5d07f31fa3be87e2f3562b7315570831ff5"
+    },
+    {
+      "path": "native/sbbase/src/lms_command.c",
+      "bytes": 6042,
+      "sha256": "922a8ec6b07f32d6c990b5f6b38bdbc55a2413bb9dcd5fd3234b37195f339e4c"
+    },
+    {
+      "path": "native/sbbase/src/output_queue.c",
+      "bytes": 2614,
+      "sha256": "cebbefa99ecb8381c040116dcc14c75867df37d003e05a7329d0e9be048249bc"
+    },
+    {
+      "path": "native/sbbase/src/slim_controller.c",
+      "bytes": 21717,
+      "sha256": "be8deea76335e0d2b4c5935a748cb2542c4bab60707ff23d61991229b6d20b4d"
+    },
+    {
+      "path": "native/common/music_contracts.h",
+      "bytes": 6091,
+      "sha256": "045ce2b3a266872662f3609253a3c2cb026e43d70736c3848b0eeb797d21a58d"
+    },
+    {
+      "path": "native/common/music_contracts.c",
+      "bytes": 4193,
+      "sha256": "07854ba2cec9b0b846e39b2c8bedd7c5be3438aa39a3a272957c5d1875cfd8a6"
+    },
+    {
+      "path": "native/sbbase/CMakeLists.txt",
+      "bytes": 1750,
+      "sha256": "ea8ca145781b783178d39b02f1018eb667bcff725c2d5b2e5f28a0a70ed6b268"
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "bytes": 21546,
+      "sha256": "6fcb548eac8d6b811159748d098fe156b7fb73f7bb2ccc9f601dc4ba7407acaf"
+    },
+    {
+      "path": "scripts/build-browse-arm.sh",
+      "bytes": 2205,
+      "sha256": "3f4e302da9fa0b9f3839e105f3837065dcd051a8875849c7777f46f231644db4"
+    },
+    {
+      "path": "scripts/build-arm.sh",
+      "bytes": 6295,
+      "sha256": "80858160f38192cfbd4b4e528a4e0f04f42bf2764a5e368843b6816e272391c7"
+    },
+    {
+      "path": "packaging/build-package.sh",
+      "bytes": 5640,
+      "sha256": "3f048fcdc5b3530a889744cc49379126d195276e396bd709e729a2ed25f0f1a6"
+    },
+    {
+      "path": "tests/music/benchmark_browse.py",
+      "bytes": 134,
+      "sha256": "5942dd1d62318d9b5e2f22940c312f7b81c8b220a9d18e44a047393a553e2d91"
+    },
+    {
+      "path": "tests/music/test_browse.c",
+      "bytes": 13108,
+      "sha256": "228319f8cca970b759ad399483b064c2f2cac0047d50e2e8ec6a87b8ea2c003c"
+    },
+    {
+      "path": "tests/music/test_browse.py",
+      "bytes": 1089,
+      "sha256": "cde3fbf93a7901d5cbff85a398456843262a75261183e435bd641f2b8a2665cd"
+    },
+    {
+      "path": "tests/music/test_browse_disabled.py",
+      "bytes": 1369,
+      "sha256": "670ddd02a49e369f4cdba89a275360056410452839722df8f90f3af2535f184a"
+    },
+    {
+      "path": "tests/music/test_browse_empty.py",
+      "bytes": 119,
+      "sha256": "be6b5c6bde91770a4bfd3581b7d220845d2ce1e084c1a97dd5f1f688632e2092"
+    },
+    {
+      "path": "tests/music/test_browse_faults.py",
+      "bytes": 4094,
+      "sha256": "af9a4caf49f77e673fb0aac9fafe3a506e968310ed0691bd9f659361678a8241"
+    },
+    {
+      "path": "tests/music/test_browse_http.py",
+      "bytes": 16811,
+      "sha256": "87bd54f63e9bda63610fd158d76e95b5c3c2bb007a13185d01a65af518ce72d7"
+    },
+    {
+      "path": "tests/music/fixtures/browse.json",
+      "bytes": 2319,
+      "sha256": "8c9131a897b4ae8ce821cce027c36f1d454abf29332aa98c0302d255a01d0878"
+    }
+  ],
+  "references": [
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SlimBrowser/SlimBrowserApplet.lua",
+      "bytes": 107254,
+      "sha256": "0d85ade9be0d47488378afa29dd78f87dee2f2718a5892868a57e945f9191e40"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SlimBrowser/DB.lua",
+      "bytes": 9427,
+      "sha256": "d85db7083689401ee058d5485f632f998884506914edbac7395bd38f5db1eaee"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/jive/slim/LocalPlayer.lua",
+      "bytes": 10088,
+      "sha256": "5f72349475aeebfe75cc9c550850d4531bf01f762a13d98c40b3556ef4fc9b76"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/NowPlaying/NowPlayingApplet.lua",
+      "bytes": 54477,
+      "sha256": "eab17c7e30d533160dad360015ada4e83496823f638142272a97e14c65a9f21b"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/MediaManager/MediaManagerApplet.lua",
+      "bytes": 25112,
+      "sha256": "731d8b698a10cd0728101b35597317e7c01962ccf4852f8f629f7b6fd219a67f"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/share/jive/applets/SqueezeCenter/SqueezeCenterApplet.lua",
+      "bytes": 25400,
+      "sha256": "526973a57d2587cd86359dd0eded3a42744d142f2dbff3a1b199f5a77fec9dc6"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Menu/BrowseLibrary.pm",
+      "bytes": 53144,
+      "sha256": "a86c71f0485f2916ae9f66cda998a562f45ab62ba25d9ded5a37cb6f023255f2"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Jive.pm",
+      "bytes": 76918,
+      "sha256": "ec095df1d924fba0ed5f8aed24c18393df9106d5bb0f3d257221f9b979c36434"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Queries.pm",
+      "bytes": 157179,
+      "sha256": "823fc8e096ba30d97a92aa54462796fa630fde807333dbcb583c83335b306f90"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/Commands.pm",
+      "bytes": 88247,
+      "sha256": "de73dd1ec21e259a3ee44e4c8f8538b09586bb7ca4a728c50f1b2ca4133afe6c"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Buttons/XMLBrowser.pm",
+      "bytes": 40390,
+      "sha256": "e017ff61a00f1fcbea60b7f4d8be31ec54edcc09da39e70ce212ec83c81bff59"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Control/XMLBrowser.pm",
+      "bytes": 57354,
+      "sha256": "fed655006d68991dbf47e90815834ae5418fb65dc684585c124acf578e7d6508"
+    },
+    {
+      "path": ".local/fab4-music-research/device/usr/squeezecenter/Slim/Web/XMLBrowser.pm",
+      "bytes": 41035,
+      "sha256": "c62b9aab17a97eb3533553fc91b3f18077baccffd3c13bfc1ce65c85c951f388"
+    },
+    {
+      "path": ".local/wp3b/SlimMenusApplet.lua",
+      "bytes": 41444,
+      "sha256": "6e2db5b9ab17c14fe2702bda9407f226d3a49f1438241a242b4bd54a3b9e63a8"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build-dual-tests/native/sbbase/sbbase",
+      "bytes": 124408,
+      "sha256": "8f331a12fda43541ea6982fb2301020be7be21398fed91a3aa7ba76185152068"
+    },
+    {
+      "path": "build-dual-tests/native/sbbase/sbbase_browse_test",
+      "bytes": 1038136,
+      "sha256": "753ee66f4ecdc18c0c05cd71c593e2dc4c9dbce319bd3e83f9044488d87180b3"
+    },
+    {
+      "path": "build-dual-tests/tests/test_music_browse",
+      "bytes": 1016368,
+      "sha256": "0c8f7a5a9370561d5cc2031b802204c8db805eb8a86fc710b13a3a1c21bd8f78"
+    },
+    {
+      "path": ".local/wp3b/sbbase_asan",
+      "bytes": 3810584,
+      "sha256": "f1a20cdec4a7483a2aaa132e6b98dbd425a497e898c9592268e0bafb78e14251"
+    },
+    {
+      "path": ".local/wp3b/test_browse_asan",
+      "bytes": 2694504,
+      "sha256": "e036610107d09e7416e4baa81e63a70192c6030e54e117f3e876e2a7f0697270"
+    },
+    {
+      "path": "build-arm/baby/sbbase",
+      "bytes": 140376,
+      "sha256": "f1a15e96d75e1953ef849f28fc802ebe90634540faf015d9797307e02aaca4b7"
+    },
+    {
+      "path": "build-arm/baby/sbproxy",
+      "bytes": 874644,
+      "sha256": "8ec063ec36993918cb17c7a7eaf1e07dd6f1316fd6d576cfcec7c88cd3ff5ebf"
+    },
+    {
+      "path": "build-arm/baby/sbwebserver",
+      "bytes": 291976,
+      "sha256": "552e694b1998d03eeca8e712f91b7b2e91b549c82f876f1e2c6b895fe68290a5"
+    },
+    {
+      "path": "build-arm/baby/sb-storage-helper",
+      "bytes": 66620,
+      "sha256": "61ad37b017505b06d78c14d3211fb6227fff69caf60487a9b6caa264be34ff16"
+    },
+    {
+      "path": "build-arm/baby/sb-storage-updater",
+      "bytes": 33852,
+      "sha256": "90d85d72700fd5c6ad528994f6b0e371dfcc4717969aa785e852ad34f71f7287"
+    },
+    {
+      "path": "build-arm/baby/svgpngrenderer",
+      "bytes": 497800,
+      "sha256": "f10238868af03f411e1ee5586d7085b5d7f5c52ae28492fdf0bc2956e4ff57c0"
+    },
+    {
+      "path": "build-arm/baby/build-manifest.txt",
+      "bytes": 1111,
+      "sha256": "ab5f6863dc634527fb9d8d82a0acbcdfa3d62332d2ce5172f31ebf56cdb06de0"
+    },
+    {
+      "path": "build-arm/baby/browse/sbbase_browse_test",
+      "bytes": 847868,
+      "sha256": "e12603e8d059744818654eac824907890909b25fba0714594387a67019714614"
+    },
+    {
+      "path": "build-arm/baby/browse/test_music_browse",
+      "bytes": 782324,
+      "sha256": "67f2035f16a96ed6416aabdf475069c090dca188f3a55f9dd21a162214edffc0"
+    },
+    {
+      "path": "build-arm/baby/browse/manifest.txt",
+      "bytes": 559,
+      "sha256": "4034dd1a008e0b2332d619916d94d4cbcbbc7eeefc840de01449d37213b45d9a"
+    },
+    {
+      "path": "build-arm/fab4/sbbase",
+      "bytes": 140376,
+      "sha256": "a4d168b9adf1e3401693b5520e3211aa55b25412f1601323821794faca664f6c"
+    },
+    {
+      "path": "build-arm/fab4/sbproxy",
+      "bytes": 874644,
+      "sha256": "79d7634f9619ba44be80b608981f5917464c738d0cd30b717effadb67f8ff4a4"
+    },
+    {
+      "path": "build-arm/fab4/sbwebserver",
+      "bytes": 291976,
+      "sha256": "c9ac2cc4eb17791283868b47f63d1d41589638a80dcbc4baddaa94cef4eb1fee"
+    },
+    {
+      "path": "build-arm/fab4/sb-storage-helper",
+      "bytes": 66620,
+      "sha256": "99813a6173d31377c8a6d5c82f2f7f9afe781a6020e97fb40ceaef66c4979918"
+    },
+    {
+      "path": "build-arm/fab4/sb-storage-updater",
+      "bytes": 33852,
+      "sha256": "8e31e531afb42120b1831e2e1b0e3761636bfb025b5252b8edfe79ea7cb5728b"
+    },
+    {
+      "path": "build-arm/fab4/svgpngrenderer",
+      "bytes": 497800,
+      "sha256": "590883469b3772d8b51d41f2a5ae2a707a78d717bc628d1d07dcc6953296ca58"
+    },
+    {
+      "path": "build-arm/fab4/build-manifest.txt",
+      "bytes": 1129,
+      "sha256": "9e17b65319e0fb5e7741664cfb2999723d7341535c63abd2993653eb53da8ffd"
+    },
+    {
+      "path": "build-arm/fab4/browse/sbbase_browse_test",
+      "bytes": 839676,
+      "sha256": "2579de0ac4ca95a779f949e0520f698cbb66fa906bf932b2384f3f76f3f5fe8c"
+    },
+    {
+      "path": "build-arm/fab4/browse/test_music_browse",
+      "bytes": 778228,
+      "sha256": "39fd07a127f27940e71779766f4b1291dd27bd6f54b022ff6f4e6b0011fc00d1"
+    },
+    {
+      "path": "build-arm/fab4/browse/manifest.txt",
+      "bytes": 577,
+      "sha256": "7f700b2cb45c0b625512598021dbd4548eead896e24993b1c876c25dd77adfa2"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".local/wp3b/baseline-tests.log",
+      "bytes": 8333,
+      "sha256": "4e438d52f079923e678fe7e2c038d3067d3a8c5922dd52815112d4ab7708e7fc"
+    },
+    {
+      "path": ".local/wp3b/final-tests.log",
+      "bytes": 8981,
+      "sha256": "c0e4d8a5ff27a1c834f2c3dd87610fdb2e54cbd17c6aa79b81e2f4c2b891562f"
+    },
+    {
+      "path": ".local/wp3b/build-final.log",
+      "bytes": 1449,
+      "sha256": "3ed72b6b40690ca6a1c8c3f0d7f0daf28de212ecc3ac270fe72d2ab8d6872efe"
+    },
+    {
+      "path": ".local/wp3b/browse-arm.log",
+      "bytes": 2298,
+      "sha256": "b789da4fcfd05de11fce5ead023f540c78fe558c03cfc87e01e739a07ac2f942"
+    },
+    {
+      "path": ".local/wp3b/full-arm.log",
+      "bytes": 7998,
+      "sha256": "364f38dbb6377cd0f2192d103e36d2abd884bc1e4f029c3072a394e2877012d7"
+    },
+    {
+      "path": ".local/wp3b/sanitizers-native.log",
+      "bytes": 232,
+      "sha256": "94164f8419694bf83a8f9aac13c35b74e5c0bf36fdf3598679b2b0bbbb3b1edc"
+    },
+    {
+      "path": ".local/wp3b/sanitizers-http.log",
+      "bytes": 116,
+      "sha256": "83d5543e0b012db7db2dfbd1fb5d852c21e79b6d5a731635c6af66ea85aee57f"
+    },
+    {
+      "path": ".local/wp3b/qemu.log",
+      "bytes": 709,
+      "sha256": "3b32b27e1de88793a52ca2e532810f669c6aed681249161fc2e4a96448299224"
+    },
+    {
+      "path": ".local/wp3b/proxy-probe.log",
+      "bytes": 1260,
+      "sha256": "8f243417938d0fc9e3032d084454c2cf669a3293f7a97676e0d89d6a025bf0a1"
+    },
+    {
+      "path": ".local/wp3b/performance-final.jsonl",
+      "bytes": 2951,
+      "sha256": "c9e9062544fa5133214007f18f80558f5be49592b110243da056fb6dd81e7623"
+    },
+    {
+      "path": ".local/wp3b/performance-final-errors.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/wp3b/inputs.json",
+      "bytes": 5400,
+      "sha256": "96814f8058388bec55171e95b16b7704c322a0c95fc5ec6ac776e0dcac5ff89a"
+    },
+    {
+      "path": ".local/wp3b/run_final_tests.sh",
+      "bytes": 361,
+      "sha256": "1a21004d1036be0293437bd2a47f4dd192cfa804589cea8728698414b416a6c7"
+    },
+    {
+      "path": ".local/wp3b/run_san_compile.sh",
+      "bytes": 1044,
+      "sha256": "ec3ba2e22139d5a584c15c6c76d311799afc5a484b9525375c72fb6403c979d7"
+    },
+    {
+      "path": ".local/wp3b/run_san_tests.sh",
+      "bytes": 557,
+      "sha256": "0c934ceedb08c56df150a28f275a52b953f3a950b8d6f6000d4010b0c15f784d"
+    },
+    {
+      "path": ".local/wp3b/run_qemu_tests.sh",
+      "bytes": 492,
+      "sha256": "b52d539d05a1d949f215bef453911a98d132ab2b7813ff046973287cd2bb3373"
+    },
+    {
+      "path": ".local/wp3b/elf-check.log",
+      "bytes": 5076,
+      "sha256": "f79e2a955a132a5667914818e3229d6bc8c59aca3475663b98008937dabcf17d"
+    }
+  ],
+  "prior_reports_unchanged": true,
+  "prior_report_count": 35
+}

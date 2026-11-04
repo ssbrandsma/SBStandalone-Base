@@ -40,6 +40,51 @@ struct np_manager {
 	np_command queue[NP_COMMANDS_MAX];
 };
 
+int np_native_music(np_manager *m, const np_status *status, int owned)
+{
+	if (!m)
+		return 0;
+	if (!owned) {
+		if (strcmp(m->s.source, "standalone_music") || !m->s.active)
+			return 0;
+		m->s.active = 0;
+		m->s.state = NP_STOPPED;
+		m->s.position_clock_ms = 0;
+		m->s.playback_revision++;
+		return 1;
+	}
+	if (!status)
+		return 0;
+	int fresh =
+		strcmp(m->s.source, "standalone_music") != 0 || !m->s.active;
+	if (fresh && m->generation_counter == UINT64_MAX)
+		return 0;
+	uint64_t generation = fresh ? ++m->generation_counter : m->s.generation;
+	uint64_t metadata =
+		m->s.metadata_revision +
+		(fresh ||
+		 memcmp(&m->s.track, &status->track, sizeof status->track));
+	uint64_t playback =
+		m->s.playback_revision +
+		(fresh || m->s.state != status->state ||
+		 m->s.position_ms != status->position_ms ||
+		 m->s.playlist_revision != status->playlist_revision);
+	if (fresh)
+		m->q_head = m->q_count = 0;
+	m->s = *status;
+	m->s.active = 1;
+	m->s.generation = generation;
+	m->s.metadata_revision = metadata;
+	m->s.playback_revision = playback;
+	m->s.last_update_ms = np_monotonic_ms();
+	m->s.position_clock_ms =
+		0; /* STAT observations, never wall-time seeking */
+	strcpy(m->s.source, "standalone_music");
+	strcpy(m->s.source_name, "My Music");
+	m->s.session_id[0] = 0; /* not an externally writable lease */
+	return 1;
+}
+
 static int
 public_metadata_json(const np_status *s, char *out, size_t cap, int length);
 
@@ -349,6 +394,13 @@ static size_t put_utf8(char *o, size_t cap, size_t n, unsigned v)
 			o[n++] = (char)(0xc0 | (v >> 6));
 			o[n++] = (char)(0x80 | (v & 63));
 		}
+	} else if (v >= 0x10000 && v <= 0x10ffff) {
+		if (n + 4 < cap) {
+			o[n++] = (char)(0xf0 | (v >> 18));
+			o[n++] = (char)(0x80 | ((v >> 12) & 63));
+			o[n++] = (char)(0x80 | ((v >> 6) & 63));
+			o[n++] = (char)(0x80 | (v & 63));
+		}
 	} else if (v < 0xd800 || v > 0xdfff) {
 		if (n + 3 < cap) {
 			o[n++] = (char)(0xe0 | (v >> 12));
@@ -384,10 +436,17 @@ static int string_value(const char *j, const jtok *t, char *o, size_t cap)
 				if (i + 4 >= t->end ||
 				    (v = hex4(j + i + 1)) < 0)
 					return 0;
+				if (v >= 0xd800 && v <= 0xdbff) {
+					int low;
+					if (i + 10 >= t->end || j[i+5] != '\\' || j[i+6] != 'u' ||
+					    (low = hex4(j+i+7)) < 0xdc00 || low > 0xdfff) return 0;
+					v = 0x10000 + ((v-0xd800)<<10) + low-0xdc00;
+					i += 6;
+				}
 				if (!v || (v >= 0xd800 && v <= 0xdfff) ||
 				    n + (v < 0x80    ? 1u
 					 : v < 0x800 ? 2u
-						     : 3u) >=
+						     : v < 0x10000 ? 3u : 4u) >=
 					    cap)
 					return 0;
 				n = put_utf8(o, cap, n, (unsigned)v);
@@ -1836,13 +1895,13 @@ int np_lms_arguments(const char *json,
 		return -1;
 	data = member(json, tokens, n, 0, "data");
 	request = member(json, tokens, n, data, "request");
-	if (request < 0 || tokens[request].type != J_ARRAY)
+	if (request < 0 || tokens[request].type != J_ARRAY || tokens[request].size != 2)
 		return -1;
 	i = request + 1;
 	if (i >= n || !string_value(json, &tokens[i], player, capacity))
 		return -1;
 	args = subtree(tokens, n, i);
-	if (args >= n || tokens[args].type != J_ARRAY)
+	if (args >= n || tokens[args].type != J_ARRAY || tokens[args].parent != request)
 		return -1;
 	for (i = args + 1; i < n && tokens[i].start < tokens[args].end; i++) {
 		if (count == maximum)
@@ -1852,7 +1911,8 @@ int np_lms_arguments(const char *json,
 				    json, &tokens[i], arguments[count], 512))
 				return -1;
 		} else if (tokens[i].type == J_PRIMITIVE &&
-			   tokens[i].end - tokens[i].start < 512) {
+			   tokens[i].end - tokens[i].start < 512 &&
+			   (json[tokens[i].start] == '-' || isdigit((unsigned char)json[tokens[i].start]))) {
 			size_t length =
 				(size_t)(tokens[i].end - tokens[i].start);
 			memcpy(arguments[count],
@@ -2082,5 +2142,58 @@ invalid:
 	snprintf(out,
 		 cap,
 		 "{\"error\":\"invalid_or_oversized_metadata_query\"}");
+	return 1;
+}
+
+size_t np_json_escape(char *out, size_t capacity, const char *text)
+{
+	return esc(out, capacity, text);
+}
+
+int np_lms_envelope_read(const char *json, size_t length, np_lms_envelope *out)
+{
+	if (!json || !out || length > 16384)
+		return 0;
+	jtok tokens[JTOKENS];
+	int n = parse_json(json, length, tokens, JTOKENS);
+	if (n < 0)
+		return 0;
+	np_lms_envelope e = {0};
+	int c = member(json, tokens, n, 0, "channel"),
+	    client = member(json, tokens, n, 0, "clientId"),
+	    id = member(json, tokens, n, 0, "id");
+	if (c < 0 ||
+	    !string_value(json, &tokens[c], e.channel, sizeof e.channel))
+		return 0;
+	if (client >= 0 &&
+	    !string_value(json, &tokens[client], e.client, sizeof e.client))
+		return 0;
+	if (id >= 0) {
+		int start = tokens[id].start, end = tokens[id].end;
+		if (tokens[id].type == J_STRING) {
+			start--;
+			end++;
+		} else if (tokens[id].type != J_PRIMITIVE)
+			return 0;
+		if (end - start <= 0 || (size_t)(end - start) >= sizeof e.id)
+			return 0;
+		memcpy(e.id, json + start, (size_t)(end - start));
+		e.id[end - start] = 0;
+	}
+	int data = member(json, tokens, n, 0, "data");
+	if (data >= 0) {
+		int r = member(json, tokens, n, data, "response"),
+		    u = member(json, tokens, n, data, "unsubscribe");
+		if (r >= 0 &&
+		    !string_value(
+			    json, &tokens[r], e.response, sizeof e.response))
+			return 0;
+		if (u >= 0 && !string_value(json,
+					    &tokens[u],
+					    e.unsubscribe,
+					    sizeof e.unsubscribe))
+			return 0;
+	}
+	*out = e;
 	return 1;
 }

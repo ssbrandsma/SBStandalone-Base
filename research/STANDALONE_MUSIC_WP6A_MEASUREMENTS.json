@@ -1,0 +1,231 @@
+{
+  "date": "2026-11-02",
+  "scope": "host measurements / QEMU host kernel only; no device or media access",
+  "music_enabled": false,
+  "host_suite": {
+    "passed": 71,
+    "total": 71,
+    "seconds": 156.69,
+    "proxy_suite": "unavailable: missing CURL_LIBRARY and CURL_INCLUDE_DIR"
+  },
+  "focused_final": {
+    "passed": 2,
+    "total": 2,
+    "seconds": 0.43
+  },
+  "qemu": {
+    "storage": [
+      "baby",
+      "fab4"
+    ],
+    "WP0_contracts_commands": [
+      "baby",
+      "fab4"
+    ],
+    "WP1": [
+      "baby DELETE",
+      "baby WAL",
+      "fab4 DELETE",
+      "fab4 WAL"
+    ]
+  },
+  "sanitizers": "ASan+UBSan+leaks: native storage, bridge, WP1 and harness; upstream SQLite archive uninstrumented",
+  "performance": {
+    "events": 100000,
+    "event_total_ms": 8.560655,
+    "event_cpu_ms": 8.559846,
+    "discovery_ms": 0.569344,
+    "validation_ms": 0.207416,
+    "idle_200ms_cpu_ms": 0.017292,
+    "max_submit_ms": 0.030149,
+    "rss_peak_kib": 2868,
+    "rss_before_worker_kib": 2228,
+    "rss_idle_worker_kib": 2356,
+    "rss_after_discovery_kib": 2740,
+    "model_bytes": 52008,
+    "discovery_bytes": 351768,
+    "fds_before": 3,
+    "fds_enabled": 5,
+    "fds_final": 3
+  },
+  "artifacts": {
+    "baby": {
+      "sb-storage-helper": {
+        "bytes": 66620,
+        "sha256": "61ad37b017505b06d78c14d3211fb6227fff69caf60487a9b6caa264be34ff16",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sb-storage-updater": {
+        "bytes": 33852,
+        "sha256": "90d85d72700fd5c6ad528994f6b0e371dfcc4717969aa785e852ad34f71f7287",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbbase": {
+        "bytes": 136272,
+        "sha256": "410fc13c349eaf0c664593ea8b71132d80baf89c821a242a107029110294619c",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbproxy": {
+        "bytes": 874644,
+        "sha256": "8ec063ec36993918cb17c7a7eaf1e07dd6f1316fd6d576cfcec7c88cd3ff5ebf",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbwebserver": {
+        "bytes": 291976,
+        "sha256": "a58eb44a4a8b0f7f1ca28c391d6afff1503d1633ff2ff3e4840b60b236f3972b",
+        "size_delta": 0,
+        "hash_unchanged": false
+      },
+      "svgpngrenderer": {
+        "bytes": 497800,
+        "sha256": "f10238868af03f411e1ee5586d7085b5d7f5c52ae28492fdf0bc2956e4ff57c0",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "music/libsbmusic-storage.a": {
+        "bytes": 32584,
+        "sha256": "d096eb4a021b15ea0888bcf1b992fedb2bcd9d52984f027ae8556326bb96f396"
+      },
+      "music/test_music_storage": {
+        "bytes": 774100,
+        "sha256": "4cfce8ddfc819a2cfe97b17fb22a2fe4b4fcdd2e457d1f69c97dfc8aa5b293af"
+      },
+      "music/libsbmusic.a": {
+        "bytes": 44874,
+        "sha256": "44558ba1925be595eb65d11fa565f481eeb5f4fb5b5dfd3eb2ea0cecd073fe06"
+      },
+      "music/libsbmusic-sqlite.a": {
+        "bytes": 1186162,
+        "sha256": "9f6f490db6442792356998aa001403df9c74982705f3f7b65a6e628ee67cd1a9"
+      },
+      "music/test_music_library": {
+        "bytes": 757756,
+        "sha256": "0f54a13d9dfb21d6e694f3a5bfaa9836b6567fcd852dec0805f76169a776e753"
+      }
+    },
+    "fab4": {
+      "sb-storage-helper": {
+        "bytes": 66620,
+        "sha256": "99813a6173d31377c8a6d5c82f2f7f9afe781a6020e97fb40ceaef66c4979918",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sb-storage-updater": {
+        "bytes": 33852,
+        "sha256": "8e31e531afb42120b1831e2e1b0e3761636bfb025b5252b8edfe79ea7cb5728b",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbbase": {
+        "bytes": 136272,
+        "sha256": "90c6226ca0e6c136b25610a5d94b7c05beef4cb6636a9d68e1161934a480576b",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbproxy": {
+        "bytes": 874644,
+        "sha256": "79d7634f9619ba44be80b608981f5917464c738d0cd30b717effadb67f8ff4a4",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbwebserver": {
+        "bytes": 291976,
+        "sha256": "bdc4405e9beae4089a7e729db34966ab750e82393cbe72025f759af471e04d83",
+        "size_delta": 0,
+        "hash_unchanged": false
+      },
+      "svgpngrenderer": {
+        "bytes": 497800,
+        "sha256": "590883469b3772d8b51d41f2a5ae2a707a78d717bc628d1d07dcc6953296ca58",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "music/libsbmusic-storage.a": {
+        "bytes": 32424,
+        "sha256": "17ab79824e9de65843c1c97488a35c1ec5a293de05b2e9585568638a8f85d97e"
+      },
+      "music/test_music_storage": {
+        "bytes": 765908,
+        "sha256": "aa4026a1f450c05816f7f7b61a06b33ded6955e158f804465ca84c062e60f03c"
+      },
+      "music/libsbmusic.a": {
+        "bytes": 44830,
+        "sha256": "4c4568d0d96e358a801eb7e0f78efdd4b059c274ffc36b5aa797b06fec07ef23"
+      },
+      "music/libsbmusic-sqlite.a": {
+        "bytes": 1180314,
+        "sha256": "becdea196bfe5d070d04dff61de503f178351a5f413ab7815af3edb9aa4a1d17"
+      },
+      "music/test_music_library": {
+        "bytes": 749564,
+        "sha256": "e59d0864bbed0c7933232a04e1e60d4c42e94767139e6e9f8c4558a6447a2645"
+      }
+    }
+  },
+  "logs": {
+    "arm-build.log": {
+      "bytes": 1604,
+      "sha256": "410006808293a562b2f4259afe7f815a5de3e8c2ccbef07f168c7ed1d897570b"
+    },
+    "build.log": {
+      "bytes": 1375,
+      "sha256": "9807c2cd68611fca9c929ebd8548162ecb858fce1939a9c0531d56b0a6a49a9b"
+    },
+    "configure.log": {
+      "bytes": 155,
+      "sha256": "00409f9c5b1ff188900d492fbed301d1c9229f32a6f1d5fb9eca43e467e5c5d8"
+    },
+    "elf.log": {
+      "bytes": 2501,
+      "sha256": "fcfb175364696c651e69832645853616d7ced824302496169f45a8a5f0d55325"
+    },
+    "final-tests.log": {
+      "bytes": 7804,
+      "sha256": "ed349b316ce3fdbe301ae81d18e239118a8a6a38e57db07cc2c649c793252636"
+    },
+    "full-arm-build.log": {
+      "bytes": 7998,
+      "sha256": "0735304ee7b1348d582332a4f7d364d6fa651c6da62a64e55b4f0318e63b08cb"
+    },
+    "proxy-probe.log": {
+      "bytes": 1260,
+      "sha256": "8f243417938d0fc9e3032d084454c2cf669a3293f7a97676e0d89d6a025bf0a1"
+    },
+    "qemu-contracts.log": {
+      "bytes": 186,
+      "sha256": "9b0153b4efce4be74063c0811173b09597207508e683303b32900d85b173d684"
+    },
+    "qemu-library.log": {
+      "bytes": 532,
+      "sha256": "369d51881fec69b55a76f19e9f946995c02839af4a4fb5f1ae5fdcff9381f23b"
+    },
+    "qemu-storage.log": {
+      "bytes": 1730,
+      "sha256": "42b596ceeff82e83b26f676115fabbd2b1dc9e8532ad4b0ff3992c99c98fc071"
+    },
+    "regression-tests.log": {
+      "bytes": 7804,
+      "sha256": "6bbfd41a4d603b94f00a6dab7772660383a4609f943359dbd29f3839686bc9e6"
+    },
+    "sanitizers.log": {
+      "bytes": 839,
+      "sha256": "c67cac5a2a28f76ba9fcd7f23e614034feb9a33ef7c4430a3ab447ca894a98c5"
+    },
+    "storage-detail.log": {
+      "bytes": 815,
+      "sha256": "487ce85753269f81e2f0e92e7e3bc1fcecd283a17d5911cc3a2f3720e6b36ab4"
+    },
+    "storage-final-tests.log": {
+      "bytes": 475,
+      "sha256": "aaf232a61fe07de9388d7bccaa469ab64727fbac2b1b177bb10b65d2771c2b78"
+    },
+    "storage-tests.log": {
+      "bytes": 475,
+      "sha256": "0689f95d50129c0442b32532e9089563c9eb28763f23329b5049bd6259b10e05"
+    }
+  }
+}

@@ -22,6 +22,7 @@ local InstallerCompat = require("applets.StandaloneBase.InstallerCompat")
 local HttpTrace = require("applets.StandaloneBase.HttpTrace")
 local FirmwareUpdates = require("applets.StandaloneBase.FirmwareUpdates")
 local AlarmPlayback = require("applets.StandaloneBase.AlarmPlayback")
+local LifecycleHeartbeat = require("applets.StandaloneBase.LifecycleHeartbeat")
 local io, os, tonumber, tostring = io, os, tonumber, tostring
 local ipairs, pairs, math, pcall, string = ipairs, pairs, math, pcall, string
 local appletManager = appletManager
@@ -192,7 +193,12 @@ function init(self)
         migrationLog:error("StandaloneBase: unsupported board; services not started")
         return
     end
+    local arbitration=false
     if platform.name == "fab4" then
+        local policy=io.open("/mnt/storage/standalonebase/tinysc-arbitration.enabled","r")
+        if policy then policy:close(); arbitration=true end
+    end
+    if platform.name == "fab4" and not arbitration then
         local conflicts=Platform.portConflicts()
         if #conflicts > 0 then
             migrationLog:error("StandaloneBase: ports occupied: ", table.concat(conflicts,", "),
@@ -201,6 +207,10 @@ function init(self)
         end
     end
     started=true
+    if arbitration then
+        os.execute("mkdir -m 700 /var/run/standalonebase >/dev/null 2>&1")
+        os.remove("/var/run/standalonebase/heartbeat.stop")
+    end
     os.execute("mkdir -p "..RUN.." /mnt/storage/standalonebase")
     os.execute("chmod 755 "..ROOT.."/svgpngrenderer "..ROOT.."/sb-storage-helper "..ROOT.."/storage-setup.sh "..ROOT.."/storage-boot.sh >/dev/null 2>&1")
     redirectBootstrapServer()
@@ -219,6 +229,20 @@ function init(self)
     jnt:subscribe(self.alarmPlayback)
     redirectLiveBootstrapServer()
     self.monitor=Timer(15000,function() self:supervise() end); self.monitor:start()
+    if arbitration then
+        self.lifecycleHeartbeat=LifecycleHeartbeat.new(Framework,Timer)
+        self.lifecycleHeartbeat:start()
+        self.lifecycleGuardTimer=Timer(1000,function()
+            self.lifecycleGuardTimer=nil
+            local latch=io.open("/var/run/standalonebase/tinysc.latch","r")
+            if latch then
+                latch:close()
+                -- A deliberate Base takeover is not a TinySC crash.
+                pcall(function() appletManager:callService("SCGuardianTimer","stop") end)
+            end
+        end,true)
+        self.lifecycleGuardTimer:start()
+    end
     -- A firmware upgrade can leave sbdata intact while removing its boot
     -- support. Recover asynchronously after reinstall, never during check().
     if platform.extended_storage then
@@ -441,6 +465,8 @@ function getStandaloneStorageStatus(self) return storage:getStorageStatus() end
 function getStandaloneStoragePreparation(self) return storage:getStoragePreparation() end
 function verifyStandaloneStorage(self) return storage:verifyStorage() end
 function free(self)
+    if self.lifecycleHeartbeat then self.lifecycleHeartbeat:stop(); self.lifecycleHeartbeat=nil end
+    if self.lifecycleGuardTimer then self.lifecycleGuardTimer:stop(); self.lifecycleGuardTimer=nil end
     if self.firmwareUpdates then self.firmwareUpdates:stop(); self.firmwareUpdates=nil end
     if self.monitor then self.monitor:stop() end
     if self.storageRecoveryTimer then self.storageRecoveryTimer:stop(); self.storageRecoveryTimer=nil end

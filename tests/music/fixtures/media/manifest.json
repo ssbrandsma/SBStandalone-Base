@@ -1,0 +1,23 @@
+{
+  "license": "CC0-1.0; generated silence and original test tags/images",
+  "title": "WP0 Caf\u00e9 \ud83c\udfb5",
+  "sample_rate": 44100,
+  "channels": 2,
+  "duration_seconds": 0.2,
+  "files": [
+    "base.mp3",
+    "comments.flac",
+    "comments.ogg",
+    "id3v1.mp3",
+    "id3v22.mp3",
+    "id3v23.mp3",
+    "id3v24.mp3",
+    "invalid-utf8.mp3",
+    "jpeg-cover.mp3",
+    "large-tags.mp3",
+    "malformed.flac",
+    "malformed.ogg",
+    "oversized.mp3",
+    "truncated.mp3"
+  ]
+}

@@ -8,8 +8,28 @@
 
 #define _POSIX_C_SOURCE 200809L
 
+#if defined(SB_MUSIC_BROWSE_TESTING) || defined(SB_MUSIC_RUNTIME)
+#define SB_MUSIC_BROWSE_INTEGRATION 1
+#endif
+#if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
+#define SB_MUSIC_PLAYBACK_INTEGRATION 1
+#endif
+
 #include "sbbase.h"
 #include "nowplaying.h"
+#include "lms_command.h"
+#include "slim_controller.h"
+#include "ownership_bridge.h"
+#include "../../sblifecycle/tinysc.h"
+#include "output_queue.h"
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+#include "music_browse.h"
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+#include "music_playback.h"
+#endif
+#include <stdarg.h>
+#endif
+#include "../../common/music_contracts.h"
 #include "alarms.h"
 #include "sleep.h"
 #include "../../common/firmware_state.h"
@@ -49,10 +69,23 @@
 #define HTTP_IDLE_SECONDS 300
 
 #define STREAM_HEARTBEAT_SECONDS 2
-#define SEND_WAIT_MS 2000
 
 typedef struct {
-	int fd, kind, helo;
+	int fd, kind, helo, close_after_drain;
+	sb_output output;
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+	struct music_http *music_http;
+	sb_lms_command *music_subscription;
+	sb_browse_call *music_sub_call;
+	char music_menu_path[160], music_path[160];
+	uint64_t music_menu_version, music_view_version, music_output_epoch;
+	int music_menu_visible;
+#endif
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	uint64_t music_connection, music_control_context;
+#endif
+	int ownership_wait;
+	uint64_t ownership_revision, ownership_deadline, ownership_connection;
 	int playerstatus_subscribed;
 	time_t keepalive;
 	size_t used;
@@ -62,12 +95,44 @@ typedef struct {
 	unsigned char buf[SB_MAX_HTTP_HEADER + SB_MAX_HTTP_BODY + 1];
 } client;
 
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+static sb_browse *music_browse;
+static sb_music_library *music_library;
+static sb_music_media music_media_snapshot = {{{1}}, 1, 1};
+static void music_dispose(client *);
+static int music_tail(client *, const char *, size_t);
+static void music_inherit(client *, client *);
+#endif
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+static sb_music_playback *local_music;
+#ifdef SB_MUSIC_RUNTIME
+#define local_owner production_owner
+#else
+static sb_physical_owner local_owner;
+#endif
+static uint64_t local_connection;
+#ifndef SB_MUSIC_RUNTIME
+static int local_mock_adapters;
+#endif
+static int playback_command(client *, struct music_http *);
+static void playback_service(void);
+#ifndef SB_MUSIC_RUNTIME
+static int playback_test_route(client *, const char *);
+#endif
+#endif
 static int player_connected;
 static int test_nowplaying;
 static np_manager *nowplaying;
 static sb_alarms *alarms;
 
 static char player_id[18];
+#ifdef SB_TARGET_FAB4
+static const char *player_model = "fab4",
+		  *player_modelname = "Squeezebox Touch";
+#else
+static const char *player_model = "baby",
+		  *player_modelname = "Squeezebox Radio";
+#endif
 
 static client *clients;
 
@@ -89,6 +154,11 @@ static size_t catalog_entry_count;
 static sb_config *active_config;
 
 static volatile sig_atomic_t running = 1;
+static sb_tinysc *tinysc_lifecycle;
+#ifdef SB_MUSIC_RUNTIME
+static void music_runtime_tick(void);
+static int music_browse_only;
+#endif
 static volatile sig_atomic_t reload_catalog = 0;
 
 static int
@@ -122,7 +192,7 @@ static void reload(int sig)
 static int nonblock(int fd)
 {
 	int f = fcntl(fd, F_GETFL, 0);
-	return f < 0 ? -1 : fcntl(fd, F_SETFL, f | O_NONBLOCK);
+	return f < 0 || fcntl(fd,F_SETFD,FD_CLOEXEC)<0 ? -1 : fcntl(fd, F_SETFL, f | O_NONBLOCK);
 }
 
 /**
@@ -152,7 +222,7 @@ static int listener(int type, unsigned port)
 		close(fd);
 		return -1;
 	}
-	nonblock(fd);
+	if(nonblock(fd)<0){close(fd);return -1;}
 	return fd;
 }
 
@@ -160,10 +230,28 @@ static int listener(int type, unsigned port)
  * @brief Close client.
  * @param c Client connection state.
  */
+static sb_ownership_bridge ownership_bridge;
+static sb_physical_owner production_owner;
+#ifndef SB_MUSIC_RUNTIME
+static uint64_t ownership_connection_sequence;
+#endif
+
 static void close_client(client *c)
 {
+ if(c->ownership_connection)sb_ob_connection(&ownership_bridge,c->ownership_connection,0);
+ c->ownership_connection=0;c->ownership_wait=0;
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	if (local_music && c->music_connection)
+		sb_playback_detach(local_music, c->music_connection);
+	c->music_connection = c->music_control_context = 0;
+#endif
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+	music_dispose(c);
+#endif
 	if (c->fd >= 0)
 		close(c->fd);
+	sb_output_clear(&c->output);
+	c->close_after_drain = 0;
 	c->fd = -1;
 	c->used = 0;
 	c->client_id[0] = 0;
@@ -180,34 +268,19 @@ static void close_client(client *c)
  */
 static int send_data(client *c, const char *data, size_t size)
 {
-	size_t off = 0;
-
-	while (off < size) {
-		ssize_t n = send(c->fd, data + off, size - off, 0);
-
-		if (n > 0) {
-			off += (size_t)n;
-			continue;
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+	if (c->music_http) {
+		int r = music_tail(c, data, size);
+		if (r >= 0) {
+			if (!r)
+				close_client(c);
+			return r;
 		}
-		if (n < 0 && errno == EINTR)
-			continue;
-
-		if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-			struct pollfd pfd = {c->fd, POLLOUT, 0};
-			int r;
-			do {
-				r = poll(&pfd, 1, SEND_WAIT_MS);
-			} while (r < 0 && errno == EINTR);
-
-			if (r > 0 && (pfd.revents & POLLOUT))
-				continue;
-		}
-
-		fprintf(stderr,
-			"SEND CLOSE fd=%d errno=%d (%s)\n",
-			c->fd,
-			errno,
-			strerror(errno));
+	}
+#endif
+	if (c->fd < 0 || c->close_after_drain ||
+	    !sb_output_enqueue(
+		    &c->output, c->fd, data, size, np_monotonic_ms())) {
 		close_client(c);
 		return 0;
 	}
@@ -237,9 +310,12 @@ http_reply(client *c, const char *status, const char *body, int keep)
 		keep ? "keep-alive" : "close");
 	if (!send_data(c, h, (size_t)l) || !send_data(c, body, n))
 		return;
-	if (!keep)
-		close_client(c);
-	else
+	if (!keep) {
+		if (c->output.length)
+			c->close_after_drain = 1;
+		else
+			close_client(c);
+	} else
 		c->keepalive = time(NULL);
 }
 
@@ -250,6 +326,10 @@ http_reply(client *c, const char *status, const char *body, int keep)
  */
 static void stream_start(client *c, const char *body)
 {
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	c->music_control_context =
+		sb_queue_snapshot(sb_playback_queue(local_music)).context;
+#endif
 	char h[256], chunk[9216];
 	size_t n = strlen(body);
 	int l = snprintf(h,
@@ -301,7 +381,12 @@ static void stream_event(client *c, const char *body)
  */
 static void player_status_json(char *out, size_t cap)
 {
-	np_playerstatus_json(nowplaying, out, cap);
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	if (local_music && local_owner.value.current == SB_OWNER_MUSIC)
+		sb_playback_status(local_music, out, cap);
+	else
+#endif
+		np_playerstatus_json(nowplaying, out, cap);
 	sb_alarms_status(alarms, out, cap, time(NULL));
 	sb_sleep_status(out, cap, np_monotonic_ms());
 }
@@ -582,9 +667,9 @@ static void publish_player(void)
 				 "s\",\"player "
 				 "count\":1,\"players_loop\":[{\"playerindex\":"
 				 "\"0\",\"playerid\":\"%s\",\"name\":"
-				 "\"Standalone\",\"model\":\"baby\","
-				 "\"modelname\":\"Squeezebox "
-				 "Radio\",\"isplayer\":1,\"connected\":1,"
+				 "\"Standalone\",\"model\":\"%s\","
+				 "\"modelname\":\"%s\",\"isplayer\":1,"
+				 "\"connected\":1,"
 				 "\"power\":1,\"firmware\":\"7.7.3\",\"ip\":"
 				 "\"127.0.0.1\",\"seq_no\":0,\"displaytype\":"
 				 "\"none\",\"isplaying\":%d,\"canpoweroff\":1}]"
@@ -596,6 +681,8 @@ static void publish_player(void)
 				 cfg->lms_version,
 				 cfg->uuid,
 				 player_id,
+				 player_model,
+				 player_modelname,
 				 np_current(nowplaying)->state == NP_PLAYING);
 			fprintf(stderr,
 				"COMET PUSH client=%s\n",
@@ -1051,6 +1138,8 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 
 	while ((p = strchr(p, '{')) != NULL) {
 		int switched;
+		sb_lms_command command;
+		sb_command_result parsed;
 		next = message_end(p);
 		if (!next)
 			break;
@@ -1067,6 +1156,20 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 		if (before(p, "\"response\"", next))
 			json_string(p, "\"response\"", reply, sizeof reply);
 		if (!reply[0]) {
+			p = next;
+			continue;
+		}
+
+
+		parsed = sb_lms_command_parse(p, (size_t)(next - p), &command);
+		if (parsed != SB_COMMAND_OK) {
+			snprintf(msg, sizeof msg,
+				 "{%s\"channel\":\"/slim/request\",\"successful\":false,\"error\":\"%s\"}",
+				 id_field, sb_lms_command_error(parsed));
+			add_json(out, cap, &used, msg);
+			snprintf(msg, sizeof msg, "{%s\"channel\":\"%s\",\"data\":{\"error\":\"%s\"}}",
+				 id_field, reply, sb_lms_command_error(parsed));
+			add_json(out, cap, &used, msg);
 			p = next;
 			continue;
 		}
@@ -1105,14 +1208,14 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 					     (size_t)(next - p),
 					     data,
 					     sizeof data)) {
-			if (before(p, "\"status\"", next)) {
+			if (!strcmp(command.arguments[0], "status")) {
 				sb_alarms_status(
 					alarms, data, sizeof data, time(NULL));
 				sb_sleep_status(
 					data, sizeof data, np_monotonic_ms());
 				register_playerstatus(reply);
 			}
-		} else if (before(p, "serverstatus", next))
+		} else if (!strcmp(command.arguments[0], "serverstatus"))
 			snprintf(data,
 				 sizeof data,
 				 "{\"httpport\":\"%u\",\"ip\":\"%s\","
@@ -1125,7 +1228,7 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 				 player_id[0] ? 1 : 0,
 				 player_id[0] ? "PLAYER" : "[]");
 
-		else if (before(p, "firmwareupgrade", next)) {
+		else if (!strcmp(command.arguments[0], "firmwareupgrade")) {
 			char version[64], machine[16];
 			firmware_parameter(p,
 					   next,
@@ -1135,19 +1238,19 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 			firmware_parameter(
 				p, next, "machine:", machine, sizeof machine);
 			firmware_payload(version, machine, data, sizeof data);
-			if (before(p, "subscribe:0", next))
+			if ((sb_lms_tag(&command, "subscribe") && !strcmp(sb_lms_tag(&command, "subscribe"), "0")))
 				firmware_subscribe(
 					reply, version, machine, data);
 		}
 
-		else if (before(p, "\"date\"", next))
+		else if (!strcmp(command.arguments[0], "date"))
 			snprintf(data,
 				 sizeof data,
 				 "{\"date_epoch\":%lu,\"date\":\"0000-00-00T00:"
 				 "00:00+00:00\"}",
 				 (unsigned long)time(NULL));
 
-		else if (before(p, "jiveapplets", next)) {
+		else if (!strcmp(command.arguments[0], "jiveapplets")) {
 			char target[64];
 			firmware_parameter(p, next, "target:", target, sizeof target);
 			catalog_response(target, data, sizeof data);
@@ -1157,16 +1260,16 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 		 * considers the server menu loaded. Alarm Clock is
 		 * server-owned; the stock device applet supplies its
 		 * wake-up/popup behavior. */
-		else if (before(p, "menustatus", next))
+		else if (!strcmp(command.arguments[0], "menustatus"))
 			sb_alarms_menu(data,
 				       sizeof data,
 				       player_id[0] ? player_id : "all",
 				       1);
 
-		else if (before(p, "\"menu\"", next))
+		else if (!strcmp(command.arguments[0], "menu"))
 			sb_alarms_menu(data, sizeof data, player_id, 0);
 
-		else if (before(p, "\"status\"", next)) {
+		else if (!strcmp(command.arguments[0], "status")) {
 			player_status_json(data, sizeof data);
 			register_playerstatus(reply);
 			if (test_nowplaying &&
@@ -1177,31 +1280,31 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 					player_id[0] ? player_id : "unknown");
 		}
 
-		else if (before(p, "\"pause\"", next)) {
+		else if (!strcmp(command.arguments[0], "pause")) {
 			np_queue_command(nowplaying,
-					 before(p, "\"0\"", next) ? "play"
+					 (command.count > 1 && !strcmp(command.arguments[1], "0")) ? "play"
 								  : "pause",
 					 0);
 			strcpy(data,
 			       "{\"count\":0,\"offset\":0,\"item_loop\":[]}");
 		}
 
-		else if (before(p, "\"play\"", next)) {
+		else if (!strcmp(command.arguments[0], "play")) {
 			np_queue_command(nowplaying, "play", 0);
 			strcpy(data,
 			       "{\"count\":0,\"offset\":0,\"item_loop\":[]}");
 		}
 
-		else if (before(p, "\"stop\"", next)) {
+		else if (!strcmp(command.arguments[0], "stop")) {
 			np_queue_command(nowplaying, "stop", 0);
 			strcpy(data,
 			       "{\"count\":0,\"offset\":0,\"item_loop\":[]}");
 		}
 
-		else if (before(p, "\"playlist\"", next) &&
-			 before(p, "\"index\"", next)) {
+		else if (!strcmp(command.arguments[0], "playlist") &&
+			 !strcmp(command.arguments[1], "index")) {
 			np_queue_command(nowplaying,
-					 before(p, "\"-1\"", next) ? "previous"
+					 !strcmp(command.arguments[2], "-1") ? "previous"
 								   : "next",
 					 0);
 			strcpy(data,
@@ -1222,13 +1325,15 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 				player,
 				sizeof player,
 				"[{\"playerindex\":\"0\",\"playerid\":\"%s\","
-				"\"name\":\"Standalone\",\"model\":\"baby\","
-				"\"modelname\":\"Squeezebox "
-				"Radio\",\"isplayer\":1,\"connected\":1,"
+				"\"name\":\"Standalone\",\"model\":\"%s\","
+				"\"modelname\":\"%s\",\"isplayer\":1,"
+				"\"connected\":1,"
 				"\"power\":1,\"firmware\":\"7.7.3\",\"ip\":"
 				"\"127.0.0.1\",\"seq_no\":0,\"displaytype\":"
 				"\"none\",\"isplaying\":%d,\"canpoweroff\":1}]",
 				player_id,
+				player_model,
+				player_modelname,
 				np_current(nowplaying)->state == NP_PLAYING);
 			memmove(mark + strlen(player),
 				mark + 6,
@@ -1257,11 +1362,25 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 	}
 }
 
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+#include "music_browse_http.inc"
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+#include "music_playback_glue.inc"
+#ifndef SB_MUSIC_RUNTIME
+#include "music_playback_test.inc"
+#else
+#include "music_runtime.inc"
+#endif
+#endif
+#endif
+
 /**
  * @brief Handle http.
  * @param c Client connection state.
  * @param cfg Object referenced by cfg.
  */
+#include "ownership_http.inc"
+
 static void handle_http(client *c, const sb_config *cfg)
 {
 
@@ -1323,6 +1442,24 @@ static void handle_http(client *c, const sb_config *cfg)
 		return;
 	}
 
+if(!strcmp(path,"/api/music/ownership")){
+  ownership_http(c,method,s,(size_t)(end-s)+2,body,(size_t)need,chunked);
+  return;
+ }
+ if(!strcmp(path,"/api/tinysc/lifecycle")){
+  struct sockaddr_in peer;socklen_t size=sizeof peer;char json[2048];
+  if(strcmp(method,"GET")||getpeername(c->fd,(struct sockaddr *)&peer,&size)||
+     peer.sin_family!=AF_INET||ntohl(peer.sin_addr.s_addr)!=INADDR_LOOPBACK){
+   http_reply(c,"404 Not Found","{}",0);return;
+  }
+  if(!sb_ts_json(tinysc_lifecycle,json,sizeof json))strcpy(json,"{}");
+  http_reply(c,"200 OK",json,0);return;
+ }
+#if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+	if (local_music && !strcmp(method, "GET") &&
+	    playback_test_route(c, path))
+		return;
+#endif
 	if (!strncmp(path, "/api/nowplaying", 15)) {
 		int was_active = np_current(nowplaying)->active;
 		int was_playing = np_current(nowplaying)->state == NP_PLAYING;
@@ -1375,8 +1512,61 @@ static void handle_http(client *c, const sb_config *cfg)
 		return;
 	}
 
-	if (strncmp(s, "POST /cometd ", 13) && strncmp(s, "GET /health ", 12) &&
-	    strncmp(s, "POST /test/next-track ", 22)) {
+#if defined(SB_MUSIC_BROWSE_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+	if (music_browse && !strcmp(method, "GET") &&
+	    !strncmp(path, "/test/music/", 12)) {
+		int ok = 1;
+		if (!strcmp(path, "/test/music/metrics")) {
+			char metrics[256];
+			snprintf(metrics,
+				 sizeof metrics,
+				 "{\"async_peak\":%u,\"http_peak\":%u,\"http_"
+				 "state_bytes\":%zu,\"wp1_result_bytes\":%zu}",
+				 sb_browse_pending_peak(music_browse),
+				 music_pending_peak,
+				 sizeof(struct music_http),
+				 sizeof(sb_ml_result));
+			http_reply(c, "200 OK", metrics, 0);
+			return;
+		}
+		if (!strcmp(path, "/test/music/offline")) {
+			music_media_snapshot.online = 0;
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+			if (local_music)
+				sb_playback_media_removed(
+					local_music, &music_media_snapshot);
+#endif
+			ok = sb_browse_media(
+				music_browse, &music_media_snapshot, 0);
+		} else if (!strcmp(path, "/test/music/online")) {
+			if (music_media_snapshot.generation >= INT64_MAX)
+				ok = 0;
+			else {
+				music_media_snapshot.generation++;
+				music_media_snapshot.online = 1;
+				ok = sb_browse_media(
+					music_browse, &music_media_snapshot, 0);
+			}
+		} else if (!strcmp(path, "/test/music/scan/start"))
+			ok = sb_browse_media(
+				music_browse, &music_media_snapshot, 1);
+		else if (!strcmp(path, "/test/music/scan/end"))
+			ok = sb_browse_media(
+				music_browse, &music_media_snapshot, 0);
+		else
+			ok = 0;
+		http_reply(c,
+			   ok ? "200 OK" : "400 Bad Request",
+			   ok ? "{\"success\":true}" : "{\"success\":false}",
+			   0);
+		return;
+	}
+#endif
+	if (strncmp(s, "POST /cometd ", 13) && strncmp(s, "GET /health ", 12)
+#ifndef SB_MUSIC_RUNTIME
+        && strncmp(s, "POST /test/next-track ", 22)
+#endif
+       ) {
 		http_reply(c,
 			   "404 Not Found",
 			   "[{\"successful\":false,\"error\":\"not found\"}]",
@@ -1394,6 +1584,7 @@ static void handle_http(client *c, const sb_config *cfg)
 		return;
 	}
 
+#ifndef SB_MUSIC_RUNTIME
 	if (!strncmp(s, "POST /test/next-track ", 22)) {
 		if (!test_nowplaying) {
 			http_reply(c,
@@ -1409,11 +1600,21 @@ static void handle_http(client *c, const sb_config *cfg)
 		return;
 	}
 
+#endif
+
 	/* Comet owns a reusable request socket (rhttp). Sinks can enqueue
 	 * another request while processing this response, so closing the socket
 	 * here races that re-entrant fetch and loses menu/playerstatus
 	 * subscriptions. */
 	keep_response = 1;
+	if (!sb_lms_json_valid(body, (size_t)need)) {
+		http_reply(c, "400 Bad Request", "[{\"successful\":false,\"error\":\"malformed_json\"}]", 0);
+		return;
+	}
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+	if (music_http_begin(c, body, (size_t)need))
+		return;
+#endif
 	json_unescape_slashes(body);
 	channel = strstr(body, "\"channel\"");
 	id = strstr(body, "\"id\"");
@@ -1480,6 +1681,9 @@ static void handle_http(client *c, const sb_config *cfg)
 					 sizeof c->subscribed_player,
 					 "%s",
 					 clients[i].subscribed_player);
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+				music_inherit(c, &clients[i]);
+#endif
 				close_client(&clients[i]);
 			}
 		snprintf(c->client_id, sizeof c->client_id, "%s", cid);
@@ -1556,7 +1760,7 @@ static void keepalive(client *c)
 	size_t z = sb_server_frame(
 		"strm", payload, sizeof payload, frame, sizeof frame);
 	if (z)
-		send(c->fd, (char *)frame, z, 0);
+		send_data(c, (const char *)frame, z);
 	c->keepalive = time(NULL);
 }
 
@@ -1595,23 +1799,79 @@ static void handle_slim(client *c)
 			op,
 			(unsigned long)n);
 		if (!strcmp(op, "HELO")) {
-			if (n >= 8) {
-				snprintf(player_id,
-					 sizeof player_id,
-					 "%02x:%02x:%02x:%02x:%02x:%02x",
-					 p[2],
-					 p[3],
-					 p[4],
-					 p[5],
-					 p[6],
-					 p[7]);
-				player_connected = 1;
-				strcpy(c->slim_player, player_id);
+			sb_slim_event event;
+			if (c->helo || sb_slim_parse(op, p, n, &event) != 1) {
+				close_client(c);
+				return;
 			}
+			const unsigned char *mac = event.hello.mac;
+			snprintf(player_id,
+				 sizeof player_id,
+				 "%02x:%02x:%02x:%02x:%02x:%02x",
+				 mac[0],
+				 mac[1],
+				 mac[2],
+				 mac[3],
+				 mac[4],
+				 mac[5]);
+			player_model = !strcmp(event.hello.model, "fab4")
+					       ? "fab4"
+				       : !strcmp(event.hello.model, "baby")
+					       ? "baby"
+					       : "unknown";
+			player_modelname = !strcmp(player_model, "fab4")
+						   ? "Squeezebox Touch"
+					   : !strcmp(player_model, "baby")
+						   ? "Squeezebox Radio"
+						   : "SqueezePlay";
+			player_connected = 1;
+			strcpy(c->slim_player, player_id);
 			c->helo = 1;
+#ifndef SB_MUSIC_RUNTIME
+   if(ownership_bridge.enabled){
+    if(ownership_connection_sequence==UINT64_MAX){close_client(c);return;}
+    c->ownership_connection=++ownership_connection_sequence;
+    sb_ob_connection(&ownership_bridge,c->ownership_connection,1);
+   }
+#endif
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+			sb_browse_player(music_browse, player_id);
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+			if (local_music) {
+				c->music_connection = ++local_connection;
+				if (!c->music_connection ||
+				    !sb_playback_attach(local_music,
+							c->music_connection,
+							&event.hello)) {
+					close_client(c);
+					return;
+				}
+#ifdef SB_MUSIC_RUNTIME
+                c->ownership_connection=c->music_connection;
+                sb_ob_connection(&ownership_bridge,c->ownership_connection,1);
+#endif
+				sb_browse_playback(music_browse,
+						   event.hello.codecs & 3u);
+			}
+#endif
+#endif
 			keepalive(c);
+			if (c->fd < 0)
+				return;
 			publish_player();
 		}
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+		if (local_music && c->helo && strcmp(op, "HELO")) {
+			sb_slim_event event;
+			if (sb_slim_parse(op, p, n, &event) == 1)
+				sb_playback_event(
+					local_music,
+					c->music_connection,
+					sb_playback_stream(local_music),
+					&event,
+					np_monotonic_ms());
+		}
+#endif
 		off += used;
 	}
 	if (off) {
@@ -1645,9 +1905,31 @@ static void defaults(sb_config *c)
 int main(int argc, char **argv)
 {
 	sb_config cfg;
+ const char *ownership_token_path=NULL;
+ int arbitration_enabled=0;
 	int udp, tcp, http, i;
 	client cs[CLIENTS];
-	struct pollfd pf[3 + CLIENTS];
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	struct pollfd pf[7 + CLIENTS];
+#ifndef SB_MUSIC_RUNTIME
+	const char *playback_root = NULL;
+	int playback_ipc = -1;
+	unsigned playback_http_port = 0;
+#endif
+#else
+	struct pollfd pf[5 + CLIENTS];
+#endif
+	int poll_count = 3 + CLIENTS;
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+#ifndef SB_MUSIC_RUNTIME
+	const char *music_fixture = NULL;
+	int test_storage_supported = 1;
+#endif
+	poll_count++;
+#endif
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	poll_count += 2;
+#endif
 	defaults(&cfg);
 	active_config = &cfg;
 	clients = cs;
@@ -1680,6 +1962,49 @@ int main(int argc, char **argv)
 	}
 
 	for (i = 1; i < argc; i++) {
+#ifdef SB_MUSIC_RUNTIME
+        int parsed=music_runtime_argument(argc,argv,&i);
+        if(parsed<0)return 2;
+        if(parsed)continue;
+#endif
+  if(!strcmp(argv[i],"--ownership-token")&&i+1<argc){ownership_token_path=argv[++i];continue;}
+  if(!strcmp(argv[i],"--tinysc-arbitration")){arbitration_enabled=1;continue;}
+#if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+		if (!strcmp(argv[i], "--test-music-root") && i + 1 < argc) {
+			playback_root = argv[++i];
+			continue;
+		}
+		if (!strcmp(argv[i], "--test-music-mock-adapters")) {
+			local_mock_adapters = 1;
+			continue;
+		}
+		if ((!strcmp(argv[i], "--test-playback-ipc") ||
+		     !strcmp(argv[i], "--test-playback-http-port")) &&
+		    i + 1 < argc) {
+			int is_fd = !strcmp(argv[i], "--test-playback-ipc");
+			char *end;
+			errno = 0;
+			long value = strtol(argv[++i], &end, 10);
+			if (errno || *end || value < (is_fd ? 3 : 1) ||
+			    value > (is_fd ? INT32_MAX : 65535))
+				return 2;
+			if (is_fd)
+				playback_ipc = (int)value;
+			else
+				playback_http_port = (unsigned)value;
+			continue;
+		}
+#endif
+#if defined(SB_MUSIC_BROWSE_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+		if (!strcmp(argv[i], "--test-music-db") && i + 1 < argc) {
+			music_fixture = argv[++i];
+			continue;
+		}
+		if (!strcmp(argv[i], "--test-music-no-storage")) {
+			test_storage_supported = 0;
+			continue;
+		}
+#endif
 		if (!strcmp(argv[i], "--config") && i + 1 < argc) {
 			const char *path = argv[++i];
 			snprintf(cfg.catalog_path,
@@ -1692,17 +2017,42 @@ int main(int argc, char **argv)
 					path);
 				return 2;
 			}
-		} else if (!strcmp(argv[i], "--test-nowplaying"))
+		}
+#ifndef SB_MUSIC_RUNTIME
+        else if (!strcmp(argv[i], "--test-nowplaying"))
 			test_nowplaying = 1;
+#endif
 		else {
 			fprintf(stderr,
 				"usage: %s [--config FILE] "
-				"[--test-nowplaying]\n",
+				"[--test-nowplaying] [--ownership-token FILE] [--tinysc-arbitration]\n",
 				argv[0]);
 			return 2;
 		}
 	}
 
+ /* Persistent opt-in also covers legacy applet supervisors after a Base-only
+  * restart. Presence requests arbitration; the worker validates ownership and
+  * permissions. An unreadable policy must not silently disable arbitration. */
+ {
+  struct stat policy;
+  if(!lstat("/mnt/storage/standalonebase/tinysc-arbitration.enabled",&policy)||errno!=ENOENT)
+   arbitration_enabled=1;
+ }
+ #ifdef SB_MUSIC_RUNTIME
+ if(music_browse_only && (ownership_token_path || music_runtime.scan_only)){
+  fputs("music: browse-only excludes ownership and scan-only modes\n",stderr);return 2;
+ }
+ #endif
+ if(ownership_token_path){
+#if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+  if(playback_root){fputs("production ownership and fixture runtime are exclusive\n",stderr);return 2;}
+#endif
+  sb_owner_init(&production_owner,1);
+  if(!sb_ob_open(&ownership_bridge,&production_owner,ownership_token_path)){
+   fputs("ownership: private provisioning failed\n",stderr);return 2;
+  }
+ }
 	signal(SIGINT, stop);
 	char alarm_path[512] = "";
 	if (cfg.catalog_path[0]) {
@@ -1725,9 +2075,120 @@ int main(int argc, char **argv)
 	signal(SIGHUP, reload);
 	signal(SIGPIPE, SIG_IGN);
 
+ if(arbitration_enabled){
+  sb_ts_options options={.enabled=1,.poll_ms=500,.stop_timeout_ms=15000,
+   .run_dir="/var/run/standalonebase",
+   .policy_path="/mnt/storage/standalonebase/tinysc-arbitration.enabled",
+   .original_service="/etc/init.d/squeezecenter.stock",
+   .control_path="/usr/share/jive/applets/StandaloneBase/sb-tinysc-control"};
+  tinysc_lifecycle=sb_ts_start(&options);
+  if(!tinysc_lifecycle){fputs("TinySC arbitration initialization refused\n",stderr);return 2;}
+  uint64_t until=np_monotonic_ms()+16000;
+  while(running&&!sb_ts_ready(tinysc_lifecycle)&&np_monotonic_ms()<until){
+   sb_ts_status status;sb_ts_snapshot(tinysc_lifecycle,&status);
+   if(status.state==SB_TS_FAILED)break;
+   struct pollfd event={sb_ts_fd(tinysc_lifecycle),POLLIN,0};
+   (void)poll(&event,1,100);sb_ts_drain(tinysc_lifecycle);
+  }
+  if(!running||!sb_ts_ready(tinysc_lifecycle)){
+   sb_ts_status status;sb_ts_snapshot(tinysc_lifecycle,&status);
+   fprintf(stderr,"TinySC arbitration failed: %s (%u processes)\n",status.error,status.count);
+   for(unsigned row=0;row<status.count;row++){
+    const sb_ts_process *p=&status.processes[row];
+    fprintf(stderr,"TINYSC_REMAIN pid=%ld start=%llu role=%u state=%c parent=%ld\n",
+     (long)p->pid,(unsigned long long)p->start,p->role,p->state,(long)p->parent);
+   }
+   sb_ts_close(tinysc_lifecycle);return 2;
+  }
+ }
+
 	if (test_nowplaying)
 		np_demo(nowplaying);
 
+#if defined(SB_MUSIC_BROWSE_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+	if (music_fixture && test_storage_supported) {
+		char canonical[4096], marker[4096];
+		if (!realpath(music_fixture, canonical) ||
+		    strcmp(canonical, music_fixture) ||
+		    strncmp(canonical, "/tmp/sb-music-browse-", 21) ||
+		    strlen(canonical) >= sizeof marker - 32) {
+			fputs("Unapproved fixture path\n", stderr);
+			return 2;
+		}
+		strcpy(marker, canonical);
+		char *slash = strrchr(marker, '/');
+		if (!slash)
+			return 2;
+		strcpy(slash + 1, "WP3B_TEST_FIXTURE");
+		int fd = open(marker, O_RDONLY | O_NOFOLLOW);
+		char proof[32] = {0};
+		ssize_t got = fd < 0 ? -1 : read(fd, proof, sizeof proof - 1);
+		if (fd >= 0)
+			close(fd);
+		if (got != 24 || strcmp(proof, "WP3B disposable fixture\n")) {
+			fputs("Fixture marker missing\n", stderr);
+			return 2;
+		}
+		sb_ml_options options = {0};
+		snprintf(options.path, sizeof options.path, "%s", canonical);
+		options.busy_ms = 20;
+		music_library = sb_music_library_start(&options);
+		if (!music_library)
+			return 2;
+		sb_ml_result result;
+		uint64_t until = np_monotonic_ms() + 5000;
+		while (sb_music_library_receive(music_library, &result) ==
+		       SB_ML_BUSY) {
+			if (np_monotonic_ms() >= until)
+				return 2;
+			struct timespec rest = {0, 1000000};
+			nanosleep(&rest, NULL);
+		}
+		if (result.status != SB_ML_OK)
+			return 2;
+		sb_ml_request source = {0};
+		source.operation = SB_ML_SOURCE;
+		source.data.media = music_media_snapshot;
+		if (sb_music_library_exchange(
+			    music_library, &source, &result) != SB_ML_OK)
+			return 2;
+		music_browse = sb_browse_start(music_library,
+					       &music_media_snapshot,
+					       1,
+					       test_storage_supported);
+		if (!music_browse)
+			return 2;
+	}
+#endif
+#if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+	if (playback_root || playback_ipc >= 0 || playback_http_port) {
+		if (!music_browse || !local_mock_adapters || !playback_root ||
+		    playback_ipc < 0 || !playback_http_port ||
+		    !playback_start(
+			    playback_root, playback_ipc, playback_http_port))
+			return 2;
+	}
+#endif
+#ifdef SB_MUSIC_RUNTIME
+    if((!music_browse_only && !ownership_bridge.enabled) || !music_runtime_start()){sb_ob_close(&ownership_bridge);return 2;}
+    if (music_runtime.scan_only) {
+        sb_ml_request close_request = {0};
+        sb_ml_result result;
+        close_request.operation = SB_ML_CLOSE;
+        int ok = sb_music_library_exchange(music_library, &close_request, &result) == SB_ML_OK;
+        uint64_t until = np_monotonic_ms() + 5000;
+        if (ok) {
+            sb_ml_status destroyed;
+            while ((destroyed = sb_music_library_destroy(music_library)) == SB_ML_BUSY && np_monotonic_ms() < until) {
+                struct timespec pause = {0, 1000000}; nanosleep(&pause, NULL);
+            }
+            ok = destroyed == SB_ML_OK;
+        }
+        music_runtime_stop();
+        sb_ob_close(&ownership_bridge);
+        return ok ? 0 : 2;
+    }
+#endif
 	udp = listener(SOCK_DGRAM, cfg.discovery_port);
 	tcp = listener(SOCK_STREAM, cfg.slim_port);
 	http = listener(SOCK_STREAM, cfg.http_port);
@@ -1735,8 +2196,24 @@ int main(int argc, char **argv)
 		perror("listener");
 		return 1;
 	}
-	for (i = 0; i < CLIENTS; i++)
+	for (i = 0; i < CLIENTS; i++) {
 		cs[i].fd = -1;
+        cs[i].ownership_wait=0;cs[i].ownership_connection=0;
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+		cs[i].music_connection = cs[i].music_control_context = 0;
+#endif
+		cs[i].close_after_drain = 0;
+		memset(&cs[i].output, 0, sizeof cs[i].output);
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+		cs[i].music_http = NULL;
+		cs[i].music_subscription = NULL;
+		cs[i].music_sub_call = NULL;
+		cs[i].music_menu_path[0] = cs[i].music_path[0] = 0;
+		cs[i].music_menu_version = cs[i].music_view_version =
+			cs[i].music_output_epoch = 0;
+		cs[i].music_menu_visible = 0;
+#endif
+	}
 	fprintf(stderr,
 		"sbbase %s (LMS %s): %s UDP/TCP %u, HTTP %u\n",
 		SBBASE_VERSION,
@@ -1746,6 +2223,7 @@ int main(int argc, char **argv)
 		cfg.http_port);
 	if (test_nowplaying)
 		fprintf(stderr, "NOWPLAYING TEST enabled\n");
+ sb_ts_operational(tinysc_lifecycle,1);
 
 	while (running) {
 		if (reload_catalog) {
@@ -1760,17 +2238,53 @@ int main(int argc, char **argv)
 					"catalog reload rejected; retaining "
 					"active catalog\n");
 		}
+#ifdef SB_MUSIC_RUNTIME
+        music_runtime_tick();
+#endif
+		ownership_events(cs);
 		pf[0] = (struct pollfd){udp, POLLIN, 0};
 		pf[1] = (struct pollfd){tcp, POLLIN, 0};
 		pf[2] = (struct pollfd){http, POLLIN, 0};
 		for (i = 0; i < CLIENTS; i++)
-			pf[3 + i] = (struct pollfd){cs[i].fd, POLLIN, 0};
-		if (poll(pf, 3 + CLIENTS, 1000) < 0) {
+			pf[3 + i] = (struct pollfd){
+				cs[i].fd,
+				(short)((cs[i].close_after_drain ? 0 : POLLIN) |
+					(cs[i].output.length ? POLLOUT : 0)),
+				0};
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+		playback_service();
+		pf[4 + CLIENTS] =
+			(struct pollfd){sb_playback_poll_fd(local_music, 0),
+					sb_playback_ipc_events(local_music),
+					0};
+		pf[5 + CLIENTS] = (struct pollfd){
+			sb_playback_poll_fd(local_music, 1), POLLIN, 0};
+#endif
+		music_events();
+		pf[3 + CLIENTS] =
+			(struct pollfd){sb_browse_fd(music_browse), POLLIN, 0};
+		/* Pending large responses need writable readiness even between
+		 * chunks. */
+		for (i = 0; i < CLIENTS; i++)
+			if (cs[i].fd >= 0 && cs[i].music_http &&
+			    cs[i].music_http->sending)
+				pf[3 + i].events |= POLLOUT;
+#endif
+  pf[poll_count]=(struct pollfd){sb_ts_fd(tinysc_lifecycle),POLLIN,0};
+		if (poll(pf, poll_count+1, 1000) < 0) {
 			if (errno == EINTR)
 				continue;
 			break;
 		}
+  sb_ts_drain(tinysc_lifecycle);
+#ifdef SB_MUSIC_RUNTIME
+  music_runtime_tick();
+#endif
 
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+		playback_service();
+#endif
 		if (np_expire(nowplaying))
 			publish_playerstatus();
 		int alarm_connected = 0;
@@ -1786,7 +2300,19 @@ int main(int argc, char **argv)
 		if (sb_alarms_active(alarms) && sb_sleep_cancel())
 			publish_playerstatus();
 		if (sb_sleep_tick(np_monotonic_ms(), alarm_connected)) {
-			np_queue_command(nowplaying, "stop", 0);
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+			if (local_music &&
+			    local_owner.value.current == SB_OWNER_MUSIC)
+				sb_playback_control(
+					local_music,
+					'q',
+					sb_queue_snapshot(
+						sb_playback_queue(local_music))
+						.context,
+					np_monotonic_ms());
+			else
+#endif
+				np_queue_command(nowplaying, "stop", 0);
 			publish_playerstatus();
 		}
 		firmware_publish(NULL);
@@ -1822,8 +2348,8 @@ int main(int argc, char **argv)
 		for (int li = 1; li <= 2; li++)
 			if (pf[li].revents & POLLIN) {
 				int fd = accept(pf[li].fd, NULL, NULL);
+				if(fd>=0&&nonblock(fd)<0){close(fd);fd=-1;}
 				if (fd >= 0) {
-					nonblock(fd);
 					for (i = 0;
 					     i < CLIENTS && cs[i].fd >= 0;
 					     i++)
@@ -1863,16 +2389,54 @@ int main(int argc, char **argv)
 					continue;
 				}
 				rev = pf[3 + i].revents;
+				if (sb_output_expired(&cs[i].output,
+						      np_monotonic_ms()) ||
+				    ((rev & POLLOUT) &&
+				     sb_output_flush(&cs[i].output,
+						     cs[i].fd,
+						     np_monotonic_ms()) < 0)) {
+					close_client(&cs[i]);
+					continue;
+				}
+				if (cs[i].close_after_drain &&
+				    !cs[i].output.length) {
+					close_client(&cs[i]);
+					continue;
+				}
 				if (rev & (POLLERR | POLLHUP | POLLNVAL)) {
 					close_client(&cs[i]);
 					continue;
 				}
-				if (rev & POLLIN) {
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+				if (cs[i].music_http) {
+					if (rev & POLLIN) {
+						char byte;
+						ssize_t n = recv(
+							cs[i].fd,
+							&byte,
+							1,
+							MSG_PEEK |
+								MSG_DONTWAIT);
+						if (n == 0 || n > 0) {
+							close_client(&cs[i]);
+							continue;
+						}
+					}
+					music_http_pump(&cs[i]);
+					continue;
+				}
+#endif
+				if ((rev & POLLIN) &&
+				    !cs[i].close_after_drain) {
 					ssize_t n = recv(cs[i].fd,
 							 cs[i].buf + cs[i].used,
 							 sizeof(cs[i].buf) - 1 -
 								 cs[i].used,
 							 0);
+					if (n < 0 && (errno == EINTR ||
+						      errno == EAGAIN ||
+						      errno == EWOULDBLOCK))
+						continue;
 					if (n <= 0) {
 						close_client(&cs[i]);
 						continue;
@@ -1897,7 +2461,8 @@ int main(int argc, char **argv)
 						cs[i].fd);
 					close_client(&cs[i]);
 				}
-				if (cs[i].fd >= 0 && cs[i].kind == 3 &&
+				if (cs[i].fd >= 0 && !cs[i].close_after_drain &&
+				    cs[i].kind == 3 &&
 				    time(NULL) - cs[i].keepalive >=
 					    STREAM_HEARTBEAT_SECONDS)
 					stream_heartbeat(&cs[i]);
@@ -1908,6 +2473,45 @@ int main(int argc, char **argv)
 	close(udp);
 	close(tcp);
 	close(http);
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+	if (local_music) {
+		uint64_t until = np_monotonic_ms() + 5000;
+		while (!sb_playback_destroy(local_music)) {
+			if (np_monotonic_ms() >= until)
+				return 2;
+			struct timespec rest = {0, 1000000};
+			nanosleep(&rest, NULL);
+		}
+		local_music = NULL;
+	}
+#endif
+	if (music_browse) {
+		while (sb_browse_stop(music_browse) == SB_ML_BUSY) {
+			struct timespec rest = {0, 1000000};
+			nanosleep(&rest, NULL);
+		}
+		uint64_t until = np_monotonic_ms() + 5000;
+		while (sb_browse_destroy(music_browse) == SB_ML_BUSY) {
+			if (np_monotonic_ms() >= until)
+				return 2;
+			struct timespec rest = {0, 1000000};
+			nanosleep(&rest, NULL);
+		}
+		sb_ml_request close_request = {0};
+		sb_ml_result result;
+		close_request.operation = SB_ML_CLOSE;
+		if (sb_music_library_exchange(
+			    music_library, &close_request, &result) == SB_ML_OK)
+			(void)sb_music_library_destroy(music_library);
+	}
+#endif
+#ifdef SB_MUSIC_RUNTIME
+    music_runtime_stop();
+#endif
+	sb_ob_close(&ownership_bridge);
+ sb_ts_operational(tinysc_lifecycle,0);
+ sb_ts_close(tinysc_lifecycle);
 	np_destroy(nowplaying);
 	sb_alarms_close(alarms);
 	return 0;

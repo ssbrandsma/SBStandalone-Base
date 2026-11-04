@@ -1,0 +1,335 @@
+{
+  "scope": "WP4a.2 Fab4 read-only baseline, actual native scan-only, failed decoder-probe reboot, TinySC incident and recovery",
+  "device": "192.168.1.244",
+  "firmware": "7.7.3 r16676",
+  "kernel": "2.6.26.8-rt16-332-g5849bfa",
+  "architecture": "armv6l",
+  "preflight_mem_total_kib": 125848,
+  "preflight_mem_free_kib": 52816,
+  "later_mem_free_kib": 42260,
+  "samples": [
+    {
+      "694": {
+        "name": "jive",
+        "cpu_ticks": 775717,
+        "rss_kib": 34016,
+        "fds": 49
+      },
+      "722": {
+        "name": "jive_alsa",
+        "cpu_ticks": 326943,
+        "rss_kib": 6824,
+        "fds": 13
+      },
+      "723": {
+        "name": "jive_alsa",
+        "cpu_ticks": 297361,
+        "rss_kib": 6828,
+        "fds": 14
+      },
+      "754": {
+        "name": "sbproxy",
+        "cpu_ticks": 1056,
+        "rss_kib": 940,
+        "fds": 16
+      },
+      "762": {
+        "name": "sbbase",
+        "cpu_ticks": 2123,
+        "rss_kib": 340,
+        "fds": 18
+      },
+      "770": {
+        "name": "sbwebserver",
+        "cpu_ticks": 22126,
+        "rss_kib": 464,
+        "fds": 16
+      }
+    },
+    {
+      "694": {
+        "name": "jive",
+        "cpu_ticks": 775734,
+        "rss_kib": 34016,
+        "fds": 49
+      },
+      "722": {
+        "name": "jive_alsa",
+        "cpu_ticks": 326951,
+        "rss_kib": 6824,
+        "fds": 13
+      },
+      "723": {
+        "name": "jive_alsa",
+        "cpu_ticks": 297368,
+        "rss_kib": 6828,
+        "fds": 14
+      },
+      "754": {
+        "name": "sbproxy",
+        "cpu_ticks": 1056,
+        "rss_kib": 940,
+        "fds": 16
+      },
+      "762": {
+        "name": "sbbase",
+        "cpu_ticks": 2123,
+        "rss_kib": 340,
+        "fds": 18
+      },
+      "770": {
+        "name": "sbwebserver",
+        "cpu_ticks": 22126,
+        "rss_kib": 464,
+        "fds": 16
+      }
+    }
+  ],
+  "interval": "sleep 1 plus collection overhead; CPU ticks uncalibrated, not percentages",
+  "audio_confirmation": {
+    "mp3": "not tested",
+    "flac": "not tested"
+  },
+  "blocking_usb": {
+    "vendor": "2357",
+    "product": "012e",
+    "descriptor": "Realtek 802.11ac NIC",
+    "storage_block_device": false,
+    "mounted_usb_volume": false
+  },
+  "backup": {
+    "files": 91,
+    "archive_bytes": 12495360,
+    "archive_sha256": "f7b7ab430f9dfc08908e6ee781164a50dc5037d0c7b97310357b5a08ffd57ce7"
+  },
+  "evidence_hashes": [
+    {
+      "path": ".local/wp4a2/audio.txt",
+      "sha256": "a47bdbd587d48a1f28e282f3d9327ac77887363359d21debdd4b1ab6220c9a15"
+    },
+    {
+      "path": ".local/wp4a2/connections.txt",
+      "sha256": "67597603d2241d27e9819829e69f54e4d8a4b3dc5e30298f3d560440ee30ca37"
+    },
+    {
+      "path": ".local/wp4a2/final_usb.txt",
+      "sha256": "f64c9f25b9a24021250e9e77d3a99f599281ca2ac070a0796ef7a25a89934b76"
+    },
+    {
+      "path": ".local/wp4a2/firmware_metadata.txt",
+      "sha256": "e46437b2e44aeb7d55b915b619c96a638ee045e656c232f4683bdabe979f91ae"
+    },
+    {
+      "path": ".local/wp4a2/identity.txt",
+      "sha256": "87c31425e87cc2a1840fde1128c6a216f9d0b8c50a086985f886d25fa04ef6f4"
+    },
+    {
+      "path": ".local/wp4a2/idle_sample.txt",
+      "sha256": "dfb13119436c6dac4e7b66a168ac1aa5bcd5b2bf65f34a26a61e845511d6e2a1"
+    },
+    {
+      "path": ".local/wp4a2/installed-build-manifest.txt",
+      "sha256": "9e17b65319e0fb5e7741664cfb2999723d7341535c63abd2993653eb53da8ffd"
+    },
+    {
+      "path": ".local/wp4a2/installed.txt",
+      "sha256": "83e9742a412a7c6be977fd2384d53742db450fa0f773215a17f86903b44063af"
+    },
+    {
+      "path": ".local/wp4a2/media.txt",
+      "sha256": "49780e6305e97c2eb9aefebc31e5a3bc825736129668a7e305b15b85e2c92701"
+    },
+    {
+      "path": ".local/wp4a2/memory.txt",
+      "sha256": "6a05a8199a049d652c5c55a907684fcd6e6133fe80138f96c752b192032b8adc"
+    },
+    {
+      "path": ".local/wp4a2/mounts.txt",
+      "sha256": "4a634adbd94831d10119cdf2ab58b1a41078cd4623ce5ddf36d44332bd96f2a7"
+    },
+    {
+      "path": ".local/wp4a2/processes.txt",
+      "sha256": "c3fb1482554455c96213e85c3786492d3131cc21bad59cec72351b18ae8f9b5a"
+    },
+    {
+      "path": ".local/wp4a2/process_details.txt",
+      "sha256": "5888b0788b433e3a1618764c1940bf0e33d81bcb44c931fb063b5595b86d2e37"
+    },
+    {
+      "path": ".local/wp4a2/runtime_status.txt",
+      "sha256": "662c33c1deb0334e35be7026da618f2c8deb66015ed7479d6394d229a1384cdc"
+    },
+    {
+      "path": ".local/wp4a2/usb_details.txt",
+      "sha256": "4d2452f5e2a70569a2e6d31c64751269ae230d0301f7d7f36e9221d5bb74c151"
+    },
+    {
+      "path": ".local/wp4a2/usb_driver.txt",
+      "sha256": "4b7fd7e3016ee285d9698d53825080bd936c1bc2f096db326a0b459985c916e4"
+    },
+    {
+      "path": ".local/wp4a2/versions.txt",
+      "sha256": "9d69b36214bd60182c24858a9f90b01c076fd314c15feb8670c2fa9611f63695"
+    }
+  ],
+  "hardware_scan": {
+    "scope": "actual Fab4 manual scan only; no decoder/controller/listener activation",
+    "rollback_validation": true,
+    "scan": {
+      "wall_seconds_with_ssh": 4.081653199973516,
+      "stdout": "",
+      "stderr": "MUSIC_SCAN state=4 files=15 tracks=11 errors=0 ms=3684 helper_rss_kib=144\n"
+    },
+    "binaries": {
+      "sbbase_music": {
+        "bytes": 916260,
+        "sha256": "9bc62edfb58ef0774aaba7917fec843bbb0732d6e925558080b214f225e339be"
+      },
+      "metadata-helper": {
+        "bytes": 66324,
+        "sha256": "dc2512300fe2c39c6f22e2b52aa875abd8d0263013737ce48787d58c59f37a54"
+      }
+    },
+    "database": {
+      "bytes": 122880,
+      "integrity": "ok",
+      "tracks": 11,
+      "distinct_ids": 11
+    },
+    "ram_cleanup_complete": true
+  },
+  "hardware_qualification": "FAILED; unexpected reboot/TinySC startup; no native audio",
+  "recovery": {
+    "all_four_meta_hashes_restored": true,
+    "jive_pid": 3192,
+    "watchdog_pid_restored": true,
+    "tinysc_absent": true,
+    "music_ram_absent": true,
+    "guard_retained_in_current_jive_memory": true
+  },
+  "original_services_and_config": [
+    {
+      "path": "/mnt/storage/standalonebase/config.json",
+      "same_as_backup": true,
+      "sha256": "bd8a1e5b104b9303b8105b3efb5f8be75e948fa7ef4a96f56a1a993a53c0cfdc"
+    },
+    {
+      "path": "/usr/share/jive/applets/StandaloneBase/sbbase",
+      "same_as_backup": true,
+      "sha256": "b97b29a759589bf304ab3b7a5751c275c9477c4dfda12fc9c92edf5b93888b0a"
+    },
+    {
+      "path": "/usr/share/jive/applets/StandaloneBase/sbwebserver",
+      "same_as_backup": true,
+      "sha256": "4f33d5890ad41b540f048096e71f1e87333529870eb3d6503a920f064d7ae8eb"
+    },
+    {
+      "path": "/usr/share/jive/applets/StandaloneBase/sbproxy",
+      "same_as_backup": true,
+      "sha256": "a74524626cdb1a0ac82778b79cedc1982ffe3f3076185a80017cc68c3aea90de"
+    }
+  ],
+  "validation": {
+    "host_passed": 96,
+    "host_total": 96,
+    "host_seconds": 425.99,
+    "qemu_production_entry": [
+      "baby-arm926",
+      "fab4-arm1136"
+    ],
+    "cross_builds": [
+      "baby",
+      "fab4"
+    ],
+    "native_mp3_audible": "not tested",
+    "native_flac_audible": "not tested",
+    "radio_recovery_audible": "unverified; owner observed stopped state after bounded test was stopped",
+    "arm_scope": "All three executables compiled/static ELF checks for both platforms; initial wrapper manifest stage failed during live edit, final scanner/archive/Base refresh exit0; final public-wrapper syntax checked, not independently repeated end-to-end after manifest fix"
+  },
+  "resume_evidence_sha256": {
+    ".local/wp4a2/resume/after-ram-cleanup.txt": "fd097231eabb88aafa4264b9793dfebd5313432c4cb41582d926be9440fb7c71",
+    ".local/wp4a2/resume/after-ram-scan.txt": "7031439eabbfde08215199d533561f6f9975c6bcea9b7a6b23c61215a24cce10",
+    ".local/wp4a2/resume/arm-build.log": "7ef7ea2c4eabf3ec8343f48f02f4b8509e1133fdb9e7a020e538b1c131d7a37c",
+    ".local/wp4a2/resume/arm-final.log": "7ad817de9357947bedc88bbf44ffef80883a7d9b0c1a571d4c9af57c599907a4",
+    ".local/wp4a2/resume/atomic-rollback-validation.json": "54b1ab3011a6420abb4adac8ae7f77a95420a820677e71320844bec35b33e137",
+    ".local/wp4a2/resume/before-probe-restart.txt": "c5c837e85a790c472b6f12fe6e370cc65060db74eeb18d8786629bc0a91dc831",
+    ".local/wp4a2/resume/before-ram-scan.txt": "e17fe99e39b9618a18703e3b2a0936e3a1763dba67dd372f1b765a29917231b5",
+    ".local/wp4a2/resume/bootstrap_test.txt": "1846504775dd4e660bc16333cc79e153bf1c7c32b0ec7694f38e6ebbf384f509",
+    ".local/wp4a2/resume/build.log": "3ddc2444d79935d0963dc54983fba635994135a6f95f25006ed3e70e82f275bd",
+    ".local/wp4a2/resume/clean-recovery-failure-state.txt": "1ab3644521d9eb4bdb3efba8618aab6ac482f55b37bce43a42e84e4fea1d8fb6",
+    ".local/wp4a2/resume/clean-recovery-running.json": "91324d8083249206e4caf323de5ebadf3e2293c52996c75ede74e4aca59f8d2b",
+    ".local/wp4a2/resume/configure.log": "7042bfc120a4c3d5d5ccfb1835d4fc31f06f8e42e67b269ea2358868790d0bea",
+    ".local/wp4a2/resume/final-state.json": "9859e1c3f67e64d79683a5bde161581c478fe298f75a7683b7c2f93719c9aaeb",
+    ".local/wp4a2/resume/focused-tests.log": "184d05e36c42d98540ccc969bfd207aeaa50c61c55a467339cce7d532d31a6f5",
+    ".local/wp4a2/resume/hardware-scan.json": "c2582e39fc076fc82127e7edc35062b90624efa30670bbd7b6372c0f96f221f6",
+    ".local/wp4a2/resume/hardware-scan.stderr": "6683ea0dacc66b8a5d5f280b2b00d518d5395597d5c432dd10ab8a9fe0380f0b",
+    ".local/wp4a2/resume/hardware-scan.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".local/wp4a2/resume/hardware-tracks.json": "2c1f4f1f784e34847e30a6008b02dd6f293d44c4c7d69064a982a7270d7e0f85",
+    ".local/wp4a2/resume/host-tests-final.log": "4f00a88d753bd79cd9ec2ab40c10ec88e94e457cfba48d48ca9d5f4d2c42f47f",
+    ".local/wp4a2/resume/host-tests.log": "50f71b9eabf1e6efced1e3d6ba5b657204c575b8d684312f9320177a744c069e",
+    ".local/wp4a2/resume/meta-backup.json": "5a1a84d4915471ba5f0945b597d7a38344eeca5a384ed11f5f695072c0a6c7d4",
+    ".local/wp4a2/resume/meta-installed.json": "de69c246eda5d30ecff51b2d4273192269f24b69f2c5347d15e641780fc56370",
+    ".local/wp4a2/resume/music_listing.txt": "5a0c0da0af2c2195ece48299702315c622df58dae38b8d20e03d0e4d488a8795",
+    ".local/wp4a2/resume/original-service-hashes.json": "0f2144ea969c825944dff03c8d32043919b1bce393021cf4b30a1e533271604b",
+    ".local/wp4a2/resume/positive_mounts.txt": "af5f3f509a8bea214f20a3d1b4bf82ee58128263b5ecd61b0e578c64a5c01b65",
+    ".local/wp4a2/resume/post-spotify-stop.json": "a492cd71d5d533e9b864437ad20f4ae18bf49abac5e2c26860a9bf353ec3716b",
+    ".local/wp4a2/resume/post-spotify-stop.txt": "35cd0da0ea8704d3da9abbd92869d6ae59970cf2d44c58dc62bf826f41578a4d",
+    ".local/wp4a2/resume/probe-live-state.txt": "d6ab5a8c4fd8cc625aa05d225fbc19a4c4bb3cb1aa867b165acb8cca26e94ba1",
+    ".local/wp4a2/resume/radio-recovery-observation.txt": "513bef6b4c7e00b7ca0c7ae0e1f2ae6c9b286a3806dfe4e1c70d530caa6b1ead",
+    ".local/wp4a2/resume/recovery-before-jive-start.txt": "827aa0a2683dc8100f75369f3750fccc174e13abc37d58984906cbedd3015bb0",
+    ".local/wp4a2/resume/recovery-before.txt": "dc76cebc0b754bd2c836ae405fda051b7a2a7f749ed4045ed299712f8ef13c9a",
+    ".local/wp4a2/resume/recovery-final.txt": "97f321ac356d30f362874d4893cbea4f469613c477c79e3715ac008b8743fa41",
+    ".local/wp4a2/resume/recovery-held.txt": "30a712df677224501cf903ee2420b276863e1b29a7efe3d3c2834e4401c85ca6",
+    ".local/wp4a2/resume/recovery-restored.json": "e85717ed1a327feaf8fb2fa6fff067a7b59c83cf8c389b4e5221fc6e3f3d128c",
+    ".local/wp4a2/resume/remote-frame-headers.json": "813d8b50bf26eeeccacc7fb32f67eaa667ba37070c163486108c6b0febb11028",
+    ".local/wp4a2/resume/remote-screen.png": "30f8996b21094eee198aea5375507ddb1cac4d94942b9b073ecc7b37f3ca033b",
+    ".local/wp4a2/resume/rollback_stage.txt": "6f84b40d028c6d17d8f2f6b7c7b7a0526170741eed92c62a3889de959eb16a00",
+    ".local/wp4a2/resume/scan-preflight.json": "a492cd71d5d533e9b864437ad20f4ae18bf49abac5e2c26860a9bf353ec3716b",
+    ".local/wp4a2/resume/scan_preflight.txt": "35cd0da0ea8704d3da9abbd92869d6ae59970cf2d44c58dc62bf826f41578a4d",
+    ".local/wp4a2/resume/spotify-stopped.png": "cd42e5d24fca9bcdc4cba8b2dd1757eb4277ad63f094694a6e117c2edf6cd6b5",
+    ".local/wp4a2/resume/startup_policy.txt": "0622bc04a1bd34da56cc56f739049fe2eed716bee18404d929f8faec656470be",
+    ".local/wp4a2/resume/tinysc-recovery-state.txt": "dc8706fc7296a9c2f25597274c716234731bad7fe16c5219a5867e8a331efa1a",
+    ".local/wp4a2/resume/tinysc-side-effects.txt": "e9197535adcbc6574651365e15b4a59ef04a792d64defbf1cfccad619a187294",
+    ".local/wp4a2/resume/usb_after_swap.txt": "882940034b8d55bf2de981be5938bb0bdbc34ece714a87fc85c93eb0ccda9e71",
+    ".local/wp4a2/resume/final-device-state.txt": "f7c58a27f2459686b2360518adde9a4fd6a6e25c4ad2ba24c301f15d452c4e96"
+  },
+  "candidate_binaries_sha256": {
+    "build-arm/baby/music-session/sbbase_music": "3675b8d30de36d914c1e65826a22e105f8ec4179be3c9eeb523804000070ccfb",
+    "build-arm/baby/music-session/sbmusic-session": "72d726fb4e5f4bfe860318afdc9cdc34ebce896ed6517773e2d063fe66610c01",
+    "build-arm/baby/music-session/sbwebserver_music": "c6238df705d653c460f62f370eaa52f29f9aa9d6e2aded16d954d88e6d4dca93",
+    "build-arm/fab4/music-session/sbbase_music": "9bc62edfb58ef0774aaba7917fec843bbb0732d6e925558080b214f225e339be",
+    "build-arm/fab4/music-session/sbmusic-session": "07df376f20059b1f3b1f80f58058914f46450498291b0122a46362a7150c2bea",
+    "build-arm/fab4/music-session/sbwebserver_music": "b25ac9240f36d5042e102991a8f40ed9f636515e38bae3bb417beb012f7d6200"
+  },
+  "final_device_state": {
+    "jive_pid": 3192,
+    "radio": "inactive/stopped",
+    "tinysc": "not present",
+    "music": "not present",
+    "test_ram_mount": "absent",
+    "temporary_web_session": "logged out; local cookie deleted"
+  },
+  "source_sha256": {
+    "native/sbbase/src/main.c": "06b1b8cb50b5df611559e91f50fc63dfa47ef55eedeb4fd41e6312e4c6a696ed",
+    "native/sbbase/src/music_runtime.inc": "b37f21262bcece9cae059051d73f6e3fcc3f0089715c688b71f0c307b3abeb80",
+    "native/sbbase/src/music_session.c": "ea1220c737d348d32eebb8de5a7daa31773dffd66bf2c53d1942a2fb345e9344",
+    "native/sbbase/src/music_playback_glue.inc": "398e51ffa95f4c3ab78f0a12b2524922ffbce817a07ce677ccab1af0fe6781ce",
+    "native/sbbase/src/music_playback_test.inc": "59f41efbe51fbd8c9a9975c2968ffef8361689c553fa4efadf9a66d921662ff8",
+    "native/sbbase/src/ownership_bridge.c": "c28e7b0a0e846008917be664bf6e9ad4a2e8dc66df34636a43375d5a30531491",
+    "native/sbbase/include/ownership_bridge.h": "517f87b2a12483c258eb07d1b162a3dead8ca652e006cdf9166120d25528582d",
+    "native/sbbase/CMakeLists.txt": "cbcc52d7fe54bc740da496c0eb929c4a6b353263d36146fd49db1eaebfda76ab",
+    "native/sbwebserver/src/main.c": "e7a4550e534f96ec209b2b1b906e01da73b3e455e994f4330f3d512279d63b67",
+    "native/sbwebserver/src/http_server.c": "90059a07aac08bf4e40cc6a39745ea6a4c70f77b0c930f781e0aa6530788bb2d",
+    "native/sbwebserver/CMakeLists.txt": "8b8ed579de7d014e53fa2c56611fc8e9e2f939c80b2f704a20afd0dcd84eaa57",
+    "native/sbmusic/music_storage_linux.c": "9bfa52f4e579935128569c173df3b6bd7d160b6aae4cb9d3c355ef9bde95478d",
+    "native/sbmusic/music_storage.h": "ad9f7e89b1e85631b25ad03ff887c99762f99ca56226e6f6975204e04fc2109c",
+    "native/sbmusic/music_scanner.c": "b5507eda0aa2cc4194202e15ce57fdbfc7bff9aee4afcc06ac112bd0d8312231",
+    "scripts/build-music-session-arm.sh": "a9b9a03014f482066306962a6a50e527ff77db4c5575730303b2f25f8ca5f02b",
+    "scripts/music-hardware-rollback.py": "80a69de8e2ba37041085db712edeb10da1bd60c0655c96c22811891c74c92cdc",
+    "tests/music/test_production_bootstrap.py": "43dd8480c73fe7cb73896624b2256e5edb14e90e3359e56038300268f0754fdb",
+    "tests/music/test_production_mounts.py": "906dc33bdfbc703ea215487370179cc20d4efa1bcbea1c1980b5bf10fbd1a9b8",
+    "tests/music/test_storage.c": "eb8814b8e42b0a0174c3ca80d7ee02c476878832823cc8f9571dd1f0c404c1a5",
+    "tests/music/test_ownership_bridge.py": "06a77021b11ec2a44078aeb626b9ae402f947308f3e2aecdf5d688c8c66cffc9",
+    "tests/CMakeLists.txt": "b4988e16f69ff0aabe13bf32501401bd06724ddc39d5b27929a2339b51854ec4"
+  }
+}

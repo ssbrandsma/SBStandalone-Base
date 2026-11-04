@@ -22,6 +22,9 @@
 #include "image_render.h"
 #include "firmware.h"
 #include "backup.h"
+#if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
+#include "music_stream_http.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -722,6 +725,10 @@ normal(Server *s, struct mg_connection *c, struct mg_http_message *m)
  */
 static void fn(struct mg_connection *c, int ev, void *data)
 {
+#if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
+	if (sb_web_music_event(c, ev, data))
+		return;
+#endif
 	Server *s = c->fn_data;
 	int firmware_readonly = 0;
 	if (ev == MG_EV_HTTP_HDRS &&
@@ -798,7 +805,12 @@ int http_server_run(int port, const char *root)
 		return 1;
 	}
 	for (;;) {
+#if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
+		sb_web_music_tick();
+		mg_mgr_poll(&mgr, sb_web_music_enabled() ? 10 : 100);
+#else
 		mg_mgr_poll(&mgr, 100);
+#endif
 		image_render_tick(&mgr);
 		catalog_sync_tick(&mgr);
 		remote_tick();

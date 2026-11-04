@@ -1,0 +1,645 @@
+{
+  "date": "2026-11-02",
+  "scope": "WP2 host-kernel fixtures only, no device access",
+  "music_enabled": false,
+  "baseline": {
+    "passed": 71,
+    "seconds": 152.46
+  },
+  "final_suite": {
+    "passed": 72,
+    "seconds": 162.03,
+    "proxy_limit": "Missing CURL_LIBRARY/CURL_INCLUDE_DIR; unavailable tests not counted"
+  },
+  "performance": [
+    {
+      "files": 1000,
+      "fixture_bytes": 298,
+      "database_bytes": 843776,
+      "build_sha256": {
+        "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests/tests/test_music_scanner": "246b571bb0ab26f47c641c254f2ec06ea935284dcd737eb33399181061cfeddd",
+        "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests/native/sbmusic/sbmusic_metadata_helper": "8533d1c9a52b7256aed2420a315155f1966ce57f4f01936fa3f82f4ceb2f9da5"
+      },
+      "fixture_sha256": "e6f43b05153e2ff9de4995d1e29c1e8169974ee35e5d950b0a89710902b2ccf8",
+      "initial": {
+        "state": 4,
+        "visited": 1010,
+        "recognized": 1000,
+        "added": 1000,
+        "updated": 0,
+        "unchanged": 0,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 7030,
+        "parser_bytes": 274000,
+        "revision": 65,
+        "epoch": 1,
+        "fd_bound": 14,
+        "rss_kib": 4688,
+        "cpu_ms": 1519.549,
+        "child_cpu_ms": 1102.594,
+        "shutdown_ms": 1,
+        "queries": 607,
+        "query_conflicts": 37,
+        "query_p95_ms": 2.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 1664,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 19,
+        "fd_final": 3,
+        "write_bytes": 15749120
+      },
+      "unchanged": {
+        "state": 4,
+        "visited": 1010,
+        "recognized": 1000,
+        "added": 0,
+        "updated": 0,
+        "unchanged": 1000,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 1170,
+        "parser_bytes": 0,
+        "revision": 66,
+        "epoch": 2,
+        "fd_bound": 14,
+        "rss_kib": 4168,
+        "cpu_ms": 671.053,
+        "child_cpu_ms": 0.0,
+        "shutdown_ms": 1,
+        "queries": 0,
+        "query_conflicts": 0,
+        "query_p95_ms": 0.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 0,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 16,
+        "fd_final": 3,
+        "write_bytes": 1912832
+      },
+      "single_update": {
+        "state": 4,
+        "visited": 1010,
+        "recognized": 1000,
+        "added": 0,
+        "updated": 1,
+        "unchanged": 999,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 1149,
+        "parser_bytes": 274,
+        "revision": 68,
+        "epoch": 3,
+        "fd_bound": 14,
+        "rss_kib": 4228,
+        "cpu_ms": 657.828,
+        "child_cpu_ms": 1.079,
+        "shutdown_ms": 1,
+        "queries": 0,
+        "query_conflicts": 0,
+        "query_p95_ms": 0.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 1664,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 16,
+        "fd_final": 3,
+        "write_bytes": 1998848
+      },
+      "files_per_second": 142.2475106685633,
+      "cpu_ms_per_file": 2.622143
+    },
+    {
+      "files": 10000,
+      "fixture_bytes": 298,
+      "database_bytes": 7643136,
+      "build_sha256": {
+        "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests/tests/test_music_scanner": "246b571bb0ab26f47c641c254f2ec06ea935284dcd737eb33399181061cfeddd",
+        "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests/native/sbmusic/sbmusic_metadata_helper": "8533d1c9a52b7256aed2420a315155f1966ce57f4f01936fa3f82f4ceb2f9da5"
+      },
+      "fixture_sha256": "e6f43b05153e2ff9de4995d1e29c1e8169974ee35e5d950b0a89710902b2ccf8",
+      "initial": {
+        "state": 4,
+        "visited": 10100,
+        "recognized": 10000,
+        "added": 10000,
+        "updated": 0,
+        "unchanged": 0,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 56251,
+        "parser_bytes": 2740000,
+        "revision": 627,
+        "epoch": 1,
+        "fd_bound": 14,
+        "rss_kib": 4940,
+        "cpu_ms": 12667.462,
+        "child_cpu_ms": 9355.027,
+        "shutdown_ms": 1,
+        "queries": 4901,
+        "query_conflicts": 256,
+        "query_p95_ms": 3.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 1664,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 19,
+        "fd_final": 3,
+        "write_bytes": 177307648
+      },
+      "unchanged": {
+        "state": 4,
+        "visited": 10100,
+        "recognized": 10000,
+        "added": 0,
+        "updated": 0,
+        "unchanged": 10000,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 8334,
+        "parser_bytes": 0,
+        "revision": 628,
+        "epoch": 2,
+        "fd_bound": 14,
+        "rss_kib": 4300,
+        "cpu_ms": 5322.707,
+        "child_cpu_ms": 0.0,
+        "shutdown_ms": 2,
+        "queries": 0,
+        "query_conflicts": 0,
+        "query_p95_ms": 0.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 0,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 17,
+        "fd_final": 3,
+        "write_bytes": 18251776
+      },
+      "single_update": {
+        "state": 4,
+        "visited": 10100,
+        "recognized": 10000,
+        "added": 0,
+        "updated": 1,
+        "unchanged": 9999,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 9510,
+        "parser_bytes": 274,
+        "revision": 630,
+        "epoch": 3,
+        "fd_bound": 14,
+        "rss_kib": 4304,
+        "cpu_ms": 5944.95,
+        "child_cpu_ms": 1.002,
+        "shutdown_ms": 1,
+        "queries": 0,
+        "query_conflicts": 0,
+        "query_p95_ms": 0.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 1664,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 17,
+        "fd_final": 3,
+        "write_bytes": 18391040
+      },
+      "files_per_second": 177.7746173401362,
+      "cpu_ms_per_file": 2.2022489000000003
+    },
+    {
+      "files": 50000,
+      "fixture_bytes": 298,
+      "database_bytes": 38653952,
+      "build_sha256": {
+        "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests/tests/test_music_scanner": "246b571bb0ab26f47c641c254f2ec06ea935284dcd737eb33399181061cfeddd",
+        "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/build-dual-tests/native/sbmusic/sbmusic_metadata_helper": "8533d1c9a52b7256aed2420a315155f1966ce57f4f01936fa3f82f4ceb2f9da5"
+      },
+      "fixture_sha256": "e6f43b05153e2ff9de4995d1e29c1e8169974ee35e5d950b0a89710902b2ccf8",
+      "initial": {
+        "state": 4,
+        "visited": 50500,
+        "recognized": 50000,
+        "added": 50000,
+        "updated": 0,
+        "unchanged": 0,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 260653,
+        "parser_bytes": 13700000,
+        "revision": 3127,
+        "epoch": 1,
+        "fd_bound": 14,
+        "rss_kib": 4684,
+        "cpu_ms": 70493.898,
+        "child_cpu_ms": 41590.658,
+        "shutdown_ms": 0,
+        "queries": 21816,
+        "query_conflicts": 977,
+        "query_p95_ms": 4.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 1664,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 19,
+        "fd_final": 3,
+        "write_bytes": 915070976
+      },
+      "unchanged": {
+        "state": 4,
+        "visited": 50500,
+        "recognized": 50000,
+        "added": 0,
+        "updated": 0,
+        "unchanged": 50000,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 39722,
+        "parser_bytes": 0,
+        "revision": 3128,
+        "epoch": 2,
+        "fd_bound": 14,
+        "rss_kib": 4300,
+        "cpu_ms": 25987.193,
+        "child_cpu_ms": 0.0,
+        "shutdown_ms": 1,
+        "queries": 0,
+        "query_conflicts": 0,
+        "query_p95_ms": 0.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 0,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 17,
+        "fd_final": 3,
+        "write_bytes": 90796032
+      },
+      "single_update": {
+        "state": 4,
+        "visited": 50500,
+        "recognized": 50000,
+        "added": 0,
+        "updated": 1,
+        "unchanged": 49999,
+        "renamed": 0,
+        "removed": 0,
+        "errors": 0,
+        "elapsed_ms": 39236,
+        "parser_bytes": 274,
+        "revision": 3130,
+        "epoch": 3,
+        "fd_bound": 14,
+        "rss_kib": 4356,
+        "cpu_ms": 25797.938,
+        "child_cpu_ms": 0.958,
+        "shutdown_ms": 1,
+        "queries": 0,
+        "query_conflicts": 0,
+        "query_p95_ms": 0.0,
+        "error_detail": [],
+        "parser_peak_rss_kib": 1664,
+        "fd_baseline": 3,
+        "fd_peak_sampled": 17,
+        "fd_final": 3,
+        "write_bytes": 90865664
+      },
+      "files_per_second": 191.82591414639387,
+      "cpu_ms_per_file": 2.24169112
+    }
+  ],
+  "lifecycle": {
+    "cancel": {
+      "state": 5,
+      "visited": 1,
+      "recognized": 0,
+      "added": 0,
+      "updated": 0,
+      "unchanged": 0,
+      "renamed": 0,
+      "removed": 0,
+      "errors": 0,
+      "elapsed_ms": 31,
+      "parser_bytes": 0,
+      "revision": 2,
+      "epoch": 1,
+      "fd_bound": 0,
+      "rss_kib": 3920,
+      "cpu_ms": 7.015,
+      "child_cpu_ms": 0.91,
+      "shutdown_ms": 1,
+      "queries": 0,
+      "query_conflicts": 0,
+      "query_p95_ms": 0.0,
+      "error_detail": [],
+      "parser_peak_rss_kib": 0,
+      "fd_baseline": 3,
+      "fd_peak_sampled": 15,
+      "fd_final": 3,
+      "write_bytes": 221184
+    },
+    "remove": {
+      "state": 7,
+      "visited": 1,
+      "recognized": 0,
+      "added": 0,
+      "updated": 0,
+      "unchanged": 0,
+      "renamed": 0,
+      "removed": 0,
+      "errors": 0,
+      "elapsed_ms": 31,
+      "parser_bytes": 0,
+      "revision": 2,
+      "epoch": 1,
+      "fd_bound": 0,
+      "rss_kib": 3792,
+      "cpu_ms": 8.066,
+      "child_cpu_ms": 0.911,
+      "shutdown_ms": 1,
+      "queries": 0,
+      "query_conflicts": 0,
+      "query_p95_ms": 0.0,
+      "error_detail": [],
+      "parser_peak_rss_kib": 0,
+      "fd_baseline": 3,
+      "fd_peak_sampled": 15,
+      "fd_final": 3,
+      "write_bytes": 221184
+    },
+    "stop": {
+      "state": 5,
+      "visited": 1,
+      "recognized": 0,
+      "added": 0,
+      "updated": 0,
+      "unchanged": 0,
+      "renamed": 0,
+      "removed": 0,
+      "errors": 0,
+      "elapsed_ms": 31,
+      "parser_bytes": 0,
+      "revision": 2,
+      "epoch": 1,
+      "fd_bound": 0,
+      "rss_kib": 3916,
+      "cpu_ms": 6.659,
+      "child_cpu_ms": 0.749,
+      "shutdown_ms": 0,
+      "queries": 0,
+      "query_conflicts": 0,
+      "query_p95_ms": 0.0,
+      "error_detail": [],
+      "parser_peak_rss_kib": 0,
+      "fd_baseline": 3,
+      "fd_peak_sampled": 15,
+      "fd_final": 3,
+      "write_bytes": 221184
+    }
+  },
+  "artifacts": {
+    "baby": {
+      "sb-storage-helper": {
+        "bytes": 66620,
+        "sha256": "61ad37b017505b06d78c14d3211fb6227fff69caf60487a9b6caa264be34ff16",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sb-storage-updater": {
+        "bytes": 33852,
+        "sha256": "90d85d72700fd5c6ad528994f6b0e371dfcc4717969aa785e852ad34f71f7287",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbbase": {
+        "bytes": 136272,
+        "sha256": "410fc13c349eaf0c664593ea8b71132d80baf89c821a242a107029110294619c",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbproxy": {
+        "bytes": 874644,
+        "sha256": "8ec063ec36993918cb17c7a7eaf1e07dd6f1316fd6d576cfcec7c88cd3ff5ebf",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbwebserver": {
+        "bytes": 291976,
+        "sha256": "78828c2861ec7435151f273e1899ad7ff019eb62f1daacd17a08246bfddff95d",
+        "size_delta": 0,
+        "hash_unchanged": false
+      },
+      "svgpngrenderer": {
+        "bytes": 497800,
+        "sha256": "f10238868af03f411e1ee5586d7085b5d7f5c52ae28492fdf0bc2956e4ff57c0",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "music/libsbmusic.a": {
+        "bytes": 51758,
+        "sha256": "feb55ead5170672e03f1996cd1ea501cb2c5157f3a240bb3830571b6eeb265fd"
+      },
+      "music/libsbmusic-sqlite.a": {
+        "bytes": 1186162,
+        "sha256": "9f6f490db6442792356998aa001403df9c74982705f3f7b65a6e628ee67cd1a9"
+      },
+      "music/libsbmusic-storage.a": {
+        "bytes": 33782,
+        "sha256": "3fd14284a7166551c579944d8bf8ee052149009ea331630678b194f89e47df85"
+      },
+      "music/libsbmusic-metadata.a": {
+        "bytes": 23140,
+        "sha256": "84287e72964bf8f1956ebafd5a797cb72aac305c98276577b1b744f09942bf20"
+      },
+      "music/libsbmusic-scanner.a": {
+        "bytes": 22980,
+        "sha256": "d935ced972a655caf12777a51de73d576ca8a9dbe1c355db77b61998b6ed751c"
+      },
+      "music/sbmusic-metadata-helper": {
+        "bytes": 66324,
+        "sha256": "793f26f0ac5e49be38d435a09bdd715193b8f04a9928861ab41c04d6c6528490"
+      },
+      "music/test_music_scanner": {
+        "bytes": 786388,
+        "sha256": "71a33a8b5e9b50591cfd902bbeec18671770ea2eb1a2671ade69c3359506fdff"
+      },
+      "music/music_metadata_fault": {
+        "bytes": 62228,
+        "sha256": "99510f61b76eca5e0b695276fdf092f2aea81f0648cca64cd0e4e07bf3cd5918"
+      },
+      "music/test_music_library": {
+        "bytes": 761852,
+        "sha256": "a14cb3d4ddfbf7a1ec255864efb51a697aee210d9449b655eaec6ef7f03ed399"
+      },
+      "music/test_music_storage": {
+        "bytes": 778196,
+        "sha256": "dc31e7560a3356144f4c62626fee1b4b5fc1ed8b109478ebdef7c3f3fa2b7129"
+      }
+    },
+    "fab4": {
+      "sb-storage-helper": {
+        "bytes": 66620,
+        "sha256": "99813a6173d31377c8a6d5c82f2f7f9afe781a6020e97fb40ceaef66c4979918",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sb-storage-updater": {
+        "bytes": 33852,
+        "sha256": "8e31e531afb42120b1831e2e1b0e3761636bfb025b5252b8edfe79ea7cb5728b",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbbase": {
+        "bytes": 136272,
+        "sha256": "90c6226ca0e6c136b25610a5d94b7c05beef4cb6636a9d68e1161934a480576b",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbproxy": {
+        "bytes": 874644,
+        "sha256": "79d7634f9619ba44be80b608981f5917464c738d0cd30b717effadb67f8ff4a4",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "sbwebserver": {
+        "bytes": 291976,
+        "sha256": "d7f3ac3f7bd5a62741e3eee7edc66055e9a264b9662724b5a1894c7821778b7f",
+        "size_delta": 0,
+        "hash_unchanged": false
+      },
+      "svgpngrenderer": {
+        "bytes": 497800,
+        "sha256": "590883469b3772d8b51d41f2a5ae2a707a78d717bc628d1d07dcc6953296ca58",
+        "size_delta": 0,
+        "hash_unchanged": true
+      },
+      "music/libsbmusic.a": {
+        "bytes": 51738,
+        "sha256": "db4f28e1c034520fc8d05d67ef4ae82a963dde13751a577d038fed1a88d4244d"
+      },
+      "music/libsbmusic-sqlite.a": {
+        "bytes": 1180314,
+        "sha256": "becdea196bfe5d070d04dff61de503f178351a5f413ab7815af3edb9aa4a1d17"
+      },
+      "music/libsbmusic-storage.a": {
+        "bytes": 33622,
+        "sha256": "8250110a4c03c39674ab395d107d1441b8f54809a8f88bc73b3221e61cad101c"
+      },
+      "music/libsbmusic-metadata.a": {
+        "bytes": 23052,
+        "sha256": "e79beaaad93eb7f72fe0d0ae49cf367fafa6586f46777879e299b7380750459e"
+      },
+      "music/libsbmusic-scanner.a": {
+        "bytes": 23000,
+        "sha256": "64768a7a780160c38fbfa9d561aff9962d0c48680a2c8f32f05a6b2783856656"
+      },
+      "music/sbmusic-metadata-helper": {
+        "bytes": 66324,
+        "sha256": "dc2512300fe2c39c6f22e2b52aa875abd8d0263013737ce48787d58c59f37a54"
+      },
+      "music/test_music_scanner": {
+        "bytes": 782292,
+        "sha256": "6e9cc112cc996bbf03f08389717985da48a31ef5eb461ea3be2801b91a136499"
+      },
+      "music/music_metadata_fault": {
+        "bytes": 62228,
+        "sha256": "63c6a060f1ee4c2e8183c0f7f59ad3d17378ec542e8817511ba65725741d7cea"
+      },
+      "music/test_music_library": {
+        "bytes": 753660,
+        "sha256": "aca618e7924af65429c0205190bd7c125c0b908852ec443b4bf36e8d7a56e321"
+      },
+      "music/test_music_storage": {
+        "bytes": 774100,
+        "sha256": "7152aee3af50d0ca41581276392030a5aa90955ab6e2aab173c22e4db9eba30b"
+      }
+    }
+  },
+  "logs": {
+    "arm-build.log": {
+      "bytes": 1604,
+      "sha256": "cdec46fd13acbda32bd31e8b324fa5d3d045f99f41c6337963852d515eb9f963"
+    },
+    "baseline-tests.log": {
+      "bytes": 7804,
+      "sha256": "b68c639e0a1ee4c7b0b53a65bf0662f24fd78b918309c215dc326c53d63b3a1e"
+    },
+    "benchmark.log": {
+      "bytes": 430,
+      "sha256": "671c79d3744f22cd3a77e6f8a16f808fff19a85e0795d261897b57924d092371"
+    },
+    "build.log": {
+      "bytes": 1705,
+      "sha256": "c5eed8b5596c92fa7b1f390d05024a037bcdbe091f52b69dc4f41e14a5b88cf3"
+    },
+    "configure.log": {
+      "bytes": 155,
+      "sha256": "77751c8b8f5e5cfdb5c1832d200022eec661ce807c79abfe0e4d5eb5403b1c53"
+    },
+    "elf.log": {
+      "bytes": 7631,
+      "sha256": "7d841cbf87f749b749e485b3d35edbab447de7d33e936b185b2ef8564eeeeca9"
+    },
+    "final-tests.log": {
+      "bytes": 7906,
+      "sha256": "6943c4843e7051730080e281a05df37b097b9abb4d5d8b4317a5939bf1e8b844"
+    },
+    "full-arm-build.log": {
+      "bytes": 7998,
+      "sha256": "904fcb347ad21155eddf79bfc938d7f2d3294682dd1a2f1cf4b0e6238dd57ceb"
+    },
+    "library-smoke.log": {
+      "bytes": 3435,
+      "sha256": "9c551b055fdac13b93e210cdd54d512d495b2c546017e5aeae01ba85b0ec600a"
+    },
+    "proxy-probe.log": {
+      "bytes": 1260,
+      "sha256": "8f243417938d0fc9e3032d084454c2cf669a3293f7a97676e0d89d6a025bf0a1"
+    },
+    "qemu-contracts.log": {
+      "bytes": 186,
+      "sha256": "9b0153b4efce4be74063c0811173b09597207508e683303b32900d85b173d684"
+    },
+    "qemu-library.log": {
+      "bytes": 532,
+      "sha256": "369d51881fec69b55a76f19e9f946995c02839af4a4fb5f1ae5fdcff9381f23b"
+    },
+    "qemu-scanner.log": {
+      "bytes": 370,
+      "sha256": "f50e86d565fcdcce135d8dd8d690afd3779aba3563125568777a459aa0d8a120"
+    },
+    "qemu-storage.log": {
+      "bytes": 1730,
+      "sha256": "42b596ceeff82e83b26f676115fabbd2b1dc9e8532ad4b0ff3992c99c98fc071"
+    },
+    "sanitizers.log": {
+      "bytes": 133,
+      "sha256": "56f0f9072682c818e587af2c2651342e5489bf5223ecb243954385619789d935"
+    },
+    "scanner-final-tests.log": {
+      "bytes": 362,
+      "sha256": "b7ebd41b067dacb5a6b356c3adb77e689b69d49902a666178e182d86e0e3fad0"
+    },
+    "scanner-tests.log": {
+      "bytes": 133,
+      "sha256": "56f0f9072682c818e587af2c2651342e5489bf5223ecb243954385619789d935"
+    }
+  },
+  "qemu": "Static Baby/Fab4 parser, coordinator, ARM exec helpers; prior WP0/WP1/WP6a suites. User-mode host kernel only.",
+  "sanitizer": "ASan/UBSan/leaks: coordinator, direct parser probes and native dependencies; upstream SQLite/limited exec helpers uninstrumented",
+  "limits": {
+    "directory_depth": 16,
+    "pending_records": 16,
+    "error_entries": 16,
+    "errors_before_abort": 64,
+    "metadata_block_bytes": 262144,
+    "metadata_read_bytes": 786432,
+    "coordinator_stack_bytes": 524288,
+    "helper_stack_bytes": 524288,
+    "helper_virtual_bytes": 16777216,
+    "helper_cpu_seconds": 2,
+    "helper_fd_ceiling": 64
+  }
+}

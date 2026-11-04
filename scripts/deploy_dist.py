@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import argparse
 import getpass
+import hashlib
+import io
+import json
 import os
 import re
 import shlex
 import sys
 import time
+import tarfile
 import warnings
 import zipfile
 from pathlib import Path
@@ -51,6 +55,13 @@ EXECUTABLES = {
 # the merged namespace can create /mnt/storage/mnt/storage/usr recursively and
 # consume the small UBIFS volume with a duplicate applet tree.
 TARGETS = ("/usr/share/jive/applets/StandaloneBase",)
+APPLET_FILES = {
+    "StandaloneBaseApplet.lua", "StandaloneBaseMeta.lua", "Platform.lua",
+    "StorageManager.lua", "ExtendedStorageState.lua", "TimeSync.lua", "TimeResolver.lua",
+    "RemoteBridge.lua", "ServerMigration.lua", "NetworkAddress.lua", "ImageRender.lua",
+    "ArtworkUrlNormalizer.lua", "Artwork.lua", "InstallerCompat.lua", "HttpTrace.lua",
+    "FirmwareUpdates.lua", "AlarmPlayback.lua", "LifecycleHeartbeat.lua", "strings.txt", "build-target",
+}
 
 
 def arguments() -> argparse.Namespace:
@@ -69,14 +80,17 @@ def arguments() -> argparse.Namespace:
     )
     parser.add_argument("--no-restart", action="store_true", help="do not restart SqueezePlay")
     parser.add_argument("--dry-run", action="store_true", help="validate locally without connecting")
+    parser.add_argument("--applet-only", action="store_true", help="copy only qualified Lua/data files; requires --no-restart and --backup-dir")
+    parser.add_argument("--backup-dir", type=Path, help="new local directory for verified original applet files")
+    parser.add_argument("--restore-backup", type=Path, help="restore a matching applet-only backup without loading/restarting Jive")
     return parser.parse_args()
 
 
-def validate_package(path: Path) -> tuple[list[str], str]:
+def validate_package(path: Path, applet_only=False) -> tuple[list[str], str]:
     path = path.resolve()
     if not path.is_file():
         raise ValueError(f"package not found: {path}")
-    match = re.fullmatch(r"StandaloneBase-([0-9]+\.[0-9]+\.[0-9]+)\.zip", path.name)
+    match = re.fullmatch(r"StandaloneBase-([0-9]+\.[0-9]+\.[0-9]+)(?:-fab4)?\.zip", path.name)
     if not match:
         raise ValueError("package name must be StandaloneBase-X.Y.Z.zip")
     if path.parent.name.lower() != "dist":
@@ -88,8 +102,8 @@ def validate_package(path: Path) -> tuple[list[str], str]:
             raise ValueError("package contains duplicate entries")
         if any("/" in name or "\\" in name or name in (".", "..") for name in names):
             raise ValueError("package entries must all be flat file names")
-        missing = sorted(REQUIRED.difference(names))
-        if tuple(map(int, match.group(1).split('.'))) >= (0, 5, 7) and "InstallerCompat.lua" not in names:
+        missing = sorted((APPLET_FILES if applet_only else REQUIRED).difference(names))
+        if not applet_only and tuple(map(int, match.group(1).split('.'))) >= (0, 5, 7) and "InstallerCompat.lua" not in names:
             missing.append("InstallerCompat.lua")
         if missing:
             raise ValueError("package is missing: " + ", ".join(missing))
@@ -98,7 +112,9 @@ def validate_package(path: Path) -> tuple[list[str], str]:
             raise ValueError("package must not contain directories")
         if archive.testzip() is not None:
             raise ValueError("package CRC validation failed")
-    return names, match.group(1)
+        if applet_only and archive.read("build-target").strip() != b"fab4":
+            raise ValueError("applet-only smoke deployment requires a Fab4 package")
+    return sorted(APPLET_FILES) if applet_only else names, match.group(1)
 
 
 def split_target(value: str) -> tuple[str, str]:
@@ -110,6 +126,156 @@ def split_target(value: str) -> tuple[str, str]:
     if not re.fullmatch(r"[A-Za-z0-9_.:-]+", host):
         raise ValueError("invalid SSH host")
     return user, host
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def applet_inventory(radio):
+    root = TARGETS[0]
+    # Same merged UnionFS destination as normal deployment; reject redirects.
+    parents = ["/usr", "/usr/share", "/usr/share/jive", "/usr/share/jive/applets", root]
+    radio.run(" && ".join("test -d " + shlex.quote(p) + " && test ! -L " + shlex.quote(p) for p in parents), attempts=1)
+    files = []
+    for name in sorted(APPLET_FILES):
+        path = shlex.quote(root + "/" + name)
+        result = radio.run(f'if test -L {path}; then echo LINK; elif test -f {path}; then echo FILE; '
+                           f'elif test -e {path}; then echo OTHER; else echo ABSENT; fi', attempts=1)
+        if result not in {"FILE", "ABSENT"}:
+            raise RuntimeError("applet target is not a regular file: " + name)
+        if result == "FILE":
+            files.append(name)
+    archive = radio.run("tar -cpf - -C " + shlex.quote(root) + " " + " ".join(map(shlex.quote, files)), attempts=1, binary=True)
+    records = {}
+    with tarfile.open(fileobj=io.BytesIO(archive)) as source:
+        for item in source:
+            if item.name not in files or item.name in records or not item.isfile() or item.uid != 0 or item.gid != 0 or item.mode & ~0o755 or item.size > 2097152:
+                raise RuntimeError("unsafe applet backup member")
+            data = source.extractfile(item).read()
+            records[item.name] = dict(sha256=digest(data), mode=item.mode, uid=item.uid, gid=item.gid, mtime=item.mtime)
+    if set(records) != set(files):
+        raise RuntimeError("incomplete applet backup")
+    return archive, records
+
+
+def load_applet_backup(directory, host):
+    manifest = json.loads((directory / "manifest.json").read_text())
+    archive = (directory / "originals.tar").read_bytes()
+    if (manifest.get("schema") != "SB_APPLET_ONLY_1" or manifest.get("host") != host or
+            manifest.get("root") != TARGETS[0] or set(manifest["new"]) != APPLET_FILES or
+            not set(manifest["original"]).issubset(APPLET_FILES) or digest(archive) != manifest["archive_sha256"]):
+        raise ValueError("applet backup manifest mismatch")
+    found = set()
+    with tarfile.open(fileobj=io.BytesIO(archive)) as source:
+        for item in source:
+            if item.name not in manifest["original"] or item.name in found or not item.isfile():
+                raise ValueError("unexpected original archive entry")
+            record = manifest["original"][item.name]
+            if (item.uid, item.gid, item.mode, item.mtime) != (0, 0, record["mode"], record["mtime"]) or item.mode & ~0o755:
+                raise ValueError("original archive metadata mismatch")
+            if digest(source.extractfile(item).read()) != record["sha256"]:
+                raise ValueError("original archive hash mismatch")
+            found.add(item.name)
+    if found != set(manifest["original"]):
+        raise ValueError("incomplete original archive")
+    return manifest
+
+
+def applet_replace(radio, source, name, mode):
+    atomic_replace(radio, source, TARGETS[0] + "/" + name, mode)
+
+
+def atomic_replace(radio, source, target, mode):
+    """Shared checked-stage copy primitive; caller supplies verified targets."""
+    temporary = target + ".new"
+    radio.run("test ! -e " + shlex.quote(temporary) + " && test ! -L " + shlex.quote(temporary) +
+              " && ( trap " + shlex.quote("rm -f " + shlex.quote(temporary)) + " EXIT; cp -p " + shlex.quote(source) + " " + shlex.quote(temporary) +
+              " && chmod " + format(mode, "o") + " " + shlex.quote(temporary) +
+              " && mv -f " + shlex.quote(temporary) + " " + shlex.quote(target) + " )", attempts=1)
+
+
+def applet_restore(radio, manifest, stage, names=None):
+    _, current = applet_inventory(radio)
+    for name in reversed(sorted(APPLET_FILES if names is None else names)):
+        record = current.get(name)
+        old = manifest["original"].get(name)
+        allowed = {manifest["new"][name]}
+        if old:
+            allowed.add(old["sha256"])
+        if record and record["sha256"] not in allowed:
+            raise RuntimeError("refuse restoring unknown applet revision: " + name)
+        if old:
+            applet_replace(radio, stage + "/original/" + name, name, old["mode"])
+        elif record:
+            radio.run("rm -f " + shlex.quote(TARGETS[0] + "/" + name), attempts=1)
+    _, restored = applet_inventory(radio)
+    if restored != manifest["original"]:
+        raise RuntimeError("original applet metadata/hash restoration did not verify")
+
+
+def deploy_applet_only(radio, package, backup, restore=None):
+    """Narrow mode of the existing SCP/stage/atomic-copy workflow. No reload."""
+    if restore:
+        backup = restore
+        manifest = load_applet_backup(backup, radio.host)
+    else:
+        archive, original = applet_inventory(radio)
+        backup.mkdir(parents=True, exist_ok=False)
+        (backup / "originals.tar").write_bytes(archive)
+        with zipfile.ZipFile(package) as source, zipfile.ZipFile(backup / "applet.zip", "w", zipfile.ZIP_DEFLATED) as selected:
+            new = {}
+            for name in sorted(APPLET_FILES):
+                data = source.read(name)
+                if len(data) > 2097152:
+                    raise ValueError("oversized applet file")
+                new[name] = digest(data)
+                selected.writestr(name, data)
+        manifest = dict(schema="SB_APPLET_ONLY_1", host=radio.host, root=TARGETS[0],
+                        original=original, new=new, archive_sha256=digest(archive))
+        with (backup / "manifest.json").open("x") as output:
+            json.dump(manifest, output, indent=2, sort_keys=True)
+            output.flush()
+            os.fsync(output.fileno())
+        load_applet_backup(backup, radio.host)
+    stage = radio.run("mktemp -d /tmp/standalonebase-deploy.XXXXXX", attempts=1)
+    if not re.fullmatch(r"/tmp/standalonebase-deploy\.[A-Za-z0-9]+", stage):
+        raise RuntimeError("unsafe staging path")
+    qstage = shlex.quote(stage)
+    try:
+        radio.upload(backup / "originals.tar", stage, "originals.tar")
+        if digest(radio.run("cat " + qstage + "/originals.tar", attempts=1, binary=True)) != manifest["archive_sha256"]:
+            raise RuntimeError("uploaded backup mismatch")
+        radio.run("mkdir " + qstage + "/original && tar -xpf " + qstage + "/originals.tar -C " + qstage + "/original", attempts=1)
+        if restore:
+            applet_restore(radio, manifest, stage)
+            return dict(state="RESTORED_ON_DISK", files=sorted(APPLET_FILES), activated=False)
+        radio.upload(backup / "applet.zip", stage, "package.zip")
+        radio.run("mkdir " + qstage + "/files && unzip -oq " + qstage + "/package.zip -d " + qstage + "/files", attempts=1)
+        _, current = applet_inventory(radio)
+        if current != manifest["original"]:
+            raise RuntimeError("applet changed after backup")
+        attempted = []
+        try:
+            for name in sorted(APPLET_FILES):
+                if manifest["original"].get(name, {}).get("sha256") == manifest["new"][name]:
+                    continue
+                source = stage + "/files/" + name
+                if digest(radio.run("cat " + shlex.quote(source), attempts=1, binary=True)) != manifest["new"][name]:
+                    raise RuntimeError("uploaded applet mismatch: " + name)
+                attempted.append(name)
+                applet_replace(radio, source, name, 0o644)
+            _, after = applet_inventory(radio)
+            if any(after[name]["sha256"] != manifest["new"][name] or after[name]["mode"] != 0o644 for name in APPLET_FILES):
+                raise RuntimeError("installed applet hash/mode mismatch")
+        except Exception:
+            applet_restore(radio, manifest, stage, attempted)
+            raise
+        result = dict(state="DEPLOYED_ON_DISK", files_changed=attempted, hashes=after, activated=False)
+        (backup / "deployment.json").write_text(json.dumps(result, indent=2))
+        return result
+    finally:
+        radio.run("rm -rf " + qstage, attempts=1)
 
 
 class Radio:
@@ -137,7 +303,7 @@ class Radio:
             timeout=12,
         )
 
-    def run(self, command: str, attempts: int = 3) -> str:
+    def run(self, command: str, attempts: int = 3, binary: bool = False):
         last: Exception | None = None
         marker = "__STANDALONEBASE_DEPLOY_RC="
         for attempt in range(attempts):
@@ -155,13 +321,18 @@ class Radio:
                     "printf '\\n" + marker + "%s\\n' \"$sb_deploy_rc\""
                 )
                 _, stdout, stderr = self.client.exec_command(wrapped)
-                output, error = stdout.read().decode(errors="replace"), stderr.read().decode(errors="replace")
+                raw = stdout.read(16 * 1024 * 1024 + 1)
+                if len(raw) > 16 * 1024 * 1024:
+                    raise RuntimeError("bounded deployment response exceeded")
+                output, error = raw.decode(errors="replace"), stderr.read().decode(errors="replace")
                 status = stdout.channel.recv_exit_status()
                 if marker in output:
                     body, result = output.rsplit(marker, 1)
                     remote_status = int(result.strip().splitlines()[0])
                     if remote_status:
                         raise RuntimeError(f"remote command failed ({remote_status}): {error or body}")
+                    if binary:
+                        return raw.rsplit(("\n" + marker).encode(), 1)[0]
                     return body.rstrip("\r\n")
                 if status:
                     raise RuntimeError(f"remote command failed ({status}): {error or output}")
@@ -207,7 +378,11 @@ class Radio:
 def main() -> int:
     args = arguments()
     try:
-        names, version = validate_package(args.zip_file)
+        if args.applet_only and (not args.no_restart or args.accept_new_host_key or not (args.backup_dir or args.restore_backup)):
+            raise ValueError("applet-only requires --no-restart, trusted SSH and --backup-dir or --restore-backup")
+        if args.restore_backup and not args.applet_only:
+            raise ValueError("--restore-backup requires --applet-only")
+        names, version = validate_package(args.zip_file, args.applet_only)
         user, host = split_target(args.target)
     except (ValueError, zipfile.BadZipFile) as exc:
         sys.stderr.write(f"deploy_dist: {exc}\n")
@@ -218,11 +393,27 @@ def main() -> int:
         print("Dry run complete; no connection or changes made.")
         return 0
 
-    password = args.password if args.password is not None else getpass.getpass("SSH password: ")
+    password = args.password if args.password is not None else os.environ.get("SB_DEVICE_PASSWORD")
+    if password is None:
+        password = getpass.getpass("SSH password: ")
     radio = Radio(user, host, password, args.port, args.accept_new_host_key)
     stage = ""
     try:
         radio.connect()
+        if args.applet_only:
+            if "Logitech Fab4 Board" not in radio.run("cat /proc/cpuinfo", attempts=1):
+                raise RuntimeError("applet-only smoke deployment requires the verified Fab4 board")
+            idle = json.loads(radio.run("wget -q -O - http://127.0.0.1:9000/api/nowplaying", attempts=1))
+            if idle.get("active") or idle.get("state") != "stopped":
+                raise RuntimeError("playback must be verified inactive before applet deployment")
+            if not args.restore_backup:
+                radio.run("test ! -e /mnt/storage/standalonebase/tinysc-arbitration.enabled && "
+                          "test ! -L /mnt/storage/standalonebase/tinysc-arbitration.enabled && "
+                          "test ! -e /var/run/standalonebase/tinysc.latch", attempts=1)
+            result = deploy_applet_only(radio, args.zip_file, args.backup_dir, args.restore_backup)
+            print(__import__('json').dumps(result))
+            print("No Jive reload/restart; native binaries, configuration and firmware patches unchanged.")
+            return 0
         candidate = radio.run("mktemp -d /tmp/standalonebase-deploy.XXXXXX").strip()
         if not re.fullmatch(r"/tmp/standalonebase-deploy\.[A-Za-z0-9]+", candidate):
             raise RuntimeError(f"unsafe staging path returned by radio: {candidate!r}")

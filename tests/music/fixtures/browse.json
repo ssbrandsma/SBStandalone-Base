@@ -1,0 +1,120 @@
+{
+  "kind": "source-derived fixture, no real device capture",
+  "sources": {
+    "BrowseLibrary.pm": "_registerBaseNodes:506..570; getJiveMenu:604; _artists:1013; _genres:1166; _albums:1288; _tracks:1487; _bmf:1677",
+    "XMLBrowser.pm": "_makeAction:1614; inactive action:1138",
+    "SlimBrowserApplet.lua": "action=none:1818; item/base resolution:1967..2020; styles:126..133",
+    "DB.lua": "BLOCK_SIZE=200:48; zero-based page input:178; timestamp reset:118",
+    "SlimMenus": "pinned upstream cca1bba4abeb3fef2b7c4a48a4e4da8fc255666d, not installed capture",
+    "SlimMenus_sha256": "6e2db5b9ab17c14fe2702bda9407f226d3a49f1438241a242b4bd54a3b9e63a8"
+  },
+  "music_nodes": [
+    {
+      "id": "myMusicArtists",
+      "node": "myMusic",
+      "text": "Artists",
+      "weight": 10,
+      "actions": {
+        "go": {
+          "cmd": [
+            "browselibrary",
+            "items"
+          ],
+          "params": {
+            "menu": 1,
+            "mode": "artists"
+          }
+        }
+      }
+    },
+    {
+      "id": "myMusicAlbums",
+      "node": "myMusic",
+      "text": "Albums",
+      "weight": 20,
+      "actions": {
+        "go": {
+          "cmd": [
+            "browselibrary",
+            "items"
+          ],
+          "params": {
+            "menu": 1,
+            "mode": "albums"
+          }
+        }
+      }
+    },
+    {
+      "id": "myMusicGenres",
+      "node": "myMusic",
+      "text": "Genres",
+      "weight": 30,
+      "actions": {
+        "go": {
+          "cmd": [
+            "browselibrary",
+            "items"
+          ],
+          "params": {
+            "menu": 1,
+            "mode": "genres"
+          }
+        }
+      }
+    },
+    {
+      "id": "myMusicMusicFolder",
+      "node": "myMusic",
+      "text": "Music Folder",
+      "weight": 70,
+      "actions": {
+        "go": {
+          "cmd": [
+            "browselibrary",
+            "items"
+          ],
+          "params": {
+            "menu": 1,
+            "mode": "bmf"
+          }
+        }
+      }
+    },
+    {
+      "id": "myMusicTracks",
+      "node": "myMusic",
+      "text": "Tracks",
+      "weight": 40,
+      "actions": {
+        "go": {
+          "cmd": [
+            "browselibrary",
+            "items"
+          ],
+          "params": {
+            "menu": 1,
+            "mode": "tracks"
+          }
+        }
+      }
+    }
+  ],
+  "native_page_max": 50,
+  "jive_wire_page": 200,
+  "disabled_leaf": {
+    "action": "none",
+    "style": "itemNoAction"
+  },
+  "artist_go": {
+    "cmd": [
+      "browselibrary",
+      "items"
+    ],
+    "itemsParams": "commonParams",
+    "params": {
+      "menu": 1,
+      "mode": "albums"
+    }
+  }
+}

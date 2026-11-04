@@ -1,0 +1,37 @@
+# WP6a native USB/SD storage foundation
+
+2026-11-02. WP6a implements an isolated native storage model, secure mounted-root operations, asynchronous Fab4 discovery adapter, disabled/Baby no-storage path and WP1 availability bridge. Standalone Music remains disabled by default. No physical device was accessed or changed, no TinySC/service was started, and no scanner, playback, Jive music browsing or unmount orchestration was introduced.
+
+Deliverables: [storage contract and diagrams](STANDALONE_MUSIC_WP6A_STORAGE_CONTRACT.md), [firmware/TinySC integration audit](STANDALONE_MUSIC_WP6A_FIRMWARE_INTEGRATION.md), [test results and measurements](STANDALONE_MUSIC_WP6A_TEST_RESULTS.md), [filesystem compatibility](STANDALONE_MUSIC_WP6A_FILESYSTEM_COMPATIBILITY.md), [source evidence ledger](STANDALONE_MUSIC_WP6A_SOURCES.json), [measurement artifact](STANDALONE_MUSIC_WP6A_MEASUREMENTS.json).
+
+## Implementation
+
+New native files under `native/sbmusic`: `music_storage.h/.c` for the bounded portable model and identity registry, `music_storage_linux.c` for proc parsing/descriptor validation/discovery worker, `music_storage_adapter.h/.c` for event ingress/reconciliation/eject requests, and `music_storage_library.h/.c` for WP0 resource revocation and WP1 SOURCE/cancellation/result guards. `applet/MusicStorage.lua` is a small opt-in, injected-bridge uevent adapter; it is not registered or loaded by startup. Host/ARM harness and mount/Lua fixtures live under `tests/music`. CMake and the isolated music ARM build script include the new archive/test executable; ordinary Base executables do not link it and existing explicit packaging does not install its native test/archive.
+
+The WP0 source/media/generation/resource contracts are reused directly. WP1 schema, database worker and track identity implementation are unchanged. Existing Radio, Spotify, Qobuz, Now Playing, SlimProto, management HTTP and platform capability behavior are untouched. No second automounter or server/backend has been added. Baby and disabled constructors return before allocation, FDs, polling or listener registration; no music menu is advertised.
+
+## Identity and lifecycle result
+
+Persistent association requires filesystem UUID plus hardware/partition evidence; otherwise use session identity. Duplicate UUIDs on distinct hardware do not merge. Concurrent identical composite identities revoke/quarantine the old source and taint the registry; later appearances use session identity. Identity lookup/import is explicit and bounded, never label/device-node based. Reliable reinsertions retain source/library association and obtain a new mount generation. Registry persistence is intentionally not performed by this read-only package; an enabled future controller must provide an approved store or accept loss of automatic recognition across restart.
+
+Mount state and online availability are distinct. Kernel mountinfo, root fd/inode/device, source block-device checks and before/after revalidation distinguish a real mount from an empty leftover directory. Symlinks, traversal, special files, nested mounts and stale source/generation handles are refused. A mounts-only fallback supports discovery but cannot authorize roots. The old target's mountinfo availability and exact syscall behavior still need approved observation; unavailable evidence fails closed.
+
+Removal immediately revokes admission in memory and prevents late discovery/DB/resource work from becoming current. The native adapter coalesces hints, discards discovery overtaken by events, and tombstones removed mount intervals. Startup reconciliation, finite delayed-mount retries and a 30-second mounted-media backstop cover missing notifications without a permanent no-media poll. Eject requests only enter QUIESCING/revoke admission; actual cancellation/draining/unmount and safe completion remain WP6b.
+
+## Firmware and TinySC findings
+
+The captured installed firmware uses kernel/udev for mounting, MediaManager for menus/eject warnings, and SqueezeCenter for server selection/startup. The new code observes existing mounts and uses an independent event-listener pattern, without calling firmware media actions. MediaManager's on-mount registration has no observed active dispatcher; comments about starting a scanner are not active code.
+
+Important legacy risk: SqueezeCenter's configure-time startup check can restart TinySC whenever mounted media exists. Stock media/advanced Start, device switching and wipe/rescan also reach its init script. SCGuardianTimer watches failures rather than restarting by itself. Those legacy paths remain untouched and are documented; the new integration never invokes them. Enabling a future product mode requires an explicit narrow bypass of those routes and qualification of configuration order. WP6a does not claim globally blocked stock TinySC startup.
+
+The Lua-to-native bridge is an executable dependency-injected integration boundary, with no production IPC listener or runtime activation yet. Native APIs/tests implement the model/worker/reconciliation; a future enabled controller must connect the existing private control/scheduler lifecycle before loading the Lua adapter. This preserves the disabled product behavior and avoids introducing an unauthenticated endpoint solely for a foundation package.
+
+## Database boundary and readiness
+
+WP1 integration publishes availability/generation updates to an already opened, independently approved library. Offline changes request cooperative cancellation, retry BUSY without blocking and reject stale completions immediately using the live model. Existing transaction rollback and committed track IDs survive reliable reinsertion; no deletion or empty-root scan occurs.
+
+The adapter opens no database on removable media. Filesystem write/locking/fsync qualification and a descriptor-anchored SQLite VFS or equivalent unmount barrier remain prerequisites: passing a checked pathname to WP1 could still open a reused underlying directory or sidecar after removal. No implicit writable policy, WAL permission or internal-flash fallback is granted. This limitation is separate from completed in-memory identity/SOURCE integration.
+
+The final available host regression passes **71/71**, with final focused storage/Lua **2/2**; normal and isolated Baby/Fab4 builds, storage/WP0/WP1 QEMU runs and focused ASan/UBSan checks pass. Normal runtime binaries grow by **zero bytes**. One host sample validates a real tmpfs root in 0.207 ms; worker FDs return from 5 to the baseline 3, and the whole-process benchmark peak RSS is 2868 KiB. Full methodology and allocator/host limits are in the companion test report. These are workstation/host-kernel results; no target timing, audio, USB insertion, SD insertion, real-media filesystem locking or power-loss qualification is claimed. The pre-existing missing-libcurl native proxy-test limitation remains visible.
+
+WP2 has a testable validated-root/generation API and the existing WP1 library for bounded scanner development. It must keep file operations on workers, revalidate every completion, preserve offline records, obey the storage path/slot limits and avoid on-medium DB writes until the placement gate is met. Product activation still requires old-kernel/firmware integration and exact filesystem qualification. **Stop after WP6a: WP2 and WP6b were not started.** No commit, push, release or deployment was performed.

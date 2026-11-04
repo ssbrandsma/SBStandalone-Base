@@ -1,0 +1,7 @@
+﻿# WP0 metadata fixture corpus
+
+These files contain generated silence, original test strings and generated one-pixel PNG / solid-red JPEG artwork. They are dedicated to CC0-1.0. No downloaded music or album art is included. The large-tags MP3 is approximately 1 MiB intentionally; it is a resource-boundary fixture, not a production asset.
+
+Regenerate with `python3 tests/music/make_corpus.py tests/music/fixtures/media --ffmpeg /path/to/ffmpeg`. Requires libmp3lame, FLAC, libvorbis and MJPEG encoders in that optional fixture-generation tool. Checked-in bytes make normal host tests independent of FFmpeg/network. Encoder versions can change compressed bytes; expected metadata/properties, not encoded checksums, are the cross-version contract. MP3 padding means duration is approximately 0.2 seconds rather than exactly 200 ms.
+
+ID3v1 has a Latin-1-compatible title. v2.2/v2.3 contain UTF-16LE including a surrogate pair; v2.4 uses UTF-8. v2.3/v2.4/FLAC/Ogg contain the generated PNG, and a separate MP3 contains the generated JPEG. Invalid UTF-8, truncated headers, a declared oversized tag, an actual 1 MiB text tag and malformed FLAC/Ogg cover negative/boundary cases. ID3v2.2 PIC, complex/chained Ogg, VBRI seek accuracy, realistic large album images, unsynchronization/compressed tags and a fuzz campaign remain additional WP2 cases; this small corpus does not establish complete format safety.

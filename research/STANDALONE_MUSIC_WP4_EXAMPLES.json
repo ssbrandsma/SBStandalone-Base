@@ -1,0 +1,2847 @@
+{
+  "kind": "Observed native host fixture requests/responses and starts; firmware events mocked; no hardware audio",
+  "commands": [
+    {
+      "command": [
+        "browselibrary",
+        "items",
+        0,
+        50,
+        "mode:albums",
+        "menu:1"
+      ],
+      "request_id": "1",
+      "comet_response": [
+        {
+          "id": "1",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "1",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 2,
+            "offset": 0,
+            "playlist_timestamp": 4,
+            "library_revision": 4,
+            "media_generation": 1,
+            "window": {
+              "text": "Albums"
+            },
+            "base": {
+              "actions": {
+                "go": {
+                  "cmd": [
+                    "browselibrary",
+                    "items"
+                  ],
+                  "itemsParams": "commonParams",
+                  "params": {
+                    "menu": 1,
+                    "mode": "tracks"
+                  }
+                }
+              }
+            },
+            "item_loop": [
+              {
+                "id": "2",
+                "text": "Two Discs",
+                "name2": "Various Artists",
+                "actions": {
+                  "play": {
+                    "cmd": [
+                      "playlistcontrol"
+                    ],
+                    "params": {
+                      "cmd": "load",
+                      "album_id": "2",
+                      "queue_context": "8557978172938496149"
+                    },
+                    "nextWindow": "nowPlaying"
+                  },
+                  "add": {
+                    "cmd": [
+                      "playlistcontrol"
+                    ],
+                    "params": {
+                      "cmd": "add",
+                      "album_id": "2",
+                      "queue_context": "8557978172938496149"
+                    }
+                  },
+                  "insert": {
+                    "cmd": [
+                      "playlistcontrol"
+                    ],
+                    "params": {
+                      "cmd": "insert",
+                      "album_id": "2",
+                      "queue_context": "8557978172938496149"
+                    }
+                  }
+                },
+                "year": 2024,
+                "commonParams": {
+                  "album_id": "2"
+                }
+              },
+              {
+                "id": "1",
+                "text": "WP0 Album",
+                "name2": "",
+                "year": 0,
+                "commonParams": {
+                  "album_id": "1"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:load",
+        "album_id:2",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "2",
+      "comet_response": [
+        {
+          "id": "2",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "2",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 2
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "3",
+      "comet_response": [
+        {
+          "id": "3",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "3",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 2,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 2,
+            "queue_revision": 2,
+            "queue_context": "8557978172938496149",
+            "intended_index": 0,
+            "count": 2,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:add",
+        "track_id:3",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "4",
+      "comet_response": [
+        {
+          "id": "4",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "4",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "music_action_busy_or_stale"
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "5",
+      "comet_response": [
+        {
+          "id": "5",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "5",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "play",
+            "rate": 1,
+            "time": 0.0,
+            "duration": 0.235,
+            "playlist_tracks": 2,
+            "playlist_cur_index": 0,
+            "playlist_timestamp": 2,
+            "queue_revision": 2,
+            "queue_context": "8557978172938496149",
+            "intended_index": 0,
+            "count": 2,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                },
+                "text": "First track",
+                "track": "First track",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        1,
+        1
+      ],
+      "request_id": "6",
+      "comet_response": [
+        {
+          "id": "6",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "6",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "play",
+            "rate": 1,
+            "time": 0.0,
+            "duration": 0.235,
+            "playlist_tracks": 2,
+            "playlist_cur_index": 0,
+            "playlist_timestamp": 2,
+            "queue_revision": 2,
+            "queue_context": "8557978172938496149",
+            "intended_index": 0,
+            "count": 1,
+            "offset": 1,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                },
+                "text": "First track",
+                "track": "First track",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "pause",
+        1
+      ],
+      "request_id": "7",
+      "comet_response": [
+        {
+          "id": "7",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "7",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "8",
+      "comet_response": [
+        {
+          "id": "8",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "8",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "pause",
+            "rate": 0,
+            "time": 0.1,
+            "duration": 0.235,
+            "playlist_tracks": 2,
+            "playlist_cur_index": 0,
+            "playlist_timestamp": 2,
+            "queue_revision": 2,
+            "queue_context": "8557978172938496149",
+            "intended_index": 0,
+            "count": 2,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                },
+                "text": "First track",
+                "track": "First track",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "pause",
+        0
+      ],
+      "request_id": "9",
+      "comet_response": [
+        {
+          "id": "9",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "9",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "10",
+      "comet_response": [
+        {
+          "id": "10",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "10",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "play",
+            "rate": 1,
+            "time": 0.1,
+            "duration": 0.235,
+            "playlist_tracks": 2,
+            "playlist_cur_index": 0,
+            "playlist_timestamp": 2,
+            "queue_revision": 2,
+            "queue_context": "8557978172938496149",
+            "intended_index": 0,
+            "count": 2,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                },
+                "text": "First track",
+                "track": "First track",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:add",
+        "track_id:3",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "11",
+      "comet_response": [
+        {
+          "id": "11",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "11",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 1
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:insert",
+        "track_id:3",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "12",
+      "comet_response": [
+        {
+          "id": "12",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "12",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 1
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:load",
+        "track_id:1",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "13",
+      "comet_response": [
+        {
+          "id": "13",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "13",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "unsupported"
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:load",
+        "track_id:4",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "14",
+      "comet_response": [
+        {
+          "id": "14",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "14",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "indexed_file_unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:load",
+        "track_id:999999",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "15",
+      "comet_response": [
+        {
+          "id": "15",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "15",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "not_found"
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlist",
+        "delete",
+        3
+      ],
+      "request_id": "16",
+      "comet_response": [
+        {
+          "id": "16",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "16",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlist",
+        "index",
+        "+1"
+      ],
+      "request_id": "17",
+      "comet_response": [
+        {
+          "id": "17",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "17",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlist",
+        "index",
+        "+1"
+      ],
+      "request_id": "18",
+      "comet_response": [
+        {
+          "id": "18",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "18",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "unsupported_or_unavailable_music_control"
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "19",
+      "comet_response": [
+        {
+          "id": "19",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "19",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 7,
+            "queue_revision": 7,
+            "queue_context": "8557978172938496149",
+            "intended_index": 2,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "20",
+      "comet_response": [
+        {
+          "id": "20",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "20",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 7,
+            "queue_revision": 7,
+            "queue_context": "8557978172938496149",
+            "intended_index": 2,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "21",
+      "comet_response": [
+        {
+          "id": "21",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "21",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 7,
+            "queue_revision": 7,
+            "queue_context": "8557978172938496149",
+            "intended_index": 2,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "22",
+      "comet_response": [
+        {
+          "id": "22",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "22",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 7,
+            "queue_revision": 7,
+            "queue_context": "8557978172938496149",
+            "intended_index": 2,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "23",
+      "comet_response": [
+        {
+          "id": "23",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "23",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 7,
+            "queue_revision": 7,
+            "queue_context": "8557978172938496149",
+            "intended_index": 2,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "24",
+      "comet_response": [
+        {
+          "id": "24",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "24",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "play",
+            "rate": 1,
+            "time": 0.0,
+            "duration": 0.235,
+            "playlist_tracks": 3,
+            "playlist_cur_index": 2,
+            "playlist_timestamp": 7,
+            "queue_revision": 7,
+            "queue_context": "8557978172938496149",
+            "intended_index": 2,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                },
+                "text": "First track",
+                "track": "First track",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlist",
+        "index",
+        "-1"
+      ],
+      "request_id": "25",
+      "comet_response": [
+        {
+          "id": "25",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "25",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "26",
+      "comet_response": [
+        {
+          "id": "26",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "26",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "27",
+      "comet_response": [
+        {
+          "id": "27",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "27",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "28",
+      "comet_response": [
+        {
+          "id": "28",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "28",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "29",
+      "comet_response": [
+        {
+          "id": "29",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "29",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "30",
+      "comet_response": [
+        {
+          "id": "30",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "30",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "31",
+      "comet_response": [
+        {
+          "id": "31",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "31",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "play",
+            "rate": 1,
+            "time": 0.0,
+            "duration": 0.2,
+            "playlist_tracks": 3,
+            "playlist_cur_index": 1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                },
+                "text": "Scanner Café 🎵",
+                "track": "Scanner Café 🎵",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "stop"
+      ],
+      "request_id": "32",
+      "comet_response": [
+        {
+          "id": "32",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "32",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "33",
+      "comet_response": [
+        {
+          "id": "33",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "33",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.2,
+            "playlist_tracks": 3,
+            "playlist_cur_index": 1,
+            "playlist_timestamp": 8,
+            "queue_revision": 8,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                },
+                "text": "Scanner Café 🎵",
+                "track": "Scanner Café 🎵",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "play"
+      ],
+      "request_id": "34",
+      "comet_response": [
+        {
+          "id": "34",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "34",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "35",
+      "comet_response": [
+        {
+          "id": "35",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "35",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 9,
+            "queue_revision": 9,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "36",
+      "comet_response": [
+        {
+          "id": "36",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "36",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 9,
+            "queue_revision": 9,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "37",
+      "comet_response": [
+        {
+          "id": "37",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "37",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 9,
+            "queue_revision": 9,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "38",
+      "comet_response": [
+        {
+          "id": "38",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "38",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 3,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 9,
+            "queue_revision": 9,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "39",
+      "comet_response": [
+        {
+          "id": "39",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "39",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "play",
+            "rate": 1,
+            "time": 0.0,
+            "duration": 0.2,
+            "playlist_tracks": 3,
+            "playlist_cur_index": 1,
+            "playlist_timestamp": 9,
+            "queue_revision": 9,
+            "queue_context": "8557978172938496149",
+            "intended_index": 1,
+            "count": 3,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "item_loop": [
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                },
+                "text": "Scanner Café 🎵",
+                "track": "Scanner Café 🎵",
+                "icon": ""
+              }
+            ],
+            "playlist_loop": [
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "1",
+                "playlist index": 0,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 0
+                }
+              },
+              {
+                "id": "2",
+                "track_id": "2",
+                "queue_entry_id": "2",
+                "playlist index": 1,
+                "title": "Scanner Café 🎵",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.2,
+                "type": "flac",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "2",
+                  "playlist_index": 1
+                }
+              },
+              {
+                "id": "3",
+                "track_id": "3",
+                "queue_entry_id": "4",
+                "playlist index": 2,
+                "title": "First track",
+                "artist": "Artist One",
+                "album": "Two Discs",
+                "duration": 0.235,
+                "type": "mp3",
+                "available": 1,
+                "playable": 1,
+                "params": {
+                  "track_id": "3",
+                  "playlist_index": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlistcontrol",
+        "cmd:load",
+        "track_id:3",
+        "queue_context:8557978172938496149"
+      ],
+      "request_id": "40",
+      "comet_response": [
+        {
+          "id": "40",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "40",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "music_action_busy_or_stale"
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlist",
+        "clear"
+      ],
+      "request_id": "41",
+      "comet_response": [
+        {
+          "id": "41",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "41",
+          "channel": "/wp4/reply",
+          "data": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "status",
+        0,
+        50
+      ],
+      "request_id": "42",
+      "comet_response": [
+        {
+          "id": "42",
+          "channel": "/slim/request",
+          "successful": true
+        },
+        {
+          "id": "42",
+          "channel": "/wp4/reply",
+          "data": {
+            "player_name": "Standalone",
+            "player_connected": 1,
+            "power": 1,
+            "mode": "stop",
+            "rate": 0,
+            "time": 0.0,
+            "duration": 0.0,
+            "playlist_tracks": 0,
+            "playlist_cur_index": -1,
+            "playlist_timestamp": 11,
+            "queue_revision": 11,
+            "queue_context": "8557978172938496149",
+            "intended_index": -1,
+            "count": 0,
+            "offset": 0,
+            "playlist repeat": 0,
+            "playlist shuffle": 0,
+            "source": "standalone_music",
+            "playlist_loop": []
+          }
+        }
+      ]
+    },
+    {
+      "command": [
+        "playlist",
+        "index",
+        "+1"
+      ],
+      "request_id": "43",
+      "comet_response": [
+        {
+          "id": "43",
+          "channel": "/slim/request",
+          "successful": false
+        },
+        {
+          "id": "43",
+          "channel": "/wp4/reply",
+          "data": {
+            "error": "unsupported_or_unavailable_music_control"
+          }
+        }
+      ]
+    }
+  ],
+  "starts": [
+    {
+      "kind": "native serialized strm-s",
+      "frame_hex": "009f7374726d73316d3f3f3f3f0000003000000000000000b4897f000001474554202f6d757369632f73747265616d2f3665393966386532353932663263646637663931636164353761333336376333346362386539633962346330633764636133653035626465616165663336613720485454502f312e300d0a486f73743a203132372e302e302e310d0a436f6e6e656374696f6e3a20636c6f73650d0a0d0a"
+    },
+    {
+      "kind": "native serialized strm-s",
+      "frame_hex": "009f7374726d7331663f3f3f3f0000003000000000000000b4897f000001474554202f6d757369632f73747265616d2f6565323065343563626532373933623364393133303930363839646562353538343137333331663133393537303030663034353635353364333961666361353020485454502f312e300d0a486f73743a203132372e302e302e310d0a436f6e6e656374696f6e3a20636c6f73650d0a0d0a"
+    },
+    {
+      "kind": "native serialized strm-s",
+      "frame_hex": "009f7374726d73316d3f3f3f3f0000003000000000000000b4897f000001474554202f6d757369632f73747265616d2f3733306335326133333538363737323035396466623236646433383063323664376463666631633532616538616533633835343239346535633439326534653420485454502f312e300d0a486f73743a203132372e302e302e310d0a436f6e6e656374696f6e3a20636c6f73650d0a0d0a"
+    },
+    {
+      "kind": "native serialized strm-s",
+      "frame_hex": "009f7374726d7331663f3f3f3f0000003000000000000000b4897f000001474554202f6d757369632f73747265616d2f3234336662333337616365633331653365356462623736386432373331303064663438336535373931626166366439353261343438613861386238376166616420485454502f312e300d0a486f73743a203132372e302e302e310d0a436f6e6e656374696f6e3a20636c6f73650d0a0d0a"
+    },
+    {
+      "kind": "native serialized strm-s",
+      "frame_hex": "009f7374726d7331663f3f3f3f0000003000000000000000b4897f000001474554202f6d757369632f73747265616d2f3137623461623963343236343635633431636638376434346465666433393634636438316133623334356133393035346332346166313230393833353732363020485454502f312e300d0a486f73743a203132372e302e302e310d0a436f6e6e656374696f6e3a20636c6f73650d0a0d0a"
+    }
+  ],
+  "events": [
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMs",
+      "jiffies": 1,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d730000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMp",
+      "jiffies": 2,
+      "elapsed_ms": 100,
+      "payload_hex": "53544d700000000000000000000000000000000000000000000000000200000000000000000000000000000000006400000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMr",
+      "jiffies": 3,
+      "elapsed_ms": 100,
+      "payload_hex": "53544d720000000000000000000000000000000000000000000000000300000000000000000000000000000000006400000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMd",
+      "jiffies": 4,
+      "elapsed_ms": 200,
+      "payload_hex": "53544d64000000000000000000000000000000000000000000000000040000000000000000000000000000000000c800000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMu",
+      "jiffies": 5,
+      "elapsed_ms": 200,
+      "payload_hex": "53544d75000000000000000000000000000000000000000000000000050000000000000000000000000000000000c800000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMs",
+      "jiffies": 1,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d730000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMf",
+      "jiffies": 2,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d660000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMs",
+      "jiffies": 1,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d730000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMf",
+      "jiffies": 2,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d660000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMs",
+      "jiffies": 1,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d730000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMf",
+      "jiffies": 2,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d660000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMs",
+      "jiffies": 1,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d730000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "kind": "mocked firmware STAT",
+      "code": "STMf",
+      "jiffies": 2,
+      "elapsed_ms": 0,
+      "payload_hex": "53544d660000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000"
+    }
+  ]
+}

@@ -1,0 +1,586 @@
+{
+  "date": "2026-11-02",
+  "scope": "Host WSL Linux fixtures; QEMU host kernel; no hardware qualification",
+  "baseline": {
+    "passed": 72,
+    "seconds": 160.39
+  },
+  "final": {
+    "passed": 76,
+    "seconds": 167.3,
+    "fixture_flush": "Private PATH wrapper: real sync -f SB_STORAGE_ROOT under /tmp; unrelated WSL 9p global sync stalls",
+    "unavailable": "Full host proxy suite: missing CURL_LIBRARY/CURL_INCLUDE_DIR"
+  },
+  "controller": {
+    "transport_bytes": 1368,
+    "event_bytes": 1240,
+    "owner_bytes": 120,
+    "output_state_bytes": 56,
+    "queue_capacity": 65536,
+    "parse_ns_per_event": 40.473,
+    "event_ns": 11.745,
+    "simulated_handoff_ns": 17.026
+  },
+  "client_before": {
+    "client_bytes": 147560,
+    "client_slots": 32,
+    "client_storage_bytes": 4721920
+  },
+  "client_after": {
+    "client_bytes": 147624,
+    "client_slots": 32,
+    "client_storage_bytes": 4723968
+  },
+  "network_before": {
+    "active": {
+      "cpu_ticks": 0,
+      "fds": 10,
+      "rss_kib": 6400
+    },
+    "after": {
+      "cpu_ticks": 1,
+      "fds": 6,
+      "rss_kib": 6400
+    },
+    "before": {
+      "cpu_ticks": 0,
+      "fds": 6,
+      "rss_kib": 6144
+    },
+    "idle_cpu_ticks_300ms": 0,
+    "mode": "normal",
+    "observed_ordered_updates": 1,
+    "peak_sample": {
+      "cpu_ticks": 1,
+      "fds": 8,
+      "rss_kib": 6400
+    },
+    "slow_closed": 0,
+    "update_ms_max": 4045.7783000019845,
+    "update_ms_p50": 4045.7783000019845,
+    "update_ms_p95": 4045.7783000019845,
+    "updates": 1
+  },
+  "network_after": {
+    "active": {
+      "cpu_ticks": 0,
+      "fds": 10,
+      "rss_kib": 6528
+    },
+    "after": {
+      "cpu_ticks": 4,
+      "fds": 6,
+      "rss_kib": 6528
+    },
+    "before": {
+      "cpu_ticks": 0,
+      "fds": 6,
+      "rss_kib": 6400
+    },
+    "idle_cpu_ticks_300ms": 0,
+    "mode": "normal",
+    "observed_ordered_updates": 160,
+    "peak_sample": {
+      "cpu_ticks": 4,
+      "fds": 8,
+      "rss_kib": 6528
+    },
+    "slow_closed": 2,
+    "update_ms_max": 2.8520969935925677,
+    "update_ms_p50": 0.47645449376432225,
+    "update_ms_p95": 0.8239669987233356,
+    "updates": 160
+  },
+  "network_partial": {
+    "active": {
+      "cpu_ticks": 0,
+      "fds": 10,
+      "rss_kib": 6528
+    },
+    "after": {
+      "cpu_ticks": 6,
+      "fds": 6,
+      "rss_kib": 6656
+    },
+    "before": {
+      "cpu_ticks": 0,
+      "fds": 6,
+      "rss_kib": 6400
+    },
+    "idle_cpu_ticks_300ms": 0,
+    "mode": "partial",
+    "observed_ordered_updates": 160,
+    "peak_sample": {
+      "cpu_ticks": 6,
+      "fds": 8,
+      "rss_kib": 6656
+    },
+    "slow_closed": 2,
+    "update_ms_max": 0.818489002995193,
+    "update_ms_p50": 0.3916435016435571,
+    "update_ms_p95": 0.6549809913849458,
+    "updates": 160
+  },
+  "network_asan": {
+    "active": {
+      "cpu_ticks": 1,
+      "fds": 10,
+      "rss_kib": 14976
+    },
+    "after": {
+      "cpu_ticks": 12,
+      "fds": 6,
+      "rss_kib": 29696
+    },
+    "before": {
+      "cpu_ticks": 0,
+      "fds": 6,
+      "rss_kib": 13824
+    },
+    "idle_cpu_ticks_300ms": 0,
+    "mode": "partial",
+    "observed_ordered_updates": 160,
+    "peak_sample": {
+      "cpu_ticks": 12,
+      "fds": 8,
+      "rss_kib": 29696
+    },
+    "slow_closed": 2,
+    "update_ms_max": 1.2497679999796674,
+    "update_ms_p50": 0.5686200020136312,
+    "update_ms_p95": 0.9347640007035807,
+    "updates": 160
+  },
+  "network_pattern": {
+    "active": {
+      "cpu_ticks": 0,
+      "fds": 10,
+      "rss_kib": 6528
+    },
+    "after": {
+      "cpu_ticks": 6,
+      "fds": 6,
+      "rss_kib": 6656
+    },
+    "before": {
+      "cpu_ticks": 0,
+      "fds": 6,
+      "rss_kib": 6400
+    },
+    "idle_cpu_ticks_300ms": 0,
+    "mode": "partial",
+    "observed_ordered_updates": 160,
+    "peak_sample": {
+      "cpu_ticks": 6,
+      "fds": 8,
+      "rss_kib": 6656
+    },
+    "slow_closed": 2,
+    "update_ms_max": 0.9228609997080639,
+    "update_ms_p50": 0.3848039996228181,
+    "update_ms_p95": 0.6834379892097786,
+    "updates": 160
+  },
+  "artifacts": [
+    {
+      "path": "build-dual-tests/native/sbbase/sbbase",
+      "bytes": 124336,
+      "sha256": "3e388159e15313ac180fe06390fc21b2f024763ecd1cc399f8fcf6135847c643"
+    },
+    {
+      "path": "build-dual-tests/tests/test_music_transport",
+      "bytes": 69736,
+      "sha256": "09a10758e633cb03dd2c8390ec2e90712a1c0f828173a56f3bf7ef665d36f180"
+    },
+    {
+      "path": "build-dual-tests/tests/libbase_socket_fault.so",
+      "bytes": 15912,
+      "sha256": "775ac72285ec1c0d41d25267604f7fbc4d1e53a0d43f20b647f090530c436aa0"
+    },
+    {
+      "path": ".local/wp3a/sbbase-before",
+      "bytes": 114376,
+      "sha256": "7ce4cdb8dcef5c7c33d2d0ff745cbc336749c74f19e17c05e4dfee7e8c4bff99"
+    },
+    {
+      "path": ".local/wp3a/sbbase_asan",
+      "bytes": 1858616,
+      "sha256": "2c60bb992aff264c823178aea71cd385d9f48087518f643cbc09a321ea09f78f"
+    },
+    {
+      "path": ".local/wp3a/test_transport_asan",
+      "bytes": 599912,
+      "sha256": "d7efa4d215462a1d9110f21b78304fab482571112658e766c358a6117aa9e113"
+    },
+    {
+      "path": ".local/wp3a/transport-performance",
+      "bytes": 53016,
+      "sha256": "f99d22787d4cce39d9220c65da8cdb9d941a6b568b30c7ce1f3f5c70ce27b276"
+    },
+    {
+      "path": ".local/wp3a/sbbase_pattern",
+      "bytes": 124280,
+      "sha256": "6a9a893425ecec6bc89e3a8b9c948dafd25682f43c1bec09b2af94e97eff950f"
+    },
+    {
+      "path": "build-arm/baby/transport/test_music_transport",
+      "bytes": 78968,
+      "sha256": "4bb5f2eef52b382d2047ecc16e32094dd5df1c6d7e7ba8674460b7cc6ff8a2a9"
+    },
+    {
+      "path": "build-arm/baby/transport/libsbtransport.a",
+      "bytes": 28724,
+      "sha256": "8346f4ffcb45529a8f94d16bde9e2f814c0e45c0e85efab461c069c1b3654b43"
+    },
+    {
+      "path": "build-arm/baby/sbbase",
+      "bytes": 140376,
+      "sha256": "e0471f02f5c79a8b5827f7dbb60074c0d0dffd93ef75e20860aef842354224ee"
+    },
+    {
+      "path": "build-arm/baby/sbproxy",
+      "bytes": 874644,
+      "sha256": "8ec063ec36993918cb17c7a7eaf1e07dd6f1316fd6d576cfcec7c88cd3ff5ebf"
+    },
+    {
+      "path": "build-arm/baby/sbwebserver",
+      "bytes": 291976,
+      "sha256": "6f2487649182e7e515f4205d1984ef6a35b135eba4dfe8cfcc72b29ba7f26f00"
+    },
+    {
+      "path": "build-arm/baby/sb-storage-helper",
+      "bytes": 66620,
+      "sha256": "61ad37b017505b06d78c14d3211fb6227fff69caf60487a9b6caa264be34ff16"
+    },
+    {
+      "path": "build-arm/baby/sb-storage-updater",
+      "bytes": 33852,
+      "sha256": "90d85d72700fd5c6ad528994f6b0e371dfcc4717969aa785e852ad34f71f7287"
+    },
+    {
+      "path": "build-arm/baby/svgpngrenderer",
+      "bytes": 497800,
+      "sha256": "f10238868af03f411e1ee5586d7085b5d7f5c52ae28492fdf0bc2956e4ff57c0"
+    },
+    {
+      "path": "build-arm/fab4/transport/test_music_transport",
+      "bytes": 78968,
+      "sha256": "d5d420ff7b598cfd1dccbab7105ba2989488b247dbdd3469def66cbfe51f0831"
+    },
+    {
+      "path": "build-arm/fab4/transport/libsbtransport.a",
+      "bytes": 28432,
+      "sha256": "6f53ac2150f243a483322439ded8247ddba84a3f556940dde34574850588947c"
+    },
+    {
+      "path": "build-arm/fab4/sbbase",
+      "bytes": 140376,
+      "sha256": "00f4230dec91db8b2f757e8043e91d7d6cf9aa7f7055cb77d1ec2e07d7c14b16"
+    },
+    {
+      "path": "build-arm/fab4/sbproxy",
+      "bytes": 874644,
+      "sha256": "79d7634f9619ba44be80b608981f5917464c738d0cd30b717effadb67f8ff4a4"
+    },
+    {
+      "path": "build-arm/fab4/sbwebserver",
+      "bytes": 291976,
+      "sha256": "686ef5914757de23767319b6a2558f015d92ec3eb15f15890885567a7f10ae7b"
+    },
+    {
+      "path": "build-arm/fab4/sb-storage-helper",
+      "bytes": 66620,
+      "sha256": "99813a6173d31377c8a6d5c82f2f7f9afe781a6020e97fb40ceaef66c4979918"
+    },
+    {
+      "path": "build-arm/fab4/sb-storage-updater",
+      "bytes": 33852,
+      "sha256": "8e31e531afb42120b1831e2e1b0e3761636bfb025b5252b8edfe79ea7cb5728b"
+    },
+    {
+      "path": "build-arm/fab4/svgpngrenderer",
+      "bytes": 497800,
+      "sha256": "590883469b3772d8b51d41f2a5ae2a707a78d717bc628d1d07dcc6953296ca58"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".local/wp3a/baseline.log",
+      "bytes": 7906,
+      "sha256": "8028023bdb768c441e9f1d99896199e3599e1b17b5fb7212c0e82f5b1b1c0002",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/initial-regression.log",
+      "bytes": 13637,
+      "sha256": "856448413066245813f9e5c43998667393f9b037da65f6d7744b421e12dba4e7",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/final-tests.log",
+      "bytes": 8333,
+      "sha256": "b0a53be4e3d5a0c650cd04ba4050ea358757a0c2c1ec01ffba9a0e3c6e5dbe34",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/retest.log",
+      "bytes": 465,
+      "sha256": "573b2b15c74ad274845b37c1a3e8862cb6a82ce98d90bb5c467790351479c0e9",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/build.log",
+      "bytes": 1303,
+      "sha256": "605c333c29c02fa55231a86472b9f7db4f727b9e48d4da443e814561aa2ce334",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/transport-arm.log",
+      "bytes": 1928,
+      "sha256": "4c545e038a34943fb7ec8d9ef9d87e7020969e078b86876d166192e8caee906d",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/full-arm.log",
+      "bytes": 7998,
+      "sha256": "ba735e5dd9ca72136051aabe11ef4169ca4f0cc5297c691431f9c1c0a5c7fe86",
+      "anchors": [
+        {
+          "line": 1,
+          "text": "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/native/sbwebserver/src/image_render.c: In function \u2018image_render_handle\u2019:"
+        },
+        {
+          "line": 9,
+          "text": "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/native/svgpngrenderer/third_party/nanosvg/nanosvg.h: In function \u2018nsvgParseFromFile\u2019:"
+        },
+        {
+          "line": 34,
+          "text": "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/native/sbwebserver/src/image_render.c: In function \u2018image_render_handle\u2019:"
+        },
+        {
+          "line": 42,
+          "text": "/mnt/c/Projects/SBStandaloneBase/StandaloneBase/native/svgpngrenderer/third_party/nanosvg/nanosvg.h: In function \u2018nsvgParseFromFile\u2019:"
+        }
+      ]
+    },
+    {
+      "path": ".local/wp3a/qemu.log",
+      "bytes": 234,
+      "sha256": "1e6132d8dd1ab773e0d978c5d00aafc9d7e4f2ff1427ce3784e390b88094a977",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/qemu-target-cpu.log",
+      "bytes": 234,
+      "sha256": "1e6132d8dd1ab773e0d978c5d00aafc9d7e4f2ff1427ce3784e390b88094a977",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/sanitizers.log",
+      "bytes": 760,
+      "sha256": "4a96718efb16be8ab102cd228d2bc2a22c708109afcc094d0a7acc7002f01862",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/elf.log",
+      "bytes": 2501,
+      "sha256": "e1833c6847880e0fde34445f5a57cb126b832727c0d5544737f705267f0e8ed5",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/proxy-probe.log",
+      "bytes": 676,
+      "sha256": "b8fd07996caf65f70682eb0bed54991840e32ea1374c4a5dec749b4500fc3d6a",
+      "anchors": []
+    }
+  ],
+  "host_harness": [
+    {
+      "path": ".local/wp3a/host-fixture-bin/sync",
+      "bytes": 208,
+      "sha256": "34a97c9092bed42fb1b2d4ab911564ea08649f8f23295cc828355f6c64c42dab",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/run_validation.sh",
+      "bytes": 355,
+      "sha256": "88b1d4b7754388af6249fb54bf91d76f4fb94797f3526b43d634f86ad5f51b51",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/run_arm.sh",
+      "bytes": 463,
+      "sha256": "cf53d100841d0f77d283e0f8f28a74f24920572e71241a03268f8302c282942c",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/run_sanitizers.sh",
+      "bytes": 1149,
+      "sha256": "163f426e626d13fe9fdbafcb542d57da1026f64665ebe961f9068be2622e55de",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/run_network_measurements.sh",
+      "bytes": 845,
+      "sha256": "5222e7be03b7795aeccb00cae0146fddd20bc23c6d5606327bae8c760f90c2bc",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/prepare_performance.sh",
+      "bytes": 1178,
+      "sha256": "3a991e36f65d917ee7628b5f20a9de3316b7ce2538be7aba9d606a67729941ae",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/main-before.c",
+      "bytes": 51685,
+      "sha256": "5c9d251945a5f07a1012537e1ebae3ff3a2b4c6e1fe4853947da7f81bdba2a07",
+      "anchors": [
+        {
+          "line": 56,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 67,
+          "text": "static int player_connected;"
+        },
+        {
+          "line": 68,
+          "text": "static int test_nowplaying;"
+        },
+        {
+          "line": 76,
+          "text": "typedef struct {"
+        },
+        {
+          "line": 89,
+          "text": "static size_t catalog_entry_count;"
+        },
+        {
+          "line": 96,
+          "text": "static int"
+        },
+        {
+          "line": 103,
+          "text": "static void stop(int sig)"
+        },
+        {
+          "line": 113,
+          "text": "static void reload(int sig)"
+        },
+        {
+          "line": 124,
+          "text": "static int nonblock(int fd)"
+        },
+        {
+          "line": 136,
+          "text": "static int listener(int type, unsigned port)"
+        },
+        {
+          "line": 165,
+          "text": "static void close_client(client *c)"
+        },
+        {
+          "line": 183,
+          "text": "static int send_data(client *c, const char *data, size_t size)"
+        },
+        {
+          "line": 226,
+          "text": "static void"
+        },
+        {
+          "line": 253,
+          "text": "static void stream_start(client *c, const char *body)"
+        },
+        {
+          "line": 278,
+          "text": "static void stream_heartbeat(client *c)"
+        },
+        {
+          "line": 289,
+          "text": "static void stream_event(client *c, const char *body)"
+        },
+        {
+          "line": 304,
+          "text": "static void player_status_json(char *out, size_t cap)"
+        },
+        {
+          "line": 320,
+          "text": "static int split_playerstatus_path(const char *path,"
+        },
+        {
+          "line": 361,
+          "text": "static void publish_playerstatus(void)"
+        },
+        {
+          "line": 406,
+          "text": "static void register_playerstatus(const char *path)"
+        },
+        {
+          "line": 432,
+          "text": "static void firmware_payload(const char *version,"
+        },
+        {
+          "line": 450,
+          "text": "static void firmware_parameter(const char *message,"
+        },
+        {
+          "line": 471,
+          "text": "static void firmware_subscribe(const char *path,"
+        },
+        {
+          "line": 511,
+          "text": "static void firmware_publish(const char *reconnected)"
+        },
+        {
+          "line": 544,
+          "text": "static void unregister_playerstatus(const char *body)"
+        },
+        {
+          "line": 569,
+          "text": "static void publish_player(void)"
+        },
+        {
+          "line": 613,
+          "text": "static void token(char out[9])"
+        },
+        {
+          "line": 625,
+          "text": "static void json_unescape_slashes(char *s)"
+        },
+        {
+          "line": 641,
+          "text": "static int valid_player_id(const char *id)"
+        },
+        {
+          "line": 666,
+          "text": "static int json_string(const char *body, const char *key, char *out, size_t cap)"
+        }
+      ]
+    },
+    {
+      "path": ".local/wp3a/qemu_target_cpu.sh",
+      "bytes": 222,
+      "sha256": "9e9da31c02c0a361421ecd746310d47cd6edf6504ad90d61717eb700230e202c",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/qemu-baby.sh",
+      "bytes": 135,
+      "sha256": "bdc7ed35bba34527c06d6e8acb2eb05934a6fcab9068ab0fbdf873e642c2aac5",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/qemu-fab4.sh",
+      "bytes": 136,
+      "sha256": "0ce20e794995c7065dff94e6d12cba7b9485de857570ef88a7d10806bc5b80c7",
+      "anchors": []
+    },
+    {
+      "path": ".local/wp3a/run_pattern.sh",
+      "bytes": 595,
+      "sha256": "35b1468cd4b31de63a35e3d309875bb5fb1baf76e31f079b29b2ab1356dad9f3",
+      "anchors": []
+    }
+  ]
+}
