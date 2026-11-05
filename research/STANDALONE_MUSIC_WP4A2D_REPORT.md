@@ -1,5 +1,14 @@
 # WP4a.2d report
 
+**Current outcome, 2026-11-05:** native My Music is visible and the owner has
+confirmed filled Artists -> Fleetwood Mac -> Rumours -> 11 tracks on the Touch.
+The reconnect and stock browse-parameter corrections are deployed. All five
+categories return expected contents through the real-device protocol; the
+confirmation prompt also included Albums or Tracks. Physical Genres/Folder
+contents and exhaustive back/reopen responsiveness were not individually
+reported. Audio remains disabled. The original-session results and investigation
+chronology below are historical; see the dated Jive follow-ups for current state.
+
 2026-11-04. **Native scanning/browsing is installed, activated and verified by
 protocol on the real Fab4. Physical UI verification is separate.**
 
@@ -34,7 +43,7 @@ stable string IDs and offset/past-end behavior were verified. All track leaves
 are action=none/itemNoAction. A negative playlistcontrol request returns false
 with music_playback_disabled. No play/decoder/ownership request was sent.
 
-Physical navigation confirmation is pending; protocol success is not visual verification.
+The first physical check failed: the owner sees only Switch Library in My Music. Native protocol browsing passes, but Jive category visibility and navigation remain unresolved. See the Jive report for the reconnect investigation.
 
 The RAM library remains active for the requested browsing test; it was not
 deleted/recreated during browsing. It is not a permanent USB/flash library.
@@ -64,3 +73,17 @@ Do not enable audio or restart qualification automatically. Stop at WP4a.2d.
 - [Tests](STANDALONE_MUSIC_WP4A2D_TEST_RESULTS.md)
 - [Hardware performance](STANDALONE_MUSIC_WP4A2D_PERFORMANCE.md)
 - [Rollback](STANDALONE_MUSIC_WP4A2D_ROLLBACK.md)
+
+Follow-up 2026-11-05: deployed a native expired-Comet-client reconnect correction.
+Stock Jive now re-handshakes and its _menuSink processes seven menu items. The
+previous completed DB was preserved after ending the old session; a new bounded
+scan indexed 11 tracks in 4575 ms with integrity ok. Jive/watchdog were unchanged.
+19 relevant host tests and static Fab4/QEMU self-tests passed. Physical screen
+confirmation is still pending; see the dated follow-up in the Jive report.
+
+Latest state: the owner saw the categories after the reconnect correction, but
+the lists were empty. A second native fix accepts stock SlimBrowser's boolean
+useContextMenu flag. It is deployed as PID 3933, SHA 682cff02825f5f9b6e56f9787eea4931cc8d82a77bb7a488dfcbd1bca03ad90c.
+Real-device requests matching Jive now return all expected contents and the
+artist/album/track path. New scan 4561 ms/11 tracks/zero errors/integrity ok.
+Filled-list touchscreen confirmation remains pending. No audio was enabled.

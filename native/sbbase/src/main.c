@@ -1665,6 +1665,22 @@ if(!strcmp(path,"/api/music/ownership")){
 		}
 		/* A Bayeux client has one event stream. Replace a stale
 		 * duplicate so it cannot consume a client slot indefinitely. */
+		/* After a Base restart the old client ID has no subscriptions.
+		 * Accepting its reconnect would strand stock Jive with cached
+		 * menus: only a handshake makes Comet replay its subscriptions.
+		 * A live replacement stream still inherits its subscriptions. */
+		if (reconnecting && !stream_for_id(cid)) {
+			char escaped[192];
+			np_json_escape(escaped, sizeof escaped, cid);
+			snprintf(response, sizeof response,
+				 "[{\"channel\":\"/meta/reconnect\","
+				 "\"clientId\":\"%s\",\"successful\":false,"
+				 "\"error\":\"402::Unknown client\","
+				 "\"advice\":{\"reconnect\":\"handshake\","
+				 "\"interval\":0}}]", escaped);
+			http_reply(c, "200 OK", response, 0);
+			return;
+		}
 		for (i = 0; i < CLIENTS; i++)
 			if (&clients[i] != c && clients[i].fd >= 0 &&
 			    clients[i].kind == 3 &&

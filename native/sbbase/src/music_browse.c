@@ -281,6 +281,13 @@ static int parse(sb_browse *b, sb_browse_call *c, const sb_lms_command *cmd)
 				return 0;
 			continue;
 		}
+		/* Stock SlimBrowser appends this display preference to every
+		 * parameterized browse action. It grants no playback actions. */
+		if (!strncmp(tag, "useContextMenu:", 15)) {
+			if (strcmp(v, "0") && strcmp(v, "1"))
+				return 0;
+			continue;
+		}
 		if (!strncmp(tag, "subscribe:", 10)) {
 			if (!integer(v, 3600, &n))
 				return 0;

@@ -57,3 +57,21 @@ automatically scans inserted media. Physical removal/reinsert was not tested.
 USB completed-write counters remained six writes/29 sectors during observation.
 That is block-level evidence, not a complete USB content hash. No USB write,
 remount, format, deletion, thumbnail/cache or metadata file operation was issued.
+
+Follow-up 2026-11-05: the native Music binary was replaced with the expired-Comet-
+client correction. The old session/database was preserved after shutdown and a
+new bounded session started. Current hashes, PID, scan measurements, RAM usage,
+activation evidence and the additional rollback prerequisite are recorded in
+[the dated Jive follow-up](STANDALONE_MUSIC_WP4A2D_JIVE.md#reconnect-correction-deployed-2026-11-05).
+Earlier measurements/hashes here describe the original 2026-11-04 session.
+
+Latest follow-up: stock SlimBrowser useContextMenu parsing is corrected and
+deployed (PID 3933; scan 4561 ms; three preserved/current 120 KiB RAM DBs). See
+[the second dated Jive follow-up](STANDALONE_MUSIC_WP4A2D_JIVE.md#stock-slimbrowser-parameter-correction-2026-11-05)
+for current hashes, validation, previous-session preservation and rollback.
+Physical category visibility passed the owner's first follow-up; filled lists
+and navigation await the next owner check.
+
+Final owner observation: filled Artists -> Fleetwood Mac -> Rumours -> 11 tracks
+is confirmed on the physical Touch after the two fixes. See the Jive report for
+the exact confirmation scope; audio remains disabled.

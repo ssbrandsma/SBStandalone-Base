@@ -21,7 +21,7 @@ Existing deploy atomic-copy primitive is shared for the exact native plan.
 | Native/independent-copy SQLite integrity | ok / ok, schema 3 |
 | Actual protocol/menu/paging/negative playback | Passed |
 | Boot/process stability | Original boot/Jive/watchdog/proxy/web identities retained |
-| Physical Jive navigation | Pending owner; not visually verified |
+| Physical Jive navigation | Failed first owner check: only Switch Library is visible; investigation ongoing |
 
 The first 103-case run failed two checks: a test incorrectly required integrity
 verification during an intentional storage-EIO/unavailable-library close, and a
@@ -65,3 +65,24 @@ attempts remain. Existing Radio/Spotify Jive settings and Meta files hash-match
 the preflight; neither engine was started. Custom-station files outside the audit
 were outside the write set; no independent pre/post content hash is claimed for
 such files. No playback, Qobuz install, USB music modification or new public port.
+
+Follow-up 2026-11-05: expired reconnect regression and 18 other relevant tests
+passed (19/19, 45.93 s); Fab4 static build/QEMU self-test/version passed. Actual
+Jive handshake and _menuSink(7) are now logged; physical category visibility and
+navigation await owner confirmation. See the Jive report for exact evidence.
+
+Latest follow-up: stock SlimBrowser useContextMenu parsing is corrected and
+deployed (PID 3933; scan 4561 ms; three preserved/current 120 KiB RAM DBs). See
+[the second dated Jive follow-up](STANDALONE_MUSIC_WP4A2D_JIVE.md#stock-slimbrowser-parameter-correction-2026-11-05)
+for current hashes, validation, previous-session preservation and rollback.
+Physical category visibility passed the owner's first follow-up; filled lists
+and navigation await the next owner check.
+
+Final owner observation, 2026-11-05: "ja" to the filled Artists -> Fleetwood Mac
+-> Rumours -> 11-track route, with Albums or Tracks included in the confirmation
+prompt. The prior physical failure is resolved for that route. All five modes
+pass target protocol checks; no separate physical Genres/Folder confirmation or
+measured visual latency is claimed.
+
+Final corrected-code regression run: 19/19 passed, 49.43 seconds; log at
+.local/wp4a2d/context-fix/host-tests.log.

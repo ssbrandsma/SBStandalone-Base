@@ -44,10 +44,12 @@ def run(base,fixture,count=3000,benchmark=False,shim=None,long_names=False):
                 assert messages[0]['id']=='1' and messages[1]['id']=='1'
                 return messages[0]['successful'],messages[1]['data'],(time.monotonic()-start)*1000,size
             def browse(mode,offset=0,quantity=200,*tags):
-                return query(['browselibrary','items',offset,quantity,f'mode:{mode}','menu:1',*tags])
-            def stream(cid):
+                # Stock SlimBrowser adds this presentation flag whenever an
+                # action has params; replay its real request shape.
+                return query(['browselibrary','items',offset,quantity,f'mode:{mode}','menu:1','useContextMenu:1',*tags])
+            def stream(cid, reconnect=False):
                 s=socket.create_connection(('127.0.0.1',9000),timeout=8);sockets.append(s)
-                body=json.dumps([{'channel':'/meta/connect','clientId':cid}]).encode()
+                body=json.dumps([{'channel':'/meta/reconnect' if reconnect else '/meta/connect','clientId':cid}]).encode()
                 s.sendall(b'POST /cometd HTTP/1.1\r\nHost: localhost\r\nContent-Length: '+str(len(body)).encode()+b'\r\n\r\n'+body)
                 r=http.client.HTTPResponse(s);r.begin();assert r.status==200
                 return r
@@ -75,6 +77,11 @@ def run(base,fixture,count=3000,benchmark=False,shim=None,long_names=False):
                 assert menu['item_loop'][2:]==golden['music_nodes']
                 ids=[x['id'] for x in menu['item_loop']]
                 assert ids==['settingsAlarm','settingsSleep','myMusicArtists','myMusicAlbums','myMusicGenres','myMusicMusicFolder','myMusicTracks'],ids
+                for flag in ('0','1'):
+                    assert query(['browselibrary','items',0,200,'mode:artists','menu:1','useContextMenu:'+flag])[0]
+                for tag in ('useContextMenu:2','useContextMenu:yes','unknownPresentation:1'):
+                    ok,rejected,_,_=query(['browselibrary','items',0,200,'mode:artists','menu:1',tag])
+                    assert not ok and rejected['error']=='unsupported_or_invalid_browse',rejected
                 latencies=[];sizes=[]
                 performance=None
                 if benchmark:
@@ -151,6 +158,14 @@ def run(base,fixture,count=3000,benchmark=False,shim=None,long_names=False):
                 with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
                     for result in executor.map(lambda _:browse('albums'),range(12)):
                         assert result[0],result[1]
+                # A stale pre-restart ID must cause stock Comet to handshake,
+                # which replays subscriptions rather than retaining empty menus.
+                _,expired,_=req('POST','/cometd',[
+                    {'channel':'/meta/reconnect','clientId':'expired-before-restart'},
+                    {'channel':'/meta/subscribe','clientId':'expired-before-restart','subscription':'/expired-before-restart/**'}])
+                assert expired[0]['successful'] is False,expired
+                assert expired[0]['advice']['reconnect']=='handshake',expired
+                assert expired[0]['channel']=='/meta/reconnect',expired
                 # Register stock menustatus subscription and verify stable IDs/reconnect.
                 _,handshake,_=req('POST','/cometd',[{'channel':'/meta/handshake'}]);cid=handshake[0]['clientId']
                 r=stream(cid);chunk(r)
@@ -180,7 +195,7 @@ def run(base,fixture,count=3000,benchmark=False,shim=None,long_names=False):
                 assert added and len(added[1])==5
                 assert browse('albums')[0]
                 # Reconnect replays the logical subscriptions without duplicate IDs.
-                r2=stream(cid);chunk(r2);r=r2
+                r2=stream(cid,reconnect=True);assert chunk(r2)[0]['successful'];r=r2
                 replay=None;view=None
                 for _ in range(10):
                     events=chunk(r)
@@ -229,7 +244,9 @@ def run(base,fixture,count=3000,benchmark=False,shim=None,long_names=False):
                 except subprocess.TimeoutExpired:process.kill();process.wait()
                 log.seek(0);errors=log.read()
                 if sys.exc_info()[0] is not None:
-                    Path('.local/wp3b/last-server-error.log').write_bytes(errors)
+                    error_path=Path('.local/wp3b/last-server-error.log')
+                    error_path.parent.mkdir(parents=True,exist_ok=True)
+                    error_path.write_bytes(errors)
                 assert process.returncode==0,(process.returncode,errors[-5000:].decode(errors='replace'))
                 assert b'ERROR: AddressSanitizer' not in errors and b'runtime error:' not in errors,errors[-5000:]
 
