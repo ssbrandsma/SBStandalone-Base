@@ -71,6 +71,7 @@ class Probe(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         status = json.loads(result.stdout)
         self.assertTrue(status["read_only"])
+        self.assertEqual(status["jive_registrations"], 2)
         self.assertEqual(status["feeder_pid"], self.watchdog.pid)
         self.assertEqual(status["jive_pid"], self.player.pid)
         self.assertEqual(LIBC.semctl(self.sem, 0, 13, ctypes.byref(after)), 0)
@@ -103,6 +104,29 @@ class Probe(unittest.TestCase):
 
     def test_expired_ui_countdown_is_refused(self):
         self.assertEqual(LIBC.semctl(self.sem, 1, 16, 0), 0)
+        self.assertEqual(self.probe().returncode, 2)
+
+    def test_second_expired_countdown_is_refused(self):
+        self.assertEqual(LIBC.semctl(self.sem, 3, 16, 0), 0)
+        self.assertEqual(self.probe().returncode, 2)
+
+    def test_one_registration_is_not_the_fab4_profile(self):
+        self.assertEqual(LIBC.semctl(self.sem, 2, 16, 1), 0)
+        self.assertEqual(self.probe().returncode, 2)
+
+    def test_three_registrations_are_refused(self):
+        player = self.start(self.jive, "jive", self.sem, 3, 3)
+        self.pidfile.write_text(str(player.pid) + "\n")
+        self.assertEqual(self.probe().returncode, 2)
+
+    def test_countdown_last_writer_is_not_registration_owner(self):
+        for slot in (1, 3):
+            self.assertEqual(LIBC.semctl(self.sem, slot, 16, 3), 0)
+            self.assertEqual(LIBC.semctl(self.sem, slot, 11), os.getpid())
+        self.assertEqual(self.probe().returncode, 0)
+
+    def test_foreign_allocation_owner_is_refused(self):
+        self.assertEqual(LIBC.semctl(self.sem, 2, 16, 0), 0)
         self.assertEqual(self.probe().returncode, 2)
 
     def test_changed_watchdog_configuration_is_refused(self):

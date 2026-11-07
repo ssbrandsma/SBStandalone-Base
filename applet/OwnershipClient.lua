@@ -80,6 +80,7 @@ function M.new(o)
                 if o.revoke then o.revoke(v) end
             end
         end
+        if o.observed then o.observed(v,self) end
         return true
     end
     local function wire(op, seq, flags, req, timeout, revision)

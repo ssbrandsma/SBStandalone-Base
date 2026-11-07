@@ -173,9 +173,10 @@ local function launch(s)
     os.remove(pidPath(s))
     os.execute("chmod 755 "..ROOT.."/"..s.exe.." >/dev/null 2>&1")
     local cmd="( "..ROOT.."/"..s.exe.." "..s.args.." >>"..RUN.."/"..s.exe..".log 2>&1 & pid=$!; "..
-        "sleep 1; if kill -0 $pid >/dev/null 2>&1; then echo $pid >"..pidPath(s).."; else rm -f "..pidPath(s).."; fi )"
+        (s.once and ("echo $pid >"..pidPath(s).." )") or
+        ("sleep 1; if kill -0 $pid >/dev/null 2>&1; then echo $pid >"..pidPath(s).."; else rm -f "..pidPath(s).."; fi )"))
     os.execute(cmd)
-    return alive(s)
+    return s.once or alive(s)
 end
 local function stop(s)
     local f=io.open(pidPath(s),"r"); if not f then return end
@@ -206,6 +207,29 @@ function init(self)
             return
         end
     end
+    local musicMarker=io.open("/var/run/standalonebase/music-idle-test.enabled","r")
+    if musicMarker then
+        musicMarker:close()
+        local firmware=io.open("/etc/squeezeos.version","r")
+        local version=firmware and firmware:read("*l")
+        if firmware then firmware:close() end
+        if platform.name~="fab4" or not arbitration or version~="7.7.3 r16676" then
+            migrationLog:error("Music qualification: firmware/arbitration refused");return
+        end
+        -- Capture function identities before loading any producer modules.
+        -- Keeping the mutable Playback class itself would bless later hooks.
+        local stockPlayback={}
+        for key,value in pairs(require("jive.audio.Playback")) do stockPlayback[key]=value end
+        self.musicStockPlayback=stockPlayback
+        self.musicStockSend=require("jive.net.SlimProto").send
+        local fence,reason=require("applets.StandaloneBase.MusicIdleFence").install()
+        if not fence then migrationLog:error("Music qualification: ",reason);return end
+        self.musicFence=fence
+        SERVICES={SERVICES[1],{name="Music qualification session",exe="sbmusic-session",once=true,
+            args="--base "..ROOT.."/sbbase-music --web "..ROOT.."/sbwebserver-music --helper "..ROOT.."/sbmusic-metadata-helper "..
+            "--root '/media/sda1/mp3/Fleetwood Mac - Rumors-1977-FAF' --database /dev/standalone-music-test/library-wp4a3b.db "..
+            "--token /var/run/sb-music-owner/token --catalog "..CONFIG.." --web-config /mnt/storage/standalonebase --web-root "..ROOT.." --port 80"}}
+    end
     started=true
     if arbitration then
         os.execute("mkdir -m 700 /var/run/standalonebase >/dev/null 2>&1")
@@ -224,6 +248,31 @@ function init(self)
     for i=2,#SERVICES do if not launch(SERVICES[i]) then self.failures[SERVICES[i].exe]=1 end end
     self.timeSync=TimeSync.new(); self.timeSync:start()
     self.remoteBridge=RemoteBridge(); self.remoteBridge:init()
+    if self.musicFence then
+        local attempts,busy,expired=0,false,false
+        self.musicStartupTimer=Timer(500,function()
+            attempts=attempts+1
+            if attempts>40 then
+                expired=true;self.musicStartupTimer:stop();migrationLog:error("Music qualification: bridge startup deadline");return
+            end
+            if busy then return end
+            local options={enabled=true,
+                fence=self.musicFence,qualifiedFirmware=true,tokenPath="/var/run/sb-music-owner/token",
+                stockPlayback=self.musicStockPlayback,stockSend=self.musicStockSend,
+                ready=function() migrationLog:info("MUSIC_INITIAL_IDLE admitted; no autoplay") end,
+                fault=function(reason) migrationLog:error("MUSIC_PRODUCTION refused: ",reason) end}
+            busy=true
+            local module=require("applets.StandaloneBase.MusicProduction")
+            module.readiness(options,function(ready)
+                busy=false
+                if expired or not ready or not self.musicFence then return end
+                self.musicProduction=module.new(options)
+                self.musicStartupTimer:stop()
+                if not self.musicProduction then migrationLog:error("Music qualification: composition refused") end
+            end)
+        end)
+        self.musicStartupTimer:start()
+    end
     if platform.extended_storage then self.firmwareUpdates=FirmwareUpdates.new(self,self.remoteBridge); self.firmwareUpdates:start() end
     self.alarmPlayback=AlarmPlayback.new()
     jnt:subscribe(self.alarmPlayback)
@@ -271,7 +320,7 @@ function supervise(self)
     for _,s in ipairs(SERVICES) do
         if not alive(s) then
             local n=(self.failures[s.exe] or 0)+1; self.failures[s.exe]=n
-            if n <= 5 and not self.backoff[s.exe] then
+            if not s.once and n <= 5 and not self.backoff[s.exe] then
                 self.backoff[s.exe]=Timer(math.min(60000,n*5000),function() self.backoff[s.exe]=nil; launch(s) end,true)
                 self.backoff[s.exe]:start()
             end
@@ -465,6 +514,9 @@ function getStandaloneStorageStatus(self) return storage:getStorageStatus() end
 function getStandaloneStoragePreparation(self) return storage:getStoragePreparation() end
 function verifyStandaloneStorage(self) return storage:verifyStorage() end
 function free(self)
+    if self.musicStartupTimer then self.musicStartupTimer:stop();self.musicStartupTimer=nil end
+    if self.musicProduction then self.musicProduction:shutdown();self.musicProduction=nil end
+    if self.musicFence then self.musicFence:shutdown();self.musicFence=nil end
     if self.lifecycleHeartbeat then self.lifecycleHeartbeat:stop(); self.lifecycleHeartbeat=nil end
     if self.lifecycleGuardTimer then self.lifecycleGuardTimer:stop(); self.lifecycleGuardTimer=nil end
     if self.firmwareUpdates then self.firmwareUpdates:stop(); self.firmwareUpdates=nil end

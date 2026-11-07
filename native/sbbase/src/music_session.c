@@ -1,6 +1,8 @@
 /* Explicit manual session supervisor; never installed/enabled at boot. */
 #define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
 #include "../../common/music_resource_ipc.h"
+#include "../../common/process_spawn.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -44,7 +46,8 @@ int main(int argc, char **argv)
 {
 	const char *base = NULL, *web = NULL, *helper = NULL, *root = NULL,
 		   *database = NULL, *token = NULL, *catalog = NULL,
-		   *config = NULL, *assets = NULL, *port = NULL;
+		   *config = NULL, *assets = NULL, *port = NULL,
+		   *store = NULL, *database_limit = NULL;
 	for (int i = 1; i < argc; i++) {
 		const char **target = NULL;
 		if (!strcmp(argv[i], "--base"))
@@ -57,6 +60,10 @@ int main(int argc, char **argv)
 			target = &root;
 		else if (!strcmp(argv[i], "--database"))
 			target = &database;
+		else if (!strcmp(argv[i],"--store"))
+			target = &store;
+		else if (!strcmp(argv[i],"--database-limit-mib"))
+			target = &database_limit;
 		else if (!strcmp(argv[i], "--token"))
 			target = &token;
 		else if (!strcmp(argv[i], "--catalog"))
@@ -72,6 +79,22 @@ int main(int argc, char **argv)
 			return 2;
 		*target = argv[++i];
 	}
+	/* Persistent browsing is a separate, decoder-free mode. It retains the
+	 * installed web/proxy and never creates a resource socket or scan request.
+	 * The deployment owner must still qualify listener/supervisor admission. */
+	if(store){
+		if(!executable(base)||!root||!catalog||web||helper||database||token||config||assets||port)return 2;
+		const char *limit=database_limit?database_limit:"32";
+		char *end;errno=0;unsigned long mib=strtoul(limit,&end,10);
+		if(errno||!*limit||*end||mib<1||mib>64)return 2;
+		unsigned maximum;if(!sb_process_fd_limit(&maximum))return 2;
+		sb_process_close_fds(maximum,-1);
+		char *args[]={(char *)base,"--tinysc-arbitration","--music-browse-only","--music-open",
+			"--config",(char *)catalog,"--music-root",(char *)root,"--music-store",(char *)store,
+			"--music-db-limit-mib",(char *)limit,NULL};
+		execv(base,args);return 127;
+	}
+	if(database_limit)return 2;
 	if (!executable(base) || !executable(web) || !executable(helper) ||
 	    !root || !database || !token || !catalog || !config || !assets ||
 	    !port)
@@ -82,6 +105,9 @@ int main(int argc, char **argv)
 	if (errno || *end || parsed < 1 || parsed > 65535)
 		return 2;
 	int pair[2];
+	unsigned limit;
+	if (!sb_process_fd_limit(&limit)) return 2;
+	sb_process_close_fds(limit, -1);
 	if (!sb_resource_pair(pair))
 		return 2;
 	char left[24], right[24];
@@ -98,6 +124,8 @@ int main(int argc, char **argv)
 			    (char *)assets,
 			    NULL};
 	char *base_args[] = {(char *)base,
+			     "--tinysc-arbitration",
+			     "--music-idle-only",
 			     "--ownership-token",
 			     (char *)token,
 			     "--config",

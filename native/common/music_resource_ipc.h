@@ -25,6 +25,16 @@ typedef struct {
 int sb_resource_pair(int pair[2]);
 int sb_resource_adopt(
 	int socket); /* connected Unix seqpacket; NONBLOCK/CLOEXEC */
+/* Single-use rendezvous for separately supervised processes: the webserver
+ * listens, the base connects, one socketpair end travels via SCM_RIGHTS,
+ * then the rendezvous closes. The wire protocol above is unchanged. */
+#define SB_RESOURCE_RENDEZVOUS_DIR "/var/run/sb-music-ipc"
+int sb_resource_rendezvous_listen(void); /* >=0 listen fd, or -1 */
+int sb_resource_rendezvous_accept(int listen_fd, unsigned timeout_ms);
+int sb_resource_rendezvous_connect(unsigned timeout_ms);
+int sb_resource_push_fd(int conn, int fd);
+int sb_resource_take_fd(int conn, unsigned timeout_ms); /* >=0 or -1 */
+void sb_resource_rendezvous_cleanup(void); /* listener-only unlink */
 /* 1 success, 0 EAGAIN, -1 closed/malformed/error. Sender retains fd. */
 int sb_resource_send(int socket, const sb_resource_message *);
 /* Closes all received descriptors on failure, CLOEXEC applied explicitly. */

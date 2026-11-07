@@ -17,7 +17,7 @@ static int peer_add(coordinator_peers *peers,const identity *id)
 static int peer_collect(coordinator_peers *peers,const identity *target)
 {
  DIR *dir=opendir("/proc");if(!dir)return 0;
- struct dirent *entry;unsigned count=0,roles[4]={0};int ok=1;
+ struct dirent *entry;unsigned count=0,roles[5]={0};int ok=1;
  while((entry=readdir(dir))){
   uint64_t pid;if(!number(entry->d_name,&pid)||pid<2||pid>INT_MAX)continue;
   if(++count>4096){ok=0;break;}

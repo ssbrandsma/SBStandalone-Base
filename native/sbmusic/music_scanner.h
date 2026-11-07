@@ -24,8 +24,10 @@ typedef enum {
     SB_SCAN_IO
 } sb_scan_code;
 typedef struct {
-    char path[128], message[128];
-    int code;
+    char path[SB_STORAGE_PATH], message[128], fingerprint[128];
+    uint64_t track_id, file_size;
+    int64_t mtime;
+    int code, recoverable;
 } sb_scan_error;
 typedef struct {
     sb_scan_state state;
@@ -33,6 +35,8 @@ typedef struct {
     uint64_t visited, recognized, added, updated, unchanged, renamed, removed, errors, elapsed_ms,
         parser_bytes;
     unsigned error_count, max_descriptors, parser_peak_rss_kib;
+    uint64_t directories, metadata_parses;
+    uint64_t candidates, recoverable_errors, fatal_errors, unsupported, corrupt, limited;
     sb_scan_error error[SB_SCAN_ERRORS];
 } sb_scan_status;
 typedef struct {

@@ -25,6 +25,7 @@ function M.new(o,p)
         grant=function(v) if p.grant then p.grant(v) end end,
         revoke=function() fence() end,
         fault=function(reason) fence();if o.fault then o.fault(reason) end end,
+        observed=function(v,c) if o.observed then o.observed(v,c) end end,
         ready=function(c) if o.ready then o.ready(binding,c) end end})
     if not client then return nil end
     binding.client=client

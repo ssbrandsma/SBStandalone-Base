@@ -18,6 +18,25 @@ static int internal_target(const char *path)
   "/usr/share/jive/applets/StandaloneBase/sb-tinysc-control",
   "/usr/share/jive/applets/StandaloneBase/sb-maintenance-helper",
   "/usr/share/jive/applets/StandaloneBase/restart-actions.sh",
+  "/usr/share/jive/applets/StandaloneBase/sbbase-music",
+  "/usr/share/jive/applets/StandaloneBase/sbbase-core",
+  "/usr/share/jive/applets/StandaloneBase/sbwebserver-music",
+  "/usr/share/jive/applets/StandaloneBase/sbmusic-session",
+  "/usr/share/jive/applets/StandaloneBase/sbmusic-metadata-helper",
+  "/usr/share/jive/applets/StandaloneBase/loadPriority.lua",
+  "/usr/share/jive/applets/StandaloneBase/MusicProduction.lua",
+  "/usr/share/jive/applets/StandaloneBase/MusicIdleFence.lua",
+  "/usr/share/jive/applets/StandaloneBase/MusicOwnership.lua",
+  "/usr/share/jive/applets/StandaloneBase/NativeMusicOwnership.lua",
+  "/usr/share/jive/applets/StandaloneBase/OwnershipBinding.lua",
+  "/usr/share/jive/applets/StandaloneBase/OwnershipClient.lua",
+  "/usr/share/jive/applets/StandaloneBase/OwnershipDecoder.lua",
+  "/usr/share/jive/applets/StandaloneBase/OwnershipHooks.lua",
+  "/usr/share/jive/applets/StandaloneBase/OwnershipHttp.lua",
+  "/usr/share/jive/applets/StandaloneBase/OwnershipRuntime.lua",
+  "/usr/share/jive/applets/StandaloneRadio/StreamPlayer.lua",
+  "/usr/share/jive/applets/SpotifyConnect/SpotifyPlayback.lua",
+  "/usr/share/jive/applets/SpotifyConnect/SpotifyService.lua",
   "/mnt/storage/standalonebase/tinysc-arbitration.enabled"};
  const char *prefix="";
 #ifdef SB_MAINTENANCE_TEST
@@ -26,7 +45,44 @@ static int internal_target(const char *path)
  for(unsigned n=0;n<sizeof targets/sizeof targets[0];n++){
   char candidate[1024];if(snprintf(candidate,sizeof candidate,"%s%s",prefix,targets[n])>=(int)sizeof candidate)return 0;
   if(!strcmp(candidate,path))return 1;
- }return 0;
+ }
+ identity generation;memset(&generation,0,sizeof generation);
+ if(strlen(path)<sizeof generation.exe){
+  strcpy(generation.exe,path);size_t length=strlen(base_root());
+  if(!strncmp(path,base_root(),length)&&!strncmp(path+length,"/generations/",13)&&base_role(&generation))return 1;
+ }
+ return 0;
+}
+/* Never replace an executable path that a live process still names. An
+ * unreadable proc entry is not proof of absence. No service is signalled. */
+static int internal_active_target(const char *target)
+{
+ DIR *dir=opendir("/proc");if(!dir)return 1;
+ unsigned count=0;int active=0;struct dirent *entry;
+ while((entry=readdir(dir))){
+  uint64_t pid;if(!number(entry->d_name,&pid)||pid<2||pid>INT_MAX)continue;
+  if(++count>4096){active=1;break;}
+  char proc[64],exe[1024];snprintf(proc,sizeof proc,"/proc/%ld/exe",(long)pid);
+  ssize_t n=readlink(proc,exe,sizeof exe-1);
+  if(n<0){
+   int error=errno;identity process;
+   if(error!=ENOENT&&error!=ESRCH){active=1;break;}
+   if(process_stat((pid_t)pid,&process)&&process.state!='Z'&&process.state!='X'){
+    /* Kernel threads have no executable and an empty maps file. A live
+     * userspace process with inaccessible executable/mappings is ambiguous. */
+    snprintf(proc,sizeof proc,"/proc/%ld/maps",(long)pid);
+    int fd=open(proc,O_RDONLY|O_CLOEXEC);char byte;
+    if(fd<0){if(errno!=ENOENT&&errno!=ESRCH)active=1;}
+    else{ssize_t got=read(fd,&byte,1);close(fd);if(got!=0)active=1;}
+    if(active)break;
+   }
+   continue;
+  }
+  if(n>=(ssize_t)sizeof exe-1){active=1;break;}
+  exe[n]=0;size_t length=strlen(target);
+  if(!strcmp(exe,target)||(!strncmp(exe,target,length)&&!strcmp(exe+length," (deleted)"))){active=1;break;}
+ }
+ closedir(dir);return active;
 }
 static int internal_syntax(const char *path)
 {
@@ -38,7 +94,14 @@ static int internal_syntax(const char *path)
 }
 static int internal_staged(const char *path)
 {
- size_t n=strlen(internal_stage());return !strncmp(path,internal_stage(),n)&&(!path[n]||path[n]=='/');
+ size_t n=strlen(internal_stage());
+ if(!strncmp(path,internal_stage(),n)&&(!path[n]||path[n]=='/'))return 1;
+#ifndef SB_MAINTENANCE_TEST
+ const char *music="/mnt/storage/standalonebase/wp4a3b-backup";n=strlen(music);
+ return !strncmp(path,music,n)&&(!path[n]||path[n]=='/');
+#else
+ return 0;
+#endif
 }
 static int internal_open(const char *path,int directory)
 {
@@ -72,7 +135,8 @@ static int internal_sync(const char *path)
  int allowed=internal_staged(path)||internal_target(path);
  if(!allowed){
   const char *parents[]={"/etc/init.d","/usr/share/jive/applets/StandaloneBase",
-   "/usr/share/jive/applets/SqueezeCenter","/mnt/storage/standalonebase"};
+   "/usr/share/jive/applets/SqueezeCenter","/mnt/storage/standalonebase",
+   "/usr/share/jive/applets/StandaloneRadio","/usr/share/jive/applets/SpotifyConnect"};
   for(unsigned n=0;n<sizeof parents/sizeof parents[0];n++)if(!strcmp(path,parents[n]))allowed=1;
  }
 #ifdef SB_MAINTENANCE_TEST
@@ -108,12 +172,14 @@ static int internal_unchanged(const struct stat *a,const struct stat *b)
 static int internal_copy(const char *source,const char *target,uint64_t mode,const char *expected)
 {
  if(mode>0777||!internal_syntax(source)||!internal_staged(source)||!internal_target(target))return 2;
+ if(internal_active_target(target))return 2;
  int in=internal_open(source,0);if(in<0)return 2;
  struct stat original;if(!internal_trusted(in,0)||fstat(in,&original)||original.st_size<0||original.st_size>2097152){close(in);return 2;}
  char leaf[256];int parent=internal_parent(target,leaf);if(parent<0){close(in);return 2;}
  /* Refuse unsupported directory durability before modifying a target. */
  if(fsync(parent)){close(parent);close(in);return 2;}
  struct stat current;int exists=fstatat(parent,leaf,&current,AT_SYMLINK_NOFOLLOW)==0;
+ if(strstr(target,"/generations/")&&exists){close(parent);close(in);return 2;}
  if((exists&&(!S_ISREG(current.st_mode)||current.st_uid!=geteuid()||(current.st_mode&0022)))||(!exists&&errno!=ENOENT)){
   close(parent);close(in);return 2;
  }
@@ -148,6 +214,7 @@ static int internal_copy(const char *source,const char *target,uint64_t mode,con
 #ifdef SB_MAINTENANCE_TEST
  const char *failure=getenv("SB_TEST_INSTALL_FAIL");if(failure&&!strcmp(failure,"before-rename"))ok=0;
 #endif
+ if(ok&&internal_active_target(target))ok=0;
  if(ok&&renameat(parent,name,parent,leaf))ok=0;
 #ifdef SB_MAINTENANCE_TEST
  if(failure&&!strcmp(failure,"after-rename"))ok=0;
@@ -159,6 +226,7 @@ static int internal_copy(const char *source,const char *target,uint64_t mode,con
 static int internal_remove(const char *target)
 {
  if(!internal_target(target))return 2;
+ if(internal_active_target(target))return 2;
  char leaf[256];int parent=internal_parent(target,leaf);if(parent<0)return 2;
  struct stat st;
  if(fstatat(parent,leaf,&st,AT_SYMLINK_NOFOLLOW)){
@@ -177,6 +245,9 @@ static int internal_audit(const char *path)
   "/usr/share/jive/applets/StandaloneBase/sb-storage-helper",
   "/usr/share/jive/applets/SqueezeCenter/SqueezeCenterMeta.lua",
   "/usr/share/jive/applets/StandaloneRadio/StandaloneRadioMeta.lua",
+  "/usr/share/jive/applets/StandaloneRadio/StreamPlayer.lua",
+  "/usr/share/jive/applets/SpotifyConnect/SpotifyPlayback.lua",
+  "/usr/share/jive/applets/SpotifyConnect/SpotifyService.lua",
   "/usr/share/jive/applets/SpotifyConnect/SpotifyConnectMeta.lua",
   "/usr/share/jive/applets/QobuzConnect/QobuzConnectMeta.lua"};
  for(unsigned n=0;n<sizeof paths/sizeof paths[0];n++)if(!strcmp(path,paths[n]))return 1;

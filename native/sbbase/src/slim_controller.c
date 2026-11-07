@@ -736,12 +736,18 @@ void sb_owner_suspend(sb_physical_owner *o, int hold)
 {
 	if (!o || !o->enabled)
 		return;
-	o->suspended = !!hold;
+	/* The service loop re-applies the alarm hold every tick; only an
+	 * actual state transition may advance the revision. */
+	hold = !!hold;
+	int changed = o->suspended != hold;
+	o->suspended = hold;
 	if (hold && o->value.yield == SB_YIELD_REQUESTED) {
 		o->value.yield = SB_YIELD_REFUSED;
 		o->value.requested = SB_OWNER_NONE;
+		changed = 1;
 	}
-	o->revision++;
+	if (changed)
+		o->revision++;
 }
 
 int sb_owner_controls(const sb_physical_owner *o,

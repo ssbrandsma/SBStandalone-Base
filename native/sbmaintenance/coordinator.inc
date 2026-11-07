@@ -136,11 +136,11 @@ static int coordinator_ui_ipc(const identity *replacement,int expected,unsigned 
   if(values[n]==0){
    if(minimum&&values[n+1]<*minimum)*minimum=values[n+1];
    if(!values[n+1])return 0;
-   int actor=semctl(id,(int)n+1,GETPID);if(actor<0)return 0;
+   int actor=semctl(id,(int)n,GETPID);if(actor<0)return 0;
    if(actor==replacement->pid)ui++;
   }
  }
- return ui==1&&same(replacement->pid,replacement->start);
+ return ui==FAB4_JIVE_KEEPALIVES&&same(replacement->pid,replacement->start);
 }
 static int coordinator_verify_ui(uint64_t pid,uint64_t start,const char *nonce)
 {
@@ -168,9 +168,53 @@ static void coordinator_child_exit(const identity *child)
   WIFEXITED(status)?WEXITSTATUS(status):-1,WIFSIGNALED(status)?WTERMSIG(status):0);
  (void)coordinator_write("jive.exit",text);
 }
+static int stack_socket(const identity *process,uint64_t inode)
+{
+ char path[128];snprintf(path,sizeof path,"/proc/%ld/fd",(long)process->pid);
+ DIR *dir=opendir(path);if(!dir)return 0;
+ struct dirent *entry;unsigned count=0;int found=0;
+ while((entry=readdir(dir))){
+  uint64_t fd;if(!number(entry->d_name,&fd))continue;
+  if(++count>512){found=0;break;}
+  snprintf(path,sizeof path,"/proc/%ld/fd/%llu",(long)process->pid,(unsigned long long)fd);
+  struct stat st;if(!stat(path,&st)&&S_ISSOCK(st.st_mode)&&(uint64_t)st.st_ino==inode)found=1;
+ }
+ closedir(dir);return found&&same(process->pid,process->start);
+}
+static int stack_listeners(const identity services[4])
+{
+ unsigned ports[4]={3483,9000,8765,80},seen[5]={0};
+#ifdef SB_MAINTENANCE_TEST
+ const char *override=getenv("SB_TEST_STACK_PORTS");
+ if(override&&sscanf(override,"%u,%u,%u,%u",&ports[0],&ports[1],&ports[2],&ports[3])!=4)return 0;
+#endif
+ const char *tables[]={"/proc/net/tcp","/proc/net/tcp6","/proc/net/udp","/proc/net/udp6"};
+ for(unsigned table=0;table<4;table++){
+  FILE *input=fopen(tables[table],"r");if(!input){if((table&1)&&errno==ENOENT)continue;return 0;}
+  char line[512];unsigned rows=0;int ok=1;
+  while(fgets(line,sizeof line,input)){
+   if(++rows>4096||!strchr(line,'\n')){ok=0;break;}
+   char *columns[10],*save=NULL;unsigned n=0;
+   for(char *p=strtok_r(line," \t\n",&save);p&&n<10;p=strtok_r(NULL," \t\n",&save))columns[n++]=p;
+   if(n<10||strcmp(columns[3],table<2?"0A":"07"))continue;
+   char *colon=strrchr(columns[1],':'),*end;uint64_t inode;if(!colon)continue;
+   unsigned long port=strtoul(colon+1,&end,16);if(*end||!number(columns[9],&inode)){ok=0;break;}
+   for(unsigned p=0;p<(table<2?4u:1u);p++)if(port==ports[p]){
+    unsigned index=table<2?p:4,role=p<2?0:p-1;
+    if(++seen[index]!=1||!stack_socket(&services[role],inode)){ok=0;break;}
+   }
+   if(!ok)break;
+  }
+  if(ferror(input))ok=0;
+  fclose(input);if(!ok)return 0;
+ }
+ for(unsigned n=0;n<5;n++)if(seen[n]!=1)return 0;
+ return 1;
+}
 static int coordinator_verify_stack(uint64_t pid,uint64_t start)
 {
- identity ui,services[3];unsigned counts[3]={0};
+ identity ui,services[4];unsigned counts[4]={0};
+ memset(services,0,sizeof services);
  if(pid<2||pid>INT_MAX||!identify((pid_t)pid,&ui)||ui.start!=start||strcmp(ui.exe,jive))return 2;
  DIR *dir=opendir("/proc");if(!dir)return 2;
  struct dirent *entry;unsigned visited=0;int ok=1;
@@ -184,11 +228,21 @@ static int coordinator_verify_stack(uint64_t pid,uint64_t start)
  }
  closedir(dir);
  if(!ok||counts[0]!=1||counts[1]!=1||counts[2]!=1||!same(ui.pid,ui.start))return 2;
- for(unsigned n=0;n<3;n++)if(!same(services[n].pid,services[n].start))return 2;
- printf("{\"base_pid\":%ld,\"base_start\":\"%llu\",\"proxy_pid\":%ld,\"proxy_start\":\"%llu\",\"web_pid\":%ld,\"web_start\":\"%llu\"}\n",
+ const char *base_gen=base_generation(&services[0]),*web_gen=base_generation(&services[2]),
+  *session_gen=counts[3]?base_generation(&services[3]):NULL;
+ if(base_gen||web_gen||session_gen){
+  if(!base_gen||!web_gen||!session_gen||base_generation(&services[1])||
+     strncmp(base_gen,web_gen,64)||strncmp(base_gen,session_gen,64))return 2;
+ }
+ for(unsigned n=0;n<4;n++)if(counts[n]&&!same(services[n].pid,services[n].start))return 2;
+ if(counts[3]&&(services[0].parent!=services[3].pid||services[2].parent!=services[3].pid||
+    services[0].start<services[3].start||services[2].start<services[3].start))return 2;
+ if(!stack_listeners(services))return 2;
+ printf("{\"base_pid\":%ld,\"base_start\":\"%llu\",\"proxy_pid\":%ld,\"proxy_start\":\"%llu\",\"web_pid\":%ld,\"web_start\":\"%llu\",\"session_pid\":%ld,\"session_start\":\"%llu\"}\n",
   (long)services[0].pid,(unsigned long long)services[0].start,
   (long)services[1].pid,(unsigned long long)services[1].start,
-  (long)services[2].pid,(unsigned long long)services[2].start);return 0;
+  (long)services[2].pid,(unsigned long long)services[2].start,
+  (long)services[3].pid,(unsigned long long)services[3].start);return 0;
 }
 static int coordinator_health(const identity *replacement,const identity *owner,const restart_profile *p,
  const char *nonce,int recovery)

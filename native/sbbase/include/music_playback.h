@@ -68,6 +68,10 @@ int sb_playback_idle_proof(sb_music_playback *,
  * refuses until private RESET/ACTIVATE/resource work is settled. */
 int sb_playback_bridge_begin(void *,uint64_t now);
 int sb_playback_bridge_ready(void *);
+/* Startup RESET/ACK roundtrip; no decoder or resource activation. */
+int sb_playback_probe_resources(sb_music_playback *, uint64_t now);
+unsigned sb_playback_codecs(const sb_music_playback *);
+int sb_playback_single_mp3(sb_music_playback *);
 int sb_playback_bridge_proof(void *,uint64_t adapter,uint64_t connection,uint64_t generation,uint64_t now);
 void sb_playback_detach(sb_music_playback *, uint64_t connection);
 void sb_playback_tick(sb_music_playback *, uint64_t now);

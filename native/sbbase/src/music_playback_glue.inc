@@ -62,6 +62,15 @@ static void playback_service(void)
 	}
 	sb_owner_suspend(&local_owner, alarm);
 	sb_playback_tick(local_music, np_monotonic_ms());
+#ifdef SB_MUSIC_RUNTIME
+	if (music_idle_only) {
+		int ready = ownership_bridge.idle_admitted &&
+			sb_ts_music_allowed(tinysc_lifecycle) &&
+			(local_owner.value.current == SB_OWNER_MUSIC ||
+			 (local_owner.baseline_idle && sb_playback_bridge_ready(local_music)));
+		sb_browse_playback(music_browse, ready ? sb_playback_codecs(local_music) & 1u : 0);
+	}
+#endif
 	sb_queue_status q = sb_queue_snapshot(sb_playback_queue(local_music));
 	sb_browse_control_context(music_browse, q.context);
 	const np_status *status = np_current(nowplaying);
@@ -132,6 +141,9 @@ static int playback_command(client *connection, struct music_http *h)
 	char data[8192];
 	int success = 0;
 #ifdef SB_MUSIC_RUNTIME
+ if(playlistcontrol && music_idle_only && !ownership_bridge.idle_admitted){
+  strcpy(data,"{\"error\":\"music_idle_not_admitted\"}");goto reply;
+ }
  if(!sb_ts_music_allowed(tinysc_lifecycle)){
   music_runtime_tick();
   strcpy(data,"{\"error\":\"tinysc_lifecycle_unavailable\"}");goto reply;
@@ -164,7 +176,20 @@ static int playback_command(client *connection, struct music_http *h)
 			strcpy(data, "{\"error\":\"invalid_playlistcontrol\"}");
 			goto reply;
 		}
-		for (unsigned i = 1; i < cmd->count; i++)
+		unsigned first_tag = 1;
+		/* SlimBrowser's go action appends the page pair before tags. */
+		if (cmd->count > 2 && !strchr(cmd->arguments[1], ':')) {
+			uint64_t from, quantity;
+			if (!playback_number(cmd->arguments[1], UINT32_MAX, &from) ||
+			    !playback_number(cmd->arguments[2], 200, &quantity)) {
+				strcpy(data,"{\"error\":\"invalid_playlistcontrol_page\"}");goto reply;
+			}
+			first_tag = 3;
+		}
+		for (unsigned i = first_tag; i < cmd->count; i++) {
+			if (!strncmp(cmd->arguments[i], "useContextMenu:", 15) &&
+			    (!strcmp(cmd->arguments[i]+15,"0") || !strcmp(cmd->arguments[i]+15,"1")))
+				continue;
 			if (strncmp(cmd->arguments[i], "cmd:", 4) &&
 			    strncmp(cmd->arguments[i], "track_id:", 9) &&
 			    strncmp(cmd->arguments[i], "album_id:", 9) &&
@@ -174,6 +199,7 @@ static int playback_command(client *connection, struct music_http *h)
 				       "playlistcontrol_tag\"}");
 				goto reply;
 			}
+		}
 		sb_queue_edit edit = !strcmp(action, "load")  ? SB_Q_LOAD
 				     : !strcmp(action, "add") ? SB_Q_ADD
 							      : SB_Q_INSERT;

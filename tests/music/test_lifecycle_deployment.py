@@ -13,6 +13,13 @@ ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("deployment", ROOT / "scripts/fab4-lifecycle.py")
 deployment = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(deployment)
+if "--music" in sys.argv:
+    sys.argv.remove("--music")
+    music_spec=importlib.util.spec_from_file_location("music_deployment",ROOT / "scripts/fab4-music-qualification.py")
+    music_deployment=importlib.util.module_from_spec(music_spec)
+    music_spec.loader.exec_module(music_deployment)
+    deployment.TARGETS=music_deployment.TARGETS
+    deployment.REMOTE_BACKUP=music_deployment.STAGE
 
 
 class Deployment(unittest.TestCase):

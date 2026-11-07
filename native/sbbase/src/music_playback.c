@@ -37,6 +37,9 @@ struct sb_music_playback {
 		existing;
 	int candidate_registered, revoke_candidate;
 	int resource_active;
+	int single_mp3, attempted;
+	int ipc_probe_required, ipc_verified;
+	uint64_t ipc_probe_deadline, ipc_sent_ms;
 	uint64_t active_expires;
 	sb_play_phase phase;
 	sb_queue_edit edit;
@@ -57,6 +60,9 @@ static void retire_file(sb_music_playback *p)
 
 static void fail(sb_music_playback *p, const char *error)
 {
+	fprintf(stderr, "MUSIC_PLAYBACK_FAIL error=%s phase=%d op=%llu ctx=%llu\n",
+		error, (int)p->phase, (unsigned long long)p->operation,
+		(unsigned long long)p->context);
 	if (p->owner_requested && p->owner->value.yield == SB_YIELD_REQUESTED &&
 	    p->owner->value.requested == SB_OWNER_MUSIC) {
 		p->owner->value.requested = SB_OWNER_NONE;
@@ -170,8 +176,7 @@ sb_music_playback *sb_playback_create(int enabled,
 				      void *send_context)
 {
 	if (!enabled || !async || !root || !owner || !owner->enabled || !np ||
-	    ipc < 0 || !port || port > 65535 || !send ||
-	    !owner->registrations[SB_OWNER_MUSIC])
+	    ipc < 0 || !port || port > 65535 || !send)
 		return NULL;
 	if (!sb_resource_adopt(ipc))
 		return NULL;
@@ -296,6 +301,8 @@ sb_queue_result sb_playback_load(sb_music_playback *p,
 				 uint64_t context,
 				 uint64_t now)
 {
+	if (p && p->single_mp3 && (edit != SB_Q_LOAD || album || p->attempted))
+		return SB_Q_INVALID;
 	if (!p || p->stopping || !p->media.online || context != p->context ||
 	    now > UINT64_MAX - 20000)
 		return SB_Q_STALE;
@@ -317,6 +324,7 @@ sb_queue_result sb_playback_load(sb_music_playback *p,
 	if (result != SB_Q_OK)
 		return result;
 	p->edit = edit;
+	if (p->single_mp3) p->attempted = 1;
 	p->phase = SB_PLAY_LOADING;
 	p->deadline = now + 20000;
 	p->error[0] = 0;
@@ -336,6 +344,9 @@ int sb_playback_attach(sb_music_playback *p,
 		sb_transport_detach(&p->transport, connection);
 		return 0;
 	}
+	fprintf(stderr, "MUSIC_SLIM attached conn=%llu codecs=%u reconnect=%d model=%.31s fw=%.63s\n",
+		(unsigned long long)connection, hello->codecs,
+		!!hello->reconnect, hello->model, hello->firmware);
 	return 1;
 }
 
@@ -375,7 +386,8 @@ int sb_playback_idle_proof(sb_music_playback *p,
 			   int hooks,
 			   int decoder)
 {
-	if (!p || !producer || !hooks || !decoder || !adapter ||
+	if (!p || (p->ipc_probe_required && !p->ipc_verified) ||
+	    !producer || !hooks || !decoder || !adapter ||
 	    adapter != p->owner->registrations[SB_OWNER_MUSIC] ||
 	    !p->owner->connected ||
 	    connection != p->owner->value.connection_generation ||
@@ -425,6 +437,10 @@ static int control(sb_music_playback *p, char command, uint64_t now)
 		fail(p, "transport_output_failed");
 		return 0;
 	}
+	fprintf(stderr, "MUSIC_STRM_SEND cmd=%c epoch=%llu owner=%llu conn=%llu\n",
+		command, (unsigned long long)p->stream.epoch,
+		(unsigned long long)p->stream.owner_generation,
+		(unsigned long long)p->transport.connection);
 	return 1;
 }
 
@@ -456,7 +472,7 @@ int sb_playback_select(sb_music_playback *p,
 		       uint64_t context,
 		       uint64_t now)
 {
-	if (!p || context != p->context ||
+	if (!p || p->single_mp3 || context != p->context ||
 	    (p->phase != SB_PLAY_ACTIVE && p->phase != SB_PLAY_FAILED &&
 	     p->phase != SB_PLAY_IDLE) ||
 	    (!sb_owner_controls(p->owner,
@@ -490,7 +506,8 @@ static void prepare_file(sb_music_playback *p, uint64_t now)
 	unsigned bit = codec == 'm'   ? SB_SLIM_CODEC_MP3
 		       : codec == 'f' ? SB_SLIM_CODEC_FLAC
 				      : 0;
-	if (!bit || !(p->transport.hello.codecs & bit)) {
+	if (!bit || !(p->transport.hello.codecs & bit) ||
+	    (p->single_mp3 && bit != SB_SLIM_CODEC_MP3)) {
 		fail(p, "unsupported_player_codec");
 		return;
 	}
@@ -558,6 +575,7 @@ static int ipc_tick(sb_music_playback *p)
 			return -1;
 		}
 		p->ipc_sent = 1;
+		p->ipc_sent_ms = np_monotonic_ms();
 	}
 	sb_resource_message ack;
 	int got = sb_resource_receive(p->ipc, &ack);
@@ -586,6 +604,28 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 {
 	if (!p || p->stopping)
 		return;
+	/* A FAILED phase with nothing outstanding is stale (e.g. an idle
+	 * player disconnect with no load in flight). Return to IDLE so a
+	 * fresh attach can re-qualify; the last error is retained and the
+	 * single-shot attempt flag is untouched. Anything pending, reserved,
+	 * requested or staged keeps the failure latched, as does an
+	 * unverified startup probe (an unpaired base must fail closed). */
+	if (p->phase == SB_PLAY_FAILED && p->media.online &&
+	    !(p->ipc_probe_required && !p->ipc_verified) &&
+	    p->completed >= p->operation &&
+	    !p->ipc_pending && !p->resource_active &&
+	    !p->candidate_registered && !p->revoke_candidate && !p->reset &&
+	    !p->file_request && !p->retired_file && !p->detail_job &&
+	    !p->staged && !p->existing && !p->owner_requested) {
+		p->phase = SB_PLAY_IDLE;
+		fprintf(stderr, "MUSIC_PLAYBACK_RECOVERED op=%llu ctx=%llu error=%s\n",
+			(unsigned long long)p->operation,
+			(unsigned long long)p->context, p->error);
+	}
+	if (p->ipc_probe_required && !p->ipc_verified && now >= p->ipc_probe_deadline) {
+		fail(p, "resource_startup_timeout");
+		return;
+	}
 	if (p->retired_file &&
 	    sb_music_file_cancel(p->file, p->retired_file) != SB_ML_BUSY)
 		p->retired_file = 0;
@@ -616,6 +656,7 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 	p->observed_owner = p->owner->value.current;
 	int acknowledged = ipc_tick(p);
 	if (acknowledged == SB_RESOURCE_RESET) {
+		p->ipc_verified = 1;
 		p->resource_active = p->candidate_registered =
 			p->revoke_candidate = 0;
 	}
@@ -657,6 +698,21 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 		return;
 	}
 	if (acknowledged < 0) {
+		publish(p);
+		return;
+	}
+	/* The startup probe has its own deadline; every later message must
+	 * be acknowledged promptly or the load fails loudly instead of
+	 * wedging with a pending capability. */
+	if (p->ipc_pending && p->ipc_sent && p->ipc_verified &&
+	    now >= p->ipc_sent_ms && now - p->ipc_sent_ms > 15000) {
+		fprintf(stderr,
+			"MUSIC_IPC_TIMEOUT op=%u seq=%llu now=%llu sent=%llu\n",
+			p->message.operation,
+			(unsigned long long)p->message.sequence,
+			(unsigned long long)now,
+			(unsigned long long)p->ipc_sent_ms);
+		fail(p, "resource_ack_timeout");
 		publish(p);
 		return;
 	}
@@ -827,6 +883,10 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 			publish(p);
 			return;
 		}
+		fprintf(stderr, "MUSIC_STRM_SEND cmd=s epoch=%llu owner=%llu conn=%llu\n",
+			(unsigned long long)p->stream.epoch,
+			(unsigned long long)p->stream.owner_generation,
+			(unsigned long long)p->transport.connection);
 		(void)sb_queue_bind_owner(
 			p->queue, p->context, p->stream.owner_generation);
 		if (p->staged &&
@@ -875,6 +935,9 @@ static void transport_status(sb_music_playback *p, uint64_t now)
 		if (!stream->epoch || p->terminal_handled == stream->epoch)
 			return;
 		p->terminal_handled = stream->epoch;
+		fprintf(stderr, "MUSIC_STREAM_TERMINAL state=%d epoch=%llu owner=%llu\n",
+			(int)t->stream.state, (unsigned long long)stream->epoch,
+			(unsigned long long)stream->owner_generation);
 		if (t->stream.state == SB_STREAM_STOPPED) {
 			(void)sb_queue_confirm(p->queue,
 					       p->context,
@@ -932,6 +995,11 @@ int sb_playback_event(sb_music_playback *p,
 		      const sb_slim_event *event,
 		      uint64_t now)
 {
+	if (p && event)
+		fprintf(stderr, "MUSIC_SLIM_EVENT kind=%d code=%.4s jif=%u http=%u epoch=%llu\n",
+			(int)event->kind, event->code, event->jiffies,
+			event->http_status,
+			(unsigned long long)(stream ? stream->epoch : 0));
 	if (!p || !stream ||
 	    !sb_transport_event(&p->transport, connection, stream, event, now))
 		return 0;
@@ -1160,6 +1228,27 @@ int sb_playback_bridge_begin(void *context,uint64_t now)
 int sb_playback_bridge_ready(void *context)
 {
  sb_music_playback *p=context;
- return p&&!p->resource_active&&!p->candidate_registered&&!p->reset&&!p->ipc_pending&&
+ return p&&p->ipc>=0&&(!p->ipc_probe_required||p->ipc_verified)&&
+        p->phase!=SB_PLAY_FAILED&&!p->resource_active&&!p->candidate_registered&&!p->reset&&!p->ipc_pending&&
         !p->retired_file&&!p->detail_job&&!p->file_request;
+}
+
+int sb_playback_probe_resources(sb_music_playback *p,uint64_t now)
+{
+ if(!p||p->phase!=SB_PLAY_IDLE||p->ipc_pending||p->resource_active||p->candidate_registered||
+    p->owner->value.current!=SB_OWNER_NONE||p->ipc_probe_required)return 0;
+ p->ipc_probe_required=1;p->ipc_verified=0;p->ipc_probe_deadline=now+5000;p->reset=1;
+ return 1;
+}
+
+unsigned sb_playback_codecs(const sb_music_playback *p)
+{
+ return p&&p->transport.attached&&!(p->single_mp3&&p->attempted)?
+        p->transport.hello.codecs:0;
+}
+
+int sb_playback_single_mp3(sb_music_playback *p)
+{
+ if(!p||p->operation||p->phase!=SB_PLAY_IDLE)return 0;
+ p->single_mp3=1;return 1;
 }

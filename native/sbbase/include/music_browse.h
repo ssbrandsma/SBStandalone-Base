@@ -14,6 +14,8 @@ int sb_browse_fd(const sb_browse *);
 void sb_browse_player(sb_browse *, const char *);
 int sb_browse_media(sb_browse *, const sb_music_media *, int scan_active);
 void sb_browse_tick(sb_browse *, uint64_t now);
+void sb_browse_snapshot_refresh(sb_browse *,int enabled);
+void sb_browse_inhibit(sb_browse *);
 uint64_t sb_browse_version(const sb_browse *);
 uint64_t sb_browse_media_version(const sb_browse *);
 int sb_browse_available(const sb_browse *);
@@ -35,6 +37,7 @@ int sb_browse_valid(const sb_browse_call *);
 void sb_browse_cancel(sb_browse *, sb_browse_call *);
 /* Native menu nodes or remove IDs, no enclosing menu envelope. */
 int sb_browse_nodes(sb_browse *, int remove, char *, size_t, unsigned *count);
+void sb_browse_single_track(sb_browse *, int enabled);
 sb_ml_status sb_browse_stop(sb_browse *);
 sb_ml_status sb_browse_destroy(sb_browse *);
 #endif

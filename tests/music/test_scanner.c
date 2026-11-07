@@ -357,9 +357,14 @@ again:
                                              : i == 1 ? "pwrite"
                                                       : "pwrite64",
                                              NULL) == SQLITE_OK);
-    request.operation = SB_ML_CLOSE;
+    request.operation = SB_ML_STATS;
     request.scan_token = 0;
     request.transaction = 0;
+    sb_ml_result measured=exchange(library,&request);
+    assert(measured.status==SB_ML_OK || status.state!=SB_SCAN_COMPLETED);
+    sb_ml_stats statistics={0};
+    if(measured.status==SB_ML_OK)statistics=measured.data.stats;
+    request.operation = SB_ML_CLOSE;
     assert(exchange(library, &request).status == SB_ML_OK);
     assert(sb_music_library_destroy(library) == SB_ML_OK);
     sb_storage_root_close(&root);
@@ -368,7 +373,9 @@ again:
     getrusage(RUSAGE_SELF, &self);
     getrusage(RUSAGE_CHILDREN, &children);
     printf("{\"state\":%d,\"visited\":%llu,\"recognized\":%llu,\"added\":%llu,\"updated\":%llu,"
-           "\"unchanged\":%llu,\"renamed\":%llu,\"removed\":%llu,\"errors\":%llu,\"elapsed_ms\":%"
+           "\"unchanged\":%llu,\"renamed\":%llu,\"removed\":%llu,\"errors\":%llu,\"recoverable\":"
+           "%llu,\"fatal\":%llu,\"unsupported\":%llu,\"corrupt\":%llu,\"limited\":%llu,"
+           "\"candidates\":%llu,\"directories\":%llu,\"elapsed_ms\":%"
            "llu,\"parser_bytes\":%llu,\"revision\":%llu,\"epoch\":%llu,\"fd_bound\":%u,\"rss_kib\":"
            "%ld,\"cpu_ms\":%.3f,\"child_cpu_ms\":%.3f,\"shutdown_ms\":%llu,\"queries\":%u,\"query_"
            "conflicts\":%u,\"query_p95_ms\":%.3f,\"error_detail\":[",
@@ -376,6 +383,10 @@ again:
            (unsigned long long)status.added, (unsigned long long)status.updated,
            (unsigned long long)status.unchanged, (unsigned long long)status.renamed,
            (unsigned long long)status.removed, (unsigned long long)status.errors,
+           (unsigned long long)status.recoverable_errors, (unsigned long long)status.fatal_errors,
+           (unsigned long long)status.unsupported, (unsigned long long)status.corrupt,
+           (unsigned long long)status.limited, (unsigned long long)status.candidates,
+           (unsigned long long)status.directories,
            (unsigned long long)status.elapsed_ms, (unsigned long long)status.parser_bytes,
            (unsigned long long)status.library_revision, (unsigned long long)status.epoch,
            status.max_descriptors, (long)peak_rss(),
@@ -390,10 +401,29 @@ again:
             putchar(',');
         json(status.error[i].message);
     }
+    printf("],\"error_class\":[");
+    for (unsigned i = 0; i < status.error_count; i++) {
+        if (i)
+            putchar(',');
+        printf("{\"path\":");
+        json(status.error[i].path);
+        printf(",\"code\":%d,\"recoverable\":%d,\"message\":", status.error[i].code,
+               status.error[i].recoverable);
+        json(status.error[i].message);
+        putchar('}');
+    }
     printf("],\"parser_peak_rss_kib\":%u,\"fd_baseline\":%u,\"fd_peak_sampled\":%u,\"fd_final\":%u,"
-           "\"write_bytes\":%llu}\n",
+           "\"write_bytes\":%llu,\"query_p50_ms\":%.3f,\"query_p99_ms\":%.3f,"
+           "\"metadata_parses\":%llu,\"db_bytes\":%llu,\"sql_inserts\":%llu,\"sql_updates\":%llu,"
+           "\"sql_deletes\":%llu,\"track_updates\":%llu,\"stats_available\":%s}\n",
            status.parser_peak_rss_kib, fd_baseline, fd_peak, fd_count(),
-           (unsigned long long)(write_bytes() - writes_before));
+           (unsigned long long)(write_bytes() - writes_before),
+           query->count?query->samples[query->count*50/100]:0,
+           query->count?query->samples[query->count*99/100]:0,
+           (unsigned long long)status.metadata_parses,(unsigned long long)statistics.db_bytes,
+           (unsigned long long)statistics.sql_inserts,(unsigned long long)statistics.sql_updates,
+           (unsigned long long)statistics.sql_deletes,(unsigned long long)statistics.track_updates,
+           measured.status==SB_ML_OK?"true":"false");
     assert(fd_count() == fd_baseline);
     pthread_mutex_destroy(&query->lock);
     free(query);

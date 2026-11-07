@@ -92,11 +92,27 @@ static void publish(sb_music_scanner *s, int force) {
 }
 static void error(sb_music_scanner *s, const char *path, int code, const char *message) {
     s->working.errors++;
+    s->working.fatal_errors++;
     if (s->working.error_count < SB_SCAN_ERRORS) {
         sb_scan_error *e = &s->working.error[s->working.error_count++];
-        snprintf(e->path, sizeof e->path, "%.127s", path);
+        snprintf(e->path, sizeof e->path, "%s", path);
         snprintf(e->message, sizeof e->message, "%.127s", message);
         e->code = code;
+    }
+}
+static void file_error(sb_music_scanner *s,const char *path,const char *fp,
+                       const struct stat *st,uint64_t id,const sb_metadata_result *result) {
+    s->working.errors++;s->working.recoverable_errors++;
+    if(result->status==SB_META_UNSUPPORTED)s->working.unsupported++;
+    else if(result->status==SB_META_LIMIT)s->working.limited++;
+    else s->working.corrupt++;
+    if(s->working.error_count<SB_SCAN_ERRORS){
+        sb_scan_error *e=&s->working.error[s->working.error_count++];
+        snprintf(e->path,sizeof e->path,"%s",path);
+        snprintf(e->message,sizeof e->message,"%.127s",result->error);
+        snprintf(e->fingerprint,sizeof e->fingerprint,"%s",fp);
+        e->track_id=id;e->file_size=(uint64_t)st->st_size;e->mtime=st->st_mtime;
+        e->code=result->status;e->recoverable=1;
     }
 }
 static sb_ml_status db(sb_music_scanner *s, sb_ml_request *request, sb_ml_result *result) {
@@ -262,7 +278,7 @@ static int metadata(sb_music_scanner *s, int fd, sb_metadata_result *result) {
 }
 static int ignored(const char *name) {
     static const char *names[] = {
-        ".StandaloneBase", ".Squeezebox", ".Trash",       ".Trashes",
+        ".standalone-music", ".StandaloneBase", ".Squeezebox", ".Trash",       ".Trashes",
         ".Spotlight-V100", ".fseventsd",  "$RECYCLE.BIN", "System Volume Information",
         "lost+found",      ".git"};
     if (!strcmp(name, ".") || !strcmp(name, ".."))
@@ -458,7 +474,32 @@ static int process_file(sb_music_scanner *s, const char *path, const char *art) 
             return 0;
         }
     }
+    /* A file rejected with identical evidence needs no reparse: the lookup
+     * re-marks scan membership so reconciliation keeps the durable record. */
+    sb_ml_request known = {0};
+    sb_ml_result prior;
+    known.operation = SB_ML_SCAN_REJECT_LOOKUP;
+    known.data.rejection.media = s->options.root.media;
+    strcpy(known.data.rejection.path, path);
+    strcpy(known.data.rejection.fingerprint, fp);
+    status = db(s, &known, &prior);
+    if (status != SB_ML_OK && status != SB_ML_NOT_FOUND) {
+        close(fd);
+        error(s, path, status, "Rejected-file lookup failed");
+        return 0;
+    }
+    if (status == SB_ML_OK && !strcmp(prior.data.rejection.fingerprint, fp) &&
+        prior.data.rejection.file_size == (uint64_t)st.st_size &&
+        prior.data.rejection.mtime == st.st_mtime) {
+        close(fd);
+        sb_metadata_result cached = {0};
+        cached.status = prior.data.rejection.code;
+        snprintf(cached.error, sizeof cached.error, "%.127s", prior.data.rejection.message);
+        file_error(s, path, fp, &st, id, &cached);
+        return 1;
+    }
     sb_metadata_result result;
+    s->working.metadata_parses++;
     int parsed = metadata(s, fd, &result);
     int changed =
         fstat(fd, &after) || st.st_size != after.st_size ||
@@ -467,7 +508,32 @@ static int process_file(sb_music_scanner *s, const char *path, const char *art) 
     close(fd);
     if (cancelled(s))
         return 0;
-    if (!parsed || result.status != SB_META_OK || changed) {
+    if(parsed&&!changed&&root_current(s)&&
+       (result.status==SB_META_UNSUPPORTED||result.status==SB_META_INVALID||result.status==SB_META_LIMIT)) {
+        /* A well-formed bounded parser rejection is local to this unchanged
+         * file. Do not stamp any previous track: only successful complete
+         * reconciliation will retire that stale playable record. */
+        file_error(s,path,fp,&st,id,&result);
+        sb_ml_request reject={0};
+        sb_ml_result ack;
+        reject.operation=SB_ML_SCAN_REJECT;
+        reject.data.rejection.media=s->options.root.media;
+        strcpy(reject.data.rejection.path,path);
+        strcpy(reject.data.rejection.fingerprint,fp);
+        snprintf(reject.data.rejection.message,sizeof reject.data.rejection.message,"%.127s",result.error);
+        reject.data.rejection.file_size=(uint64_t)st.st_size;
+        reject.data.rejection.mtime=st.st_mtime;
+        reject.data.rejection.code=result.status;
+        reject.data.rejection.previous_track_id=id;
+        if(db(s,&reject,&ack)!=SB_ML_OK){
+            error(s,path,ack.status,"Rejected-file record failed");
+            return 0;
+        }
+        s->working.parser_bytes+=result.bytes_read;
+        if(result.peak_rss_kib>s->working.parser_peak_rss_kib)s->working.parser_peak_rss_kib=result.peak_rss_kib;
+        return 1;
+    }
+    if (!parsed || result.status != SB_META_OK || changed || !root_current(s)) {
         error(s, path, parsed ? result.status : SB_META_IO,
               changed  ? "File changed during probe"
               : parsed ? result.error
@@ -579,8 +645,9 @@ static void scan(sb_music_scanner *s) {
     first->ino = st.st_ino;
     first->observed = st;
     depth = 1;
+    s->working.directories=1;
     cover(s, first);
-    while (depth && !cancelled(s) && s->working.errors < 64) {
+    while (depth && !cancelled(s) && s->working.fatal_errors < 64) {
         directory *d = &s->stack[depth - 1];
         errno = 0;
         struct dirent *entry = readdir(d->dir);
@@ -657,8 +724,10 @@ static void scan(sb_music_scanner *s) {
             next->dev = next->observed.st_dev;
             next->ino = next->observed.st_ino;
             depth++;
+            s->working.directories++;
             cover(s, next);
         } else if (S_ISREG(st.st_mode) && audio_name(entry->d_name)) {
+            s->working.candidates++;
             if (!(st.st_mode & 0444)) {
                 error(s, path, EACCES, "Audio permission mask denies reading");
                 continue;
@@ -698,7 +767,7 @@ static void scan(sb_music_scanner *s) {
             d->dir = NULL;
         }
     }
-    if (!cancelled(s) && flush(s) && !s->working.errors && root_current(s)) {
+    if (!cancelled(s) && flush(s) && !s->working.fatal_errors && root_current(s)) {
         s->working.state = SB_SCAN_COMMITTING;
         publish(s, 1);
         r.operation = SB_ML_SCAN_FINISH;

@@ -141,6 +141,7 @@ static void event(const char *code, unsigned jiffies, unsigned elapsed)
 
 int main(int argc, char **argv)
 {
+	unsigned scan_files = 0;
 	char directory[] = "/dev/shm/sb-music-playback-XXXXXX";
 	assert(mkdtemp(directory));
 	char dbpath[] = "/tmp/sb-music-playback-db-XXXXXX";
@@ -260,8 +261,6 @@ int main(int argc, char **argv)
 	np_manager *np = np_create(120, 32);
 	assert(np);
 	assert(sb_owner_init(&owner, 1));
-	assert(sb_owner_register(&owner, SB_OWNER_MUSIC, 99));
-	assert(sb_owner_register(&owner, SB_OWNER_RADIO, 77));
 	int ipc[2];
 	assert(sb_resource_pair(ipc));
 	assert(fcntl(ipc[0], F_SETFD, 0) == 0);
@@ -277,10 +276,41 @@ int main(int argc, char **argv)
 				      send_frame,
 				      NULL);
 	assert(playback);
+	int single_mp3=argc>3&&!strcmp(argv[3],"single-mp3");
+	if(single_mp3)assert(sb_playback_single_mp3(playback));
 	assert(fcntl(ipc[0], F_GETFD) & FD_CLOEXEC);
+	/* Production constructs before Lua registers. RESET/ACK establishes the
+	 * real registry channel without creating a resource or starting a decoder. */
+	assert(!owner.registrations[SB_OWNER_MUSIC]);
+	assert(sb_playback_probe_resources(playback,np_monotonic_ms()));
+	assert(!sb_playback_bridge_ready(playback));
+	uint64_t probe_until=np_monotonic_ms()+5000;
+	while(!sb_playback_bridge_ready(playback)){
+		tick();rest();assert(np_monotonic_ms()<probe_until);
+	}
+	assert(starts==0&&commands==0&&owner.value.current==SB_OWNER_NONE&&!owner.baseline_idle);
+	assert(sb_owner_register(&owner, SB_OWNER_MUSIC, 99));
+	assert(sb_owner_register(&owner, SB_OWNER_RADIO, 77));
 	attach(1);
 	uint64_t context =
 		sb_queue_snapshot(sb_playback_queue(playback)).context;
+	if(single_mp3){
+		assert(sb_playback_load(playback,SB_Q_ADD,ids[0],0,context,np_monotonic_ms())==SB_Q_INVALID);
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],1,context,np_monotonic_ms())==SB_Q_INVALID);
+		/* WP4a.5: an idle player disconnect fails loudly, then the
+		 * empty failure recovers to IDLE so a fresh attach can
+		 * re-qualify without a process restart. */
+		sb_playback_detach(playback, 1);
+		assert(sb_playback_phase(playback)==SB_PLAY_FAILED);
+		assert(!sb_playback_bridge_ready(playback));
+		uint64_t recover_until=np_monotonic_ms()+5000;
+		while(sb_playback_phase(playback)!=SB_PLAY_IDLE){
+			tick();rest();assert(np_monotonic_ms()<recover_until);
+		}
+		assert(sb_playback_bridge_ready(playback));
+		assert(!strcmp(sb_playback_error(playback),"player_disconnected"));
+		attach(2);
+	}
 	assert(sb_playback_load(playback,
 				SB_Q_LOAD,
 				ids[0],
@@ -289,6 +319,29 @@ int main(int argc, char **argv)
 				np_monotonic_ms()) == SB_Q_OK);
 	phase(SB_PLAY_ACTIVE);
 	assert(starts == 1);
+	if(single_mp3){
+		assert(sb_playback_codecs(playback)==0);
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],0,context,np_monotonic_ms())==SB_Q_INVALID);
+		assert(!sb_playback_select(playback,0,context,np_monotonic_ms()));
+		assert(sb_playback_control(playback,'q',context,np_monotonic_ms()));
+		settle();
+		assert(starts==1);
+		/* WP4a.5 Gate F: a teardown RESET whose send timestamp lands
+		 * after the tick's now (same-millisecond straddle) must not
+		 * trip the 15s ACK timeout via unsigned underflow. Device
+		 * evidence: now=309987805 sent=309987806 fired instantly. */
+		sb_playback_detach(playback, 2);
+		sb_playback_tick(playback, np_monotonic_ms());
+		sb_playback_tick(playback, np_monotonic_ms());
+		sb_playback_tick(playback, 1);
+		assert(strcmp(sb_playback_error(playback),
+			      "resource_ack_timeout"));
+		sb_playback_tick(playback, np_monotonic_ms() + 1000000);
+		assert(sb_playback_phase(playback) == SB_PLAY_FAILED);
+		assert(!strcmp(sb_playback_error(playback),
+			       "resource_ack_timeout"));
+		goto cleanup;
+	}
 	assert(sb_queue_snapshot(sb_playback_queue(playback)).audible ==
 	       SB_QUEUE_NONE);
 	assert(!np_current(np)->track.title[0]);
@@ -371,7 +424,6 @@ int main(int argc, char **argv)
 	assert(sb_playback_status(playback, status, sizeof status));
 	assert(strstr(status, "\"playlist_tracks\":2") &&
 	       strstr(status, "\"playlist_cur_index\":1"));
-	unsigned scan_files = 0;
 	if (argc >= 3) {
 		char source[4096];
 		snprintf(source, sizeof source, "%s/comments.flac", argv[2]);
@@ -526,6 +578,7 @@ int main(int argc, char **argv)
 				      1,
 				      1,
 				      1));
+cleanup:
 	while (!sb_playback_destroy(playback))
 		rest();
 	while (!sb_stream_registry_stop(registry))

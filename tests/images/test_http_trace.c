@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <syslog.h>
 static char records[16384];
 static void capture_syslog(int priority,const char *format,...) {
     (void)priority;size_t n=strlen(records);va_list args;

@@ -1,7 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 #define _FILE_OFFSET_BITS 64
 #include "music_stream.h"
+#include <inttypes.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -167,18 +169,28 @@ int sb_stream_registry_tick(sb_stream_registry *s, uint64_t now)
 			int sent = sb_resource_send(s->ipc, &s->ack);
 			if (!sent)
 				return 1;
-			if (sent < 0)
+			if (sent < 0) {
+				fprintf(stderr,
+					"MUSIC_IPC_DISCONNECT why=ack_send seq=%llu\n",
+					(unsigned long long)s->ack.sequence);
 				goto disconnected;
+			}
 			s->ack_pending = 0;
 		}
 		sb_resource_message m;
 		int received = sb_resource_receive(s->ipc, &m);
 		if (!received)
 			return 1;
-		if (received < 0)
+		if (received < 0) {
+			fprintf(stderr, "MUSIC_IPC_DISCONNECT why=recv\n");
 			goto disconnected;
+		}
 		unsigned status = 0;
 		if (m.sequence <= s->sequence) {
+			fprintf(stderr,
+				"MUSIC_IPC_DISCONNECT why=sequence op=%u seq=%llu sseq=%llu\n",
+				m.operation, (unsigned long long)m.sequence,
+				(unsigned long long)s->sequence);
 			if (m.fd >= 0)
 				close(m.fd);
 			goto disconnected;
@@ -260,8 +272,11 @@ int sb_stream_registry_tick(sb_stream_registry *s, uint64_t now)
 					     32)))
 					resource_revoke(r);
 			}
-		} else
+		} else {
+			fprintf(stderr, "MUSIC_IPC_DISCONNECT why=op op=%u seq=%llu\n",
+				m.operation, (unsigned long long)m.sequence);
 			goto disconnected;
+		}
 		memset(&s->ack, 0, sizeof s->ack);
 		s->ack.operation = SB_RESOURCE_ACK;
 		s->ack.sequence = m.sequence;

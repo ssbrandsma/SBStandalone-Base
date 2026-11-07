@@ -15,7 +15,7 @@ import time
 WIRE = struct.Struct('!4sBBBBQ32s16s' + 'Q' * 9)
 
 
-def run(binary):
+def run(binary, production=False):
     with tempfile.TemporaryDirectory(prefix='sb-music-stream-http-') as directory:
         root = Path(directory)
         (root / 'web').mkdir()
@@ -40,7 +40,7 @@ def run(binary):
         env = os.environ | {'SBWEBSERVER_CONFIG_DIR': str(root / 'config')}
         with tempfile.TemporaryFile() as log:
             p = subprocess.Popen([binary, '--port', str(port), '--web-root', str(root / 'web'),
-                                  '--test-music-ipc', str(child.fileno())],
+                                  '--music-ipc' if production else '--test-music-ipc', str(child.fileno())],
                                  pass_fds=(child.fileno(),), env=env, stdout=log, stderr=log)
             child.close()
             sequence = 0
@@ -149,4 +149,4 @@ def run(binary):
 
 
 if __name__ == '__main__':
-    run(sys.argv[1])
+    run(sys.argv[1], '--production' in sys.argv[2:])

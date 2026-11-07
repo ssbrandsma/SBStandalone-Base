@@ -25,6 +25,7 @@
 #if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
 #include "music_stream_http.h"
 #endif
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -796,14 +797,16 @@ int http_server_run(int port, const char *root)
 	remote_init(d);
 	firmware_init(port);
 	snprintf(url, sizeof url, "http://0.0.0.0:%d", port);
+	fprintf(stderr, "SBWebserver: binding %s\n", url);
 	struct mg_mgr mgr;
 	mg_mgr_init(&mgr);
 	if (!mg_http_listen(&mgr, url, fn, &s)) {
-		fprintf(stderr, "Cannot listen on %s\n", url);
+		fprintf(stderr, "Cannot listen on %s: %s\n", url, strerror(errno));
 		remote_free();
 		auth_free();
 		return 1;
 	}
+	fprintf(stderr, "SBWebserver: bound %s\n", url);
 	for (;;) {
 #if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
 		sb_web_music_tick();

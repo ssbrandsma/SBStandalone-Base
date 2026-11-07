@@ -1,9 +1,18 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #define _POSIX_C_SOURCE 200809L
 #include "music_resource_ipc.h"
+#include <poll.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 
 int sb_resource_adopt(int socket)
@@ -51,6 +60,250 @@ static uint64_t get(const unsigned char *p)
 	for (unsigned i = 0; i < 8; i++)
 		n = (n << 8) | p[i];
 	return n;
+}
+
+static uint64_t rendezvous_ms(void)
+{
+	struct timespec t;
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	return (uint64_t)t.tv_sec * 1000 + (uint64_t)t.tv_nsec / 1000000;
+}
+
+/* Qualification override for unprivileged host tests; production always
+ * uses the compiled default. Mirrors the SBWEBSERVER_CONFIG_DIR precedent. */
+static const char *rendezvous_dir(void)
+{
+	const char *e = getenv("SB_MUSIC_IPC_DIR");
+	return e && *e ? e : SB_RESOURCE_RENDEZVOUS_DIR;
+}
+
+static int rendezvous_path(char out[108])
+{
+	if (snprintf(out,
+		     108,
+		     "%s/music.sock",
+		     rendezvous_dir()) >= 108)
+		return 0;
+	return 1;
+}
+
+static int rendezvous_address(struct sockaddr_un *address)
+{
+	char path[108];
+	memset(address, 0, sizeof *address);
+	address->sun_family = AF_UNIX;
+	if (!rendezvous_path(path) ||
+	    strlen(path) >= sizeof address->sun_path)
+		return 0;
+	strcpy(address->sun_path, path);
+	return 1;
+}
+
+static int rendezvous_directory(void)
+{
+	const char *dir = rendezvous_dir();
+	struct stat st;
+	if (mkdir(dir, 0700) && errno != EEXIST)
+		return 0;
+	if (stat(dir, &st) || !S_ISDIR(st.st_mode) ||
+	    st.st_uid != geteuid() || (st.st_mode & 0077))
+		return 0;
+	return 1;
+}
+
+int sb_resource_rendezvous_listen(void)
+{
+	struct sockaddr_un address;
+	if (!rendezvous_address(&address) || !rendezvous_directory())
+		return -1;
+	/* A live listener means another music webserver; refuse duplicates.
+	 * A stale socket from a dead listener is unlinked and replaced. */
+	int probe = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (probe < 0 || fcntl(probe, F_SETFD, FD_CLOEXEC) < 0) {
+		if (probe >= 0)
+			close(probe);
+		return -1;
+	}
+	if (!connect(probe,
+		     (struct sockaddr *)&address,
+		     (socklen_t)sizeof address)) {
+		close(probe);
+		errno = EADDRINUSE;
+		return -1;
+	}
+	int error = errno;
+	close(probe);
+	if (error != ENOENT && error != ECONNREFUSED)
+		return -1;
+	char stale[108];
+	if (!rendezvous_path(stale))
+		return -1;
+	unlink(stale);
+	int listener = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (listener < 0 || fcntl(listener, F_SETFD, FD_CLOEXEC) < 0) {
+		if (listener >= 0)
+			close(listener);
+		return -1;
+	}
+	if (bind(listener,
+		 (struct sockaddr *)&address,
+		 (socklen_t)sizeof address) ||
+	    listen(listener, 1)) {
+		close(listener);
+		return -1;
+	}
+	return listener;
+}
+
+int sb_resource_rendezvous_accept(int listen_fd, unsigned timeout_ms)
+{
+	if (listen_fd < 0)
+		return -1;
+	uint64_t until = rendezvous_ms() + timeout_ms;
+	for (;;) {
+		uint64_t now = rendezvous_ms();
+		if (now >= until)
+			return -1;
+		unsigned wait = until - now > 1000 ? 1000 :
+							 (unsigned)(until - now);
+		struct pollfd p = {listen_fd, POLLIN, 0};
+		int n = poll(&p, 1, (int)wait);
+		if (n < 0 && errno == EINTR)
+			continue;
+		if (n <= 0)
+			continue;
+		int conn = accept(listen_fd, NULL, NULL);
+		if (conn < 0 && errno == EINTR)
+			continue;
+		if (conn < 0 || fcntl(conn, F_SETFD, FD_CLOEXEC) < 0) {
+			if (conn >= 0)
+				close(conn);
+			return -1;
+		}
+		struct ucred peer;
+		socklen_t length = sizeof peer;
+		if (getsockopt(conn,
+			       SOL_SOCKET,
+			       SO_PEERCRED,
+			       &peer,
+			       &length) ||
+		    length != sizeof peer || peer.uid != geteuid()) {
+			close(conn);
+			continue;
+		}
+		return conn;
+	}
+}
+
+int sb_resource_rendezvous_connect(unsigned timeout_ms)
+{
+	struct sockaddr_un address;
+	if (!rendezvous_address(&address) || !rendezvous_directory())
+		return -1;
+	uint64_t until = rendezvous_ms() + timeout_ms;
+	for (;;) {
+		int conn = socket(AF_UNIX, SOCK_STREAM, 0);
+		if (conn < 0)
+			return -1;
+		if (fcntl(conn, F_SETFD, FD_CLOEXEC) < 0) {
+			close(conn);
+			return -1;
+		}
+		if (!connect(conn,
+			     (struct sockaddr *)&address,
+			     (socklen_t)sizeof address))
+			return conn;
+		int error = errno;
+		close(conn);
+		if (error != ENOENT && error != ECONNREFUSED)
+			return -1;
+		if (rendezvous_ms() >= until)
+			return -1;
+		struct timespec pause = {0, 200000000};
+		nanosleep(&pause, NULL);
+	}
+}
+
+int sb_resource_push_fd(int conn, int fd)
+{
+	if (conn < 0 || fd < 0)
+		return 0;
+	unsigned char byte = 1;
+	struct iovec io = {&byte, 1};
+	union {
+		struct cmsghdr align;
+		unsigned char data[CMSG_SPACE(sizeof(int))];
+	} control;
+	memset(&control, 0, sizeof control);
+	struct msghdr msg = {0};
+	msg.msg_iov = &io;
+	msg.msg_iovlen = 1;
+	msg.msg_control = control.data;
+	msg.msg_controllen = sizeof control.data;
+	struct cmsghdr *c = CMSG_FIRSTHDR(&msg);
+	c->cmsg_level = SOL_SOCKET;
+	c->cmsg_type = SCM_RIGHTS;
+	c->cmsg_len = CMSG_LEN(sizeof(int));
+	memcpy(CMSG_DATA(c), &fd, sizeof(int));
+	ssize_t n;
+	do {
+		n = sendmsg(conn, &msg, MSG_NOSIGNAL);
+	} while (n < 0 && errno == EINTR);
+	return n == 1;
+}
+
+int sb_resource_take_fd(int conn, unsigned timeout_ms)
+{
+	if (conn < 0)
+		return -1;
+	struct pollfd p = {conn, POLLIN, 0};
+	int n = poll(&p, 1, (int)timeout_ms);
+	if (n <= 0)
+		return -1;
+	unsigned char byte = 0;
+	struct iovec io = {&byte, 1};
+	union {
+		struct cmsghdr align;
+		unsigned char data[CMSG_SPACE(sizeof(int))];
+	} control;
+	memset(&control, 0, sizeof control);
+	struct msghdr msg = {0};
+	msg.msg_iov = &io;
+	msg.msg_iovlen = 1;
+	msg.msg_control = control.data;
+	msg.msg_controllen = sizeof control.data;
+	ssize_t got;
+	do {
+		got = recvmsg(conn, &msg, 0);
+	} while (got < 0 && errno == EINTR);
+	if (got != 1 || byte != 1 ||
+	    (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC)))
+		return -1;
+	int fd = -1, count = 0;
+	for (struct cmsghdr *c = CMSG_FIRSTHDR(&msg); c;
+	     c = CMSG_NXTHDR(&msg, c)) {
+		if (c->cmsg_level != SOL_SOCKET ||
+		    c->cmsg_type != SCM_RIGHTS ||
+		    c->cmsg_len != CMSG_LEN(sizeof(int)))
+			return -1;
+		if (!count)
+			memcpy(&fd, CMSG_DATA(c), sizeof(int));
+		count++;
+	}
+	if (count != 1 || fd < 0)
+		return -1;
+	if (fcntl(fd, F_SETFD, FD_CLOEXEC) < 0) {
+		close(fd);
+		return -1;
+	}
+	return fd;
+}
+
+void sb_resource_rendezvous_cleanup(void)
+{
+	char path[108];
+	if (rendezvous_path(path))
+		unlink(path);
 }
 
 int sb_resource_pair(int pair[2])
@@ -121,7 +374,11 @@ int sb_resource_send(int socket, const sb_resource_message *m)
 	if (n < 0 &&
 	    (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR))
 		return 0;
-	return n == (ssize_t)sizeof wire ? 1 : -1;
+	int ok = n == (ssize_t)sizeof wire;
+	fprintf(stderr, "MUSIC_IPC_SEND op=%u seq=%llu fd=%d result=%d\n",
+		m->operation, (unsigned long long)m->sequence,
+		m->fd >= 0, ok ? 1 : -errno);
+	return ok ? 1 : -1;
 }
 
 int sb_resource_receive(int socket, sb_resource_message *out)
@@ -142,8 +399,10 @@ int sb_resource_receive(int socket, sb_resource_message *out)
 	if (n < 0 &&
 	    (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR))
 		return 0;
-	if (n < 0)
+	if (n < 0) {
+		fprintf(stderr, "MUSIC_IPC_RECV_ERROR result=%d\n", -errno);
 		return -1;
+	}
 	int fd = -1, count = 0, invalid = 0;
 	for (struct cmsghdr *c = CMSG_FIRSTHDR(&msg); c;
 	     c = CMSG_NXTHDR(&msg, c)) {
@@ -224,8 +483,12 @@ int sb_resource_receive(int socket, sb_resource_message *out)
 	if (!out)
 		goto fail;
 	*out = m;
+	fprintf(stderr, "MUSIC_IPC_RECV op=%u seq=%llu fd=%d\n",
+		m.operation, (unsigned long long)m.sequence, m.fd >= 0);
 	return 1;
 fail:
+	fprintf(stderr, "MUSIC_IPC_RECV_INVALID n=%zd flags=%u fds=%d\n",
+		n, (unsigned)msg.msg_flags, count);
 	if (fd >= 0)
 		close(fd);
 	return -1;

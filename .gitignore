@@ -11,5 +11,6 @@ __pycache__/
 *.log
 *.pid
 /.local/
+/.venv/
 /packaging/bootstrap-config.json
 /packaging/extensions.xml

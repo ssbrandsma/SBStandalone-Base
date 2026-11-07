@@ -224,7 +224,7 @@ class Coordinator(unittest.TestCase):
         self.state("RECOVERED")
         values = (ctypes.c_ushort * 20)()
         self.assertEqual(LIBC.semctl(self.sem, 0, 13, ctypes.byref(values)), 0)
-        self.assertEqual(sum(values[n] == 0 for n in range(0, 20, 2)), 1,
+        self.assertEqual(sum(values[n] == 0 for n in range(0, 20, 2)), 2,
                          "the old orphan decoder must not retain an IPC allocation")
 
     def test_stop_failure_with_advancing_original_ui_restores_original(self):

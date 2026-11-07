@@ -59,10 +59,14 @@ with tempfile.TemporaryDirectory(prefix="sb-library-wp1-") as directory:
     data = bytearray(corrupt.read_bytes()); data[:16] = b"NOT SQLITE DATA!"; corrupt.write_bytes(data)
     before = digest(corrupt)
     assert run("probe", corrupt) == "corrupt" and digest(corrupt) == before
-    # A v1 fixture has the same schema minus the two v2 scanner fields.
+    # A v1 fixture has the same schema minus the v2 scanner fields and the
+    # v4 rejection table: no real v1 database ever contained rejected_files,
+    # so retaining it while flipping user_version would be an impossible
+    # schema that must fail closed.
     legacy = root / "legacy.db"; shutil.copyfile(path, legacy)
     with sqlite3.connect(legacy) as db:
         db.execute("drop index track_fingerprint")
+        db.execute("drop table rejected_files")
         for column in ("bit_depth", "track_total", "disc_total", "release_date", "total_samples"):
             db.execute(f"alter table tracks drop column {column}")
         db.execute("alter table library_meta drop column scan_counter")
@@ -74,13 +78,15 @@ with tempfile.TemporaryDirectory(prefix="sb-library-wp1-") as directory:
     assert run("probe", legacy, 1) == "migration_required" and digest(legacy) == before
     assert run("probe", legacy) == "ok"
     with sqlite3.connect(legacy) as db:
-        assert db.execute("pragma user_version").fetchone()[0] == 3
+        assert db.execute("pragma user_version").fetchone()[0] == 4
         assert db.execute("select id,path,title from tracks order by id").fetchall() == expected
         assert db.execute("select count(*) from tracks where fingerprint='' and scan_epoch=0").fetchone()[0] == len(expected)
+        assert db.execute("select count(*) from rejected_files").fetchone()[0] == 0
     # Missing parent/source does not create directories or replacement data.
     legacy2 = root / "legacy2.db"; shutil.copyfile(path,legacy2)
     with sqlite3.connect(legacy2) as db:
         db.execute("drop index track_fingerprint")
+        db.execute("drop table rejected_files")
         for column in ("bit_depth","track_total","disc_total","release_date","total_samples"):
             db.execute(f"alter table tracks drop column {column}")
         db.execute("alter table library_meta drop column scan_counter")
@@ -90,9 +96,23 @@ with tempfile.TemporaryDirectory(prefix="sb-library-wp1-") as directory:
     assert run("probe",legacy2,1)=="migration_required" and digest(legacy2)==before
     assert run("probe",legacy2)=="ok"
     with sqlite3.connect(legacy2) as db:
-        assert db.execute("pragma user_version").fetchone()[0]==3
+        assert db.execute("pragma user_version").fetchone()[0]==4
+        assert db.execute("select count(*) from rejected_files").fetchone()[0]==0
         assert db.execute("select id,path,title from tracks order by id").fetchall()==expected
         assert db.execute("select count(*) from tracks where bit_depth=0 and track_total=0 and disc_total=0 and release_date=''").fetchone()[0]==len(expected)
+    # The deployed baseline is schema 3: it serves read-only as-is and
+    # gains only the rejection table on writable migration.
+    legacy3 = root / "legacy3.db"; shutil.copyfile(path,legacy3)
+    with sqlite3.connect(legacy3) as db:
+        db.execute("drop table rejected_files")
+        db.execute("pragma user_version=3")
+    before=digest(legacy3)
+    assert run("probe",legacy3,1)=="ok" and digest(legacy3)==before
+    assert run("probe",legacy3)=="ok"
+    with sqlite3.connect(legacy3) as db:
+        assert db.execute("pragma user_version").fetchone()[0]==4
+        assert db.execute("select id,path,title from tracks order by id").fetchall()==expected
+        assert db.execute("select count(*) from rejected_files").fetchone()[0]==0
     missing = root / "removed" / "library.db"
     assert run("probe", missing) == "io" and not missing.parent.exists()
     # Repeated worker start/close is exercised in C alongside per-operation FDs.

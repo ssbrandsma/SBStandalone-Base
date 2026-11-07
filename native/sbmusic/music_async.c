@@ -171,6 +171,7 @@ sb_ml_status sb_music_async_submit(sb_music_async *a,
 	    (request->operation != SB_ML_BROWSE &&
 	     request->operation != SB_ML_DETAIL &&
 	     request->operation != SB_ML_BROWSE_SUMMARY &&
+	     request->operation != SB_ML_REFRESH &&
 	     request->operation != SB_ML_SOURCE))
 		return SB_ML_INVALID;
 	if (pthread_mutex_trylock(&a->lock))

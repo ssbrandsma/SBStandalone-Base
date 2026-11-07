@@ -49,7 +49,9 @@ struct sb_music_library {
 	uint64_t revision, data_revision, pending_revision, transaction,
 		deadline, last_request;
 	int dirty, unavailable;
- uint64_t scan_epoch; sb_music_media scan_media;
+ uint64_t scan_epoch,scan_start_revision; sb_music_media scan_media;
+ uint64_t row_inserts,row_updates,row_deletes,track_updates;
+ uint64_t sql_inserts,sql_updates,sql_deletes,temporary_writes;
 };
 static uint64_t milliseconds(void)
 {
@@ -218,24 +220,37 @@ static int source_update(sb_music_library *h,const sb_music_media *media)
 	return 0;
 	}
 	sqlite3_int64 id=0;
+	int source_changed=0;
 	binding key[]={B(media->source.bytes)};
+	if(h->options.single_source){
+		sqlite3_int64 other=0,matching=0;
+		if(!scalar(h,"SELECT count(*) FROM media WHERE source!=?",key,1,&other)||
+		   !scalar(h,"SELECT count(*) FROM media WHERE source=?",key,1,&matching))return 0;
+		if(other||(!matching&&!h->options.create)){failure(h,SB_ML_CONFLICT,"Selected-volume database source mismatch; original preserved");return 0;}
+	}
 	if(h->options.read_only) {
 		if(!scalar(h,"SELECT id FROM media WHERE source=?",key,1,&id)){
 			if(h->result.status==SB_ML_OK)failure(h,SB_ML_NOT_FOUND,"Source is absent from read-only library");
 			return 0;
 		}
 	} else {
-		if(!execute(h,"BEGIN IMMEDIATE",NULL,0))return 0;
 		binding values[]={B(media->source.bytes),I(media->generation),I(!!media->online)};
-		int ok=execute(h,"INSERT INTO media(source,generation,online) VALUES(?,?,?) ON CONFLICT(source) DO UPDATE SET generation=excluded.generation,online=excluded.online",values,3)&&
-			scalar(h,"SELECT id FROM media WHERE source=?",key,1,&id)&&bump_revision(h)&&execute(h,"COMMIT",NULL,0);
+		sqlite3_int64 same=0;
+		if(!scalar(h,"SELECT count(*) FROM media WHERE source=? AND generation=? AND online=?",values,3,&same))return 0;
+		if(same){if(!scalar(h,"SELECT id FROM media WHERE source=?",key,1,&id))return 0;}
+		else {
+		if(!execute(h,"BEGIN IMMEDIATE",NULL,0))return 0;
+		int ok=execute(h,"INSERT INTO media(source,generation,online) VALUES(?,?,?) ON CONFLICT(source) DO UPDATE SET generation=excluded.generation,online=excluded.online WHERE media.generation!=excluded.generation OR media.online!=excluded.online",values,3);
+		if(ok)source_changed=sqlite3_changes(h->db)!=0;
+		ok=ok&&(!source_changed||bump_revision(h))&&scalar(h,"SELECT id FROM media WHERE source=?",key,1,&id)&&execute(h,"COMMIT",NULL,0);
 		if(!ok){execute(h,"ROLLBACK",NULL,0);
 		return 0;
+		}
 		}
 	}
 	h->media[slot]=(media_slot){*media,id};
 	if(slot==h->media_count)h->media_count++;
-	if(h->options.read_only)h->revision++;else revision_committed(h);
+	if(source_changed)revision_committed(h);
 	return 1;
 }
 static int upsert_track(sb_music_library *h,const sb_ml_track *track,sqlite3_int64 media)
@@ -374,20 +389,53 @@ static int progress(void *context)
 	}
 	return cancel||(h->deadline&&milliseconds()>=h->deadline);
 }
+static int trace_statement(unsigned event,void *context,void *statement,void *text)
+{
+ (void)event;(void)text;sb_music_library *h=context;
+ const char *sql=sqlite3_sql(statement);if(!sql)return 0;
+ uint64_t *counter=!strncmp(sql,"INSERT ",7)?&h->sql_inserts:!strncmp(sql,"UPDATE ",7)?&h->sql_updates:!strncmp(sql,"DELETE ",7)?&h->sql_deletes:NULL;
+ const char *destination=NULL;
+ if(!strncmp(sql,"INSERT ",7)){const char *into=strstr(sql," INTO ");if(into)destination=into+6;}
+ else if(!strncmp(sql,"UPDATE ",7))destination=sql+7;
+ else if(!strncmp(sql,"DELETE ",7)){const char *from=strstr(sql," FROM ");if(from)destination=from+6;}
+ /* A main-table DELETE may read the temporary membership table. Classify
+  * the write destination, not every table referenced by the statement. */
+ if(counter&&destination&&!strncmp(destination,"temp.",5))counter=&h->temporary_writes;
+ if(counter&&*counter<UINT64_MAX)(*counter)++;
+ return 0;
+}
+static void changed_row(void *context,int operation,const char *database,const char *table,sqlite3_int64 row)
+{
+ (void)row;sb_music_library *h=context;
+ if(strcmp(database,"main"))return;
+ uint64_t *counter=operation==SQLITE_INSERT?&h->row_inserts:operation==SQLITE_UPDATE?&h->row_updates:&h->row_deletes;
+ if(*counter<UINT64_MAX)(*counter)++;
+ if(operation==SQLITE_UPDATE&&!strcmp(table,"tracks")&&h->track_updates<UINT64_MAX)h->track_updates++;
+}
 static int open_database(sb_music_library *h)
 {
 	pthread_once(&memory_policy_once,memory_policy);
 	int flags=h->options.read_only?SQLITE_OPEN_READONLY:SQLITE_OPEN_READWRITE|(h->options.create?SQLITE_OPEN_CREATE:0);
 	int rc=sqlite3_open_v2(h->options.path,&h->db,flags|SQLITE_OPEN_NOMUTEX,NULL);
 	if(rc!=SQLITE_OK)return sql_error(h,rc);
+	sqlite3_update_hook(h->db,changed_row,h);
+	sqlite3_trace_v2(h->db,SQLITE_TRACE_STMT,trace_statement,h);
 	sqlite3_extended_result_codes(h->db,1);
 	sqlite3_busy_timeout(h->db,(int)h->options.busy_ms);
 	sqlite3_limit(h->db,SQLITE_LIMIT_LENGTH,65536);
 	sqlite3_limit(h->db,SQLITE_LIMIT_SQL_LENGTH,32768);
 	sqlite3_limit(h->db,SQLITE_LIMIT_ATTACHED,0);
 	if(!execute(h,"PRAGMA foreign_keys=ON",NULL,0)||!execute(h,"PRAGMA trusted_schema=OFF",NULL,0)||!script(h,"PRAGMA cache_size=-512;PRAGMA mmap_size=0;PRAGMA temp_store=MEMORY;"))return 0;
+	if(h->options.maximum_bytes) {
+		sqlite3_int64 page_size=0,pages=0;
+		if(!scalar(h,"PRAGMA page_size",NULL,0,&page_size)||!scalar(h,"PRAGMA page_count",NULL,0,&pages)||page_size<=0)return 0;
+		if((uint64_t)pages>h->options.maximum_bytes/(uint64_t)page_size){failure(h,SB_ML_LIMIT,"Database exceeds configured working-copy budget");return 0;}
+		char pragma[96];snprintf(pragma,sizeof pragma,"PRAGMA max_page_count=%llu",(unsigned long long)(h->options.maximum_bytes/(uint64_t)page_size));
+		if(!script(h,pragma))return 0;
+	}
 	sqlite3_int64 version=0,application=0,tables=0;
 	if(!scalar(h,"PRAGMA user_version",NULL,0,&version)||!scalar(h,"PRAGMA application_id",NULL,0,&application))return 0;
+	h->result.record_id=(uint64_t)version; /* OPEN reports pre-migration schema. */
 	if(version>SB_ML_SCHEMA_VERSION){failure(h,SB_ML_NEW_SCHEMA,"Newer schema preserved; downgrade refused");
 	return 0;
 	}
@@ -400,17 +448,35 @@ static int open_database(sb_music_library *h)
 		return 0;
 		}
 		if(!execute(h,"BEGIN IMMEDIATE",NULL,0))return 0;
-		if(!script(h,sb_ml_schema)||!script(h,"PRAGMA application_id=1396854101;PRAGMA user_version=3;COMMIT;"))return 0;
+		if(!script(h,sb_ml_schema)||!script(h,"PRAGMA application_id=1396854101;PRAGMA user_version=4;COMMIT;"))return 0;
 	} else if(version==1) {
 		if(h->options.read_only){failure(h,SB_ML_MIGRATION_REQUIRED,"Read-only schema needs writable migration");
 		return 0;
 		}
-		if(!script(h,"BEGIN IMMEDIATE;ALTER TABLE tracks ADD COLUMN fingerprint TEXT NOT NULL DEFAULT '';ALTER TABLE tracks ADD COLUMN scan_epoch INTEGER NOT NULL DEFAULT 0;PRAGMA user_version=2;COMMIT;"))return 0;
+		if(!script(h,"BEGIN IMMEDIATE;ALTER TABLE tracks ADD COLUMN fingerprint TEXT NOT NULL DEFAULT '';ALTER TABLE tracks ADD COLUMN scan_epoch INTEGER NOT NULL DEFAULT 0;PRAGMA user_version=2;"))return 0;
  version=2;
 	}
  if(version&&version<3){
   if(h->options.read_only){failure(h,SB_ML_MIGRATION_REQUIRED,"Read-only schema needs WP2 migration");return 0;}
-  if(!script(h,"BEGIN IMMEDIATE;ALTER TABLE tracks ADD COLUMN bit_depth INTEGER NOT NULL DEFAULT 0;ALTER TABLE tracks ADD COLUMN track_total INTEGER NOT NULL DEFAULT 0;ALTER TABLE tracks ADD COLUMN disc_total INTEGER NOT NULL DEFAULT 0;ALTER TABLE tracks ADD COLUMN release_date TEXT NOT NULL DEFAULT '';ALTER TABLE tracks ADD COLUMN total_samples INTEGER NOT NULL DEFAULT 0;ALTER TABLE library_meta ADD COLUMN scan_counter INTEGER NOT NULL DEFAULT 0;ALTER TABLE media ADD COLUMN scan_root TEXT;CREATE INDEX track_fingerprint ON tracks(media_id,fingerprint);PRAGMA user_version=3;COMMIT;"))return 0;
+  if(sqlite3_get_autocommit(h->db)&&!execute(h,"BEGIN IMMEDIATE",NULL,0))return 0;
+  if(!script(h,"ALTER TABLE tracks ADD COLUMN bit_depth INTEGER NOT NULL DEFAULT 0;ALTER TABLE tracks ADD COLUMN track_total INTEGER NOT NULL DEFAULT 0;ALTER TABLE tracks ADD COLUMN disc_total INTEGER NOT NULL DEFAULT 0;ALTER TABLE tracks ADD COLUMN release_date TEXT NOT NULL DEFAULT '';ALTER TABLE tracks ADD COLUMN total_samples INTEGER NOT NULL DEFAULT 0;ALTER TABLE library_meta ADD COLUMN scan_counter INTEGER NOT NULL DEFAULT 0;ALTER TABLE media ADD COLUMN scan_root TEXT;CREATE INDEX track_fingerprint ON tracks(media_id,fingerprint);PRAGMA user_version=3;"))return 0;
+  version=3;
+ }
+ /* Schema 3 remains a supported read-only projection for baseline rollback.
+  * Writable scans migrate their private working copy transactionally. */
+ if(version==3&&!h->options.read_only){
+  if(sqlite3_get_autocommit(h->db)&&!execute(h,"BEGIN IMMEDIATE",NULL,0))return 0;
+  if(!script(h,SB_ML_REJECTIONS_SCHEMA)||!script(h,"PRAGMA user_version=4;"))return 0;
+ }
+
+ sqlite3_int64 required=0;
+ if((version>=4||!h->options.read_only)&&!execute(h,"SELECT media_id,path,fingerprint,size,mtime,code,message,previous_track_id FROM rejected_files LIMIT 0",NULL,0))return 0;
+ if(!scalar(h,"SELECT count(*) FROM sqlite_schema WHERE type='index' AND name IN ('folder_parent','album_name','track_fingerprint','track_name','track_album','track_folder','track_recent','contributor_tracks','genre_tracks')",NULL,0,&required)||required!=9){
+  failure(h,SB_ML_CORRUPT,"Required library indexes missing; database preserved");return 0;
+ }
+ sqlite3_int64 valid_revision=0;
+ if(!scalar(h,"SELECT revision FROM library_meta WHERE id=1 AND scan_counter>=0",NULL,0,&valid_revision)||valid_revision<1||valid_revision>=INT64_MAX){
+  failure(h,SB_ML_CORRUPT,"Missing/invalid library metadata; migration not committed");return 0;
  }
 
 	sqlite3_stmt *check=prepare(h,"PRAGMA quick_check",NULL,0);
@@ -423,6 +489,7 @@ static int open_database(sb_music_library *h)
 	failure(h,SB_ML_CORRUPT,"Database quick_check failed; original preserved");
 	return 0;
 	}
+	if(!sqlite3_get_autocommit(h->db)&&!execute(h,"COMMIT",NULL,0))return 0;
 	if(!h->options.read_only) {
 		const char *mode=h->options.journal==SB_ML_WAL_JOURNAL?"PRAGMA journal_mode=WAL":"PRAGMA journal_mode=DELETE";
 		check=prepare(h,mode,NULL,0);
@@ -838,7 +905,12 @@ static int statistics(sb_music_library *h)
 	out->sqlite_memory = (uint64_t)used;
 	out->sqlite_memory_high = (uint64_t)high;
 	out->revision = h->revision;
-	out->schema_version = SB_ML_SCHEMA_VERSION;
+	sqlite3_int64 schema_version=0;if(!scalar(h,"PRAGMA user_version",NULL,0,&schema_version))return 0;
+	out->schema_version = (unsigned)schema_version;
+	out->row_inserts=h->row_inserts;out->row_updates=h->row_updates;
+	out->row_deletes=h->row_deletes;out->track_updates=h->track_updates;
+	out->sql_inserts=h->sql_inserts;out->sql_updates=h->sql_updates;
+	out->sql_deletes=h->sql_deletes;out->temporary_writes=h->temporary_writes;
 	return 1;
 }
 static void rollback_preserving_error(sb_music_library *h)
@@ -855,6 +927,44 @@ static void rollback_preserving_error(sb_music_library *h)
  if(status!=SB_ML_OK){h->result.status=status;h->result.sqlite_code=code;memcpy(h->result.error,error,sizeof error);}
 }
 
+static void refresh_database(sb_music_library *h)
+{
+ if(!h->options.read_only||!h->options.refresh||h->transaction||h->scan_epoch){failure(h,SB_ML_UNSUPPORTED,"Snapshot refresh requires idle read-only provider");return;}
+ if(h->revision>=INT64_MAX-1){failure(h,SB_ML_LIMIT,"Revision exhausted");return;}
+ sb_ml_refresh refreshed={0};
+ sb_ml_status status=h->options.refresh(h->options.refresh_context,h->options.path,&refreshed);
+ if(status!=SB_ML_OK){
+  if(status==SB_ML_BUSY||status==SB_ML_LIMIT||status==SB_ML_CANCELLED){failure(h,status,"Snapshot refresh deferred; previous view retained");return;}
+  int changed=0;for(unsigned i=0;i<h->media_count;i++){changed|=h->media[i].state.online;h->media[i].state.online=0;}
+  if(changed&&h->revision<INT64_MAX-1)h->revision++;
+  failure(h,status,"Snapshot medium unavailable; catalogue retained offline");return;
+ }
+ h->result.data.media=refreshed.media;
+ if(!refreshed.changed)return;
+ if(refreshed.path[0]!='/'||!memchr(refreshed.path,0,sizeof refreshed.path)||!strcmp(refreshed.path,h->options.path)){
+  failure(h,SB_ML_INVALID,"Refresh must supply an inactive validated working copy");return;
+ }
+ sb_ml_options previous=h->options;media_slot old_media[16];
+ memcpy(old_media,h->media,sizeof old_media);unsigned old_count=h->media_count;
+ uint64_t old_revision=h->revision;
+ int rc=sqlite3_close(h->db);if(rc!=SQLITE_OK){sql_error(h,rc);return;}h->db=NULL;
+ snprintf(h->options.path,sizeof h->options.path,"%s",refreshed.path);
+ h->media_count=0;h->unavailable=0;
+ int ok=open_database(h)&&source_update(h,&refreshed.media);
+ if(ok){
+  if(h->revision<=old_revision)h->revision=old_revision+1;
+  h->result.record_id=1;h->result.data.media=refreshed.media;return;
+ }
+ sb_ml_result failed=h->result;
+ if(h->db){sqlite3_close(h->db);h->db=NULL;}
+ h->options=previous;h->unavailable=0;h->media_count=0;
+ if(open_database(h)){
+  memcpy(h->media,old_media,sizeof old_media);h->media_count=old_count;
+  h->revision=old_revision;
+ }
+ h->result=failed;
+}
+
 #include "music_library_scan.inc"
 
 static void process_request(sb_music_library *h)
@@ -863,6 +973,7 @@ static void process_request(sb_music_library *h)
  if(r->operation==SB_ML_OPEN){open_database(h);
  return;
  }
+ if(r->operation==SB_ML_REFRESH){refresh_database(h);return;}
  if(r->operation==SB_ML_CLOSE){
   if(h->transaction)rollback_preserving_error(h);
   sqlite3_progress_handler(h->db,0,NULL,NULL);
@@ -1011,6 +1122,12 @@ static void process_request(sb_music_library *h)
  ok=execute(h,"DELETE FROM tracks WHERE media_id=? AND id=?",v,2);
  if(ok&&sqlite3_changes(h->db))h->dirty=1;
  }
+ if(ok && r->operation==SB_ML_UPSERT && r->scan_token){
+  binding rejected[]={I(media->id),T(r->data.track.path)};
+  ok=execute(h,"DELETE FROM rejected_files WHERE media_id=? AND path=?",rejected,2);
+  binding seen[]={I(h->result.record_id)};
+  if(ok)ok=execute(h,"INSERT OR IGNORE INTO temp.scan_seen VALUES(?)",seen,1);
+ }
  if(ok&&automatic){ok=(!h->dirty||bump_revision(h))&&execute(h,"COMMIT",NULL,0);
  if(ok){if(h->dirty)revision_committed(h);
  h->dirty=0;
@@ -1080,6 +1197,7 @@ sb_music_library *sb_music_library_start(const sb_ml_options *options)
 	if (!options || options->path[0] != '/' ||
 	    !text_valid(options->path, sizeof options->path) ||
 	    options->busy_ms > 200 || options->query_ms > 5000 ||
+	    (options->maximum_bytes && (options->maximum_bytes<4096 || options->maximum_bytes>UINT64_C(536870912))) ||
 	    (unsigned)options->journal > SB_ML_WAL_JOURNAL ||
 	    (options->journal == SB_ML_WAL_JOURNAL && !options->wal_safe) ||
 	    (options->read_only && options->create))
@@ -1313,6 +1431,7 @@ sb_ml_status sb_music_library_exchange_browse(sb_music_library *h,
 	    (r->operation != SB_ML_BROWSE &&
 	     r->operation != SB_ML_DETAIL &&
 	     r->operation != SB_ML_BROWSE_SUMMARY &&
+	     r->operation != SB_ML_REFRESH &&
 	     r->operation != SB_ML_SOURCE))
 		return SB_ML_INVALID;
 	pthread_mutex_lock(&h->lock);

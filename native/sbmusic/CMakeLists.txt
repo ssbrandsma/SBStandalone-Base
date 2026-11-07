@@ -27,3 +27,28 @@ target_link_libraries(sbmusic_scanner PUBLIC sbmusic_storage)
 add_library(sbmusic_async STATIC music_async.c)
 target_compile_options(sbmusic_async PRIVATE -Os -Wall -Wextra -Wpedantic)
 target_link_libraries(sbmusic_async PUBLIC sbmusic)
+
+add_library(sbmusic_snapshot STATIC music_snapshot.c music_snapshot_view.c)
+target_compile_options(sbmusic_snapshot PRIVATE -Os -Wall -Wextra -Wpedantic)
+target_compile_definitions(sbmusic_snapshot PRIVATE _FILE_OFFSET_BITS=64)
+target_link_libraries(sbmusic_snapshot PUBLIC sbmusic_storage)
+add_executable(sbmusic_library_tool music_library_tool.c)
+target_compile_options(sbmusic_library_tool PRIVATE -Os -Wall -Wextra -Wpedantic)
+target_compile_definitions(sbmusic_library_tool PRIVATE _FILE_OFFSET_BITS=64)
+target_link_libraries(sbmusic_library_tool PRIVATE sbmusic_snapshot sbmusic_scanner)
+if(BUILD_TESTING)
+ find_package(Python3 COMPONENTS Interpreter REQUIRED)
+ add_executable(sbmusic_library_fixture music_library_tool.c)
+ target_compile_definitions(sbmusic_library_fixture PRIVATE _FILE_OFFSET_BITS=64 SB_MUSIC_LIBRARY_TESTING=1)
+ target_link_libraries(sbmusic_library_fixture PRIVATE sbmusic_snapshot sbmusic_scanner)
+ add_test(NAME music_library_lifecycle COMMAND ${Python3_EXECUTABLE}
+   ${CMAKE_SOURCE_DIR}/tests/music/test_library_lifecycle.py
+   $<TARGET_FILE:sbmusic_library_fixture> $<TARGET_FILE:sbmusic_metadata_helper>)
+ set_tests_properties(music_library_lifecycle PROPERTIES TIMEOUT 90)
+ add_executable(test_music_snapshot_view ${CMAKE_SOURCE_DIR}/tests/music/snapshot_view_driver.c)
+ target_link_libraries(test_music_snapshot_view PRIVATE sbmusic_snapshot sbmusic_async)
+ add_test(NAME music_snapshot_view COMMAND ${Python3_EXECUTABLE}
+   ${CMAKE_SOURCE_DIR}/tests/music/test_snapshot_view.py
+   $<TARGET_FILE:sbmusic_library_fixture> $<TARGET_FILE:sbmusic_metadata_helper> $<TARGET_FILE:test_music_snapshot_view>)
+ set_tests_properties(music_snapshot_view PROPERTIES TIMEOUT 60)
+endif()

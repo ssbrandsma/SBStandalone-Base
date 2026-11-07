@@ -1,6 +1,7 @@
 #ifndef SB_MUSIC_SCHEMA_H
 #define SB_MUSIC_SCHEMA_H
 #define SB_ML_APPLICATION_ID 1396854101
+#define SB_ML_REJECTIONS_SCHEMA "CREATE TABLE rejected_files(media_id INTEGER NOT NULL REFERENCES media(id),path TEXT NOT NULL,fingerprint TEXT NOT NULL,size INTEGER NOT NULL,mtime INTEGER NOT NULL,code INTEGER NOT NULL CHECK(code BETWEEN 1 AND 3),message TEXT NOT NULL,previous_track_id INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(media_id,path)) WITHOUT ROWID;"
 static const char sb_ml_schema[] =
 "CREATE TABLE library_meta(id INTEGER PRIMARY KEY CHECK(id=1),revision INTEGER NOT NULL,scan_counter INTEGER NOT NULL DEFAULT 0);"
 "INSERT INTO library_meta VALUES(1,1,0);"
@@ -21,5 +22,6 @@ static const char sb_ml_schema[] =
 "CREATE TABLE track_contributors(track_id INTEGER NOT NULL REFERENCES tracks(id) ON DELETE CASCADE,contributor_id INTEGER NOT NULL REFERENCES contributors(id),role INTEGER NOT NULL,ordinal INTEGER NOT NULL,PRIMARY KEY(track_id,contributor_id,role)) WITHOUT ROWID;"
 "CREATE INDEX contributor_tracks ON track_contributors(contributor_id,track_id);"
 "CREATE TABLE track_genres(track_id INTEGER NOT NULL REFERENCES tracks(id) ON DELETE CASCADE,genre_id INTEGER NOT NULL REFERENCES genres(id),PRIMARY KEY(track_id,genre_id)) WITHOUT ROWID;"
-"CREATE INDEX genre_tracks ON track_genres(genre_id,track_id);";
+"CREATE INDEX genre_tracks ON track_genres(genre_id,track_id);"
+SB_ML_REJECTIONS_SCHEMA;
 #endif

@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <poll.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -162,8 +163,14 @@ if(rc){fprintf(stderr,"fixture SQL: %s\n",error);
 abort();
 }sqlite3_free(error);
 }
+static void *descriptor_warmup(void *unused){return unused;}
 static void correctness(const char *path,unsigned n,int wal)
 {
+ /* Linux-user QEMU lazily creates a host event descriptor for its first
+  * guest thread. Establish that runtime baseline with a thread that never
+  * touches the library. Every library open/close must still preserve it. */
+ pthread_t warmup;assert(!pthread_create(&warmup,NULL,descriptor_warmup,NULL));
+ assert(!pthread_join(warmup,NULL));
  unsigned fds=descriptors();
  sb_music_library *h=open_library(path,1,0,wal);
  source(h);
@@ -399,7 +406,7 @@ static void benchmark(const char *path,unsigned n)
  h=open_library(path,0,0,0);
  source(h);
  sb_music_query_kind kinds[]={SB_QUERY_ARTISTS,SB_QUERY_ALBUMS,SB_QUERY_TRACKS,SB_QUERY_TRACKS};
- double cold[4],warm[4],p95[4];
+ double cold[4],warm[4],p95[4],p50[4],p99[4];
  for(unsigned k=0;k<4;k++){
   r=query_request(kinds[k]);
   if(k==3)strcpy(r.data.query.search,"Track 00");
@@ -408,10 +415,10 @@ static void benchmark(const char *path,unsigned n)
   cold[k]=(now()-started)*1000;
   assert(k==3||result.data.query.page.total==(k==0?62:k==1?(n+9)/10:n));
   started=now();
-  double samples[20];
-  for(unsigned j=0;j<20;j++){double tick=now();checked(h,&r);samples[j]=(now()-tick)*1000;}
-  warm[k]=(now()-started)*1000/20;
-  qsort(samples,20,sizeof samples[0],compare_double);p95[k]=samples[18];
+  double samples[100];
+  for(unsigned j=0;j<100;j++){double tick=now();checked(h,&r);samples[j]=(now()-tick)*1000;}
+  warm[k]=(now()-started)*1000/100;
+  qsort(samples,100,sizeof samples[0],compare_double);p50[k]=samples[50];p95[k]=samples[95];p99[k]=samples[99];
  }
  started=now();
  transaction(h,SB_ML_BEGIN,2);
@@ -446,7 +453,7 @@ static void benchmark(const char *path,unsigned n)
  for(unsigned j=0;j<plan.data.plan.count;j++)printf("%s\"%s\"",j?",":"",plan.data.plan.lines[j]);
  printf("]");
  }
- printf("]}\n");
+ printf("],\"warm_p50_ms\":[%.6f,%.6f,%.6f,%.6f],\"warm_p99_ms\":[%.6f,%.6f,%.6f,%.6f]}\n",p50[0],p50[1],p50[2],p50[3],p99[0],p99[1],p99[2],p99[3]);
  close_library(h);
 }
 static ssize_t fail_write(int fd,const void *buffer,size_t count){(void)fd;(void)buffer;(void)count;errno=EIO;return -1;}

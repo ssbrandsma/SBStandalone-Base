@@ -1,6 +1,10 @@
 /* Read-only restart preflight. Never opens the watchdog device or mutates IPC. */
 #include <ctype.h>
 typedef struct { identity feeder,watched,children[4];int semid;unsigned slots,fd,child_count; } restart_profile;
+/* Fab4 7.7.3 r16676 has two observed Jive watchdog registrations.
+ * Countdown GETPID is not ownership: the stock feeder also decrements it.
+ * Registration evidence is distinct from the challenge-bound UI witness. */
+#define FAB4_JIVE_KEEPALIVES 2
 static const char *watchdog_executable(void)
 {
 #ifdef SB_MAINTENANCE_TEST
@@ -118,20 +122,20 @@ static int restart_preflight(restart_profile *out)
   if(values[n]>1)return restart_error("uncertain IPC allocation");
   if(values[n]==0){
    if(!values[n+1])return restart_error("an allocated watchdog IPC countdown has expired");
-   int actor=semctl(out->semid,(int)n+1,GETPID);
+   int actor=semctl(out->semid,(int)n,GETPID);
    if(actor<0)return restart_error("cannot identify IPC keepalive actor");
    if(actor==out->watched.pid)ui++;
   }
  }
- if(ui!=1||!same(out->watched.pid,out->watched.start)||!same(out->feeder.pid,out->feeder.start))
-  return restart_error("missing/stale Jive UI or feeder keepalive evidence");
+ if(ui!=FAB4_JIVE_KEEPALIVES||!same(out->watched.pid,out->watched.start)||!same(out->feeder.pid,out->feeder.start))
+  return restart_error("missing/stale Fab4 Jive registrations or feeder identity");
  return 1;
 }
 static int show_restart_preflight(void)
 {
  restart_profile p;if(!restart_preflight(&p))return 2;
- printf("{\"actor\":\"restart_preflight\",\"read_only\":true,\"jive_pid\":%ld,\"jive_start\":\"%llu\",\"feeder_pid\":%ld,\"feeder_start\":\"%llu\",\"watchdog_fd\":%u,\"semid\":%d,\"slots\":%u}\n",
+ printf("{\"actor\":\"restart_preflight\",\"read_only\":true,\"jive_pid\":%ld,\"jive_start\":\"%llu\",\"feeder_pid\":%ld,\"feeder_start\":\"%llu\",\"watchdog_fd\":%u,\"semid\":%d,\"slots\":%u,\"jive_registrations\":%u}\n",
   (long)p.watched.pid,(unsigned long long)p.watched.start,(long)p.feeder.pid,
-  (unsigned long long)p.feeder.start,p.fd,p.semid,p.slots);
+  (unsigned long long)p.feeder.start,p.fd,p.semid,p.slots,FAB4_JIVE_KEEPALIVES);
  return 0;
 }

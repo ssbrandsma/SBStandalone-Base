@@ -7,6 +7,7 @@
 #include <unistd.h>
 static sb_physical_owner owner;
 static int resources_ready = 0;
+static int music_ready(void *context) {(void)context;return resources_ready;}
 
 static int music_proof(void *ctx,
 		       uint64_t adapter,
@@ -58,7 +59,15 @@ int main(void)
 	while (fgets(line, sizeof line, stdin)) {
 		line[strcspn(line, "\n")] = 0;
 		unsigned long long value;
-		if (sscanf(line, "!time %llu", &value) == 1) {
+		if (sscanf(line,"!native-request %llu",&value)==1) {
+			int ok=value==4&&sb_owner_request(&owner,SB_OWNER_MUSIC,owner.last_request+1,now,1000);
+			printf("{\"status\":%d}\n",ok?200:409);
+		} else if (sscanf(line, "!idle-policy %llu", &value) == 1) {
+			bridge.idle_only=1;bridge.unavailable_mask=14;
+			bridge.startup_native_absent_mask=(unsigned)value;
+			bridge.music_ready=music_ready;
+			puts("{\"status\":200}");
+		} else if (sscanf(line, "!time %llu", &value) == 1) {
 			now = (uint64_t)value;
 			sb_ob_tick(&bridge, now);
 			puts("{\"status\":200}");

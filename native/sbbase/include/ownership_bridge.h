@@ -28,6 +28,7 @@ typedef struct {
 	int reconnect_pending;
 	unsigned unavailable_mask, startup_native_absent_mask;
 	unsigned idle_mask, admission_holds;
+	int idle_only, idle_admitted; /* explicit initial-idle qualification policy */
 	int alarm_hold;
 	int enabled, token_dir;
 	char token[65], token_name[128];

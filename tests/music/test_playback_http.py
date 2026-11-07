@@ -211,7 +211,7 @@ def run(base, web, scanner, helper, initial_owner=None, library_size=0, fixture=
                 playable = next(x for x in albums['item_loop'] if x['id'] == str(tracks['first.mp3'][0 if library_size else 1]))
                 action = playable['actions']['play']
                 context = action['params']['queue_context']
-                actual = [*action['cmd'], *[f'{k}:{v}' for k, v in action['params'].items()]]
+                actual = [*action['cmd'], 0, 200, *[f'{k}:{v}' for k, v in action['params'].items()], 'useContextMenu:1']
                 if initial_owner:
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
                         pending = pool.submit(command, actual)

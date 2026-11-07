@@ -216,6 +216,14 @@ add_executable(test_music_transport music/test_transport.c)
 target_compile_options(test_music_transport PRIVATE -UNDEBUG)
 target_link_libraries(test_music_transport PRIVATE sbtransport)
 add_test(NAME music_transport COMMAND test_music_transport)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+add_library(music_rendezvous_paths SHARED music/rendezvous_paths.c)
+target_link_libraries(music_rendezvous_paths PRIVATE dl)
+endif()
+add_executable(test_music_resource_rendezvous music/test_resource_rendezvous.c ../native/common/music_resource_ipc.c)
+target_compile_options(test_music_resource_rendezvous PRIVATE -UNDEBUG)
+target_include_directories(test_music_resource_rendezvous PRIVATE ../native/common)
+add_test(NAME music_resource_rendezvous COMMAND test_music_resource_rendezvous)
 if(Python3_Interpreter_FOUND AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_CROSSCOMPILING)
   add_test(NAME music_transport_wire COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/music/test_transport_wire.py $<TARGET_FILE:test_music_transport>)
@@ -315,6 +323,7 @@ if(TARGET sbmusic_queue)
   add_test(NAME music_http_policy COMMAND test_music_http_policy)
   add_test(NAME music_stream COMMAND test_music_stream)
   add_test(NAME music_playback COMMAND test_music_playback $<TARGET_FILE:sbmusic_metadata_helper> ${CMAKE_CURRENT_SOURCE_DIR}/music/fixtures/media)
+  add_test(NAME music_playback_single_mp3 COMMAND test_music_playback $<TARGET_FILE:sbmusic_metadata_helper> ${CMAKE_CURRENT_SOURCE_DIR}/music/fixtures/media single-mp3)
   add_test(NAME music_load COMMAND test_music_load)
   if(LUA_EXECUTABLE)
    add_test(NAME music_ownership_lua COMMAND ${LUA_EXECUTABLE}
@@ -352,6 +361,7 @@ if(UNIX AND TARGET sbtransport)
  target_link_libraries(test_ownership_driver PRIVATE sbtransport)
  if(Python3_Interpreter_FOUND AND NOT CMAKE_CROSSCOMPILING)
   add_test(NAME music_ownership_bridge COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_ownership_bridge.py $<TARGET_FILE:test_ownership_driver>)
+  add_test(NAME music_idle_admission COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_idle_admission.py $<TARGET_FILE:test_ownership_driver>)
  endif()
 endif()
 
@@ -365,9 +375,18 @@ if(LUA_EXECUTABLE)
 endif()
 
 option(SB_TEST_FIRMWARE_ADAPTERS "Run sibling app adapter tests with development-only lupa" OFF)
+if(TARGET sbmusic-session AND Python3_Interpreter_FOUND)
+ add_test(NAME music_store_launcher COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_store_launcher.py $<TARGET_FILE:sbmusic-session>)
+ set_tests_properties(music_store_launcher PROPERTIES TIMEOUT 30)
+endif()
 set(SB_RADIO_SOURCE "${CMAKE_SOURCE_DIR}/../../squeezebox" CACHE PATH "Radio source for ownership fixtures")
 set(SB_SPOTIFY_SOURCE "${CMAKE_SOURCE_DIR}/../../SBSpotifyConnect" CACHE PATH "Spotify source for ownership fixtures")
 set(SB_QOBUZ_SOURCE "${CMAKE_SOURCE_DIR}/../../QoBuz" CACHE PATH "Qobuz source for ownership fixtures")
+if(Python3_Interpreter_FOUND AND EXISTS "${SB_RADIO_SOURCE}/applet/StandaloneRadio/StreamPlayer.lua" AND EXISTS "${SB_SPOTIFY_SOURCE}/applet/SpotifyService.lua")
+  add_test(NAME music_idle_fence COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_music_idle_fence.py
+    ${CMAKE_SOURCE_DIR} ${SB_RADIO_SOURCE} ${SB_SPOTIFY_SOURCE})
+  set_tests_properties(music_idle_fence PROPERTIES SKIP_RETURN_CODE 77)
+endif()
 if(SB_TEST_FIRMWARE_ADAPTERS AND TARGET test_ownership_driver AND Python3_Interpreter_FOUND AND NOT CMAKE_CROSSCOMPILING)
  add_test(NAME music_firmware_adapters COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_firmware_ownership.py
   $<TARGET_FILE:test_ownership_driver> ${CMAKE_SOURCE_DIR} ${SB_RADIO_SOURCE} ${SB_SPOTIFY_SOURCE} ${SB_QOBUZ_SOURCE})
@@ -376,6 +395,14 @@ endif()
 if(TARGET sbbase_music AND TARGET sbwebserver_music AND TARGET sbmusic-session AND Python3_Interpreter_FOUND AND NOT CMAKE_CROSSCOMPILING)
  add_test(NAME music_production_bootstrap COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_production_bootstrap.py
   $<TARGET_FILE:sbbase_music> $<TARGET_FILE:sbwebserver_music> $<TARGET_FILE:sbmusic-session>)
+ add_test(NAME music_production_resource_ipc COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_stream_http.py
+  $<TARGET_FILE:sbwebserver_music> --production)
+ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_test(NAME music_rendezvous_pairing COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_rendezvous_pairing.py
+  $<TARGET_FILE:sbbase_music_host_test> $<TARGET_FILE:sbwebserver_music> $<TARGET_FILE:test_music_scanner> $<TARGET_FILE:sbmusic_metadata_helper> $<TARGET_FILE:music_rendezvous_paths>)
+ add_test(NAME music_store_pairing COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_store_pairing.py
+  $<TARGET_FILE:sbbase_music_host_test> $<TARGET_FILE:sbwebserver_music> $<TARGET_FILE:test_music_scanner> $<TARGET_FILE:sbmusic_metadata_helper> $<TARGET_FILE:music_rendezvous_paths>)
+ endif()
 endif()
 
 if(UNIX AND TARGET sbbase)
@@ -395,11 +422,20 @@ if(UNIX AND TARGET sbbase)
     $<TARGET_FILE:maintenance_helper_fixture> $<TARGET_FILE:sb_maintenance_helper> $<TARGET_FILE:maintenance_jive_fixture> -v)
   add_test(NAME maintenance_probe COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_restart_probe.py
     $<TARGET_FILE:maintenance_helper_fixture> $<TARGET_FILE:restart_probe_fixture> -v)
+  add_test(NAME maintenance_stack COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_stack_topology.py
+    $<TARGET_FILE:maintenance_helper_fixture> $<TARGET_FILE:restart_probe_fixture> -v)
+  add_test(NAME maintenance_executable_identity COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_executable_identity.py
+    $<TARGET_FILE:maintenance_helper_fixture> $<TARGET_FILE:restart_probe_fixture> -v)
+  add_test(NAME maintenance_music_generation COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_music_generation.py -v)
   add_test(NAME maintenance_coordinator COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_restart_coordinator.py
     $<TARGET_FILE:maintenance_helper_fixture> $<TARGET_FILE:restart_probe_fixture> -v)
   add_test(NAME maintenance_internal_files COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_internal_install.py
     $<TARGET_FILE:maintenance_helper_fixture> -v)
   add_test(NAME maintenance_deployment_rollback COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_lifecycle_deployment.py
+    $<TARGET_FILE:maintenance_helper_fixture> -v)
+  add_test(NAME maintenance_music_deployment_rollback COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_lifecycle_deployment.py
+    $<TARGET_FILE:maintenance_helper_fixture> --music -v)
+  add_test(NAME maintenance_music_recovery COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_music_qualification.py
     $<TARGET_FILE:maintenance_helper_fixture> -v)
   add_test(NAME applet_only_deployment COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_applet_only_deployment.py -v)
   set_tests_properties(applet_only_deployment PROPERTIES TIMEOUT 90)

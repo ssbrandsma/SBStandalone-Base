@@ -265,7 +265,7 @@ int sb_ts_release(const sb_ts_options *o)
  close(lease);return ok?0:77;
 }
 static void notify(sb_tinysc *a)
-{char byte=1;(void)write(a->fd[1],&byte,1);}
+{char byte=1;ssize_t n=write(a->fd[1],&byte,1);(void)n;}
 static void publish(sb_tinysc *a,sb_ts_state state,const sb_ts_scan *scan,const char *error)
 {
  pthread_mutex_lock(&a->lock);
@@ -406,8 +406,15 @@ sb_tinysc *sb_ts_start(const sb_ts_options *o)
 #endif
  sb_tinysc *a=calloc(1,sizeof *a);if(!a)return NULL;
  a->lease=-1;a->fd[0]=a->fd[1]=-1;a->options=*o;
+#ifdef SB_TINYSC_TEST
+ {
+  const char *run=getenv("SB_TS_TEST_RUN_DIR"),*policy=getenv("SB_TS_TEST_POLICY");
+  if(run)a->options.run_dir=run;
+  if(policy)a->options.policy_path=policy;
+ }
+#endif
  if(!sb_process_fd_limit(&a->close_limit))goto fail;
- if(!copy_option(a->run,sizeof a->run,o->run_dir)||!copy_option(a->policy,sizeof a->policy,o->policy_path)||
+ if(!copy_option(a->run,sizeof a->run,a->options.run_dir)||!copy_option(a->policy,sizeof a->policy,a->options.policy_path)||
   !copy_option(a->original,sizeof a->original,o->original_service)||!copy_option(a->control,sizeof a->control,o->control_path)||
   !trusted_directory(a->run))goto fail;
  a->options.run_dir=a->run;a->options.policy_path=a->policy;a->options.original_service=a->original;a->options.control_path=a->control;

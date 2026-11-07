@@ -213,7 +213,7 @@ def helper(device, *arguments):
     return device.call(command)
 
 
-def preflight(device, boot=None):
+def preflight(device, boot=None, minimum_free_kib=4096):
     version, mounts = device.profile()
     current_boot = device.call("cat /proc/sys/kernel/random/boot_id").decode().strip()
     if boot and boot != current_boot:
@@ -236,8 +236,9 @@ def preflight(device, boot=None):
     if not any(' /media/sda1 ' in line and ' - vfat /dev/sda1 ' in line for line in mounts.splitlines()):
         raise RuntimeError("Expected USB mount is not present")
     filesystem = device.call("df -k /mnt/storage").decode().splitlines()[-1].split()
-    if len(filesystem) < 6 or not filesystem[3].isdigit() or int(filesystem[3]) < 4096:
-        raise RuntimeError("At least 4 MiB free internal overlay storage is required")
+    if (minimum_free_kib < 1 or len(filesystem) < 6 or not filesystem[3].isdigit() or
+            int(filesystem[3]) < minimum_free_kib):
+        raise RuntimeError("Insufficient free internal overlay storage: require " + str(minimum_free_kib) + " KiB")
     return dict(firmware=version, boot=current_boot, nowplaying=status)
 
 
@@ -348,6 +349,9 @@ def file_rollback(plan, observed, invoke, paths=None):
             allowed.add(plan["recovery"]["applet_sha256"])
         if current not in allowed:
             raise RuntimeError("Refuse rollback of an unrecognized revision: " + path)
+        if old and current == old["sha256"] and all(
+                observed[path][0].get(key) == old.get(key) for key in ("mode", "uid", "gid")):
+            continue  # Already restored; never recopy an active executable.
         if old:
             invoke("install-file", REMOTE_BACKUP + "/" + old["source"], path, old["mode"], current)
         elif current != "absent":
@@ -467,26 +471,27 @@ def rollback(device, snapshot, candidate):
         cleanup_bootstrap(device)
 
 
-def install(device, snapshot, candidate):
-    device.call("test ! -e /dev/standalonebase-wp4a2b && test ! -L /dev/standalonebase-wp4a2b")
+def install(device, snapshot, candidate, individual=False):
+    ram = "/dev/standalonebase-wp4a3b" if individual else "/dev/standalonebase-wp4a2b"
+    device.call("test ! -e " + ram + " && test ! -L " + ram)
     try:
-        return install_staged(device, snapshot, candidate)
+        return install_staged(device, snapshot, candidate, individual=individual)
     finally:
         # The directory was absent before this operation; never recursively
         # remove it or follow a symlink during cleanup.
-        device.script('if test -d /dev/standalonebase-wp4a2b && '
-                      'test ! -L /dev/standalonebase-wp4a2b; then '
-                      'test ! -L /dev/standalonebase-wp4a2b/helper && '
-                      'rm -f /dev/standalonebase-wp4a2b/helper && '
-                      'rmdir /dev/standalonebase-wp4a2b; fi\n')
+        device.script('if test -d ' + ram + ' && '
+                      'test ! -L ' + ram + '; then '
+                      'test ! -L ' + ram + '/helper && '
+                      'rm -f ' + ram + '/helper && '
+                      'rmdir ' + ram + '; fi\n')
 
 
-def install_staged(device, snapshot, candidate):
+def install_staged(device, snapshot, candidate, individual=False):
     plan = qualification_gate(candidate)
     before = preflight(device, plan["boot"])
     verify_state(snapshot, candidate, current_files(device), initial=True)
     # Private tmpfs bootstrap: only the qualified production maintenance ELF.
-    ram = "/dev/standalonebase-wp4a2b"
+    ram = "/dev/standalonebase-wp4a3b" if individual else "/dev/standalonebase-wp4a2b"
     device.script('set -eu\numask 077\ntest ! -L /dev\ntest ! -e ' + shlex.quote(ram) +
                   '\nmkdir -m 700 ' + shlex.quote(ram) + '\n')
     binary_row = next(r for r in plan["files"] if r["path"] == APP + "/sb-maintenance-helper")
@@ -503,22 +508,52 @@ def install_staged(device, snapshot, candidate):
     watchdog = json.loads(bootstrap("restart-preflight"))
     services = json.loads(bootstrap("verify-stack", watchdog["jive_pid"], watchdog["jive_start"]))
     save_json(candidate / "hardware-preflight.json", dict(preflight=before, watchdog=watchdog, services=services))
+    # Refuse a legacy mutable-path plan before staging/replacing ANY overlay
+    # member. New generations must leave every active executable path intact.
+    for row in plan["files"]:
+        bootstrap("check-inactive", row["path"])
 
     # Probe the actual parent without touching the USB filesystem. All copies
     # use descriptor-relative native rename and file/directory fsync.
-    for parent in ("/etc/init.d", APP, "/usr/share/jive/applets/SqueezeCenter", "/mnt/storage/standalonebase"):
+    parents = ["/etc/init.d", APP, "/usr/share/jive/applets/SqueezeCenter", "/mnt/storage/standalonebase"]
+    if individual:
+        parents.extend(("/usr/share/jive/applets/StandaloneRadio", "/usr/share/jive/applets/SpotifyConnect"))
+    for parent in parents:
         bootstrap("sync-internal", parent)
     device.script('set -eu\numask 077\ntest ! -e ' + shlex.quote(REMOTE_BACKUP) +
                   '\nmkdir -m 700 ' + shlex.quote(REMOTE_BACKUP) + '\n')
-    archive = payload_archive(candidate)
-    if len(archive) > 4194304:
-        raise RuntimeError("Recovery payload exceeds its 4 MiB bound")
-    archive_path = REMOTE_BACKUP + "/payload.tar"
-    device.call('umask 077; set -C; cat > ' + shlex.quote(archive_path), data=archive)
-    if sha(device.call("cat " + shlex.quote(archive_path))) != sha(archive):
-        raise RuntimeError("Recovery upload SHA-256 mismatch")
-    device.call("tar -xpf " + shlex.quote(archive_path) + " -C " + shlex.quote(REMOTE_BACKUP))
     _, sources = load_plan(candidate)
+    if individual:
+        # A second complete archive plus its extracted payload exceeds the
+        # small Fab4 overlay budget. Stage each checked member once instead.
+        device.script("set -eu\n" + "\n".join("mkdir -m 700 " + shlex.quote(REMOTE_BACKUP + "/" + folder)
+                       for folder in ("new", "original", "recovery")) + "\n")
+        if sum((candidate / source).stat().st_size for source in sources) > 4194304:
+            raise RuntimeError("Recovery payload exceeds its 4 MiB bound")
+        mtimes = {row["original"]["source"]: int(row["original"]["mtime"])
+                  for row in plan["files"] if row["original"]}
+        for source in sorted(sources):
+            data = (candidate / source).read_bytes()
+            member = tarfile.TarInfo(source)
+            member.uid = member.gid = 0
+            member.mode = 0o400
+            member.mtime = mtimes.get(source, 0)
+            member.size = len(data)
+            stream = io.BytesIO()
+            with tarfile.open(fileobj=stream, mode="w", format=tarfile.USTAR_FORMAT) as archive:
+                archive.addfile(member, io.BytesIO(data))
+            # Stream one regular member directly: no on-device archive copy,
+            # and the recorded original timestamp survives exact restoration.
+            device.call("tar -xpf - -C " + shlex.quote(REMOTE_BACKUP), data=stream.getvalue())
+    else:
+        archive = payload_archive(candidate)
+        if len(archive) > 4194304:
+            raise RuntimeError("Recovery payload exceeds its 4 MiB bound")
+        archive_path = REMOTE_BACKUP + "/payload.tar"
+        device.call('umask 077; set -C; cat > ' + shlex.quote(archive_path), data=archive)
+        if sha(device.call("cat " + shlex.quote(archive_path))) != sha(archive):
+            raise RuntimeError("Recovery upload SHA-256 mismatch")
+        device.call("tar -xpf " + shlex.quote(archive_path) + " -C " + shlex.quote(REMOTE_BACKUP))
     for source in sorted(sources):
         remote = REMOTE_BACKUP + "/" + source
         expected = sha((candidate / source).read_bytes())

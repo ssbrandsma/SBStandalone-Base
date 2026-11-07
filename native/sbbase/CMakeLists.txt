@@ -61,7 +61,17 @@ if(SB_BUILD_MUSIC_SESSION)
  target_include_directories(sbbase_music PRIVATE include)
  target_compile_definitions(sbbase_music PRIVATE _GNU_SOURCE _FILE_OFFSET_BITS=64 SB_MUSIC_RUNTIME=1)
  target_compile_options(sbbase_music PRIVATE -Os -Wall -Wextra -Wpedantic)
- target_link_libraries(sbbase_music PRIVATE sbmusic_playback sbmusic_browse sbmusic_scanner Threads::Threads)
+ target_link_libraries(sbbase_music PRIVATE sbmusic_playback sbmusic_browse sbmusic_scanner sbmusic_snapshot Threads::Threads)
+ if(UNIX)
+  # Host-capable production runtime: identical bootstrap/rendezvous/IPC/
+  # ownership paths; only the Fab4 hardware identity check is relaxed so the
+  # pairing test can run unprivileged under a user namespace.
+  add_executable(sbbase_music_host_test ${SB_BASE_RUNTIME_SOURCES})
+  target_include_directories(sbbase_music_host_test PRIVATE include)
+  target_compile_definitions(sbbase_music_host_test PRIVATE _GNU_SOURCE _FILE_OFFSET_BITS=64 SB_MUSIC_RUNTIME=1 SB_TINYSC_TEST=1)
+  target_compile_options(sbbase_music_host_test PRIVATE -Os -Wall -Wextra -Wpedantic)
+  target_link_libraries(sbbase_music_host_test PRIVATE sbmusic_playback sbmusic_browse sbmusic_scanner sbmusic_snapshot Threads::Threads)
+ endif()
 endif()
 
 if(SB_BUILD_MUSIC_SESSION)

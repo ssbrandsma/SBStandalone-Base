@@ -154,10 +154,12 @@ static size_t catalog_entry_count;
 static sb_config *active_config;
 
 static volatile sig_atomic_t running = 1;
+static volatile sig_atomic_t exit_signal = 0;
 static sb_tinysc *tinysc_lifecycle;
 #ifdef SB_MUSIC_RUNTIME
 static void music_runtime_tick(void);
 static int music_browse_only;
+static int music_idle_only;
 #endif
 static volatile sig_atomic_t reload_catalog = 0;
 
@@ -170,8 +172,36 @@ json_string(const char *body, const char *key, char *out, size_t cap);
  */
 static void stop(int sig)
 {
-	(void)sig;
+	exit_signal = sig;
 	running = 0;
+}
+
+/* Death-rattle diagnostics: a silent process exit is unacceptable in a
+ * supervised production service. Fatal signals announce themselves with
+ * async-signal-safe writes, then re-raise for the canonical exit status.
+ * Clean shutdowns report the terminating signal (0 = internal exit). */
+static void fatal(int sig)
+{
+	const char *m = "MUSIC_FATAL signal\n";
+	if (sig == SIGSEGV)
+		m = "MUSIC_FATAL SIGSEGV\n";
+	else if (sig == SIGABRT)
+		m = "MUSIC_FATAL SIGABRT\n";
+	else if (sig == SIGBUS)
+		m = "MUSIC_FATAL SIGBUS\n";
+	else if (sig == SIGILL)
+		m = "MUSIC_FATAL SIGILL\n";
+	else if (sig == SIGFPE)
+		m = "MUSIC_FATAL SIGFPE\n";
+	(void)write(STDERR_FILENO, m, strlen(m));
+	signal(sig, SIG_DFL);
+	raise(sig);
+}
+
+static void death_notice(void)
+{
+	fprintf(stderr, "MUSIC_EXIT terminating_signal=%d\n",
+		(int)exit_signal);
 }
 
 /**
@@ -1867,7 +1897,11 @@ static void handle_slim(client *c)
                 sb_ob_connection(&ownership_bridge,c->ownership_connection,1);
 #endif
 				sb_browse_playback(music_browse,
-						   event.hello.codecs & 3u);
+
+#ifdef SB_MUSIC_RUNTIME
+                           music_idle_only ? 0 :
+#endif
+                           event.hello.codecs & 3u);
 			}
 #endif
 #endif
@@ -2047,6 +2081,13 @@ int main(int argc, char **argv)
 		}
 	}
 
+#ifdef SB_MUSIC_RUNTIME
+ if(music_runtime.check_only){
+  if(!music_browse_only||ownership_token_path||music_idle_only||music_runtime.scan||music_runtime.scan_only||
+     music_runtime.initialize||music_runtime.resource_fd>=0||music_runtime.port){np_destroy(nowplaying);return 2;}
+  int ok=runtime_open_check();music_runtime_stop();np_destroy(nowplaying);return ok?0:2;
+ }
+#endif
  /* Persistent opt-in also covers legacy applet supervisors after a Base-only
   * restart. Presence requests arbitration; the worker validates ownership and
   * permissions. An unreadable policy must not silently disable arbitration. */
@@ -2056,10 +2097,15 @@ int main(int argc, char **argv)
    arbitration_enabled=1;
  }
  #ifdef SB_MUSIC_RUNTIME
- if(music_browse_only && (ownership_token_path || music_runtime.scan_only)){
+ if(music_browse_only && (ownership_token_path || music_runtime.scan_only || music_idle_only)){
   fputs("music: browse-only excludes ownership and scan-only modes\n",stderr);return 2;
  }
  #endif
+#ifdef SB_MUSIC_RUNTIME
+ if(music_idle_only && (!ownership_token_path || music_runtime.scan_only)){
+  fputs("music: idle qualification requires production ownership\n",stderr);return 2;
+ }
+#endif
  if(ownership_token_path){
 #if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
   if(playback_root){fputs("production ownership and fixture runtime are exclusive\n",stderr);return 2;}
@@ -2090,6 +2136,12 @@ int main(int argc, char **argv)
 	signal(SIGTERM, stop);
 	signal(SIGHUP, reload);
 	signal(SIGPIPE, SIG_IGN);
+	signal(SIGSEGV, fatal);
+	signal(SIGABRT, fatal);
+	signal(SIGBUS, fatal);
+	signal(SIGILL, fatal);
+	signal(SIGFPE, fatal);
+	atexit(death_notice);
 
  if(arbitration_enabled){
   sb_ts_options options={.enabled=1,.poll_ms=500,.stop_timeout_ms=15000,

@@ -10,6 +10,7 @@
 #include <sys/sysmacros.h>
 #include <dirent.h>
 #include <pthread.h>
+#include <ctype.h>
 #include "../common/descriptor_walk.h"
 
 static int decode(const char *in,char *out,size_t cap)
@@ -207,6 +208,61 @@ static int link_identity(const char *dir,const struct stat *device,char *out,siz
   if(++found>1||strlen(e->d_name)>=cap){found=0;break;}strcpy(out,e->d_name);
  }closedir(d);if(found!=1)out[0]=0;return found==1;
 }
+static int sys_attribute(const char *base,const char *name,char *out,size_t cap)
+{
+ char path[2048];
+ if(snprintf(path,sizeof path,"%s/%s",base,name)>=(int)sizeof path)return 0;
+ int fd=open(path,O_RDONLY|O_CLOEXEC);if(fd<0)return 0;
+ ssize_t n=read(fd,out,cap);close(fd);
+ if(n<=0||(size_t)n>=cap)return 0;
+ out[n]=0;out[strcspn(out,"\r\n")]=0;
+ return out[0]!=0;
+}
+/* Original Fab4 udev creates by-uuid but may omit by-id. Recover only actual
+ * USB serial + vendor/product + partition evidence from the trusted sysfs tree;
+ * never substitute a port path, volume label or sdX allocation as identity. */
+static int usb_partition_identity(const sb_storage_mount *m,char *out,size_t cap)
+{
+ const char *leaf=strrchr(m->device,'/');if(!leaf||!leaf[1])return 0;leaf++;
+ for(const unsigned char *p=(const unsigned char *)leaf;*p;p++)if(!isalnum(*p)&&*p!='_'&&*p!='-')return 0;
+ DIR *dir=opendir("/sys/block");if(!dir)return 0;
+ struct dirent *entry;char path[2048],resolved[4096],value[64],partition[32];
+ unsigned count=0;int found=0;
+ while((entry=readdir(dir))) {
+  if(++count>128)break;
+  if(entry->d_name[0]=='.')continue;
+  if(snprintf(path,sizeof path,"/sys/block/%s/%s",entry->d_name,leaf)>=(int)sizeof path)continue;
+  unsigned maj,min,part;char extra;
+  if(!sys_attribute(path,"dev",value,sizeof value)||sscanf(value,"%u:%u%c",&maj,&min,&extra)!=2||
+     maj!=m->major||min!=m->minor)continue;
+  if(!sys_attribute(path,"partition",partition,sizeof partition)) {
+   /* 2.6.26 exposes the partition child/dev but may omit its number attribute. */
+   size_t n=strlen(entry->d_name);
+   if(strncmp(leaf,entry->d_name,n))continue;
+   const char *suffix=leaf+n;if(*suffix=='p')suffix++;
+   if(!*suffix||strlen(suffix)>=sizeof partition)continue;
+   strcpy(partition,suffix);
+  }
+  if(sscanf(partition,"%u%c",&part,&extra)!=1||!part||part>65535)continue;
+  if(snprintf(path,sizeof path,"/sys/block/%s/device",entry->d_name)>=(int)sizeof path||
+     !realpath(path,resolved)||strncmp(resolved,"/sys/devices/",13))continue;
+  for(unsigned depth=0;depth<10;depth++) {
+   char serial[128],vendor[16],product[16];
+   if(sys_attribute(resolved,"serial",serial,sizeof serial)&&
+      sys_attribute(resolved,"idVendor",vendor,sizeof vendor)&&
+      sys_attribute(resolved,"idProduct",product,sizeof product)&&strlen(vendor)==4&&strlen(product)==4) {
+    int valid=strcmp(serial,"0")!=0;
+    for(const unsigned char *p=(const unsigned char *)serial;*p;p++)if(!isalnum(*p)&&*p!='-'&&*p!='_')valid=0;
+    for(unsigned i=0;i<4;i++)if(!isxdigit((unsigned char)vendor[i])||!isxdigit((unsigned char)product[i]))valid=0;
+    if(valid&&snprintf(out,cap,"usb:%s:%s:%s:partition:%u",vendor,product,serial,part)<(int)cap)found=1;
+    break;
+   }
+   char *slash=strrchr(resolved,'/');if(!slash||slash<=resolved+12)break;*slash=0;
+  }
+  break;
+ }
+ closedir(dir);return found;
+}
 sb_storage_status sb_storage_identity_linux(const sb_storage_mount *m,sb_storage_evidence *out)
 {
  if(!m||!out)return SB_STORAGE_INVALID;
@@ -215,6 +271,7 @@ sb_storage_status sb_storage_identity_linux(const sb_storage_mount *m,sb_storage
  if(strcmp(m->fs,"fuseblk")&&(major(device.st_rdev)!=m->major||minor(device.st_rdev)!=m->minor))return SB_STORAGE_STALE;
  link_identity("/dev/disk/by-uuid",&device,out->uuid,sizeof out->uuid);
  link_identity("/dev/disk/by-id",&device,out->hardware_partition,sizeof out->hardware_partition);
+ if(!out->hardware_partition[0])usb_partition_identity(m,out->hardware_partition,sizeof out->hardware_partition);
  return SB_STORAGE_OK;
 }
 

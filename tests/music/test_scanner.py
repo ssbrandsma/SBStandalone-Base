@@ -28,6 +28,11 @@ def rows(db):
         return connection.execute("select id,path,title,fingerprint from tracks order by path").fetchall()
 
 
+def rejected(db):
+    with sqlite3.connect(db) as connection:
+        return connection.execute("select path,code,previous_track_id from rejected_files order by path").fetchall()
+
+
 with tempfile.TemporaryDirectory(prefix="sb-scanner-", dir="/dev/shm") as media_dir, tempfile.TemporaryDirectory(prefix="sb-scanner-db-") as db_dir:
     root, dbroot = Path(media_dir), Path(db_dir)
     fixtures = populate(root)
@@ -106,15 +111,35 @@ with tempfile.TemporaryDirectory(prefix="sb-scanner-", dir="/dev/shm") as media_
     assert result["state"] == 4 and result["removed"] == 1, result
     previous = rows(db)
 
-    # An incomplete root cannot delete a previously valid missing record.
+    # A bounded per-file parser rejection is recoverable, never whole-scan
+    # fatal: traversal completes, the rejection is classified and recorded
+    # durably, no track is fabricated, and complete reconciliation still
+    # retires the genuinely missing record.
     (root/"v22.mp3").unlink()
     (root/"broken.mp3").write_bytes(b"ID3\x04\0\0\x7f\x7f\x7f\x7f")
     result = run("scan",root,db,helper,0)
-    assert result["state"] == 6 and result["removed"] == 0 and result["errors"] > 0, result
-    assert rows(db) == previous
+    assert result["state"] == 4 and result["removed"] == 1, result
+    assert result["errors"] == 1 and result["recoverable"] == 1 and result["fatal"] == 0, result
+    assert result["limited"] == 1, result
+    classes = result["error_class"]
+    assert len(classes) == 1 and classes[0]["path"] == "broken.mp3", result
+    assert classes[0]["recoverable"] == 1 and classes[0]["code"] == 3, result
+    current = rows(db)
+    assert not any(row[1] == "broken.mp3" for row in current)
+    assert not any(row[1] == "v22.mp3" for row in current)
+    assert len(current) == len(previous) - 1
+    filings = rejected(db)
+    assert len(filings) == 1 and filings[0][0] == "broken.mp3" and filings[0][1] == 3, filings
+    assert filings[0][2] == 0, filings
+    # An unchanged rescan skips the known-bad file without reparsing it.
+    again = run("scan",root,db,helper,0)
+    assert again["state"] == 4 and again["metadata_parses"] == 0, again
+    assert again["recoverable"] == 1 and again["fatal"] == 0, again
+    assert rejected(db) == filings
     (root/"broken.mp3").unlink()
     (root/"v22.mp3").write_bytes(fixtures["v22.mp3"])
-    run("scan",root,db,helper,0)
+    healed = run("scan",root,db,helper,0)
+    assert healed["state"] == 4 and rejected(db) == [], healed
     # Permission/depth failures are incomplete, even when a privileged host
     # could bypass mode bits. Exact committed IDs remain present.
     denied=root/"denied";denied.mkdir();(denied/"no.mp3").write_bytes(mp3());denied.chmod(0)
@@ -142,9 +167,14 @@ with tempfile.TemporaryDirectory(prefix="sb-scanner-", dir="/dev/shm") as media_
     (root/long_name).write_bytes(mp3())
     (root/"wrong.flac").write_bytes(b"not flac but has an extension")
     result=run("scan",root,db,helper,0)
-    assert result["state"] == 6 and result["errors"] == 1, result
+    assert result["state"] == 4 and result["errors"] == 1, result
+    assert result["recoverable"] == 1 and result["fatal"] == 0 and result["unsupported"] == 1, result
+    assert len(result["error_class"]) == 1 and result["error_class"][0]["path"] == "wrong.flac", result
+    assert result["error_class"][0]["recoverable"] == 1 and result["error_class"][0]["code"] == 1, result
     assert any(row[1] == long_name for row in rows(db))
+    assert not any(row[1] == "wrong.flac" for row in rows(db))
     assert not any("ignored" in row[1] for row in rows(db))
+    assert rejected(db) == [("wrong.flac",1,0)], rejected(db)
     (root/"wrong.flac").unlink()
 
     # Sidecar discovery/revision, no image decoding or cache writes.

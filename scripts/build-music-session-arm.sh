@@ -22,7 +22,7 @@ libs="$music/libsbmusic-storage.a $music/libsbmusic.a $music/libsbmusic-sqlite.a
 "$cc" $flags -D_GNU_SOURCE -DSB_MUSIC_RUNTIME=1 \
  -static -pthread -Wl,--gc-sections -I"$root/native/sbbase/include" -I"$root/native/sbmusic" \
  "$root/native/sbbase/src/main.c" "$root/native/sblifecycle/tinysc.c" -pthread "$root/native/sbbase/src/ownership_bridge.c" "$root/native/sbbase/src/alarms.c" "$root/native/sbbase/src/sleep.c" \
- $core $common "$music/libsbmusic-scanner.a" "$music/libsbmusic-metadata.a" $libs -o "$out/sbbase_music"
+ $core $common "$root/native/sbmusic/music_snapshot.c" "$root/native/sbmusic/music_snapshot_view.c" "$music/libsbmusic-scanner.a" "$music/libsbmusic-metadata.a" $libs -o "$out/sbbase_music"
 "$cc" $flags -D_GNU_SOURCE -DSB_MUSIC_RUNTIME=1 -static -pthread -Wl,--gc-sections \
  -DMG_ENABLE_EPOLL=0 -DMG_ENABLE_POLL=1 -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 \
  -I"$root/native/sbwebserver/src" -I"$root/native/sbwebserver/third_party" -I"$root/native/sbbase/include" -I"$image/include" \

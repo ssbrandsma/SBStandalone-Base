@@ -49,16 +49,36 @@ static const char *alsa_executable(void)
 }
 static int base_role(const identity *i)
 {
- const char *names[]={"sbbase","sbproxy","sbwebserver"};char path[600];
- for(unsigned n=0;n<3;n++){
-  snprintf(path,sizeof path,"%s/%s",base_root(),names[n]);if(!strcmp(i->exe,path))return (int)n+1;
-  snprintf(path,sizeof path,"%s/%s (deleted)",base_root(),names[n]);if(!strcmp(i->exe,path))return (int)n+1;
- }return 0;
+ const char *names[]={"sbbase","sbbase-core","sbbase-music","sbproxy",
+  "sbwebserver","sbwebserver-music","sbmusic-session"};
+ const int roles[]={1,1,1,2,3,3,4};char path[600];
+ for(unsigned n=0;n<sizeof roles/sizeof roles[0];n++){
+  snprintf(path,sizeof path,"%s/%s",base_root(),names[n]);if(!strcmp(i->exe,path))return roles[n];
+  snprintf(path,sizeof path,"%s/%s (deleted)",base_root(),names[n]);if(!strcmp(i->exe,path))return roles[n];
+ }
+ const char *leaf=NULL;size_t root_length=strlen(base_root());
+ if(!strncmp(i->exe,base_root(),root_length)&&!strncmp(i->exe+root_length,"/generations/",13)){
+  const char *generation=i->exe+root_length+13;
+  if(strlen(generation)>=66){
+   unsigned n=0;while(n<64&&strchr("0123456789abcdef",generation[n]))n++;
+   if(n==64&&generation[64]=='/')leaf=generation+65;
+  }
+ }
+ if(leaf)for(unsigned n=0;n<sizeof roles/sizeof roles[0];n++)
+  if(!strcmp(leaf,names[n]))return roles[n];
+ return 0;
 }
 static int managed(const identity *i)
 {
  if(watchable(i))return 1;
  return base_role(i)!=0;
+}
+static const char *base_generation(const identity *i)
+{
+ size_t length=strlen(base_root());
+ if(!strncmp(i->exe,base_root(),length)&&!strncmp(i->exe+length,"/generations/",13)&&base_role(i))
+  return i->exe+length+13;
+ return NULL;
 }
 static int profile(void)
 {
@@ -109,7 +129,7 @@ static int spawn_identified(int holding,identity *result)
     "PATH=/usr/sbin:/usr/bin:/sbin:/bin",NULL};
    char *args[]={(char *)jive,NULL};execve(jive,args,env);
   }
- failed: {int error=errno; (void)write(channel[1],&error,sizeof error);_exit(127);}
+ failed: {int error=errno;ssize_t sent=write(channel[1],&error,sizeof error);(void)sent;_exit(127);}
  }
  close(channel[1]);int error;ssize_t n;
  do{n=read(channel[0],&error,sizeof error);}while(n<0&&errno==EINTR);
@@ -240,6 +260,7 @@ static int audit(void)
 #include "coordinator.inc"
 #include "quiesce.inc"
 #include "internal_files.inc"
+#include "executable_identity.inc"
 
 int main(int argc,char **argv)
 {
@@ -274,6 +295,12 @@ int main(int argc,char **argv)
  if(argc==3&&!strcmp(argv[1],"sync-internal"))return internal_sync(argv[2]);
  if(argc==3&&!strcmp(argv[1],"remove-file"))return internal_remove(argv[2]);
  if(argc==3&&!strcmp(argv[1],"sha256-internal"))return internal_sha256(argv[2]);
+ if(argc==3&&!strcmp(argv[1],"check-inactive")){
+  if(!internal_target(argv[2])||internal_active_target(argv[2])){
+   fprintf(stderr,"active or unverifiable executable target: %s\n",argv[2]);return 2;
+  }
+  return 0;
+ }
  if((argc==5||argc==6)&&!strcmp(argv[1],"install-file")&&number(argv[4],&start))return internal_copy(argv[2],argv[3],start,argc==6?argv[5]:NULL);
  if(argc==2&&!strcmp(argv[1],"maintenance-active")){identity owner;return coordinator_owner(&owner)?0:1;}
  if(argc==2&&!strcmp(argv[1],"quiesce-new"))return coordinator_quiesce("restart.new",0,0,1);
@@ -284,6 +311,13 @@ int main(int argc,char **argv)
   return coordinator_verify_ui(pid,start,argv[4]);
  if(argc==4&&!strcmp(argv[1],"verify-stack")&&number(argv[2],&pid)&&number(argv[3],&start))
   return coordinator_verify_stack(pid,start);
+ if(argc==5&&!strcmp(argv[1],"verify-exe")&&number(argv[2],&pid)&&number(argv[3],&start))
+  {executable_proof proof;return executable_inspect(pid,start,-1,0,argv[4],0,&proof)?0:2;}
+ if(argc==7&&(!strcmp(argv[1],"inspect-exe")||!strcmp(argv[1],"inspect-pin"))&&
+    number(argv[2],&pid)&&number(argv[3],&start)){
+  uint64_t parent,size;if(!number(argv[4],&parent)||parent>INT_MAX||!number(argv[5],&size))return 2;
+  return executable_report(pid,start,(int64_t)parent,size,argv[6],!strcmp(argv[1],"inspect-pin"));
+ }
  if(argc==4&&!strcmp(argv[1],"terminate")&&number(argv[2],&pid)&&number(argv[3],&start)&&pid>=2&&pid<=INT_MAX){
   identity i;if(!identify((pid_t)pid,&i)||i.start!=start||!managed(&i)||pid==(uint64_t)getpid())return 2;
   return kill((pid_t)pid,SIGTERM)?2:0;

@@ -47,9 +47,14 @@ done
 for binary in sbmusic-metadata-helper music_metadata_fault test_music_scanner; do
   "$sdk/bin/arm-buildroot-linux-musleabi-strip" --strip-all "$out/$binary"
 done
+"$cc" $flags -std=c99 -static -pthread -Wall -Wextra -Wpedantic -Wl,--gc-sections -I"$root/native/sbmusic" \
+  "$root/native/sbmusic/music_library_tool.c" "$root/native/sbmusic/music_snapshot.c" \
+  "$out/libsbmusic-scanner.a" "$out/libsbmusic-storage.a" "$out/libsbmusic.a" \
+  "$out/libsbmusic-sqlite.a" -o "$out/sbmusic-library"
+"$sdk/bin/arm-buildroot-linux-musleabi-strip" --strip-all "$out/sbmusic-library"
 "$cc" $flags -static -pthread -Wl,--gc-sections -I"$root/native/sbmusic" \
   "$root/tests/music/test_library.c" "$out/libsbmusic.a" "$out/libsbmusic-sqlite.a" -o "$out/test_music_library"
 file "$out/test_music_library"
 "$sdk/bin/arm-buildroot-linux-musleabi-size" "$out/test_music_library" "$out/libsbmusic.a" "$out/libsbmusic-sqlite.a"
 "$sdk/bin/arm-buildroot-linux-musleabi-strip" --strip-all "$out/test_music_library"
-{ printf '%s\n' "flags=$flags" "sqlite_flags=$sqlite_flags" "sqlite_input=$stamp"; sha256sum "$out"/libsbmusic*.a "$out"/test_music_* "$out/sbmusic-metadata-helper" "$out/music_metadata_fault"; } > "$out/manifest.txt"
+{ printf '%s\n' "flags=$flags" "sqlite_flags=$sqlite_flags" "sqlite_input=$stamp"; sha256sum "$out"/libsbmusic*.a "$out"/test_music_* "$out/sbmusic-metadata-helper" "$out/music_metadata_fault" "$out/sbmusic-library"; } > "$out/manifest.txt"

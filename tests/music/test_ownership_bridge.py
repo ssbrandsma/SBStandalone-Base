@@ -2,7 +2,8 @@
 import json, subprocess, sys, time
 class Driver:
     def __init__(self,binary):
-        self.process=subprocess.Popen([binary],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
+        self.process=subprocess.Popen(binary if isinstance(binary,list) else [binary],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
+        self.process.stdin.reconfigure(newline='\n')
         self.sequence=[0]*5;self.inc=[0]*5;self.snapshot=None
     def raw(self,text):
         self.process.stdin.write(text+'\n');self.process.stdin.flush()

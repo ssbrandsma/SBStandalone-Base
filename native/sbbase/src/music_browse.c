@@ -19,7 +19,10 @@ struct sb_browse {
 	uint32_t tracks, albums, artists;
 	unsigned live_calls;
 	unsigned playback_codecs;
+	int single_track;
 	uint64_t control_context;
+ int refresh_enabled;
+ uint64_t refresh_job,next_refresh;
 };
 
 struct sb_browse_call {
@@ -29,6 +32,7 @@ struct sb_browse_call {
 	size_t used;
 	int done, success, started, info, valid;
 	unsigned playback_codecs;
+	int single_track;
 	uint64_t control_context;
 	char mode[16];
 	char json[SB_BROWSE_JSON_MAX];
@@ -169,6 +173,24 @@ void sb_browse_tick(sb_browse *b, uint64_t now)
 	if (!b || b->stopped)
 		return;
 	sb_ml_result result;
+ if(b->refresh_enabled) {
+  if(b->refresh_job&&sb_music_async_poll(b->async,b->refresh_job,&result)==SB_ML_OK) {
+   b->refresh_job=0;
+   if(result.status==SB_ML_OK) {
+    if(result.record_id||!b->ready||result.data.media.generation!=b->media.generation){
+     retire(b,b->summary_job);b->summary_job=0;
+     b->media=result.data.media;b->ready=b->media.online;
+     b->revision=result.revision;b->version++;b->media_version++;b->next_summary=0;
+    }
+   } else if(result.status!=SB_ML_BUSY&&result.status!=SB_ML_CANCELLED&&result.status!=SB_ML_LIMIT) {
+    if(b->ready){b->ready=0;b->media.online=0;b->version++;b->media_version++;}
+   }
+  }
+  if(!b->refresh_job&&now>=b->next_refresh) {
+   sb_ml_request refresh={.operation=SB_ML_REFRESH};
+   if(sb_music_async_submit(b->async,&refresh,now+5000,&b->refresh_job)==SB_ML_OK)b->next_refresh=now+1000;
+  }
+ }
 	for (unsigned i = 0; i < SB_ASYNC_SLOTS; i++)
 		if (b->retired[i] &&
 		    sb_music_async_cancel(b->async, b->retired[i]) !=
@@ -218,6 +240,19 @@ void sb_browse_tick(sb_browse *b, uint64_t now)
 		    SB_ML_OK)
 			b->next_summary = now + 1000;
 	}
+}
+
+void sb_browse_snapshot_refresh(sb_browse *b,int enabled)
+{if(b)b->refresh_enabled=!!enabled;}
+
+void sb_browse_inhibit(sb_browse *b)
+{
+ if(!b)return;
+ b->refresh_enabled=0;
+ retire(b,b->refresh_job);retire(b,b->source_job);retire(b,b->summary_job);
+ b->refresh_job=b->source_job=b->summary_job=0;
+ b->ready=0;b->media.online=0;b->source_dirty=1;b->source_attempts=0;
+ b->version++;b->media_version++;
 }
 
 uint64_t sb_browse_version(const sb_browse *b)
@@ -326,6 +361,7 @@ sb_browse_begin(sb_browse *b, const sb_lms_command *cmd, uint64_t deadline)
 		return NULL;
 	b->live_calls++;
 	c->playback_codecs = b->playback_codecs;
+	c->single_track = b->single_track;
 	c->control_context = b->control_context;
 	c->query.media = b->media;
 	c->query.limit = 1;
@@ -343,6 +379,7 @@ static int playback_actions(sb_browse_call *c,
 			    const sb_ml_browse_info *info)
 {
 	if (!info->codec_mask || (info->codec_mask & ~c->playback_codecs) ||
+	    (c->single_track && r->kind != SB_QUERY_TRACKS) ||
 	    (r->kind != SB_QUERY_TRACKS && r->kind != SB_QUERY_ALBUMS))
 		return 1;
 	const char *key = r->kind == SB_QUERY_TRACKS ? "track_id" : "album_id";
@@ -350,7 +387,7 @@ static int playback_actions(sb_browse_call *c,
 		return 0;
 	static const char *names[] = {"go", "play", "add", "insert"};
 	static const char *commands[] = {"load", "load", "add", "insert"};
-	for (unsigned n = r->kind == SB_QUERY_TRACKS ? 0 : 1; n < 4; n++) {
+	for (unsigned n = r->kind == SB_QUERY_TRACKS ? 0 : 1; n < (c->single_track ? 2u : 4u); n++) {
 		if (!emit(c->json,
 			  sizeof c->json,
 			  &c->used,
@@ -712,6 +749,14 @@ void sb_browse_playback(sb_browse *b, unsigned codecs)
 {
 	if (b && b->playback_codecs != (codecs & 3u)) {
 		b->playback_codecs = codecs & 3u;
+		b->version++;
+	}
+}
+
+void sb_browse_single_track(sb_browse *b, int enabled)
+{
+	if (b && b->single_track != !!enabled) {
+		b->single_track = !!enabled;
 		b->version++;
 	}
 }
