@@ -221,12 +221,18 @@ static int playback_command(client *connection, struct music_http *h)
 		return 1;
 	}
 	if (!strcmp(name, "status")) {
-		uint64_t offset = 0, quantity = 1;
-		if (cmd->count == 2 ||
-		    (cmd->count >= 3 &&
-		     (!playback_number(
-			      cmd->arguments[1], UINT32_MAX, &offset) ||
-		      !playback_number(cmd->arguments[2], 200, &quantity)))) {
+		uint32_t offset = 0, quantity = 1;
+		if (!sb_playback_status_args(cmd->count,
+					     cmd->count >= 3 ?
+						     cmd->arguments[1] :
+						     NULL,
+					     cmd->count >= 3 ?
+						     cmd->arguments[2] :
+						     NULL,
+					     q.audible,
+					     q.intended,
+					     &offset,
+					     &quantity)) {
 			strcpy(data, "{\"error\":\"invalid_status_page\"}");
 			goto reply;
 		}
@@ -245,8 +251,8 @@ static int playback_command(client *connection, struct music_http *h)
 			goto reply;
 		}
 		success = sb_playback_status_page(local_music,
-						  (uint32_t)offset,
-						  (uint32_t)quantity,
+						  offset,
+						  quantity,
 						  page,
 						  SB_BROWSE_JSON_MAX - 2048);
 		if (!music_reply(h,

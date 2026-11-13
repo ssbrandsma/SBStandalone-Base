@@ -334,7 +334,7 @@ function menu(self)
     if platform.extended_storage then menu:addItem({text="Extended Storage",callback=function() self:storageMenu() end}) end
     menu:addItem({text="Web Access",callback=function() if not self.remoteBridge:isInjecting() then self:webAccessMenu() end end})
     if self.firmwareUpdates then menu:addItem({text="Custom Firmware Updates",callback=function() self.firmwareUpdates:menu() end}) end
-	menu:addItem({text="Version: 0.7.0"})
+	menu:addItem({text="Version: 0.7.1"})
     window:addWidget(menu); window:show()
 end
 function webAccessMenu(self)
@@ -356,7 +356,7 @@ function showPairingCode(self,previous)
         window:setAllowScreensaver(false)
         local menu=SimpleMenu("menu")
         menu:setHeaderWidget(Textarea("help_text","Enter this code in the Standalone Base web page. Remote screen capture is disabled while the code is active."))
-        local pinItem={text="Pairing code: "..pin:sub(1,3).." "..pin:sub(4,6),style="item_info"}
+        local pinItem={text="Pairing code: "..pin:sub(1,3).." "..pin:sub(4,6)}
         local address=NetworkAddress.current()
         local addressItem={text=address and ("Web access: http://"..address) or "Web access: IP address unavailable",style="item_info"}
         local expiresItem={text="Expires in 02:00",style="item_info"}

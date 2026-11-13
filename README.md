@@ -13,7 +13,7 @@ hotspot calibration are documented in
 
 StandaloneBase is a three-process native runtime plus SqueezePlay applet for a Logitech Squeezebox Radio. It provides a minimal local LMS-compatible bootstrap (`sbbase`), the existing configuration web server (`sbwebserver`), and the existing loopback HTTPS compatibility proxy (`sbproxy`).
 
-Browser management uses physical six-digit PIN pairing and short-lived HttpOnly sessions; see [Web Access pairing](docs/WEB_ACCESS_PAIRING.md).
+Browser management uses physical six-digit PIN pairing, with optional remembered browsers and HttpOnly cookies; see [Web Access pairing](docs/WEB_ACCESS_PAIRING.md).
 
 The local LMS service now supplies the stock **Settings → Alarm Clock** menus
 and alarm scheduling, reusing the Radio's resident AlarmSnooze UI and fallback
@@ -101,3 +101,7 @@ The [metadata-delivery optimization](docs/HLS_METADATA_DELIVERY.md) replaces
 ## Release 0.7.0
 
 Baby and Fab4 share one source tree, with target-specific static binaries and installer ZIPs. Fab4 includes live landscape Virtual Touch capture and touchscreen controls. See [dual-platform build instructions](docs/DUAL_PLATFORM.md) and [Virtual Touch validation](docs/VIRTUAL_TOUCH.md).
+
+## Release 0.7.1
+
+Adds remembered-browser web access, larger access codes, firmware standby power/sequence handling and shared Radio connection fixes. The matching Standalone Radio standby guard is released separately. Baby and Fab4 packages retain Standalone Music disabled by default.

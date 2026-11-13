@@ -40,6 +40,7 @@ struct sb_music_playback {
 	int single_mp3, attempted;
 	int ipc_probe_required, ipc_verified;
 	uint64_t ipc_probe_deadline, ipc_sent_ms;
+	uint64_t keepalive_ms;
 	uint64_t active_expires;
 	sb_play_phase phase;
 	sb_queue_edit edit;
@@ -73,6 +74,11 @@ static void fail(sb_music_playback *p, const char *error)
 	p->owner_requested = 0;
 	snprintf(p->error, sizeof p->error, "%s", error);
 	p->phase = SB_PLAY_FAILED;
+	/* The single-track latch covers one live stream, not the process:
+	 * a failure without a live stream must not brick later loads. */
+	if (!(p->transport.used_connection &&
+	      !p->transport.stream.terminal_seen))
+		p->attempted = 0;
 	if (p->completed < p->operation) {
 		p->completed = p->operation;
 		p->completed_success = 0;
@@ -301,7 +307,11 @@ sb_queue_result sb_playback_load(sb_music_playback *p,
 				 uint64_t context,
 				 uint64_t now)
 {
-	if (p && p->single_mp3 && (edit != SB_Q_LOAD || album || p->attempted))
+	/* WP4a.6 switch: one live stream, replaceable by an explicit
+	 * tap. LOAD is accepted mid-play; the superseded stream is
+	 * retired in prepare_file after the candidate validates, so a
+	 * rejected selection leaves the playing stream untouched. */
+	if (p && p->single_mp3 && (edit != SB_Q_LOAD || album))
 		return SB_Q_INVALID;
 	if (!p || p->stopping || !p->media.online || context != p->context ||
 	    now > UINT64_MAX - 20000)
@@ -467,6 +477,36 @@ int sb_playback_control(sb_music_playback *p,
 	return 1;
 }
 
+/* Retire the superseded stream for an in-flight LOAD. The stop goes
+ * out on the validated path, the slot is freed synchronously, and
+ * the late firmware terminal is pre-absorbed so the tick path cannot
+ * clobber the new load. The superseding strm-s makes the old
+ * terminal moot: firmware serializes strm frames on one decoder, and
+ * stale old-stream events keep rejecting against the retired
+ * identity. Raw control() (not sb_playback_control) serves here: the
+ * latter would cancel the new operation this retires for. */
+static int retire_previous_stream(sb_music_playback *p, uint64_t now)
+{
+	if (!p->transport.used_connection ||
+	    p->transport.stream.terminal_seen)
+		return 1;
+	if (p->transport.state != SB_T_STOPPING && !control(p, 'q', now))
+		return 0;
+	p->reset = 1;
+	(void)sb_queue_confirm(p->queue,
+			       p->context,
+			       p->stream.owner_generation,
+			       p->stream.epoch,
+			       SB_Q_STOPPED,
+			       0);
+	if (!sb_transport_stopped(&p->transport, &p->stream, 1))
+		return 0;
+	p->terminal_handled = p->stream.epoch;
+	(void)sb_transport_release_stream(&p->transport);
+	p->attempted = 0;
+	return 1;
+}
+
 int sb_playback_select(sb_music_playback *p,
 		       uint32_t index,
 		       uint64_t context,
@@ -509,6 +549,17 @@ static void prepare_file(sb_music_playback *p, uint64_t now)
 	if (!bit || !(p->transport.hello.codecs & bit) ||
 	    (p->single_mp3 && bit != SB_SLIM_CODEC_MP3)) {
 		fail(p, "unsupported_player_codec");
+		return;
+	}
+	/* A valid candidate supersedes the live stream. The RESET that
+	 * revokes the old capability must reach the registry before the
+	 * new RESERVE, so defer the file submit one round trip. */
+	if (p->transport.used_connection &&
+	    !p->transport.stream.terminal_seen) {
+		if (!retire_previous_stream(p, now)) {
+			fail(p, "previous_stream_stop_failed");
+			return;
+		}
 		return;
 	}
 	if (!p->file_request) {
@@ -636,7 +687,11 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 	sb_transport_tick(&p->transport, now);
 	if (p->transport.stream.terminal_seen)
 		transport_status(p, now);
-	/* A committed external takeover invalidates every old request context.
+	/* A committed external takeover invalidates every old request
+	 * context. Expected releases (natural completion, clean stop, idle
+	 * resync) change the owner with no live stream and no open
+	 * operation: they stay transparent to already-rendered UI, whose
+	 * next tap otherwise dies on a stale context with no feedback.
 	 */
 	int native_reconnect_release =
 		p->existing && p->owner->value.current == SB_OWNER_NONE &&
@@ -645,13 +700,22 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 		p->owner_requested && p->owner->value.current == SB_OWNER_MUSIC;
 	if (p->observed_owner != p->owner->value.current &&
 	    !native_reconnect_release && !native_acquisition) {
-		if (p->context == UINT64_MAX) {
-			fail(p, "context_exhausted");
-			return;
+		/* Takeovers of a live stream or an open load rotate the
+		 * fenced context and fail loudly. */
+		if (((p->owner->value.current != SB_OWNER_NONE &&
+		      p->owner->value.current != SB_OWNER_MUSIC) ||
+		     p->completed < p->operation ||
+		     !p->transport.stream.terminal_seen) &&
+		    p->operation) {
+			if (p->context == UINT64_MAX) {
+				fail(p, "context_exhausted");
+				return;
+			}
+			sb_queue_context(p->queue,
+					 ++p->context,
+					 p->owner->value.generation);
+			fail(p, "physical_owner_changed");
 		}
-		sb_queue_context(
-			p->queue, ++p->context, p->owner->value.generation);
-		fail(p, "physical_owner_changed");
 	}
 	p->observed_owner = p->owner->value.current;
 	int acknowledged = ipc_tick(p);
@@ -721,6 +785,31 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 		fail(p, "playback_action_timeout");
 		publish(p);
 		return;
+	}
+	/* Jive drops a server-silent SlimProto connection after 35 s
+	 * (READ_TIMEOUT), which kills an active native stream on detach.
+	 * Poll a live stream well inside that window. strm-t is answered
+	 * with STMt and changes no decoder state (jive/audio/Playback.lua);
+	 * a failed poll retries next tick and never fails the stream. */
+	if (p->phase == SB_PLAY_ACTIVE && p->owner->connected &&
+	    p->owner->value.current == SB_OWNER_MUSIC &&
+	    p->transport.attached && now >= p->keepalive_ms &&
+	    now - p->keepalive_ms >= 15000) {
+		unsigned char frame[64];
+		size_t length = sb_slim_strm('t',
+					     (uint32_t)(now & 0xffffffffu),
+					     NULL,
+					     frame,
+					     sizeof frame);
+		if (length &&
+		    p->send(p->send_context, frame, length, &p->stream)) {
+			p->keepalive_ms = now;
+			fprintf(stderr,
+				"MUSIC_STRM_SEND cmd=t epoch=%llu owner=%llu conn=%llu\n",
+				(unsigned long long)p->stream.epoch,
+				(unsigned long long)p->stream.owner_generation,
+				(unsigned long long)p->transport.connection);
+		}
 	}
 	sb_music_load_tick(p->load, now);
 	if (p->phase == SB_PLAY_LOADING) {
@@ -887,6 +976,7 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 			(unsigned long long)p->stream.epoch,
 			(unsigned long long)p->stream.owner_generation,
 			(unsigned long long)p->transport.connection);
+		p->keepalive_ms = now;
 		(void)sb_queue_bind_owner(
 			p->queue, p->context, p->stream.owner_generation);
 		if (p->staged &&
@@ -939,6 +1029,17 @@ static void transport_status(sb_music_playback *p, uint64_t now)
 			(int)t->stream.state, (unsigned long long)stream->epoch,
 			(unsigned long long)stream->owner_generation);
 		if (t->stream.state == SB_STREAM_STOPPED) {
+			if (p->completed < p->operation) {
+				/* Sub-tick race: the superseded stream's
+				 * terminal landed after LOAD-accept but
+				 * before its first tick. Free the slot for
+				 * the in-flight load; it re-proves
+				 * quiescence and epoch at ACTIVATE. */
+				p->attempted = 0;
+				p->reset = 1;
+				(void)sb_transport_release_stream(t);
+				return;
+			}
 			(void)sb_queue_confirm(p->queue,
 					       p->context,
 					       stream->owner_generation,
@@ -947,15 +1048,23 @@ static void transport_status(sb_music_playback *p, uint64_t now)
 					       0);
 			p->phase = SB_PLAY_IDLE;
 			p->reset = 1;
+			/* Terminal stop frees the single-track latch and the
+			 * connection; a later load re-qualifies from idle. */
+			p->attempted = 0;
+			(void)sb_transport_release_stream(t);
 			return;
 		}
-		if (p->staged) {
+		int drained = t->error == SB_T_OK &&
+			      t->stream.state == SB_STREAM_DRAINED;
+		/* A natural drain racing an open LOAD is the old stream's
+		 * expected end, not a failure: its successor proceeds
+		 * (the post-drain firmware reset below still runs for
+		 * it). Failed terminals keep cancelling the pending load. */
+		if (p->staged && !(drained && p->completed < p->operation)) {
 			(void)sb_music_load_cancel(p->load);
 			p->staged = 0;
 			retire_file(p);
 		}
-		int drained = t->error == SB_T_OK &&
-			      t->stream.state == SB_STREAM_DRAINED;
 		int advanced = sb_queue_terminal(p->queue,
 						 p->context,
 						 stream->owner_generation,
@@ -971,6 +1080,42 @@ static void transport_status(sb_music_playback *p, uint64_t now)
 			p->phase = SB_PLAY_FAILED;
 			strcpy(p->error, "transport_failed");
 		}
+		/* WP4a.6: a naturally drained decoder keeps C-layer replay
+		 * state that stalls the next strm-s (STMc + HTTP 200, then
+		 * silence: decode never starts, no STMs). Reset the
+		 * firmware with a post-drain stop while ownership is still
+		 * ours. The transport is already terminal so the validated
+		 * control() path refuses; this raw frame carries the
+		 * completed stream identity on the still-attached
+		 * connection. The resulting flush is rejected by the
+		 * terminal guard, or absorbed as a rebuffer/connect
+		 * self-flush if it lands in the next stream.
+		 * Failure-terminal drains stay silent: a wedged drain may
+		 * still be audible. */
+		if (drained &&
+		    p->owner->value.current == SB_OWNER_MUSIC && p->send) {
+			unsigned char reset[64];
+			size_t reset_length = sb_slim_strm('q',
+							   0,
+							   NULL,
+							   reset,
+							   sizeof reset);
+			if (reset_length &&
+			    p->send(p->send_context,
+				    reset,
+				    reset_length,
+				    &p->stream))
+				fprintf(stderr,
+					"MUSIC_STRM_SEND cmd=q epoch=%llu owner=%llu conn=%llu\n",
+					(unsigned long long)p->stream.epoch,
+					(unsigned long long)p->stream.owner_generation,
+					(unsigned long long)p->transport.connection);
+		}
+		/* Terminal drain/failure also retires the finished stream:
+		 * NEED_CONNECTION advance and later loads share one freed
+		 * connection, each re-proving quiescence and epoch. */
+		p->attempted = 0;
+		(void)sb_transport_release_stream(t);
 	} else if (t->state == SB_T_PLAYING || t->state == SB_T_PAUSED) {
 		(void)sb_queue_confirm(p->queue,
 				       p->context,
@@ -1084,6 +1229,52 @@ static int status_row(char *out,
 			   title))
 		return 0;
 	return status_append(out, cap, used, "}");
+}
+
+static int status_digits(const char *s, uint64_t limit, uint64_t *value)
+{
+	uint64_t n;
+	if (!s || !*s)
+		return 0;
+	n = 0;
+	for (; *s; s++) {
+		if (*s < '0' || *s > '9' ||
+		    n > (limit - (unsigned)(*s - '0')) / 10)
+			return 0;
+		n = n * 10 + (unsigned)(*s - '0');
+	}
+	*value = n;
+	return 1;
+}
+
+int sb_playback_status_args(unsigned count,
+			    const char *first,
+			    const char *second,
+			    uint32_t audible,
+			    uint32_t intended,
+			    uint32_t *offset,
+			    uint32_t *quantity)
+{
+	uint64_t off = 0, qty = 1;
+	if (!offset || !quantity || !count)
+		return 0;
+	if (count == 2)
+		return 0;
+	if (count >= 3) {
+		if (first && !strcmp(first, "-")) {
+			/* LMS "-" offset: from the current song. */
+			off = audible == SB_QUEUE_NONE ?
+				(intended == SB_QUEUE_NONE ? 0u : intended) :
+				audible;
+		} else if (!status_digits(first, UINT32_MAX, &off)) {
+			return 0;
+		}
+		if (!status_digits(second, 200, &qty))
+			return 0;
+	}
+	*offset = (uint32_t)off;
+	*quantity = (uint32_t)qty;
+	return 1;
 }
 
 int sb_playback_status_page(sb_music_playback *p,
@@ -1243,7 +1434,9 @@ int sb_playback_probe_resources(sb_music_playback *p,uint64_t now)
 
 unsigned sb_playback_codecs(const sb_music_playback *p)
 {
- return p&&p->transport.attached&&!(p->single_mp3&&p->attempted)?
+ /* WP4a.6 switch: play actions stay offered mid-play; the latch no
+  * longer hides them while a replaceable stream is live. */
+ return p&&p->transport.attached?
         p->transport.hello.codecs:0;
 }
 

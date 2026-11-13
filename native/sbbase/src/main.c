@@ -71,7 +71,7 @@
 #define STREAM_HEARTBEAT_SECONDS 2
 
 typedef struct {
-	int fd, kind, helo, close_after_drain;
+	int fd, kind, helo, close_after_drain, http_resume;
 	sb_output output;
 #ifdef SB_MUSIC_BROWSE_INTEGRATION
 	struct music_http *music_http;
@@ -88,6 +88,10 @@ typedef struct {
 	uint64_t ownership_revision, ownership_deadline, ownership_connection;
 	int playerstatus_subscribed;
 	time_t keepalive;
+	/* Last strm-t poll sent. Incoming traffic must not move this:
+	 * a chattering peer (decoder STMt) would otherwise suppress the
+	 * idle poll and trip Jive's 35 s READ_TIMEOUT. */
+	time_t slim_poll;
 	size_t used;
 	char client_id[32];
 	char subscribed_player[18];
@@ -282,6 +286,7 @@ static void close_client(client *c)
 		close(c->fd);
 	sb_output_clear(&c->output);
 	c->close_after_drain = 0;
+	c->http_resume = 0;
 	c->fd = -1;
 	c->used = 0;
 	c->client_id[0] = 0;
@@ -468,39 +473,95 @@ static client *stream_for_id(const char *id)
 	return NULL;
 }
 
+/* WP4a.6: Jive uses one CID for short requests and a different CID for
+ * its long-poll stream, so a per-stream subscription flag can never
+ * cover it: sets keyed by stream CID never match the request CID, and
+ * pushes addressed to the stream CID land on a channel Jive ignores.
+ * Track subscribed request-CIDs globally and broadcast each addressed
+ * snapshot to every live stream (loopback-only listener: the only
+ * consumers are Jive and local probes, which route by channel). */
+#define SB_SUBSCRIBED_CIDS 8
+static char subscribed_cids[SB_SUBSCRIBED_CIDS][32];
+
+static void subscribed_cid_add(const char *cid)
+{
+	int i;
+	if (!cid || !cid[0])
+		return;
+	for (i = 0; i < SB_SUBSCRIBED_CIDS; i++)
+		if (!strcmp(subscribed_cids[i], cid))
+			return;
+	for (i = 0; i < SB_SUBSCRIBED_CIDS; i++)
+		if (!subscribed_cids[i][0]) {
+			snprintf(subscribed_cids[i],
+				 sizeof subscribed_cids[i],
+				 "%s",
+				 cid);
+			return;
+		}
+	/* Old request identities can outlive their disconnected Jive stream.
+	 * Keep this cache bounded without permanently refusing new subscribers. */
+	memmove(subscribed_cids,subscribed_cids+1,
+		(SB_SUBSCRIBED_CIDS-1)*sizeof subscribed_cids[0]);
+	snprintf(subscribed_cids[SB_SUBSCRIBED_CIDS-1],
+		sizeof subscribed_cids[0],"%s",cid);
+}
+
+static void subscribed_cid_clear(const char *cid)
+{
+	int i;
+	if (!cid || !cid[0])
+		return;
+	for (i = 0; i < SB_SUBSCRIBED_CIDS; i++)
+		if (!strcmp(subscribed_cids[i], cid))
+			subscribed_cids[i][0] = 0;
+}
+
+static int subscribed_cid_any(void)
+{
+	int i;
+	for (i = 0; i < SB_SUBSCRIBED_CIDS; i++)
+		if (subscribed_cids[i][0])
+			return 1;
+	return 0;
+}
+
 /**
  * @brief Handle publish playerstatus.
  */
 static void publish_playerstatus(void)
 {
 	char data[6144], event[8192], channel[128];
-	int i, subscribers = 0, delivered = 0;
-	if (!player_id[0])
+	int i, s, subscribers = 0, delivered = 0;
+	if (!player_id[0] || !subscribed_cid_any())
 		return;
 	player_status_json(data, sizeof data);
-	for (i = 0; i < CLIENTS; i++) {
-		client *c = &clients[i];
-		if (c->fd < 0 || c->kind != 3 || !c->playerstatus_subscribed ||
-		    strcmp(c->subscribed_player, player_id))
+	for (s = 0; s < SB_SUBSCRIBED_CIDS; s++) {
+		if (!subscribed_cids[s][0])
 			continue;
 		subscribers++;
 		snprintf(channel,
 			 sizeof channel,
-			 "/%s/slim/playerstatus/%s",
-			 c->client_id,
+			 "/%.31s/slim/playerstatus/%.17s",
+			 subscribed_cids[s],
 			 player_id);
 		snprintf(event,
 			 sizeof event,
 			 "[{\"channel\":\"%s\",\"data\":%s}]",
 			 channel,
 			 data);
-		if (test_nowplaying)
-			fprintf(stderr,
-				"NOWPLAYING PUSH client=%s\n",
-				c->client_id);
-		stream_event(c, event);
-		if (c->fd >= 0)
-			delivered++;
+		for (i = 0; i < CLIENTS; i++) {
+			client *c = &clients[i];
+			if (c->fd < 0 || c->kind != 3 || !c->client_id[0])
+				continue;
+			if (test_nowplaying)
+				fprintf(stderr,
+					"NOWPLAYING PUSH client=%s\n",
+					c->client_id);
+			stream_event(c, event);
+			if (c->fd >= 0)
+				delivered++;
+		}
 	}
 	if (test_nowplaying)
 		fprintf(stderr,
@@ -519,20 +580,12 @@ static void publish_playerstatus(void)
 static void register_playerstatus(const char *path)
 {
 	char cid[32], requested[18];
-	client *stream;
 	if (!split_playerstatus_path(
 		    path, cid, sizeof cid, requested, sizeof requested))
 		return;
 	if (!player_id[0] || strcmp(requested, player_id))
 		return;
-	stream = stream_for_id(cid);
-	if (!stream)
-		return;
-	stream->playerstatus_subscribed = 1;
-	snprintf(stream->subscribed_player,
-		 sizeof stream->subscribed_player,
-		 "%s",
-		 requested);
+	subscribed_cid_add(cid);
 	if (test_nowplaying)
 		fprintf(stderr,
 			"NOWPLAYING SUBSCRIBE player=%s client=%s\n",
@@ -669,11 +722,12 @@ static void unregister_playerstatus(const char *body)
 		    path, cid, sizeof cid, requested, sizeof requested))
 		return;
 	stream = stream_for_id(cid);
-	if (stream && stream->playerstatus_subscribed &&
-	    !strcmp(stream->subscribed_player, requested)) {
+	if (stream) {
 		stream->playerstatus_subscribed = 0;
 		stream->subscribed_player[0] = 0;
 	}
+	if (!strcmp(requested, player_id))
+		subscribed_cid_clear(cid);
 }
 
 /**
@@ -700,8 +754,8 @@ static void publish_player(void)
 				 "\"Standalone\",\"model\":\"%s\","
 				 "\"modelname\":\"%s\",\"isplayer\":1,"
 				 "\"connected\":1,"
-				 "\"power\":1,\"firmware\":\"7.7.3\",\"ip\":"
-				 "\"127.0.0.1\",\"seq_no\":0,\"displaytype\":"
+				 "\"power\":%d,\"firmware\":\"7.7.3\",\"ip\":"
+				 "\"127.0.0.1\",\"seq_no\":%u,\"displaytype\":"
 				 "\"none\",\"isplaying\":%d,\"canpoweroff\":1}]"
 				 "}}]",
 				 clients[i].client_id,
@@ -713,6 +767,7 @@ static void publish_player(void)
 				 player_id,
 				 player_model,
 				 player_modelname,
+				 np_player_power(nowplaying),np_player_sequence(nowplaying),
 				 np_current(nowplaying)->state == NP_PLAYING);
 			fprintf(stderr,
 				"COMET PUSH client=%s\n",
@@ -1310,6 +1365,26 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 					player_id[0] ? player_id : "unknown");
 		}
 
+		else if (!strcmp(command.arguments[0], "power")) {
+			const char *seq=sb_lms_tag(&command,"seq_no");
+			uint32_t sequence=seq?(uint32_t)strtoull(seq,NULL,10):0;
+			if(command.count>1&&strcmp(command.arguments[1],"?")){
+				int on=!strcmp(command.arguments[1],"1");
+				if(np_set_player_power(nowplaying,on,sequence)){
+					if(!on)(void)np_queue_command(nowplaying,"stop",0);
+					publish_playerstatus();publish_player();
+				}
+			}
+			snprintf(data,sizeof data,"{\"_power\":%d}",np_player_power(nowplaying));
+		}
+		else if (!strcmp(command.arguments[0], "mixer")) {
+			const char *seq=sb_lms_tag(&command,"seq_no");
+			if(command.count>2&&strcmp(command.arguments[2],"?")){
+				(void)np_set_player_volume(nowplaying,atoi(command.arguments[2]),seq?(uint32_t)strtoull(seq,NULL,10):0);
+				publish_playerstatus();
+			}
+			snprintf(data,sizeof data,"{\"_volume\":%d}",np_player_volume(nowplaying));
+		}
 		else if (!strcmp(command.arguments[0], "pause")) {
 			np_queue_command(nowplaying,
 					 (command.count > 1 && !strcmp(command.arguments[1], "0")) ? "play"
@@ -1358,12 +1433,13 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 				"\"name\":\"Standalone\",\"model\":\"%s\","
 				"\"modelname\":\"%s\",\"isplayer\":1,"
 				"\"connected\":1,"
-				"\"power\":1,\"firmware\":\"7.7.3\",\"ip\":"
-				"\"127.0.0.1\",\"seq_no\":0,\"displaytype\":"
+				"\"power\":%d,\"firmware\":\"7.7.3\",\"ip\":"
+				"\"127.0.0.1\",\"seq_no\":%u,\"displaytype\":"
 				"\"none\",\"isplaying\":%d,\"canpoweroff\":1}]",
 				player_id,
 				player_model,
 				player_modelname,
+				np_player_power(nowplaying),np_player_sequence(nowplaying),
 				np_current(nowplaying)->state == NP_PLAYING);
 			memmove(mark + strlen(player),
 				mark + 6,
@@ -1411,57 +1487,180 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
  */
 #include "ownership_http.inc"
 
+/* Bounded reject diagnostic: Jive replays its whole backlog after any
+ * error, so a silent 400 turns one poison batch into an undiagnosable
+ * reconnect storm. Log length, whether the body is valid JSON under a
+ * generous budget, and a sanitized head. */
+static void comet_malformed_log(const client *c,
+				const char *body,
+				size_t need,
+				int big_valid)
+{
+	static char dump[16385];
+	size_t n = need < 16384 ? need : 16384, i;
+	const char *s = (const char *)c->buf;
+	size_t off = (size_t)(body - s);
+	for (i = 0; i < n; i++) {
+		unsigned char ch = (unsigned char)body[i];
+		dump[i] = (ch == '\r') ? 'R' : (ch == '\n') ? 'N' :
+			  (ch >= 32 && ch < 127) ? (char)ch : '?';
+	}
+	dump[n] = 0;
+	fprintf(stderr,
+		"COMET MALFORMED len=%lu used=%lu off=%lu big=%d body=%s\n",
+		(unsigned long)need,
+		(unsigned long)c->used,
+		(unsigned long)off,
+		big_valid,
+		dump);
+}
+
+static void handle_http_once(client *c,
+				 const sb_config *cfg,
+				 char *body,
+				 long need,
+				 int chunked);
+
 static void handle_http(client *c, const sb_config *cfg)
 {
+	/* Consume-then-shift: Jive pipelines back-to-back POSTs on its
+	 * reusable sockets, and loopback coalesces them into one recv.
+	 * Discarding the tail (used=0) desyncs the socket permanently:
+	 * the next recv overwrites buf+0 and every later request
+	 * validates a fragment (COMET MALFORMED storm). Parse one
+	 * request, dispatch it, shift the leftover, and re-enter while
+	 * a complete request is buffered. Bounded per call; any rest
+	 * waits for the next recv. Async music, streams, chunked
+	 * uploads and draining sockets keep single-shot behavior. */
+	for (int round = 0; round < 64; round++) {
+		char *s = (char *)c->buf, *end = strstr(s, "\r\n\r\n"), *body,
+		     *cl, *size_end, *size_parse;
+		long need = 0;
+		int chunked;
+		size_t total, consumed;
+		char save = 0;
+		int guarded = 0;
 
-	char *s = (char *)c->buf, *end = strstr(s, "\r\n\r\n"), *body, *cl,
-	     *channel, *id, *size_end, *size_parse;
-	long need = 0;
+		if (!end)
+			return;
+
+		char header_tail=*end;
+		*end=0; /* Header searches must not inspect a pipelined request/body. */
+		cl = strstr(s, "Content-Length:");
+		if (!cl)
+			cl = strstr(s, "content-length:");
+		if (cl)
+			need = strtol(cl + 15, NULL, 10);
+
+		chunked = !cl && (strstr(s, "Transfer-Encoding: chunked") ||
+				  strstr(s, "transfer-encoding: chunked"));
+		*end=header_tail;
+		body = end + 4;
+
+		if (chunked) {
+			size_end = strstr(body, "\r\n");
+			if (!size_end)
+				return;
+			errno = 0;
+			need = strtol(body, &size_parse, 16);
+			if (errno || size_parse != size_end)
+				need = -1;
+			if (need >= 0 &&
+			    (size_t)(size_end + 2 - s) + (size_t)need + 2 >
+				    c->used)
+				return;
+			if (need >= 0) {
+				memmove(body, size_end + 2, (size_t)need);
+				body[need] = 0;
+			}
+		}
+
+		if (need < 0 || need > SB_MAX_HTTP_BODY) {
+			http_reply(c,
+				   "413 Payload Too Large",
+				   "[{\"successful\":false}]",
+				   0);
+			return;
+		}
+
+		if (!chunked && (size_t)(body - s) + (size_t)need > c->used)
+			return;
+
+		total = c->used;
+		/* NUL-guard the slice: dispatch uses unbounded strstr and
+		 * must not see pipelined bytes. Restored below. */
+		if (!chunked &&
+		    (size_t)(body - s) + (size_t)need < total) {
+			save = body[need];
+			body[need] = 0;
+			guarded = 1;
+		}
+		if(test_nowplaying) {
+			char bh[25];
+			int m = need < 24 ? (need < 0 ? 0 : (int)need) : 24, q;
+			for (q = 0; q < m; q++) {
+				unsigned char ch = (unsigned char)body[q];
+				bh[q] = (ch >= 32 && ch < 127) ? (char)ch : '?';
+			}
+			bh[m] = 0;
+			fprintf(stderr,
+				"COMET ROUND fd=%d off=%lu need=%ld "
+				"used=%lu bodyhead=%s\n",
+				c->fd,
+				(unsigned long)(body - s),
+				need,
+				(unsigned long)total,
+				bh);
+		}
+		handle_http_once(c, cfg, body, need, chunked);
+		if (guarded)
+			body[need] = save;
+		if (chunked)
+			return;
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+		if (c->music_http)
+			return;
+#endif
+		if (c->fd < 0 || c->close_after_drain || c->kind != 2)
+			return;
+		if (c->http_resume) {
+			/* A synchronously completed music request
+			 * already shifted the tail; re-parse it. */
+			c->http_resume = 0;
+			continue;
+		}
+		consumed = (size_t)(body - s) + (size_t)need;
+		if(test_nowplaying) fprintf(stderr,
+			"COMET SHIFT fd=%d consumed=%lu total=%lu left=%lu\n",
+			c->fd,
+			(unsigned long)consumed,
+			(unsigned long)total,
+			(unsigned long)(consumed >= total ?
+					0 : total - consumed));
+		if (consumed >= total) {
+			c->used = 0;
+			return;
+		}
+		memmove(c->buf, c->buf + consumed, total - consumed);
+		c->used = total - consumed;
+		c->buf[c->used] = 0;
+	}
+	/* Yield after a bounded turn, but drain buffered requests on the next
+	 * event-loop turn even if the peer has no more bytes to send. */
+	if(c->used)c->http_resume=1;
+}
+
+static void handle_http_once(client *c,
+			     const sb_config *cfg,
+			     char *body,
+			     long need,
+			     int chunked)
+{
+	char *s = (char *)c->buf, *end = strstr(s, "\r\n\r\n"), *channel, *id;
 	char response[24000], cid[32], reply[160] = "/response", mac[32],
 				       rid[32] = "1";
-	int i, chunked, keep_response = 0;
+	int i, keep_response = 0;
 	char method[8], path[512];
-
-	if (!end)
-		return;
-
-	cl = strstr(s, "Content-Length:");
-	if (!cl)
-		cl = strstr(s, "content-length:");
-	if (cl)
-		need = strtol(cl + 15, NULL, 10);
-
-	chunked = !cl && (strstr(s, "Transfer-Encoding: chunked") ||
-			  strstr(s, "transfer-encoding: chunked"));
-	body = end + 4;
-
-	if (chunked) {
-		size_end = strstr(body, "\r\n");
-		if (!size_end)
-			return;
-		errno = 0;
-		need = strtol(body, &size_parse, 16);
-		if (errno || size_parse != size_end)
-			need = -1;
-		if (need >= 0 &&
-		    (size_t)(size_end + 2 - s) + (size_t)need + 2 > c->used)
-			return;
-		if (need >= 0) {
-			memmove(body, size_end + 2, (size_t)need);
-			body[need] = 0;
-		}
-	}
-
-	if (need < 0 || need > SB_MAX_HTTP_BODY) {
-		http_reply(c,
-			   "413 Payload Too Large",
-			   "[{\"successful\":false}]",
-			   0);
-		return;
-	}
-
-	if (!chunked && (size_t)(body - s) + (size_t)need > c->used)
-		return;
 
 	method[0] = path[0] = 0;
 	if (sscanf(s, "%7s %511s", method, path) != 2) {
@@ -1593,6 +1792,7 @@ if(!strcmp(path,"/api/music/ownership")){
 	}
 #endif
 	if (strncmp(s, "POST /cometd ", 13) && strncmp(s, "GET /health ", 12)
+	    && strncmp(s, "GET /api/debug/comet ", 19)
 #ifndef SB_MUSIC_RUNTIME
         && strncmp(s, "POST /test/next-track ", 22)
 #endif
@@ -1611,6 +1811,45 @@ if(!strcmp(path,"/api/music/ownership")){
 			   "\"version\":\"" SBBASE_VERSION
 			   "\",\"lms_version\":\"" SB_LMS_COMPAT_VERSION "\"}",
 			   0);
+		return;
+	}
+	/* Loopback-only listener: safe to expose stream/subscription state
+	 * for Now Playing diagnosis (WP4a.6 Dreams: is Jive subscribed?). */
+	if (!strncmp(s, "GET /api/debug/comet ", 19)) {
+		char dbg[4096], *w = dbg, *end = dbg + sizeof dbg;
+		int i, first = 1;
+		w += snprintf(w,
+			      (size_t)(end - w),
+			      "{\"player_id\":\"%s\",\"subscribed_cids\":[",
+			      player_id);
+		for (i = 0; i < SB_SUBSCRIBED_CIDS && w < end - 48; i++) {
+			if (!subscribed_cids[i][0])
+				continue;
+			w += snprintf(w,
+				      (size_t)(end - w),
+				      "%s\"%s\"",
+				      first ? "" : ",",
+				      subscribed_cids[i]);
+			first = 0;
+		}
+		first = 1;
+		if (w < end - 16)
+			w += snprintf(w, (size_t)(end - w), "],\"streams\":[");
+		for (i = 0; i < CLIENTS && w < end - 128; i++) {
+			client *sc = &clients[i];
+			if (sc->fd < 0 || sc->kind != 3 ||
+			    !sc->client_id[0])
+				continue;
+			w += snprintf(w,
+				      (size_t)(end - w),
+				      "%s{\"cid\":\"%s\"}",
+				      first ? "" : ",",
+				      sc->client_id);
+			first = 0;
+		}
+		if (w < end - 8)
+			w += snprintf(w, (size_t)(end - w), "]}");
+		http_reply(c, "200 OK", dbg, 0);
 		return;
 	}
 
@@ -1638,6 +1877,21 @@ if(!strcmp(path,"/api/music/ownership")){
 	 * subscriptions. */
 	keep_response = 1;
 	if (!sb_lms_json_valid(body, (size_t)need)) {
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+		/* Drain over-budget backlogs and resync truncated heads
+		 * instead of 400-looping; aligned-but-corrupt bodies
+		 * keep the strict 400 (see music_prefix_drain). */
+		int big_valid =
+			sb_lms_json_valid_budget(body, (size_t)need, 65536);
+		if (music_prefix_drain(c,
+				       body,
+				       (size_t)need,
+				       big_valid))
+			return;
+		comet_malformed_log(c, body, (size_t)need, big_valid);
+#else
+		comet_malformed_log(c, body, (size_t)need, 0);
+#endif
 		http_reply(c, "400 Bad Request", "[{\"successful\":false,\"error\":\"malformed_json\"}]", 0);
 		return;
 	}
@@ -1666,8 +1920,13 @@ if(!strcmp(path,"/api/music/ownership")){
 
 	if (strstr(channel, "/meta/handshake")) {
 		token(cid);
+		/* WP4a.6: first handshake wins. A later probe with a
+		 * different MAC must not hijack the established player
+		 * identity (and its playback context) out from under
+		 * Jive; same-MAC re-handshakes stay harmless. */
 		if (json_string(body, "\"mac\"", mac, sizeof mac) &&
-		    valid_player_id(mac))
+		    valid_player_id(mac) &&
+		    (!player_id[0] || !strcmp(mac, player_id)))
 			strcpy(player_id, mac);
 		snprintf(response,
 			 sizeof response,
@@ -1732,6 +1991,14 @@ if(!strcmp(path,"/api/music/ownership")){
 #endif
 				close_client(&clients[i]);
 			}
+		/* Bayeux requires the subscribe ack to echo the requested
+		 * subscription; without it SqueezePlay never completes
+		 * its subscribe and reconnects forever. */
+		char sub[192], subesc[384];
+		sub[0] = 0;
+		subesc[0] = 0;
+		if (json_string(body, "\"subscription\"", sub, sizeof sub))
+			np_json_escape(subesc, sizeof subesc, sub);
 		snprintf(c->client_id, sizeof c->client_id, "%s", cid);
 		snprintf(
 			response,
@@ -1741,21 +2008,26 @@ if(!strcmp(path,"/api/music/ownership")){
 			"\"advice\":{\"reconnect\":\"retry\",\"interval\":0,"
 			"\"timeout\":60000}},"
 			"{\"channel\":\"/meta/"
-			"subscribe\",\"clientId\":\"%s\",\"successful\":true}]",
+			"subscribe\",\"clientId\":\"%s\"%s%s%s,\"successful\":"
+			"true}]",
 			reconnecting ? "reconnect" : "connect",
 			cid,
-			cid);
+			cid,
+			subesc[0] ? ",\"subscription\":\"" : "",
+			subesc,
+			subesc[0] ? "\"" : "");
 		fprintf(stderr,
 			"COMET RX %.*s\nCOMET STREAM client=%s\n",
 			(int)need,
 			body,
 			cid);
 		stream_start(c, response);
-		/* A replacement stream inherits the logical subscription.
-		 * Immediately replay the current snapshot, so updates that
-		 * raced the reconnect cannot
+		/* Subscriptions live in the global CID set (Jive's request
+		 * CID differs from its stream CID), so every reconnect
+		 * replays the current snapshot whenever anyone is
+		 * subscribed. Updates that raced the reconnect cannot
 		 * leave SqueezePlay displaying stale metadata. */
-		if (c->fd >= 0 && c->playerstatus_subscribed)
+		if (c->fd >= 0 && subscribed_cid_any())
 			publish_playerstatus();
 		firmware_publish(cid);
 		return;
@@ -1808,6 +2080,7 @@ static void keepalive(client *c)
 	if (z)
 		send_data(c, (const char *)frame, z);
 	c->keepalive = time(NULL);
+	c->slim_poll = c->keepalive;
 }
 
 /**
@@ -2440,7 +2713,10 @@ int main(int argc, char **argv)
 						cs[i].kind = -li;
 						cs[i].used = 0;
 						cs[i].helo = 0;
+						cs[i].close_after_drain = 0;
+						cs[i].http_resume = 0;
 						cs[i].keepalive = time(NULL);
+						cs[i].slim_poll = cs[i].keepalive;
 						cs[i].client_id[0] = 0;
 						cs[i].playerstatus_subscribed =
 							0;
@@ -2509,7 +2785,25 @@ int main(int argc, char **argv)
 						close_client(&cs[i]);
 						continue;
 					}
-					cs[i].keepalive = time(NULL);
+						cs[i].keepalive = time(NULL);
+					if (test_nowplaying && cs[i].kind == 2 && n > 0) {
+						char hx[49];
+						int m = n < 16 ? (int)n : 16;
+						for (int q = 0; q < m; q++)
+							sprintf(hx + 3 * q,
+								"%02x ",
+								cs[i].buf[cs[i].used +
+									 (size_t)q]);
+						hx[3 * m] = 0;
+						fprintf(stderr,
+							"COMET RECV slot=%d fd=%d "
+							"n=%ld used=%lu head=%s\n",
+							i,
+							cs[i].fd,
+							(long)n,
+							(unsigned long)cs[i].used,
+							hx);
+					}
 					cs[i].used += (size_t)n;
 					cs[i].buf[cs[i].used] = 0;
 					if (cs[i].kind == 1)
@@ -2517,9 +2811,21 @@ int main(int argc, char **argv)
 					else if (cs[i].kind == 2)
 						handle_http(&cs[i], &cfg);
 				}
+				/* A completed music request may have shifted
+				 * pipelined bytes down; re-enter the parser
+				 * without waiting for the next recv. */
+				if (cs[i].http_resume && !cs[i].close_after_drain
+#ifdef SB_MUSIC_BROWSE_INTEGRATION
+				    && !cs[i].music_http
+#endif
+				) {
+					cs[i].http_resume = 0;
+					if (cs[i].fd >= 0 && cs[i].kind == 2)
+						handle_http(&cs[i], &cfg);
+				}
 				if (cs[i].fd >= 0 && cs[i].kind == 1 &&
 				    cs[i].helo &&
-				    time(NULL) - cs[i].keepalive >= 4)
+				    time(NULL) - cs[i].slim_poll >= 4)
 					keepalive(&cs[i]);
 				if (cs[i].fd >= 0 && cs[i].kind == 2 &&
 				    time(NULL) - cs[i].keepalive >=

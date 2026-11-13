@@ -79,6 +79,7 @@ def arguments() -> argparse.Namespace:
         help="trust an unknown host key for this run (known hosts are verified by default)",
     )
     parser.add_argument("--no-restart", action="store_true", help="do not restart SqueezePlay")
+    parser.add_argument("--preserve-config", action="store_true", help="keep the existing persistent Base configuration")
     parser.add_argument("--dry-run", action="store_true", help="validate locally without connecting")
     parser.add_argument("--applet-only", action="store_true", help="copy only qualified Lua/data files; requires --no-restart and --backup-dir")
     parser.add_argument("--backup-dir", type=Path, help="new local directory for verified original applet files")
@@ -440,12 +441,13 @@ def main() -> int:
                     f"chmod {mode} {shlex.quote(target + '.new')} && "
                     f"mv {shlex.quote(target + '.new')} {shlex.quote(target)}"
                 )
-        radio.run(
-            "mkdir -p /mnt/storage/standalonebase && "
-            f"cp {qstage}/files/config.json /mnt/storage/standalonebase/config.json.new && "
-            "chmod 644 /mnt/storage/standalonebase/config.json.new && "
-            "mv /mnt/storage/standalonebase/config.json.new /mnt/storage/standalonebase/config.json"
-        )
+        if not args.preserve_config:
+            radio.run(
+                "mkdir -p /mnt/storage/standalonebase && "
+                f"cp {qstage}/files/config.json /mnt/storage/standalonebase/config.json.new && "
+                "chmod 644 /mnt/storage/standalonebase/config.json.new && "
+                "mv /mnt/storage/standalonebase/config.json.new /mnt/storage/standalonebase/config.json"
+            )
         # Patch before restart: SlimServer.lua is loaded early in SqueezePlay,
         # before the StandaloneBase applet itself is initialized.
         radio.run(

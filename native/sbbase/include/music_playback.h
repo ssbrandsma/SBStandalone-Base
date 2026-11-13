@@ -93,6 +93,18 @@ int sb_playback_select(sb_music_playback *,
 		       uint64_t now);
 void sb_playback_media_removed(sb_music_playback *, const sb_music_media *);
 int sb_playback_status(sb_music_playback *, char *, size_t);
+/* Parse a music-owned status page request. Bare ["status"] keeps offset 0
+ * quantity 1; ["status", x] stays invalid; Jive's "-" offset means "from
+ * the current song" (audible, else intended, else 0). Count/strings are
+ * passed separately because sb_lms_command stores a fixed 2D argument
+ * array (no char** decay). Returns nonzero with *offset/*quantity set. */
+int sb_playback_status_args(unsigned,
+			    const char *,
+			    const char *,
+			    uint32_t,
+			    uint32_t,
+			    uint32_t *,
+			    uint32_t *);
 int sb_playback_status_page(
 	sb_music_playback *,
 	uint32_t offset,

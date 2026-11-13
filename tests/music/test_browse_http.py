@@ -82,6 +82,20 @@ def run(base,fixture,count=3000,benchmark=False,shim=None,long_names=False):
                 for tag in ('useContextMenu:2','useContextMenu:yes','unknownPresentation:1'):
                     ok,rejected,_,_=query(['browselibrary','items',0,200,'mode:artists','menu:1',tag])
                     assert not ok and rejected['error']=='unsupported_or_invalid_browse',rejected
+                # WP4a.6: Jive replays its whole sink after any error, so
+                # rejecting an oversized backlog wedges CometD in a
+                # permanent resend loop (Fab4 UI flap at 68
+                # handshakes/s; backlogs do exceed 256). Oversized
+                # batches are truncated to their head instead: the
+                # first 32 are answered, the rest noted, and the sink
+                # drains progressively. Per-request work stays bounded
+                # by the 32-command pump cap + keep-partial overflow.
+                batch=[message(['menu',0,10,'direct:1'],number=n) for n in range(1,41)]
+                status,_,_=req('POST','/cometd',batch);assert status==200,status
+                batch=[message(['menu',0,10,'direct:1'],number=n) for n in range(1,258)]
+                status,messages,_=req('POST','/cometd',batch);assert status==200,status
+                assert messages[0]['id']=='1' and messages[0]['successful'],messages[:2]
+                assert any(m.get('error')=='response_too_large' for m in messages),messages[-3:]
                 latencies=[];sizes=[]
                 performance=None
                 if benchmark:

@@ -2,6 +2,8 @@
 #include "nowplaying.h"
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
+#include <errno.h>
 
 typedef struct { const unsigned char *p, *end; unsigned tokens; } cursor;
 static void space(cursor *c) { while (c->p < c->end && *c->p && strchr(" \t\r\n", *c->p)) c->p++; }
@@ -40,9 +42,9 @@ static int string(cursor *c, int key)
 	}
 	return 0;
 }
-static int value(cursor *c, unsigned depth)
+static int value(cursor *c, unsigned depth, unsigned budget)
 {
-	space(c); if (c->p==c->end || depth>16 || ++c->tokens>4096) return 0;
+	space(c); if (c->p==c->end || depth>16 || ++c->tokens>budget) return 0;
 	if (*c->p=='"') return string(c,0);
 	if (*c->p=='{' || *c->p=='[') {
 		unsigned char open=*c->p++, close=open=='{'?'}':']';
@@ -57,7 +59,7 @@ static int value(cursor *c, unsigned depth)
 				keys[count]=start;lengths[count++]=n;
 				space(c);if(c->p==c->end || *c->p++!=':')return 0;
 			}
-			if(!value(c,depth+1))return 0;
+			if(!value(c,depth+1,budget))return 0;
 			space(c);if(c->p==c->end)return 0;
 			if(*c->p==close){c->p++;return 1;}
 			if(*c->p++!=',')return 0;
@@ -75,11 +77,18 @@ static int value(cursor *c, unsigned depth)
 	if(c->p<c->end && (*c->p=='e'||*c->p=='E')){c->p++;if(c->p<c->end && (*c->p=='+'||*c->p=='-'))c->p++;if(c->p==c->end || !isdigit(*c->p))return 0;while(c->p<c->end && isdigit(*c->p))c->p++;}
 	return 1;
 }
+int sb_lms_json_valid_budget(const char *json, size_t length, unsigned budget)
+{
+	if(!json || !length || length>131072u)return 0;
+	cursor c={(const unsigned char *)json,(const unsigned char *)json+length,0};
+	if(!value(&c,0,budget))return 0;
+	space(&c);return c.p==c.end;
+}
 int sb_lms_json_valid(const char *json, size_t length)
 {
 	if(!json || !length || length>131072u)return 0;
 	cursor c={(const unsigned char *)json,(const unsigned char *)json+length,0};
-	if(!value(&c,0))return 0;
+	if(!value(&c,0,4096))return 0;
 	space(&c);return c.p==c.end;
 }
 const char *sb_lms_tag(const sb_lms_command *cmd,const char *key)
@@ -90,7 +99,7 @@ const char *sb_lms_tag(const sb_lms_command *cmd,const char *key)
 }
 sb_command_result sb_lms_command_parse(const char *json,size_t length,sb_lms_command *cmd)
 {
-	static const char *supported[]={"connect","sleep","sleepsettings","alarm","alarms","alarmsettings","jiveupdatealarm","jiveupdatealarmdays","jivealarmvolume","jivealarm","status","songinfo","contextmenu","trackinfo","serverstatus","firmwareupgrade","date","jiveapplets","menustatus","menu","pause","play","stop","playlist","jiveblankcommand"};
+	static const char *supported[]={"power","mixer","connect","sleep","sleepsettings","alarm","alarms","alarmsettings","jiveupdatealarm","jiveupdatealarmdays","jivealarmvolume","jivealarm","status","songinfo","contextmenu","trackinfo","serverstatus","firmwareupgrade","date","jiveapplets","menustatus","menu","pause","play","stop","playlist","jiveblankcommand"};
 	static const char *future[]={"browselibrary","artists","albums","titles","tracks","genres","musicfolder","search","playlists","playlistcontrol","rescan","time","mixer","info"};
 	if(!cmd)return SB_COMMAND_MALFORMED;
 	memset(cmd,0,sizeof *cmd);
@@ -99,6 +108,19 @@ sb_command_result sb_lms_command_parse(const char *json,size_t length,sb_lms_com
 	int count=np_lms_arguments(json,length,cmd->player,sizeof cmd->player,cmd->arguments,SB_LMS_ARGUMENTS_MAX);
 	if(count<1 || !cmd->arguments[0][0])return SB_COMMAND_MALFORMED;
 	cmd->count=(unsigned)count;
+	if(!strcmp(cmd->arguments[0],"power")||!strcmp(cmd->arguments[0],"mixer")){
+	 int power=!strcmp(cmd->arguments[0],"power");
+	 if(power&&count>1&&strcmp(cmd->arguments[1],"0")&&strcmp(cmd->arguments[1],"1")&&strcmp(cmd->arguments[1],"?"))return SB_COMMAND_MALFORMED;
+	 if(!power&&(count<2||strcmp(cmd->arguments[1],"volume")))return SB_COMMAND_UNSUPPORTED;
+	 if(!power&&count>2&&strcmp(cmd->arguments[2],"?")){
+	  char *end;errno=0;long volume=strtol(cmd->arguments[2],&end,10);
+	  if(errno||!cmd->arguments[2][0]||*end||volume < -100||volume>100)return SB_COMMAND_MALFORMED;
+	 }
+	 const char *seq=sb_lms_tag(cmd,"seq_no");
+	 if(seq){char *end;errno=0;unsigned long long value=strtoull(seq,&end,10);
+	  if(errno||!isdigit((unsigned char)*seq)||*end||value>UINT32_MAX)return SB_COMMAND_MALFORMED;
+	 }
+	}
 	for(const char *p=cmd->arguments[0];*p;p++)if(!islower((unsigned char)*p) && *p!='_')return SB_COMMAND_MALFORMED;
 	for(unsigned i=1;i<cmd->count;i++) {
 		const char *colon=strchr(cmd->arguments[i],':');

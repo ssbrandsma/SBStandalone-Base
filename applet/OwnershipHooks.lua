@@ -14,6 +14,32 @@ function M.new()
         target[key] = wrapper
         return true
     end
+    function self:reinstall(target, key, make)
+        -- Adopt a foreign wrapper chained over ours (Radio re-installs
+        -- its header hooks on every station start): stack a fresh
+        -- observer above the current top. True when already on top,
+        -- or when an unwrapped slot is re-armed. Fails closed when the
+        -- slot holds no function. Note: restore() cannot unwind a
+        -- stacked slot (it would strand the foreign chain); stacked
+        -- slots refuse restore and clear on process restart.
+        if not self.live or type(target[key]) ~= "function" then return false end
+        for _, r in ipairs(self.records) do
+            if r.target == target and r.key == key then
+                if target[key] == r.wrapper then return true end
+                if target[key] == r.original then
+                    target[key] = r.wrapper
+                    return true
+                end
+                local wrapper = make(target[key])
+                if type(wrapper) ~= "function" then return false end
+                self.records[#self.records + 1] = {target=target, key=key,
+                    original=target[key], wrapper=wrapper}
+                target[key] = wrapper
+                return true
+            end
+        end
+        return self:install(target, key, make)
+    end
     function self:record(target,key,original)
         if not self.live or type(original)~="function" or type(target[key])~="function" then return false end
         for _,r in ipairs(self.records) do if r.target==target and r.key==key then return false end end

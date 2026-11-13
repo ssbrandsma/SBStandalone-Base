@@ -127,6 +127,7 @@ int sb_transport_command(sb_transport *,
 int sb_transport_stopped(sb_transport *,
 			 const sb_music_stream_id *,
 			 int confirmed_quiescent);
+int sb_transport_release_stream(sb_transport *);
 int sb_transport_event(sb_transport *,
 		       uint64_t connection,
 		       const sb_music_stream_id *,

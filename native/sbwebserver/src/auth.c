@@ -16,6 +16,7 @@
 
 #define SESSION_MAX 8
 #define SESSION_LIFE 86400
+#define REMEMBER_COOKIE_LIFE 31536000
 #define PIN_LIFE 120
 #define CLIENT_LIMIT 4
 
@@ -23,6 +24,7 @@ typedef struct {
 	unsigned char hash[32];
 	time_t expires;
 	unsigned long serial;
+	int remembered;
 } Session;
 
 typedef struct {
@@ -154,6 +156,14 @@ static int hexval(char c)
 	return -1;
 }
 
+#include "auth_store.inc"
+
+static void session_cookie(char *out,size_t size,const char *token,int remembered)
+{
+ snprintf(out,size,"Set-Cookie: sb_session=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=Strict\r\n",
+          token,remembered?REMEMBER_COOKIE_LIFE:SESSION_LIFE);
+}
+
 /**
  * @brief Handle cookie token.
  * @param m HTTP request message.
@@ -206,7 +216,7 @@ int auth_session_ok(struct mg_http_message *m, time_t *expires)
 		return 0;
 	hash_token(raw, hash);
 	for (int i = 0; i < SESSION_MAX; i++)
-		if (A.sessions[i].expires > now &&
+		if ((A.sessions[i].remembered || A.sessions[i].expires > now) &&
 		    constant_eq(hash, A.sessions[i].hash, 32)) {
 			if (expires)
 				*expires = A.sessions[i].expires;
@@ -223,28 +233,40 @@ int auth_session_ok(struct mg_http_message *m, time_t *expires)
  * @brief Handle clear current.
  * @param m HTTP request message.
  */
-static void clear_current(struct mg_http_message *m)
+static int clear_current(struct mg_http_message *m)
 {
 	unsigned char raw[32], hash[32];
 	if (!cookie_token(m, raw))
-		return;
+		return 1;
 	hash_token(raw, hash);
+	Session before[SESSION_MAX];memcpy(before,A.sessions,sizeof before);int persistent=0;
 	for (int i = 0; i < SESSION_MAX; i++)
-		if (constant_eq(hash, A.sessions[i].hash, 32))
+		if (constant_eq(hash, A.sessions[i].hash, 32)) {
+			persistent|=A.sessions[i].remembered;
 			memset(&A.sessions[i], 0, sizeof A.sessions[i]);
+		}
+	int ok=!persistent||save_sessions();if(!ok)memcpy(A.sessions,before,sizeof before);
+	memset(before,0,sizeof before);
 	memset(raw, 0, sizeof raw);
 	memset(hash, 0, sizeof hash);
+	return ok;
 }
 
 /**
  * @brief Handle auth revoke all.
  */
-void auth_revoke_all(void)
+int auth_revoke_all(void)
 {
+	Session before[SESSION_MAX];memcpy(before,A.sessions,sizeof before);
 	memset(A.sessions, 0, sizeof A.sessions);
+	/* Persist an empty set even after an unreadable/corrupt previous store. */
+	int persistent=0;for(int i=0;i<SESSION_MAX;i++)persistent|=before[i].remembered;
+	if((persistent||remembered_store_present)&&!save_sessions()){memcpy(A.sessions,before,sizeof before);memset(before,0,sizeof before);return 0;}
+	memset(before,0,sizeof before);
 	A.pin[0] = 0;
 	A.pin_expires = 0;
 	A.pin_attempts = 0;
+	return 1;
 }
 
 /**
@@ -253,6 +275,7 @@ void auth_revoke_all(void)
 void auth_init(void)
 {
 	memset(&A, 0, sizeof A);
+	load_sessions();
 }
 
 /**
@@ -441,7 +464,7 @@ internal(struct mg_connection *c, struct mg_http_message *m, int allowed)
 	}
 	if (eq(m->uri, "/api/internal/web-access/revoke-all") &&
 	    eq(m->method, "POST")) {
-		auth_revoke_all();
+		if(!auth_revoke_all()){failure(c,503,"Could not revoke remembered browsers; try again");return;}
 		json(c, 200, "{\"ok\":true}", NULL);
 		return;
 	}
@@ -459,6 +482,8 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 	unsigned char raw[32], hash[32];
 	char hex[65], cookie[300], body[100];
 	time_t now = time(NULL);
+	bool remember=false;
+	mg_json_get_bool(m->body,"$.remember",&remember);
 	if (!eq(m->method, "POST")) {
 		failure(c, 405, "Method not allowed");
 		return;
@@ -498,30 +523,32 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 	int slot = -1;
 	time_t oldest = 0;
 	for (int i = 0; i < SESSION_MAX; i++) {
-		if (A.sessions[i].expires <= now) {
+		if (!A.sessions[i].remembered && A.sessions[i].expires <= now) {
 			slot = i;
 			break;
 		}
-		if (slot < 0 || A.sessions[i].expires < oldest) {
+		if (slot < 0 || A.sessions[i].serial < (unsigned long)oldest) {
 			slot = i;
-			oldest = A.sessions[i].expires;
+			oldest = (time_t)A.sessions[i].serial;
 		}
 	}
+	Session before=A.sessions[slot];
 	memcpy(A.sessions[slot].hash, hash, 32);
-	A.sessions[slot].expires = now + SESSION_LIFE;
+	A.sessions[slot].remembered=remember;
+	A.sessions[slot].expires = remember?0:now + SESSION_LIFE;
 	A.sessions[slot].serial = ++A.serial;
+	if((remember||before.remembered)&&!save_sessions()){
+		A.sessions[slot]=before;memset(&before,0,sizeof before);memset(raw,0,sizeof raw);memset(hash,0,sizeof hash);
+		failure(c,503,"Could not save browser pairing; generate a new code and try again");return;
+	}
+	memset(&before,0,sizeof before);
 	for (int i = 0; i < 32; i++)
 		sprintf(hex + i * 2, "%02x", raw[i]);
-	snprintf(cookie,
-		 sizeof cookie,
-		 "Set-Cookie: sb_session=%s; Max-Age=%d; Path=/; HttpOnly; "
-		 "SameSite=Strict\r\n",
-		 hex,
-		 SESSION_LIFE);
+	session_cookie(cookie,sizeof cookie,hex,remember);
 	snprintf(body,
 		 sizeof body,
-		 "{\"authenticated\":true,\"expiresAt\":%ld}",
-		 (long)A.sessions[slot].expires);
+		 "{\"authenticated\":true,\"expiresAt\":%ld,\"remembered\":%s}",
+		 (long)A.sessions[slot].expires,remember?"true":"false");
 	json(c, 200, body, cookie);
 	memset(raw, 0, sizeof raw);
 	memset(hash, 0, sizeof hash);
@@ -557,7 +584,12 @@ int auth_handle(struct mg_connection *c,
 			 ok ? "" : "");
 		if (!ok)
 			strcpy(b, "{\"authenticated\":false}");
-		json(c, 200, b, NULL);
+		char cookie[300]={0};
+		if(ok&&!expires){unsigned char raw[32];if(cookie_token(m,raw)){
+		 char hex[65];for(int i=0;i<32;i++)sprintf(hex+2*i,"%02x",raw[i]);
+		 session_cookie(cookie,sizeof cookie,hex,1);memset(raw,0,sizeof raw);memset(hex,0,sizeof hex);
+		 snprintf(b,sizeof b,"{\"authenticated\":true,\"expiresAt\":0,\"remembered\":true}");}}
+		json(c, 200, b, cookie[0]?cookie:NULL);
 		return 1;
 	}
 	if (eq(m->uri, "/api/auth/pair")) {
@@ -569,7 +601,7 @@ int auth_handle(struct mg_connection *c,
 			failure(c, 403, "Request rejected");
 			return 1;
 		}
-		clear_current(m);
+		if(!clear_current(m)){failure(c,503,"Could not forget this browser; try again");return 1;}
 		json(c,
 		     200,
 		     "{\"ok\":true}",
@@ -583,7 +615,7 @@ int auth_handle(struct mg_connection *c,
 			failure(c, 403, "Request rejected");
 			return 1;
 		}
-		auth_revoke_all();
+		if(!auth_revoke_all()){failure(c,503,"Could not revoke remembered browsers; try again");return 1;}
 		json(c,
 		     200,
 		     "{\"ok\":true}",

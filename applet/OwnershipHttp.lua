@@ -10,6 +10,8 @@ function M.new(o)
     local json=require("json")
     return function(body,done)
         local sent,finished=false,false
+        -- Never pass Content-Length here: live SocketHttp always adds its
+        -- own, and the bridge rejects a duplicated header (WP4a.6).
         local request=RequestHttp(function(data,err)
             if finished then return end
             if err then finished=true;done(nil,"transport_error");return end
@@ -20,8 +22,7 @@ function M.new(o)
                     if value.error then done(nil,"bridge_rejected") else done(value) end
                 end
             elseif data then finished=true;done(nil,"oversized_reply") end
-        end,"POST","/api/music/ownership",{headers={Connection="close",["X-Music-Ownership"]=token,
-            ["Content-Length"]=tostring(#body),["Content-Type"]="text/plain"},
+        end,"POST","/api/music/ownership",{headers={Connection="close",["X-Music-Ownership"]=token},
             t_bodySource=function() if not sent then sent=true;return body end end})
         local socket=SocketHttp(o.jnt,"127.0.0.1",9000,"StandaloneOwnership")
         socket:fetch(request)

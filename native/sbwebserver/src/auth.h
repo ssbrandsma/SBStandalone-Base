@@ -12,6 +12,6 @@ int auth_handle(struct mg_connection *c,
 int auth_session_ok(struct mg_http_message *m, time_t *expires);
 int auth_origin_ok(struct mg_http_message *m);
 int auth_pairing_protected(void);
-void auth_revoke_all(void);
+int auth_revoke_all(void);
 
 #endif

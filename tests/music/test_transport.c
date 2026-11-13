@@ -259,6 +259,68 @@ static void transport(void)
 	assert(t.state == SB_T_DISCONNECTED);
 }
 
+static void release_stream(void)
+{
+	sb_transport t;
+	/* No transport, no stream, no release. */
+	assert(!sb_transport_release_stream(NULL));
+	memset(&t, 0xa5, sizeof t);
+	assert(!sb_transport_release_stream(&t));
+	assert(sb_transport_init(&t, 1));
+	assert(!sb_transport_release_stream(&t));
+	assert(sb_transport_attach(&t, 1, &h));
+	assert(!sb_transport_release_stream(&t));
+	/* A live stream pins its connection. */
+	assert(sb_transport_quiescent(&t, 1, 3));
+	assert(sb_transport_prepare(&t, &id, 'm', 0));
+	assert(sb_transport_command(&t, &id, 's', 0));
+	assert(!sb_transport_release_stream(&t));
+	/* Full start, then a drained terminal. */
+	assert(ev(&t, "STMf", 0));
+	assert(ev(&t, "STMc", 1));
+	assert(ev(&t, "STMe", 2));
+	assert(ev(&t, "STMh", 3));
+	assert(ev(&t, "STMl", 4));
+	sb_slim_event r = response(1);
+	assert(sb_transport_event(&t, 1, &id, &r, 5));
+	assert(ev(&t, "STMs", 6) && t.state == SB_T_PLAYING);
+	assert(ev(&t, "STMd", 7) && t.state == SB_T_DRAINING);
+	assert(ev(&t, "STMu", 8));
+	assert(t.stream.terminal_seen && t.used_connection);
+	/* prepare stays explicit: terminal alone does not free. */
+	sb_music_stream_id next = id;
+	next.epoch = 2;
+	assert(!sb_transport_prepare(&t, &next, 'm', 9));
+	assert(sb_transport_release_stream(&t));
+	/* The terminal guard survives verbatim; only the connection pin
+	 * and per-stream progress bits retire. */
+	assert(!t.used_connection && !t.quiescent && !t.seen_progress &&
+	       t.stream.terminal_seen && t.stream.id.epoch == 1 &&
+	       t.state == SB_T_STOPPED);
+	assert(!sb_transport_release_stream(&t));
+	/* Stale events for the retired stream are rejected. */
+	assert(!ev(&t, "STMt", 9));
+	/* The same connection re-qualifies with a fresh epoch and
+	 * monotonically increasing firmware jiffies. */
+	assert(sb_transport_quiescent(&t, 1, 3));
+	assert(sb_transport_prepare(&t, &next, 'm', 10));
+	assert(sb_transport_command(&t, &next, 's', 10));
+	assert(sb_transport_event(&t, 1, &next, &r, 10));
+	sb_slim_event s = status("STMs", 11);
+	assert(sb_transport_event(&t, 1, &next, &s, 11) &&
+	       t.state == SB_T_PLAYING);
+	sb_slim_event old = status("STMt", 3);
+	assert(!sb_transport_event(&t, 1, &next, &old, 12));
+	/* A confirmed stop terminal releases the same way. */
+	assert(sb_transport_command(&t, &next, 'q', 12));
+	assert(sb_transport_stopped(&t, &next, 1));
+	assert(sb_transport_release_stream(&t));
+	assert(!t.used_connection && t.state == SB_T_STOPPED);
+	/* Detach after release reports no spurious connection loss. */
+	sb_transport_detach(&t, 1);
+	assert(t.state == SB_T_DISCONNECTED && t.error == SB_T_OK);
+}
+
 static void setup_owner(sb_physical_owner *o, sb_music_owner first)
 {
 	assert(sb_owner_init(o, 1));
@@ -529,6 +591,82 @@ static void wire(void)
 	assert(!sb_slim_strm('t', 0, NULL, p, 29));
 }
 
+static void audible(sb_transport *t)
+{
+	sb_slim_event r;
+	begin(t);
+	assert(ev(t, "STMc", 1));
+	assert(ev(t, "STMe", 2));
+	assert(ev(t, "STMh", 3));
+	assert(ev(t, "STMl", 4));
+	r = response(1);
+	assert(sb_transport_event(t, 1, &id, &r, 5));
+	assert(ev(t, "STMs", 6) && t->state == SB_T_PLAYING);
+}
+
+/* WP4a.6 Dreams regression: STMd starts the drain window, but the
+ * decoder keeps the stream alive with STMt proof-of-life while its
+ * output buffer drains (~10 s on Fab4). The deadline must slide on
+ * STMt; only a quiet decoder may time out. */
+static void drain_race(void)
+{
+	sb_transport t;
+	audible(&t);
+	assert(ev(&t, "STMd", 100) && t.state == SB_T_DRAINING);
+	for (unsigned j = 1100; j <= 12100; j += 1000)
+		assert(ev(&t, "STMt", j));
+	assert(ev(&t, "STMu", 12101));
+	assert(t.stream.state == SB_STREAM_DRAINED && t.error == SB_T_OK);
+	assert(t.stream.terminal_seen);
+	/* Sliding window: proof-of-life extends, silence still times out. */
+	audible(&t);
+	assert(ev(&t, "STMd", 100));
+	assert(ev(&t, "STMt", 20000));
+	assert(ev(&t, "STMt", 29999));
+	assert(!ev(&t, "STMt", 40000));
+	assert(t.stream.state == SB_STREAM_FAILED &&
+	       t.error == SB_T_TIMEOUT);
+	/* A decoder that goes quiet right after STMd still times out. */
+	audible(&t);
+	assert(ev(&t, "STMd", 100));
+	assert(!ev(&t, "STMt", 40001));
+	assert(t.stream.state == SB_STREAM_FAILED &&
+	       t.error == SB_T_TIMEOUT);
+}
+
+/* WP4a.6 F2: a mid-play input flush is a rebuffer window, not an
+ * instant protocol error. Pause-time flushes are benign; a flush
+ * during drain still fails closed. */
+static void flush_rebuffer(void)
+{
+	sb_transport t;
+	/* PLAYING + STMf -> bounded BUFFERING, STMs recovers. */
+	audible(&t);
+	assert(ev(&t, "STMf", 7) && t.state == SB_T_BUFFERING &&
+	       !t.stream.terminal_seen && t.deadline_ms == 7 + 15000);
+	assert(ev(&t, "STMs", 8) && t.state == SB_T_PLAYING &&
+	       !t.deadline_ms);
+	/* Recovery never arrives -> the rebuffer window times out. */
+	assert(ev(&t, "STMf", 9) && t.state == SB_T_BUFFERING);
+	assert(sb_transport_tick(&t, 9 + 15000));
+	assert(t.stream.state == SB_STREAM_FAILED && t.error == SB_T_TIMEOUT);
+	/* PAUSED + STMf is benign: pause-induced input starvation must
+	 * not kill a resumable stream. */
+	audible(&t);
+	assert(sb_transport_command(&t, &id, 'p', 7));
+	assert(ev(&t, "STMp", 8) && t.state == SB_T_PAUSED);
+	assert(ev(&t, "STMf", 9) && t.state == SB_T_PAUSED &&
+	       !t.stream.terminal_seen);
+	assert(sb_transport_command(&t, &id, 'u', 10));
+	assert(ev(&t, "STMr", 11) && t.state == SB_T_PLAYING);
+	/* DRAINING + STMf still fails closed. */
+	audible(&t);
+	assert(ev(&t, "STMd", 7) && t.state == SB_T_DRAINING);
+	assert(ev(&t, "STMf", 8));
+	assert(t.stream.state == SB_STREAM_FAILED &&
+	       t.error == SB_T_PROTOCOL_ERROR);
+}
+
 int main(int argc, char **argv)
 {
 	if (argc == 4 && !strcmp(argv[1], "--decode")) {
@@ -550,6 +688,9 @@ int main(int argc, char **argv)
 	}
 	parsing();
 	transport();
+	drain_race();
+	flush_rebuffer();
+	release_stream();
 	ownership();
 	outputs();
 	if (argc > 1 && !strcmp(argv[1], "--wire")) {

@@ -22,7 +22,7 @@ Browser management sessions and internal service authentication are separate dom
 1. Open the Radio's Standalone Base applet and choose **Web Access → Show Pairing Code** using the physical controls.
 2. The applet asks `sbwebserver` to create a PIN through the authenticated loopback channel. The native service uses rejection sampling over `/dev/urandom`, stores one six-digit PIN in memory, and expires it after 120 seconds.
 3. Open the web interface, enter the code, and select **Pair browser**. Spaces are accepted by the UI and removed before submission; leading zeroes are preserved.
-4. `POST /api/auth/pair` consumes the PIN before generating an independent 256-bit token. Only its SHA-256 hash and absolute 24-hour expiration are held server-side.
+4. `POST /api/auth/pair` consumes the PIN before generating an independent 256-bit token. By default, only its SHA-256 hash and absolute 24-hour expiration are held in memory. Selecting **Remember this browser** sends `remember: true` and persists the hash so pairing survives service/device restarts.
 5. The raw token is returned only as `sb_session`, with `HttpOnly`, `SameSite=Strict`, and `Path=/`. This build has only a direct HTTP listener, so it omits `Secure`; an HTTPS reverse proxy must add `Secure` while preserving the other attributes.
 
 PINs are single-use. A new code invalidates the old one. Five failures invalidate the current PIN. Per-client and global one-minute limits plus a 30-second cooldown bound guessing. Authentication failures are deliberately generic.
@@ -45,7 +45,9 @@ This boundary has host-side tests but still requires the physical-device procedu
 
 Unauthenticated users see only the static pairing shell and `/api/auth/status`. Protected API calls return 401 without management data. Successful pairing restores Overview, Virtual Radio, Applets, Settings, System Info, and conditional Standalone Radio navigation. Settings shows session expiry and provides logout and revoke-all actions.
 
-Sessions are memory-only and bounded to eight. At capacity, the session with the earliest absolute expiry is replaced. They do not slide and do not survive an `sbwebserver` restart. Logout deletes the current hash; revoke-all clears all hashes and any active PIN. Session expiry stops Virtual Radio polling and returns the browser to pairing.
+Sessions are bounded to eight. At capacity, the oldest pairing is replaced. Ordinary sessions retain their fixed 24-hour lifetime and are memory-only. Remembered hashes have no server-side time expiry; their HttpOnly cookie has a one-year lifetime renewed by `/api/auth/status` when the browser returns. This avoids claiming literal browser-controlled permanent storage. Settings identifies remembered browsers and offers logout and revoke-all.
+
+Remembered hashes are atomically written to mode-0600 `remembered-browsers.conf` under `SBWEBSERVER_CONFIG_DIR` (default `/mnt/storage/sbwebserver`). Only hashes are saved, never the PIN or raw cookie. A temporary file is fsynced, renamed and its directory fsynced; storage failure returns an error rather than claiming successful persistence or revocation. Unsafe permissions, symlinks and malformed stores fail closed on startup. No temporary-directory fallback is used for remembered credentials. Configuration backups exclude these credentials. Logout/revoke-all update durable storage before reporting success, so access cannot silently return on restart after a successful revocation.
 
 ## API
 
@@ -68,9 +70,9 @@ Existing `management.token` files may remain on disk after upgrade but are no lo
 Recovery cases:
 
 - Lost or expired session: generate a new code on the physical Radio.
-- Native service restart: generate a new code; old sessions intentionally become invalid.
+- Native service restart: ordinary sessions require a new code; remembered browsers remain paired.
 - Clock correction: sessions use absolute system time and may expire early after a forward jump; pair again. A backward jump never extends beyond the stored absolute timestamp relative to the corrected clock, but reliable time synchronization remains important.
-- Extended storage unavailable: pairing still works because PINs and sessions are memory-only; storage-dependent management writes remain unavailable.
+- Persistent storage unavailable: ordinary pairing still works; requesting remembered access returns an explicit error if the credential file cannot be saved.
 - Jive menu unavailable: restart the Radio normally. Local shell access is the last-resort diagnostic path; there is no unauthenticated network reset endpoint.
 
 ## Threat model and HTTP limitation
@@ -79,7 +81,7 @@ Pairing proves access to the physical UI against ordinary unauthenticated LAN cl
 
 ## Performance
 
-The implementation adds no process, daemon, persistent session database, or idle polling. Session lookup checks at most eight SHA-256 hashes. PIN/session entropy is read only when requested. Revocation and restart cause no flash writes.
+The implementation adds no process, daemon or idle polling. Session lookup checks at most eight SHA-256 hashes. PIN/session entropy is read only when requested. The bounded remembered-credential file is written only when remembered pairings change, including logout/revocation or eviction. Cookie renewal/status checks do not rewrite it; restarting only loads it.
 
 ## Build and deployment
 
@@ -94,13 +96,13 @@ Build using `scripts/build-arm.sh`, then create the distribution with the normal
 5. Verify formatting, leading-zero display when encountered, the countdown, two-minute expiry, cancel, single use, five-failure invalidation, and replacement by a newer PIN.
 6. Pair desktop and mobile browsers; exercise every management page, uploads, downloads, radio station editing, and Virtual Radio.
 7. Test logout, browser revoke-all, and physically confirmed revoke-all.
-8. Restart `sbwebserver` and verify prior cookies fail.
+8. Restart `sbwebserver`: ordinary sessions must fail; explicitly remembered browsers must remain authenticated. Verify logout and both revoke-all routes remain effective after another restart.
 9. Verify Now Playing, Spotify Connect, Qobuz Connect, `sbproxy`, applet installation, storage management, startup, and shutdown.
 10. Confirm no PIN, cookie, or internal capability appears in logs, diagnostics, URLs, screenshots, or exported configuration.
 
 ## Known limitations
 
-- Sessions do not survive a service restart.
+- Ordinary sessions do not survive a service restart. Remembered browsers survive while their browser retains the cookie; cookies expire after a year without renewal and may be cleared earlier by the browser.
 - HTTP provides no confidentiality.
 - No physical-device security validation has yet been performed.
 - Leaving the PIN screen through an unhandled Jive navigation path may leave capture protected until the PIN's short expiry; the explicit Cancel action clears it immediately.

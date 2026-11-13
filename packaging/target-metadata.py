@@ -13,12 +13,12 @@ base = os.environ.get("SB_RELEASE_BASE_URL", "")
 url = base.rstrip("/") + "/" + archive.name if base else archive.name
 xml = ET.Element("extensions")
 apps = ET.SubElement(xml, "applets")
-a = ET.SubElement(apps, "applet", name="StandaloneBase", version="0.7.0", target=target, minTarget="7.7.2", maxTarget="*")
+a = ET.SubElement(apps, "applet", name="StandaloneBase", version="0.7.1", target=target, minTarget="7.7.2", maxTarget="*")
 ET.SubElement(a, "title", lang="EN").text = "Standalone Base"
 ET.SubElement(a, "desc", lang="EN").text = "Local standalone services for Squeezebox " + ("Touch." if target == "fab4" else "Radio.")
-ET.SubElement(a, "changes", lang="EN").text = "Dual-platform Baby/Fab4 builds and Virtual Touch screen capture with touchscreen controls."
+ET.SubElement(a, "changes", lang="EN").text = "Remember this browser web access, readable access codes, standby power handling and Radio connection fixes."
 ET.SubElement(a, "creator").text = "Sjoerd Brandsma"
 ET.SubElement(a, "url").text = url
 ET.SubElement(a, "sha").text = sha
 ET.ElementTree(xml).write(archive.with_suffix(".xml"), encoding="utf-8", xml_declaration=True)
-archive.with_suffix(".manifest.json").write_text(json.dumps(dict(target=target, version="0.7.0", sha1=sha, files=zipfile.ZipFile(archive).namelist()), indent=2))
+archive.with_suffix(".manifest.json").write_text(json.dumps(dict(target=target, version="0.7.1", sha1=sha, files=zipfile.ZipFile(archive).namelist()), indent=2))

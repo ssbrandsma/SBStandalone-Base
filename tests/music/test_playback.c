@@ -19,6 +19,7 @@
 static sb_music_media medium = {{{1}}, 1, 1};
 static sb_stream_registry *registry;
 static unsigned starts, commands;
+static char last_cmd;
 static char last_token[65];
 static sb_music_playback *playback;
 static sb_physical_owner owner;
@@ -45,6 +46,7 @@ static int send_frame(void *unused,
 	assert(length >= 7 && !memcmp(frame + 2, "strm", 4));
 	assert(stream->connection_generation && stream->owner_generation);
 	commands++;
+	last_cmd = (char)frame[6];
 	if (frame[6] == 's') {
 		starts++;
 		const char *prefix = "/music/stream/";
@@ -139,8 +141,40 @@ static void event(const char *code, unsigned jiffies, unsigned elapsed)
 		np_monotonic_ms()));
 }
 
+static void status_args(void)
+{
+	uint32_t off = 99, qty = 99;
+	assert(sb_playback_status_args(
+		1, NULL, NULL, 0, 0, &off, &qty));
+	assert(off == 0 && qty == 1);
+	assert(!sb_playback_status_args(
+		2, "0", NULL, 0, 0, &off, &qty));
+	assert(sb_playback_status_args(
+		3, "2", "10", 0, 0, &off, &qty));
+	assert(off == 2 && qty == 10);
+	/* Jive's "-" offset: current song (audible, else intended). */
+	assert(sb_playback_status_args(
+		4, "-", "10", 3, 1, &off, &qty));
+	assert(off == 3 && qty == 10);
+	assert(sb_playback_status_args(
+		4, "-", "10", 0xffffffffu, 1, &off, &qty));
+	assert(off == 1 && qty == 10);
+	assert(sb_playback_status_args(
+		4, "-", "10", 0xffffffffu, 0xffffffffu, &off, &qty));
+	assert(off == 0 && qty == 10);
+	assert(!sb_playback_status_args(
+		3, "x", "10", 0, 0, &off, &qty));
+	assert(!sb_playback_status_args(
+		3, "0", "201", 0, 0, &off, &qty));
+	assert(!sb_playback_status_args(
+		3, NULL, "10", 0, 0, &off, &qty));
+	assert(!sb_playback_status_args(
+		0, NULL, NULL, 0, 0, &off, &qty));
+}
+
 int main(int argc, char **argv)
 {
+	status_args();
 	unsigned scan_files = 0;
 	char directory[] = "/dev/shm/sb-music-playback-XXXXXX";
 	assert(mkdtemp(directory));
@@ -181,8 +215,8 @@ int main(int argc, char **argv)
 	request.operation = SB_ML_BEGIN;
 	request.transaction = 1;
 	exchange(db, &request);
-	uint64_t ids[3];
-	for (unsigned i = 0; i < 3; i++) {
+	uint64_t ids[4];
+	for (unsigned i = 0; i < 4; i++) {
 		sb_ml_track track = {0};
 		track.identity.source = medium.source;
 		track.media_generation = 1;
@@ -190,19 +224,24 @@ int main(int argc, char **argv)
 			 sizeof track.path,
 			 "track%u.%s",
 			 i,
-			 i == 0	  ? "mp3"
-			 : i == 1 ? "flac"
-				  : "ogg");
+			 (i == 0 || i == 3) ? "mp3"
+			 : i == 1	    ? "flac"
+					    : "ogg");
 		snprintf(track.title, sizeof track.title, "Track %u", i);
 		strcpy(track.album, "Album");
 		strcpy(track.album_key, "album");
 		strcpy(track.album_artist, "Artist");
 		strcpy(track.artists[0], "Artist");
 		track.artist_count = 1;
-		strcpy(track.codec, i == 0 ? "mp3" : i == 1 ? "flac" : "ogg");
+		strcpy(track.codec,
+		       (i == 0 || i == 3) ? "mp3"
+		       : i == 1		  ? "flac"
+					  : "ogg");
 		track.track = i + 1;
 		track.disc = i + 1;
-		track.duration_ms = 10000;
+		/* WP4a.6: long enough that the 15 s keepalive window fits
+		 * inside the resource TTL. */
+		track.duration_ms = 120000;
 		char path[8192];
 		snprintf(path, sizeof path, "%s/%s", directory, track.path);
 		int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0600);
@@ -213,9 +252,9 @@ int main(int argc, char **argv)
 				 sizeof source,
 				 "%s/%s",
 				 argv[2],
-				 i == 0	  ? "base.mp3"
-				 : i == 1 ? "comments.flac"
-					  : "comments.ogg");
+				 (i == 0 || i == 3) ? "base.mp3"
+				 : i == 1	     ? "comments.flac"
+						     : "comments.ogg");
 			int input = open(source, O_RDONLY);
 			assert(input >= 0);
 			unsigned char buffer[4096];
@@ -320,12 +359,122 @@ int main(int argc, char **argv)
 	phase(SB_PLAY_ACTIVE);
 	assert(starts == 1);
 	if(single_mp3){
-		assert(sb_playback_codecs(playback)==0);
-		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],0,context,np_monotonic_ms())==SB_Q_INVALID);
+		/* WP4a.6: browse strips play actions while codecs read 0,
+		 * so a mid-play switch tap never leaves Jive. Codecs stay
+		 * advertised while attached; the single-track latch only
+		 * limits each load to one MP3, never the process to one. */
+		assert(sb_playback_codecs(playback)!=0);
 		assert(!sb_playback_select(playback,0,context,np_monotonic_ms()));
+		/* A rejected candidate fails loudly WITHOUT disturbing
+		 * the playing stream: no stop frame, no new start. */
+		unsigned flac_commands = commands;
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[1],0,context,
+			np_monotonic_ms())==SB_Q_OK);
+		uint64_t flac_until = np_monotonic_ms() + 6000;
+		while (sb_playback_phase(playback) != SB_PLAY_FAILED) {
+			tick();
+			rest();
+			assert(np_monotonic_ms() < flac_until);
+		}
+		assert(!strcmp(sb_playback_error(playback),
+			"unsupported_player_codec"));
+		assert(starts == 1 && commands == flac_commands);
+		/* An explicit mid-play LOAD replaces the one live stream:
+		 * the old stream is stopped on the validated path, its
+		 * slot is retired synchronously, and the new selection
+		 * starts with ownership and fenced context intact. */
+		unsigned switch_commands = commands;
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[3],0,context,
+			np_monotonic_ms())==SB_Q_OK);
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],0,context,
+			np_monotonic_ms())==SB_Q_BUSY);
+		uint64_t stop_until = np_monotonic_ms() + 6000;
+		while (last_cmd != 'q') {
+			tick();
+			rest();
+			assert(np_monotonic_ms() < stop_until);
+		}
+		assert(commands == switch_commands + 1);
+		phase(SB_PLAY_ACTIVE);
+		assert(starts == 2);
+		assert(owner.value.current == SB_OWNER_MUSIC);
+		assert(!sb_playback_error(playback)[0]);
+		assert(sb_queue_snapshot(
+			sb_playback_queue(playback)).context == context);
+		sb_slim_event switch_resp = {0};
+		switch_resp.kind = SB_SLIM_RESP;
+		switch_resp.http_status = 200;
+		assert(sb_playback_event(playback,
+			sb_playback_stream(playback)->connection_generation,
+			sb_playback_stream(playback),
+			&switch_resp,
+			np_monotonic_ms()));
+		event("STMs", 1, 0);
+		assert(!strcmp(np_current(np)->track.title, "Track 3"));
+		/* The old stream draining mid-switch must not cancel its
+		 * successor: the drain is absorbed, the firmware still
+		 * gets its post-drain reset, and the new track starts. */
+		switch_commands = commands;
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],0,context,
+			np_monotonic_ms())==SB_Q_OK);
+		event("STMd", 2, 60000);
+		event("STMu", 3, 120000);
+		phase(SB_PLAY_ACTIVE);
+		assert(starts == 3);
+		assert(commands == switch_commands + 2 &&
+			last_cmd == 's');
+		assert(!sb_playback_error(playback)[0]);
+		assert(sb_queue_snapshot(
+			sb_playback_queue(playback)).context == context);
+		assert(sb_playback_event(playback,
+			sb_playback_stream(playback)->connection_generation,
+			sb_playback_stream(playback),
+			&switch_resp,
+			np_monotonic_ms()));
+		event("STMs", 4, 0);
+		assert(!strcmp(np_current(np)->track.title, "Track 0"));
 		assert(sb_playback_control(playback,'q',context,np_monotonic_ms()));
 		settle();
-		assert(starts==1);
+		assert(starts==3);
+		/* WP4a.6: the single-track latch covers one live stream, not
+		 * the process. After user stop + adapter release proof, a
+		 * fresh selection must load and start on the same SlimProto
+		 * connection (hardware never reconnects between tracks). */
+		assert(sb_playback_idle_proof(playback,99,2,owner.value.generation,
+			np_monotonic_ms(),1,1,1));
+		settle();
+		assert(sb_playback_phase(playback)==SB_PLAY_IDLE);
+		assert(sb_playback_codecs(playback)!=0);
+		assert(owner.value.current==SB_OWNER_NONE&&owner.baseline_idle);
+		/* WP4a.6: a clean release retires the stream without
+		 * latching a failure, and stays transparent to
+		 * already-rendered UI: the fenced context must NOT rotate
+		 * (only takeovers rotate it). */
+		assert(!sb_playback_error(playback)[0]);
+		assert(sb_queue_snapshot(
+			sb_playback_queue(playback)).context == context);
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],0,context,
+			np_monotonic_ms())==SB_Q_OK);
+		phase(SB_PLAY_ACTIVE);
+		assert(starts==4);
+		assert(sb_playback_control(playback,'q',context,np_monotonic_ms()));
+		settle();
+		assert(sb_playback_idle_proof(playback,99,2,owner.value.generation,
+			np_monotonic_ms(),1,1,1));
+		settle();
+		assert(sb_playback_phase(playback)==SB_PLAY_IDLE);
+		/* Takeover of an open load still rotates the fenced context
+		 * and fails loudly. */
+		assert(sb_playback_load(playback,SB_Q_LOAD,ids[0],0,context,
+			np_monotonic_ms())==SB_Q_OK);
+		owner.value.current = SB_OWNER_RADIO;
+		settle();
+		assert(!strcmp(sb_playback_error(playback),
+			"physical_owner_changed"));
+		assert(sb_queue_snapshot(
+			sb_playback_queue(playback)).context == context + 1);
+		settle();
+		assert(sb_playback_phase(playback)==SB_PLAY_IDLE);
 		/* WP4a.5 Gate F: a teardown RESET whose send timestamp lands
 		 * after the tick's now (same-millisecond straddle) must not
 		 * trip the 15s ACK timeout via unsigned underflow. Device
@@ -357,6 +506,20 @@ int main(int argc, char **argv)
 	assert(!strcmp(np_current(np)->track.title, "Track 0"));
 	event("STMt", 2, 1000);
 	assert(np_position(np) == 1000);
+	/* WP4a.6: Jive drops a server-silent SlimProto connection after 35 s
+	 * (READ_TIMEOUT). A steady PLAYING stream is polled with strm-t
+	 * (answered by STMt, no decoder state change) well inside that
+	 * window; silence resumes afterwards and no new stream starts. */
+	{
+		unsigned before = commands;
+		uint64_t base = np_monotonic_ms();
+		sb_playback_tick(playback, base + 16000);
+		assert(commands == before + 1 && last_cmd == 't');
+		assert(starts == 1);
+		assert(sb_playback_phase(playback) == SB_PLAY_ACTIVE);
+		settle();
+		assert(commands == before + 1);
+	}
 	assert(sb_playback_control(playback, 'p', context, np_monotonic_ms()));
 	event("STMp", 3, 1000);
 	rest();
@@ -398,7 +561,12 @@ int main(int argc, char **argv)
 	event("STMd", 5, 10000);
 	assert(starts == 1);
 	sb_music_stream_id old = *sb_playback_stream(playback);
+	/* WP4a.6: natural end resets the firmware decoder with a post-drain
+	 * stop; without it the next strm-s stalls (headers served, decode
+	 * never starts, no STMs). */
+	unsigned drained_commands = commands;
 	event("STMu", 6, 10000);
+	assert(commands == drained_commands + 1 && last_cmd == 'q');
 	assert(sb_playback_phase(playback) == SB_PLAY_NEED_CONNECTION);
 	assert(sb_queue_snapshot(sb_playback_queue(playback)).intended == 1);
 	assert(!sb_playback_event(playback,
@@ -406,19 +574,25 @@ int main(int argc, char **argv)
 				  &old,
 				  &(sb_slim_event){.kind = SB_SLIM_DSCO},
 				  np_monotonic_ms()));
-	settle();
-	sb_playback_detach(playback, 1);
-	attach(2);
+	/* WP4a.6: Fab4 hardware never reconnects SlimProto between tracks
+	 * (Test-1 log: conn=1 throughout, no second HELO). The terminal
+	 * stream frees its connection, so track 2 advances in place with
+	 * monotonically increasing firmware jiffies. Detach/reattach
+	 * mechanics stay covered by test_transport and the single-mp3
+	 * idle path above. */
 	phase(SB_PLAY_ACTIVE);
 	assert(starts == 2);
 	assert(!sb_playback_event(
+		playback, 99, sb_playback_stream(playback), &response,
+		np_monotonic_ms()));
+	assert(!sb_playback_event(
 		playback, 1, &old, &response, np_monotonic_ms()));
 	assert(sb_playback_event(playback,
-				 2,
+				 1,
 				 sb_playback_stream(playback),
 				 &response,
 				 np_monotonic_ms()));
-	event("STMs", 1, 0);
+	event("STMs", 7, 0);
 	assert(!strcmp(np_current(np)->track.title, "Track 1"));
 	char status[16384];
 	assert(sb_playback_status(playback, status, sizeof status));
@@ -537,7 +711,7 @@ int main(int argc, char **argv)
 		request.data.query.kind = SB_QUERY_TRACKS;
 		request.data.query.limit = 1;
 		assert(exchange(db, &request).data.query.page.total ==
-		       scan_files + 3);
+		       scan_files + 4);
 		printf("{\"actual_scanner_files\":%u,\"concurrent_browse_"
 		       "queries\":%u,\"successful_queries\":%u,"
 		       "\"retryable_queries\":%u,\"query_max_ms\":%" PRIu64
@@ -550,13 +724,13 @@ int main(int argc, char **argv)
 		       query_max,
 		       np_monotonic_ms() - began);
 	}
-	event("STMo", 2, 0);
+	event("STMo", 8, 0);
 	assert(np_current(np)->state == NP_BUFFERING);
     /* Production bridge cleanup cannot skip private RESET acknowledgement. */
     assert(!sb_playback_bridge_ready(playback));
     assert(sb_playback_bridge_begin(playback,np_monotonic_ms()));
     assert(!sb_playback_bridge_ready(playback));
-    assert(!sb_playback_bridge_proof(playback,99,2,owner.value.generation,np_monotonic_ms()));
+    assert(!sb_playback_bridge_proof(playback,99,1,owner.value.generation,np_monotonic_ms()));
     settle();
     assert(sb_playback_bridge_ready(playback));
     assert(owner.value.current==SB_OWNER_MUSIC); /* resource cleanup is not decoder proof */
@@ -572,7 +746,7 @@ int main(int argc, char **argv)
 				np_monotonic_ms()) == SB_Q_STALE);
 	assert(sb_playback_idle_proof(playback,
 				      99,
-				      2,
+				      1,
 				      owner.value.generation,
 				      np_monotonic_ms(),
 				      1,
@@ -599,16 +773,16 @@ cleanup:
 		snprintf(path, sizeof path, "%s/scan%u.flac", directory, i);
 		assert(!unlink(path));
 	}
-	for (unsigned i = 0; i < 3; i++) {
+	for (unsigned i = 0; i < 4; i++) {
 		char path[1024];
 		snprintf(path,
 			 sizeof path,
 			 "%s/track%u.%s",
 			 directory,
 			 i,
-			 i == 0	  ? "mp3"
-			 : i == 1 ? "flac"
-				  : "ogg");
+			 (i == 0 || i == 3) ? "mp3"
+			 : i == 1	    ? "flac"
+					    : "ogg");
 		assert(!unlink(path));
 	}
 	assert(!rmdir(directory));

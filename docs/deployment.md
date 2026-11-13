@@ -20,7 +20,7 @@ is available; editing GitHub alone cannot update older code.
 Update the tracked `config.json` when releasing applets. A private alternative
 may remain under `.local/`; select it explicitly with PowerShell `-ConfigPath`
 or shell `SB_PACKAGE_CONFIG`. Private deployment configuration remains ignored.
-The remote bootstrap catalog remains Base-only; the embedded local catalog
+The remote bootstrap catalog offers Base and Radio for Baby and Fab4; the embedded local catalog
 contains Standalone Base, Standalone Radio, Spotify Connect, and Qobuz Connect.
 After loading the refreshed catalog, the local Applet Installer can offer Base
 updates without switching the selected LMS back to the bootstrap server. The
@@ -89,3 +89,5 @@ services. The normal deployment mode retains its existing full-package behavior;
 The password may be supplied through `SB_DEVICE_PASSWORD` rather than a command
 argument. Do not accept a new or changed host key automatically for a restricted
 hardware smoke test.
+
+For the published 0.7.1 archives, target checksums and validation, see [the release deployment record](RELEASE_0.7.1_DEPLOYMENT.md) and `packaging/releases/0.7.1.json`. The release package-config file records the catalog actually embedded at build time; root `config.json` records the latest published applets.

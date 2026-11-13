@@ -460,6 +460,14 @@ int sb_ob_command(sb_ownership_bridge *b,
 				(void)b->music_begin(b->music_context, now);
 			result = sb_owner_crashed(
 				o, (sb_music_owner)who, a->incarnation);
+			/* WP4a.6: a faulted adapter that held the decoder
+			 * leaves a REVOKED grant its zeroed registration
+			 * can never release. Latch a reconnect requirement
+			 * so re-proof clears it; a fault with no grant
+			 * held leaves admission alone. */
+			if (result &&
+			    o->value.current == (sb_music_owner)who)
+				b->reconnect_pending = 1;
 			a->incarnation = 0;
 			b->idle_mask &= ~(1u << who);
 			if (who == SB_OWNER_MUSIC)
@@ -493,6 +501,10 @@ int sb_ob_command(sb_ownership_bridge *b,
 	}
 	if (!result)
 		return 409;
+	/* A latched reconnect requirement dies with the last grant: with
+	 * no owner held there is nothing left to re-prove. */
+	if (o->value.current == SB_OWNER_NONE)
+		b->reconnect_pending = 0;
 	a->seen_ms = now;
 	a->sequence = n[2];
 	strcpy(a->command, original);

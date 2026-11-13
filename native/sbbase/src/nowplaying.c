@@ -38,6 +38,8 @@ struct np_manager {
 	unsigned lease_seconds, command_limit, q_head, q_count;
 	uint64_t generation_counter, command_counter;
 	np_command queue[NP_COMMANDS_MAX];
+	int power, volume;
+	uint32_t sequence;
 };
 
 int np_native_music(np_manager *m, const np_status *status, int owned)
@@ -125,10 +127,25 @@ np_manager *np_create(unsigned lease_seconds, unsigned command_limit)
 	if (!m)
 		return NULL;
 	m->lease_seconds = lease_seconds ? lease_seconds : 120;
+	m->power=1;m->volume=50;
 	m->command_limit = command_limit && command_limit <= NP_COMMANDS_MAX
 				   ? command_limit
 				   : NP_COMMANDS_MAX;
 	return m;
+}
+
+int np_player_power(np_manager *m){return m->power;}
+int np_player_volume(np_manager *m){return m->volume;}
+uint32_t np_player_sequence(np_manager *m){return m->sequence;}
+int np_set_player_power(np_manager *m,int on,uint32_t sequence)
+{
+ if((on!=0&&on!=1)||(sequence&&sequence<m->sequence))return 0;
+ m->power=on;if(sequence)m->sequence=sequence;return 1;
+}
+int np_set_player_volume(np_manager *m,int volume,uint32_t sequence)
+{
+ if(volume < -100||volume>100||(sequence&&sequence<m->sequence))return 0;
+ m->volume=volume;if(sequence)m->sequence=sequence;return 1;
 }
 
 /**
@@ -674,14 +691,14 @@ int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 		return snprintf(out,
 				cap,
 				"{\"player_name\":\"Standalone\",\"player_"
-				"connected\":1,\"power\":1,\"mode\":\"stop\","
+				"connected\":1,\"power\":%d,\"mode\":\"stop\","
 				"\"time\":0,\"duration\":0,\"playlist_tracks\":"
 				"0,\"count\":0,\"offset\":0,\"playlist_cur_"
 				"index\":0,\"playlist repeat\":0,\"playlist "
 				"shuffle\":0,\"mixer "
-				"volume\":50,\"digital_volume_control\":1,"
+				"volume\":%d,\"digital_volume_control\":1,"
 				"\"player_needs_upgrade\":0,\"player_is_"
-				"upgrading\":0,\"seq_no\":0}");
+				"upgrading\":0,\"seq_no\":%u}",m->power,m->volume,m->sequence);
 	esc(ti, sizeof ti, s->track.title);
 	esc(ar, sizeof ar, s->track.artist);
 	esc(al, sizeof al, s->track.album);
@@ -703,15 +720,15 @@ int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 		out,
 		cap,
 		"{\"player_name\":\"Standalone\",\"player_connected\":1,"
-		"\"power\":1,\"mode\":\"%s\",\"rate\":%d,\"time\":%.3f,"
+		"\"power\":%d,\"mode\":\"%s\",\"rate\":%d,\"time\":%.3f,"
 		"\"duration\":%.3f,\"playlist_tracks\":1,\"count\":1,"
 		"\"offset\":0,\"playlist_cur_"
 		"index\":0,\"playlist_timestamp\":%llu,\"playlist "
 		"repeat\":0,\"playlist "
 		"shuffle\":0,\"remote\":%d,\"current_title\":\"%s\",\"mixer "
-		"volume\":50,\"digital_volume_control\":1,\"use_volume_"
+		"volume\":%d,\"digital_volume_control\":1,\"use_volume_"
 		"control\":1,\"player_needs_upgrade\":0,\"player_is_"
-		"upgrading\":0,\"seq_no\":0,\"item_loop\":[{\"text\":\"%s\","
+		"upgrading\":0,\"seq_no\":%u,\"item_loop\":[{\"text\":\"%s\","
 		"\"id\":-1,\"track\":\"%s\",\"artist\":\"%s\",\"album\":\"%s\","
 		"\"duration\":%.3f,\"icon\":\"%s\",\"params\":{\"track_id\":-1,"
 		"\"playlist_index\":0}}],\"base\":{\"actions\":{\"more\":{"
@@ -719,13 +736,13 @@ int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 		"\"params\":{"
 		"\"menu\":\"track\",\"context\":\"playlist\"},\"window\":{"
 		"\"isContextMenu\":1}}}}}",
-		lms_mode(s->state),
+		m->power,lms_mode(s->state),
 		s->state == NP_PLAYING ? 1 : 0,
 		(double)pos / 1000.0,
 		s->duration_known ? (double)s->duration_ms / 1000.0 : 0.0,
 		(unsigned long long)s->playlist_revision,
 		strcmp(s->source, "demo") ? 1 : 0,
-		s->live && st[0] ? st : ti,
+		s->live && st[0] ? st : ti,m->volume,m->sequence,
 		text,
 		ti,
 		ar,
@@ -1911,6 +1928,12 @@ int np_lms_arguments(const char *json,
 				    json, &tokens[i], arguments[count], 512))
 				return -1;
 		} else if (tokens[i].type == J_PRIMITIVE &&
+			   count==2 && !strcmp(arguments[0],"power") &&
+			   ((tokens[i].end-tokens[i].start==5&&!memcmp(json+tokens[i].start,"false",5))||
+			    (tokens[i].end-tokens[i].start==4&&!memcmp(json+tokens[i].start,"true",4)))) {
+			size_t length=(size_t)(tokens[i].end-tokens[i].start);
+			memcpy(arguments[count],json+tokens[i].start,length);arguments[count][length]=0;
+		} else if (tokens[i].type == J_PRIMITIVE &&
 			   tokens[i].end - tokens[i].start < 512 &&
 			   (json[tokens[i].start] == '-' || isdigit((unsigned char)json[tokens[i].start]))) {
 			size_t length =
@@ -2093,16 +2116,16 @@ int np_lms_query_json(
 	} else {
 		write_json(&w,
 			   "{\"player_name\":\"Standalone\",\"player_"
-			   "connected\":1,\"power\":1,"
+			   "connected\":1,\"power\":%d,"
 			   "\"mode\":\"%s\",\"time\":%.3f,\"duration\":%.3f,"
 			   "\"playlist_tracks\":%d,"
 			   "\"playlist_cur_index\":0,\"count\":%d,\"offset\":0,"
-			   "\"remote\":1,\"current_title\":",
-			   lms_mode(s->state),
+			   "\"remote\":1,\"mixer volume\":%d,\"seq_no\":%u,\"current_title\":",
+			   m->power,lms_mode(s->state),
 			   np_position(m) / 1000.0,
 			   s->duration_known ? s->duration_ms / 1000.0 : 0,
 			   count ? 1 : 0,
-			   count ? 1 : 0);
+			   count ? 1 : 0,m->volume,m->sequence);
 		write_string(&w,
 			     s->station.name[0]		      ? s->station.name
 			     : s->live && s->track.station[0] ? s->track.station

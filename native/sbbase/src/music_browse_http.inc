@@ -91,9 +91,14 @@ static int music_append(struct music_http *h, const char *fmt, ...)
 
 static void music_overflow(struct music_http *h)
 {
-	h->used = 0;
-	music_append(
-		h, "[{\"successful\":false,\"error\":\"response_too_large\"}]");
+	/* Never wipe replies already assembled: Jive replays an entirely
+	 * unanswered batch forever through its CometD sink, so a wipe turns
+	 * one oversized batch into a permanent reconnect storm. Keep prior
+	 * replies, note the error if it fits, and stop the batch: the sink
+	 * drains progressively instead. */
+	music_append(h,
+		     "%s{\"successful\":false,\"error\":\"response_too_large\"}",
+		     h->used > 1 ? "," : "");
 	h->offset = h->length;
 }
 
@@ -142,11 +147,28 @@ static void music_send_pump(client *c)
 		h->tail_sent += n;
 		return;
 	}
+	/* Completion must preserve pipelined bytes: the request body points
+	 * into c->buf, and anything after it belongs to the next request.
+	 * Shift it down and flag the main loop to re-enter the parser;
+	 * otherwise the tail rots until the next recv overwrites buf+0
+	 * (socket desync). Stream events carry no request body. */
+	const char *tbody = h->body;
+	size_t tlen = h->length;
 	free(h);
 	c->music_http = NULL;
 	if (music_pending)
 		music_pending--;
-	c->used = 0;
+	if (tbody && tbody >= (const char *)c->buf &&
+	    (size_t)(tbody - (const char *)c->buf) + tlen < c->used) {
+		size_t consumed =
+			(size_t)(tbody - (const char *)c->buf) + tlen;
+		memmove(c->buf, c->buf + consumed, c->used - consumed);
+		c->used -= consumed;
+		c->buf[c->used] = 0;
+		c->http_resume = 1;
+	} else {
+		c->used = 0;
+	}
 	c->keepalive = time(NULL);
 }
 
@@ -340,6 +362,19 @@ static void music_http_pump(client *c)
 			music_overflow(h);
 			break;
 		}
+		/* WP4a.6 Dreams heal: a truncated head can swallow Jive's
+		 * one-time playerstatus subscribe (the startup drain
+		 * skipped its 206 bytes) while follow-up replies fool
+		 * Jive into never resending it. Any live request from a
+		 * connected client therefore refreshes that client's
+		 * subscription; only an explicit playerstatus
+		 * unsubscribe opts out. */
+		if (!strcmp(h->envelope.channel, "/slim/unsubscribe") &&
+		    strstr(h->envelope.unsubscribe, "/slim/playerstatus/")) {
+			subscribed_cid_clear(h->envelope.client);
+		} else if (player_id[0] && h->envelope.client[0]) {
+			subscribed_cid_add(h->envelope.client);
+		}
 		if (!strcmp(h->envelope.channel, "/slim/unsubscribe")) {
 			client *stream = stream_for_id(h->envelope.client);
 			if (stream) {
@@ -458,6 +493,87 @@ static void music_http_pump(client *c)
 	music_send_pump(c);
 }
 
+/* Whole-body validation failed. Two drainable shapes exist. A valid
+ * but over-budget batch (big_valid: a replayed Jive backlog past the
+ * 4096-token guard) opens with a valid /slim envelope: answer its head
+ * through the normal pump instead of 400-looping. An invalid batch
+ * whose head is truncated mid-message (Jive's pump emitting a suffix
+ * under backpressure: body starts mid-message, ends with `}]`) can
+ * resync at the first valid /slim envelope past the break, provided
+ * at least 8 bytes are skipped: aligned-but-corrupt bodies (a stray
+ * byte before `[`, bad UTF-8) keep the strict 400, while a genuinely
+ * truncated head always skips the broken first message (dozens of
+ * bytes). Either way the pump caps at 32 commands with keep-partial
+ * overflow, so the sink drains progressively. Returns 0 when the body
+ * is not a drainable music batch (caller keeps the strict 400). */
+static int music_prefix_drain(client *c,
+			      const char *body,
+			      size_t length,
+			      int big_valid)
+{
+	const char *p, *end, *start = NULL;
+	np_lms_envelope e;
+	struct music_http *h;
+	unsigned tried = 0;
+	if (!music_browse || !length)
+		return 0;
+	p = body;
+	for (;;) {
+		size_t skipped;
+		if ((size_t)(p - body) >= length || tried >= 64 ||
+		    (size_t)(p - body) >= 8192)
+			return 0;
+		p = memchr(p, '{', length - (size_t)(p - body));
+		if (!p)
+			return 0;
+		skipped = (size_t)(p - body);
+		tried++;
+		end = message_end(p);
+		if (!end || end > body + length ||
+		    (size_t)(end - p) > SB_LMS_MESSAGE_MAX) {
+			p++;
+			continue;
+		}
+		if (!np_lms_envelope_read(p, (size_t)(end - p), &e)) {
+			p++;
+			continue;
+		}
+		if (strcmp(e.channel, "/slim/request") &&
+		    strcmp(e.channel, "/slim/subscribe") &&
+		    strcmp(e.channel, "/slim/unsubscribe")) {
+			p++;
+			continue;
+		}
+		if (big_valid) {
+			if (tried != 1)
+				return 0;
+		} else if (skipped != 0 && skipped < 8) {
+			return 0;
+		}
+		start = p;
+		break;
+	}
+	h = music_allocate(c);
+	if (!h) {
+		http_reply(c,
+			   "503 Service Unavailable",
+			   "{\"error\":\"browse_busy\"}",
+			   0);
+		return 1;
+	}
+	h->body = start;
+	h->length = length - (size_t)(start - body);
+	h->deadline = np_monotonic_ms() + 5000;
+	h->output[0] = '[';
+	h->used = 1;
+	fprintf(stderr,
+		"COMET DRAIN len=%lu skipped=%lu\n",
+		(unsigned long)length,
+		(unsigned long)(start - body));
+	music_http_pump(c);
+	return 1;
+}
+
 static int music_http_begin(client *c, const char *body, size_t length)
 {
 	if (!music_browse)
@@ -483,12 +599,14 @@ static int music_http_begin(client *c, const char *body, size_t length)
 				   0);
 			return 1;
 		}
-		if (++messages > 32) {
-			http_reply(c,
-				   "413 Payload Too Large",
-				   "{\"error\":\"too_many_commands\"}",
-				   0);
-			return 1;
+		if (++messages > SB_LMS_BATCH_MAX) {
+			/* Truncate, never reject: Jive replays its whole
+			 * backlog after any error, so a 413 here wedges
+			 * CometD in a permanent resend loop. Stop
+			 * validating and let the pump below answer the
+			 * first 32 with keep-partial overflow; the sink
+			 * drains progressively instead. */
+			break;
 		}
 		p = end;
 		if (p == body + length)

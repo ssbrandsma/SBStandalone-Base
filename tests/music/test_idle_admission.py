@@ -90,4 +90,20 @@ try:
     d.command('admit-idle',4,7)
     assert d.snapshot['idle_admitted']
 finally:d.close()
+# WP4a.6: a faulted adapter that HELD the decoder leaves a REVOKED grant.
+# Re-register + reconnect with proof must clear it (no base restart);
+# without the reconnect latch the grant wedges music permanently.
+d=setup()
+try:
+    d.raw('!ready 1');d.command('admit-idle',4,7)
+    d.command('request',4,timeout=1000)
+    assert d.snapshot['owner']==4
+    d.command('fault',4)
+    assert d.snapshot['owner']==4 and d.snapshot['yield']==5
+    d.inc[4]=0;d.command('register',4)
+    d.command('reconnect',4,7)
+    assert d.snapshot['owner']==0
+    d.command('admit-idle',4,7)
+    assert d.snapshot['idle_admitted']
+finally:d.close()
 print('Explicit Music-only admission: identity/IPC/proof/alarm/connection gates passed')

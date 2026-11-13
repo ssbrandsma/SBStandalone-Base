@@ -14,7 +14,6 @@
 typedef struct {
 	struct mg_connection *connection;
 	uint64_t job, offset, remaining, deadline;
-	size_t previous_send;
 	unsigned char token[32];
 	sb_music_resource resource;
 	sb_music_http_range range;
@@ -23,14 +22,24 @@ typedef struct {
 
 static sb_stream_registry *registry;
 static stream_client clients[HTTP_STREAMS];
+static uint64_t test_now_ms;
+static int test_now_set;
 
 /* IPC expiry uses Base CLOCK_MONOTONIC, not Mongoose MONOTONIC_RAW. */
 static uint64_t music_now(void)
 {
 	struct timespec t;
+	if (test_now_set)
+		return test_now_ms;
 	if (clock_gettime(CLOCK_MONOTONIC, &t))
 		return UINT64_MAX;
 	return (uint64_t)t.tv_sec * 1000 + t.tv_nsec / 1000000;
+}
+
+void sb_web_music_test_now(uint64_t now_ms, int set)
+{
+	test_now_ms = now_ms;
+	test_now_set = set;
 }
 
 int sb_web_music_init(int fd)
@@ -173,7 +182,10 @@ static int start(struct mg_connection *c, struct mg_http_message *m)
 	s->head = head;
 	s->offset = r.first;
 	s->remaining = r.length;
-	s->deadline = music_now() + 15000;
+	/* WP4a.6 F1: a paused decoder holds the socket without dying. Bound
+	 * the stream by the resource TTL, not a fixed 15 s tripwire; the
+	 * registry expiry check in pump() still retires it. */
+	s->deadline = s->resource.expires_ms;
 	return 1;
 }
 
@@ -193,9 +205,6 @@ static void pump(stream_client *s)
 		retire(s);
 		return;
 	}
-	if (c->send.len < s->previous_send)
-		s->deadline = now + 15000;
-	s->previous_send = c->send.len;
 	if (now >= s->deadline) {
 		c->is_closing = 1;
 		retire(s);

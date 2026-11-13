@@ -434,8 +434,18 @@ int sb_transport_event(sb_transport *t,
 			if (t->http_status != 200 || t->state == SB_T_PAUSED)
 				return 0;
 			if (!sb_music_stream_event(
-				    &t->stream, id, SB_EVENT_AUDIBLE))
-				return 0;
+				    &t->stream, id, SB_EVENT_AUDIBLE)) {
+				/* WP4a.6 F2: rebuffer recovery. AUDIBLE is
+				 * one-shot per stream, so a repeat STMs
+				 * after a flush/underrun cannot re-fire it;
+				 * accept it as transport recovery out of
+				 * BUFFERING only. Duplicates in PLAYING
+				 * keep rejecting below. */
+				if (t->state != SB_T_BUFFERING ||
+				    !(t->stream.seen_events &
+				      (1u << SB_EVENT_AUDIBLE)))
+					return 0;
+			}
 			t->state = SB_T_PLAYING;
 			t->deadline_ms = 0;
 			break;
@@ -457,12 +467,15 @@ int sb_transport_event(sb_transport *t,
 			if (!sb_music_stream_event(
 				    &t->stream, id, SB_EVENT_DECODER_READY))
 				return 0;
-			if (now > UINT64_MAX - 10000) {
+			if (now > UINT64_MAX - 30000) {
 				terminal(t, SB_T_TIMEOUT, SB_EVENT_FAILED);
 				return 1;
 			}
 			t->state = SB_T_DRAINING;
-			t->deadline_ms = now + 10000;
+			/* Fab4 drains a full output buffer in ~10 s after
+			 * STMd; allow 30 s base plus sliding proof-of-life
+			 * below so a talking decoder never races the clock. */
+			t->deadline_ms = now + 30000;
 			break;
 		case 'u':
 			if (!(t->stream.seen_events &
@@ -478,17 +491,50 @@ int sb_transport_event(sb_transport *t,
 		case 'n':
 			terminal(t, SB_T_CODEC_ERROR, SB_EVENT_FAILED);
 			return 1;
-		case 'f': /* unsolicited flush makes correlation unsafe */
+		case 'f': /* flush handling depends on stream phase */
 			/* strm-s itself flushes old input before connecting. */
 			if (t->state == SB_T_CONNECTING_STREAM &&
 			    !t->http_status && !t->stream.seen_events)
 				break;
+			/* WP4a.6 F2: input starvation while paused is
+			 * benign. The decoder holds its output; resume
+			 * re-buffers. Killing the stream here would strand
+			 * a resumable pause. */
+			if (t->state == SB_T_PAUSED)
+				break;
+			/* WP4a.6 F2: a mid-play flush is a bounded rebuffer
+			 * window, not an instant protocol error. STMs
+			 * recovers to PLAYING (clearing the window); STMd
+			 * moves to DRAINING with its own window; silence
+			 * times out via the tick. Drain-phase and
+			 * pre-stream flushes still fail closed below. */
+			if (t->state == SB_T_PLAYING ||
+			    t->state == SB_T_BUFFERING) {
+				if (now > UINT64_MAX - 15000) {
+					terminal(t,
+						 SB_T_TIMEOUT,
+						 SB_EVENT_FAILED);
+					return 1;
+				}
+				t->state = SB_T_BUFFERING;
+				t->deadline_ms = now + 15000;
+				break;
+			}
 			terminal(t, SB_T_PROTOCOL_ERROR, SB_EVENT_FAILED);
 			return 1;
 		case 'o': /* recoverable underrun, no automatic resume */
 			t->state = SB_T_BUFFERING;
 			break;
 		case 't':
+			/* Proof-of-life while draining: a decoder that keeps
+			 * reporting time is still emptying its buffer, so
+			 * slide the drain window. Silent elsewhere: PLAYING
+			 * and PAUSED carry no deadline, and an already
+			 * expired window must still time out via the tick. */
+			if (t->state == SB_T_DRAINING &&
+			    t->deadline_ms && now < t->deadline_ms &&
+			    now <= UINT64_MAX - 10000)
+				t->deadline_ms = now + 10000;
 			break;
 		default:
 			return 0;
@@ -531,6 +577,29 @@ int sb_transport_stopped(sb_transport *t,
 	    t->stream.terminal_seen)
 		return 0;
 	terminal(t, SB_T_OK, SB_EVENT_STOPPED);
+	return 1;
+}
+
+/* A terminal stream frees its SlimProto connection for a later stream.
+ * The next stream re-proves quiescence, mints a fresh epoch and
+ * re-activates its own resource; nothing here starts audio. The
+ * terminal guard (id, state, terminal_seen) is preserved verbatim: late
+ * firmware events must keep rejecting against the retired stream, and
+ * the playback owner-change fence keys clean releases off it. Only the
+ * connection pin and per-stream progress bits are retired. Jiffy
+ * ordering survives: firmware jiffies are uptime-monotonic, so a new
+ * stream never legitimately rewinds them. */
+int sb_transport_release_stream(sb_transport *t)
+{
+	if (!t || !t->enabled || !t->attached || !t->used_connection ||
+	    !t->stream.terminal_seen || (t->state != SB_T_STOPPED &&
+					 t->state != SB_T_ERROR))
+		return 0;
+	t->used_connection = 0;
+	t->quiescent = 0;
+	t->owner_generation = 0;
+	t->seen_progress = 0;
+	t->revision++;
 	return 1;
 }
 

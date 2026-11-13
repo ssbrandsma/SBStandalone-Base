@@ -58,7 +58,7 @@ def prepare(args):
         a=dict(name='StandaloneBase',title='Standalone Base',version=version,target=target,min_target_version='7.7.2',
                url=args.base_url.rstrip('/')+'/'+archive.name,sha=hashlib.sha1(archive.read_bytes()).hexdigest(),
                desc=f'Local LMS-compatible infrastructure for Squeezebox {device}.',
-               changes='Dual-platform Baby/Fab4 builds and live Virtual Touch display with touchscreen controls.',creator='Sjoerd Brandsma',email='')
+               changes=args.base_changes,creator='Sjoerd Brandsma',email='')
         entries.append(a)
         artifacts.append(dict(file=archive.name,target=target,sha1=a['sha'],sha256=hashlib.sha256(archive.read_bytes()).hexdigest()))
     base_entries=entries.copy()
@@ -88,6 +88,7 @@ if __name__=='__main__':
     p.add_argument('--version',required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--base-url',required=True);p.add_argument('--radio-url',required=True)
     p.add_argument('--radio-zip',type=Path,required=True)
+    p.add_argument('--base-changes',default='Standalone Base updates for Baby and Fab4.')
     p.add_argument('--config',type=Path,action='append',default=[])
     p.add_argument('--extensions',type=Path,action='append',default=[])
     prepare(p.parse_args())

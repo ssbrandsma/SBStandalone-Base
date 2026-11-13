@@ -188,6 +188,20 @@ try:
     assert status == 404
     request_serverstatus(cid)
 
+    # WP4a.6: a later handshake from a different MAC (a diagnostic probe)
+    # must not hijack the established player identity out from under Jive.
+    status, body = post({"channel": "/meta/handshake",
+                         "mac": "02:00:00:00:00:99"})
+    assert status == 200 and body[0]["successful"]
+    status, body = post({
+        "channel": "/slim/request", "clientId": cid, "id": 8,
+        "data": {"request": ["", ["serverstatus", 0, 999]],
+                 "response": f"/{cid}/slim/request"},
+    })
+    assert status == 200
+    data = next(item["data"] for item in body if "data" in item)
+    assert data["players_loop"][0]["playerid"] == PLAYER, data
+
     # Real API updates drive the native subscription. Identity changes advance
     # the playlist timestamp; metadata and playback changes for one identity do
     # not. Exact duplicates are suppressed.
@@ -310,7 +324,10 @@ finally:
     errors = stop_server(process)
     assert b"NOWPLAYING" not in errors
 
-# Demonstration mode publishes only to explicitly subscribed stream clients.
+# Demonstration mode: subscriptions are request-CIDs tracked globally and
+# each addressed snapshot is broadcast to every live stream (loopback-only
+# listener; Jive's request CID differs from its stream CID, so per-stream
+# flags can never cover it). Consumers route by channel.
 process = run_server(binary, True)
 try:
     first_id, unrelated_id = handshake(), handshake()
@@ -333,7 +350,11 @@ try:
     assert changed["item_loop"][0]["params"]["track_id"] == -1
     assert changed["item_loop"][0]["track"] == "Money for Nothing"
     assert changed["playlist_timestamp"] > first["playlist_timestamp"]
-    unrelated_stream.assert_no_playerstatus()
+    # Broadcast: the live-but-unsubscribed stream also receives the
+    # snapshot, addressed to the subscribed CID (it routes by channel).
+    echoed = unrelated_stream.next_playerstatus()
+    assert f"/{first_id}/slim/playerstatus/" in echoed["channel"]
+    assert echoed["data"]["item_loop"][0]["track"] == "Money for Nothing"
 
     # Replacing the active stream and re-subscribing returns current state.
     replacement = EventStream(first_id)
@@ -349,6 +370,24 @@ try:
     status, _ = post({}, "/test/next-track")
     assert status == 200
     replacement.assert_no_playerstatus()
+
+    # Jive shape: the long-poll stream CID differs from the short-request
+    # CID. A subscribe from the request CID must still deliver addressed
+    # snapshots to the stream.
+    stream_id, request_id = handshake(), handshake()
+    stream = EventStream(stream_id)
+    status, body = post({
+        "channel": "/slim/subscribe", "clientId": request_id, "id": 40,
+        "data": {"request": [PLAYER, ["status", "-", 10,
+                                     "subscribe:600"]],
+                 "response": f"/{request_id}/slim/playerstatus/{PLAYER}"},
+    })
+    assert status == 200
+    status, result = post({}, "/test/next-track")
+    assert status == 200 and result["status"] == "ok"
+    jive = stream.next_playerstatus()
+    assert f"/{request_id}/slim/playerstatus/" in jive["channel"], jive
+    stream.close()
     replacement.close()
     first_stream.close()
     unrelated_stream.close()
