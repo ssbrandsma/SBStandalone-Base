@@ -334,7 +334,7 @@ function menu(self)
     if platform.extended_storage then menu:addItem({text="Extended Storage",callback=function() self:storageMenu() end}) end
     menu:addItem({text="Web Access",callback=function() if not self.remoteBridge:isInjecting() then self:webAccessMenu() end end})
     if self.firmwareUpdates then menu:addItem({text="Custom Firmware Updates",callback=function() self.firmwareUpdates:menu() end}) end
-	menu:addItem({text="Version: 0.7.1"})
+	menu:addItem({text="Version: 0.7.2"})
     window:addWidget(menu); window:show()
 end
 function webAccessMenu(self)

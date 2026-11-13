@@ -137,6 +137,22 @@ stock_volume_set_77x_exact() {
     done
 }
 
+# Measured 7.7.3 r16676 alternative: primary and backup pairs exchange IDs,
+# while the production ubifs remains ID 2. This is not the larger 9.0.1 image.
+stock_volume_set_773_primary_exact() {
+    stock_volume_exact 0 kernel 23 2967552 || return 1
+    stock_volume_exact 1 cramfs 106 13676544 || return 1
+    stock_volume_exact 2 ubifs 82 10579968 || return 1
+    stock_volume_exact 3 kernel_bak 23 2967552 || return 1
+    stock_volume_exact 4 cramfs_bak 106 13676544 || return 1
+    for stock in "$UBI_CLASS"/ubi0_*; do
+        test -d "$stock" || continue
+        case ${stock##*_} in 0|1|2|3|4) ;; *) return 1 ;; esac
+        test "$(value "$stock/alignment")" = 1 || return 1
+        test "$(value "$stock/usable_eb_size")" = 129024 || return 1
+    done
+}
+
 stock_volume_set_901_exact() {
     stock_volume_exact 0 kernel 23 2967552 || return 1
     stock_volume_exact 1 cramfs 113 14579712 || return 1
@@ -168,7 +184,9 @@ virgin_layout_exact() {
         && test -z "$(mounted_type "$SOURCE")" \
         || return 1
     case $firmware in
-        '7.7.2 r9663'|'7.7.3 r16676') test $((layout_available + layout_bad)) = 660 && stock_volume_set_77x_exact ;;
+        '7.7.2 r9663') test $((layout_available + layout_bad)) = 660 && stock_volume_set_77x_exact ;;
+        '7.7.3 r16676') test $((layout_available + layout_bad)) = 660 &&
+            { stock_volume_set_77x_exact || stock_volume_set_773_primary_exact; } ;;
         '9.0.1 r17084') test $((layout_available + layout_bad)) = 653 && stock_volume_set_901_exact ;;
         *) return 1 ;;
     esac
@@ -269,11 +287,23 @@ layout_diagnostics() (
         case $(value "$ROOT/etc/squeezeos.version") in
             '7.7.2 r9663'|'7.7.3 r16676')
                 diagnostic_expected_free=660
-                diagnostic_stock 0 kernel_bak 23 2967552
-                diagnostic_stock 1 cramfs_bak 106 13676544
-                diagnostic_stock 2 ubifs 82 10579968
-                diagnostic_stock 3 kernel 23 2967552
-                diagnostic_stock 4 cramfs 106 13676544 ;;
+                if test "$(value "$ROOT/etc/squeezeos.version")" = '7.7.3 r16676' &&
+                    test "$(value "$UBI_CLASS/ubi0_0/name")" = kernel &&
+                    test "$(value "$UBI_CLASS/ubi0_3/name")" = kernel_bak; then
+                    printf 'PROFILE=7.7.3-primary-first\n'
+                    diagnostic_stock 0 kernel 23 2967552
+                    diagnostic_stock 1 cramfs 106 13676544
+                    diagnostic_stock 2 ubifs 82 10579968
+                    diagnostic_stock 3 kernel_bak 23 2967552
+                    diagnostic_stock 4 cramfs_bak 106 13676544
+                else
+                    printf 'PROFILE=7.7.x-backup-first\n'
+                    diagnostic_stock 0 kernel_bak 23 2967552
+                    diagnostic_stock 1 cramfs_bak 106 13676544
+                    diagnostic_stock 2 ubifs 82 10579968
+                    diagnostic_stock 3 kernel 23 2967552
+                    diagnostic_stock 4 cramfs 106 13676544
+                fi ;;
             '9.0.1 r17084')
                 diagnostic_expected_free=653
                 diagnostic_stock 0 kernel 23 2967552

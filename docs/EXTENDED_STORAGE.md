@@ -188,8 +188,17 @@ for bad blocks. It contains exactly these five healthy dynamic volumes:
 | 3 | `kernel` | 23 | 2,967,552 |
 | 4 | `cramfs` | 106 | 13,676,544 |
 
-Only an exact match, with no volume or device node for ID 5 and no additional
-user volumes, enables creation. The explicitly confirmed initializer runs:
+An additional measured `7.7.3 r16676` profile has `kernel`/`cramfs` at IDs
+0/1 and `kernel_bak`/`cramfs_bak` at IDs 3/4, with the same sizes and production
+`ubifs` at ID 2. Both complete orders are supported; mixed pairs, duplicate
+names and unknown firmware revisions are refused. The primary-first profile
+also checks alignment 1 and usable LEB size 129024 for all five volumes.
+See [the analysis and validation record](EXTENDED_STORAGE_773_PRIMARY_FIRST.md).
+This additional order is not enabled for unmeasured 7.7.2 firmware.
+
+Only an exact match, with no sysfs volume for ID 5 and no additional user
+volumes, enables creation. A pre-existing static device node alone is not a
+volume and does not block creation. The explicitly confirmed initializer runs:
 
 ```sh
 /usr/sbin/ubimkvol /dev/ubi0 -n 5 -N sbdata -S 521 -t dynamic

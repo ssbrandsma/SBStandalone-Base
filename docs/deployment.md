@@ -91,3 +91,5 @@ argument. Do not accept a new or changed host key automatically for a restricted
 hardware smoke test.
 
 For the published 0.7.1 archives, target checksums and validation, see [the release deployment record](RELEASE_0.7.1_DEPLOYMENT.md) and `packaging/releases/0.7.1.json`. The release package-config file records the catalog actually embedded at build time; root `config.json` records the latest published applets.
+
+The 0.7.2 release includes the validated alternate 7.7.3 Radio storage profile. See [release notes](RELEASE_0.7.2.md) and `packaging/releases/0.7.2.json` for artifacts and qualification. Its frozen package catalog is retained separately from the current public catalog.

@@ -35,7 +35,7 @@ stage=${SB_PACKAGE_STAGE:-$root/build-package/$platform/StandaloneBase}
 output=${SB_PACKAGE_OUTPUT:-$root/build-package}
 mkdir -p "$output"
 output=$(CDPATH= cd -- "$output" && pwd)
-zipfile="$output/StandaloneBase-0.7.1-$platform.zip"
+zipfile="$output/StandaloneBase-0.7.2-$platform.zip"
 rm -rf "$stage"
 mkdir -p "$stage"
 cp "$root/applet/Platform.lua" "$root/applet/StandaloneBaseMeta.lua" "$root/applet/StandaloneBaseApplet.lua" "$root/applet/StorageManager.lua" "$root/applet/ExtendedStorageState.lua" "$root/applet/TimeSync.lua" "$root/applet/TimeResolver.lua" "$root/applet/RemoteBridge.lua" "$root/applet/ServerMigration.lua" "$root/applet/NetworkAddress.lua" "$root/applet/strings.txt" "$stage/"

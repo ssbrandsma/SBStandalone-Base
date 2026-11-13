@@ -112,7 +112,18 @@ add_stock_volume() {
     printf '%s\n' "$4" >"$stock/data_bytes"
     printf '0\n' >"$stock/corrupted"
     printf '0\n' >"$stock/upd_marker"
+    printf '1\n' >"$stock/alignment"
+    printf '129024\n' >"$stock/usable_eb_size"
 }
+
+primary_773_names() {
+    for spec in '0 kernel' '1 cramfs' '3 kernel_bak' '4 cramfs_bak'; do
+        set -- $spec
+        printf '%s\n' "$2" >"$fixture/sys/class/ubi/ubi0_$1/name"
+    done
+}
+
+make_773_primary() { make_base; primary_773_names; }
 
 add_volume() {
     mkdir -p "$fixture/sys/class/ubi/ubi0_5"
@@ -200,6 +211,37 @@ expect_precreate_failure() {
     assert_ubimkvol_not_called
     assert_ubiupdatevol_not_called
 }
+
+# The new profile is accepted only as a complete measured 7.7.3 layout.
+make_773_primary; expect_status AVAILABLE
+check | grep -q '^INITIALIZATION_SUPPORTED=1$'
+grep -q '^PROFILE=7.7.3-primary-first$' "$fixture/tmp/sbstorage-check.log"
+! grep -q '^FAIL ' "$fixture/tmp/sbstorage-check.log"
+assert_ubimkvol_not_called; assert_ubiupdatevol_not_called
+for id in 0 1 2 3 4; do
+    for field in type alignment reserved_ebs data_bytes usable_eb_size corrupted upd_marker; do
+        make_773_primary
+        stock="$fixture/sys/class/ubi/ubi0_$id"
+        saved=$(cat "$stock/$field")
+        if test "$field" = type; then wrong=static; else wrong=$((saved + 1)); fi
+        printf '%s\n' "$wrong" >"$stock/$field"
+        expect_status UNAVAILABLE
+        expect_precreate_failure 28
+    done
+done
+make_773_primary; rm "$fixture/sys/class/ubi/ubi0_1/upd_marker"; expect_precreate_failure 28
+make_773_primary; printf '106junk\n' >"$fixture/sys/class/ubi/ubi0_1/reserved_ebs"; expect_precreate_failure 28
+make_773_primary; printf '0junk\n' >"$fixture/sys/class/ubi/ubi0_0/upd_marker"; expect_precreate_failure 28
+make_773_primary; printf '7.7.2 r9663\n' >"$fixture/etc/squeezeos.version"; expect_precreate_failure 28
+make_773_primary; printf '7.7.3 unknown-build\n' >"$fixture/etc/squeezeos.version"; expect_precreate_failure 28
+make_773_primary; printf 'kernel_bak\n' >"$fixture/sys/class/ubi/ubi0_0/name"; expect_precreate_failure 28
+make_773_primary; printf 'kernel_bak\n' >"$fixture/sys/class/ubi/ubi0_0/name"; printf 'kernel\n' >"$fixture/sys/class/ubi/ubi0_3/name"; expect_precreate_failure 28
+make_773_primary; printf 'cramfs_bak\n' >"$fixture/sys/class/ubi/ubi0_1/name"; expect_precreate_failure 28
+make_773_primary; printf 'cramfs_bak\n' >"$fixture/sys/class/ubi/ubi0_1/name"; printf 'cramfs\n' >"$fixture/sys/class/ubi/ubi0_4/name"; expect_precreate_failure 28
+make_773_primary; rm -rf "$fixture/sys/class/ubi/ubi0_4"; expect_precreate_failure 28
+make_773_primary; add_stock_volume 6 unexpected 1 129024; expect_precreate_failure 28
+make_773_primary; printf '659\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"; expect_precreate_failure 28
+make_773_primary; printf '1013\n' >"$fixture/sys/class/ubi/ubi0/total_eraseblocks"; expect_precreate_failure 28
 
 # Every virgin-layout invariant is a hard gate before ubimkvol.
 make_base; printf '9.0.1 r17084\n' >"$fixture/etc/squeezeos.version"; expect_precreate_failure 28
@@ -483,6 +525,36 @@ grep -q '^STAGE=COMPLETE$' "$fixture/tmp/sbstorage.status"
 grep -q '^REBOOT_REQUIRED=1$' "$fixture/tmp/sbstorage.status"
 test -d "$fixture/mnt/sbdata/applets/StandaloneBase"
 test -x "$fixture/etc/init.d/rcS.local"
+
+# Exercise creation, an interrupted update, retry and boot with primary-first
+# firmware volumes. Only ID 5 may be created/written; IDs 0..4 stay identical.
+reset_virgin
+primary_773_names
+stock_digest() {
+    find "$fixture/sys/class/ubi/ubi0_0" "$fixture/sys/class/ubi/ubi0_1" \
+        "$fixture/sys/class/ubi/ubi0_2" "$fixture/sys/class/ubi/ubi0_3" \
+        "$fixture/sys/class/ubi/ubi0_4" -type f -exec sha256sum {} \; | sort
+}
+stock_before=$(stock_digest)
+set +e; SB_TEST_FAIL_UBIUPDATEVOL=1 run_init; rc=$?; set -e
+test "$rc" = 23
+test "$(cat "$fixture/tmp/ubimkvol.calls")" = "$fixture/dev/ubi0 -n 5 -N sbdata -S 521 -t dynamic"
+test "$(stock_digest)" = "$stock_before"
+reset_runtime
+run_init
+assert_ubimkvol_not_called
+test "$(wc -l <"$fixture/tmp/ubiupdatevol.calls" | tr -d ' ')" = 1
+test "$(stock_digest)" = "$stock_before"
+expect_status REBOOT_REQUIRED
+SB_STORAGE_ROOT="$fixture" sh "$boot"
+expect_status ACTIVE
+SB_STORAGE_ROOT="$fixture" sh "$boot"
+test "$(stock_digest)" = "$stock_before"
+test "$(wc -l <"$fixture/tmp/ubiupdatevol.calls" | tr -d ' ')" = 1
+grep -q "^ubi0:ubifs $fixture/mnt/storage ubifs " "$fixture/proc/mounts"
+for spec in '0 kernel_bak' '1 cramfs_bak' '3 kernel' '4 cramfs'; do
+    set -- $spec; printf '%s\n' "$2" >"$fixture/sys/class/ubi/ubi0_$1/name"
+done
 
 # Explicit destructive recovery never creates a new volume, and must be
 # confirmed. The fixture updater logs calls; no physical flash is touched.

@@ -1,0 +1,79 @@
+{
+  "version": "0.7.2",
+  "applets": [
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.2",
+      "target": "baby",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-baby.zip",
+      "sha": "6e3530a01b04504fd16ab238641850bd047b45aa",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
+      "changes": "Support the validated primary-first Radio 7.7.3 storage layout, retaining strict volume geometry, health and firmware checks. Fix exact volume-name matching.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.2",
+      "target": "fab4",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-fab4.zip",
+      "sha": "26568cfedb6c32fce317cc7ed4895cbf0329114e",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
+      "changes": "Support the validated primary-first Radio 7.7.3 storage layout, retaining strict volume geometry, health and firmware checks. Fix exact volume-name matching.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Radio.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Touch.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "StandaloneBase-0.7.2-baby.zip",
+      "target": "baby",
+      "sha1": "6e3530a01b04504fd16ab238641850bd047b45aa",
+      "sha256": "a5f645983e1a37ee2e49c5dc2608183c3d576c6cbad6d8e36574cfb907513d42",
+      "bytes": 2711911
+    },
+    {
+      "file": "StandaloneBase-0.7.2-fab4.zip",
+      "target": "fab4",
+      "sha1": "26568cfedb6c32fce317cc7ed4895cbf0329114e",
+      "sha256": "489b4a6743ca85c60fffb07fb3feef46db34656761bc90d543d157f5670df1a3",
+      "bytes": 2620451
+    },
+    {
+      "file": "StandaloneRadio-0.9.20.zip",
+      "target": "baby,fab4",
+      "sha1": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "sha256": "f46460b59232540eaf4ccb74438d94f90bc22745367332ddc05cefa46fe8b489"
+    }
+  ]
+}

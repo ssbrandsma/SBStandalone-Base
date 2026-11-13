@@ -661,29 +661,62 @@ static void collect(info_t *i)
 	formatter(i);
 }
 
-/**
- * @brief Handle compatible.
- * @param i Object referenced by i.
- * @param r Mutable text buffer for r.
- * @param n Capacity or item count associated with the operation.
- * @return Zero on success; otherwise a nonzero status or error code.
- */
+/* Compare whole inventory tokens: "kernel" must not match "kernel_bak". */
+static int volume_named(const info_t *i, int id, const char *name)
+{
+	char token[96];
+	snprintf(token, sizeof token, "%d:%s", id, name);
+	for (const char *p = i->volumes; *p;) {
+		const char *end = strchr(p, ',');
+		size_t length = end ? (size_t)(end - p) : strlen(p);
+		if (length == strlen(token) && !memcmp(p, token, length))
+			return 1;
+		if (!end) break;
+		p = end + 1;
+	}
+	return 0;
+}
+
+/* Qualify the newly measured 7.7.3 primary-first profile, not arbitrary
+ * reordered firmware volumes or the larger 9.0.1 cramfs geometry. */
+static int primary_773_geometry(void)
+{
+	static const long lebs[] = {23, 106, 82, 23, 106};
+	static const char *fields[] = {"alignment", "reserved_ebs", "data_bytes",
+		"usable_eb_size", "corrupted", "upd_marker"};
+	char p[128], type[32], actual[64], expected_text[64];
+	for (int id = 0; id < 5; id++) {
+		long expected[] = {1, lebs[id], lebs[id] * 129024, 129024, 0, 0};
+		snprintf(p, sizeof p, "/sys/class/ubi/ubi0/ubi0_%d/type", id);
+		if (read_text(p, type, sizeof type) || strcmp(type, "dynamic")) return 0;
+		for (size_t field = 0; field < sizeof fields / sizeof fields[0]; field++) {
+			snprintf(p, sizeof p, "/sys/class/ubi/ubi0/ubi0_%d/%s", id, fields[field]);
+			snprintf(expected_text, sizeof expected_text, "%ld", expected[field]);
+			if (read_text(p, actual, sizeof actual) || strcmp(actual, expected_text)) return 0;
+		}
+	}
+	return 1;
+}
+
+/* Read-only compatibility inspection; the shell initialization frontend
+ * independently rechecks exact controller capacity and every write gate. */
 static int compatible(const info_t *i, char *r, size_t n)
 {
 	long target =
 		i->leb_size > 0
 			? (long)((TARGET_BYTES + i->leb_size - 1) / i->leb_size)
 			: -1;
-	int layout77x = strstr(i->volumes, "0:kernel_bak") &&
-			strstr(i->volumes, "1:cramfs_bak") &&
-			strstr(i->volumes, "2:ubifs") &&
-			strstr(i->volumes, "3:kernel") &&
-			strstr(i->volumes, "4:cramfs");
-	int layout901 = strstr(i->volumes, "0:kernel") &&
-			strstr(i->volumes, "1:cramfs") &&
-			strstr(i->volumes, "2:ubifs") &&
-			strstr(i->volumes, "3:kernel_bak") &&
-			strstr(i->volumes, "4:cramfs_bak");
+	int layout77x = volume_named(i, 0, "kernel_bak") &&
+			volume_named(i, 1, "cramfs_bak") &&
+			volume_named(i, 2, "ubifs") &&
+			volume_named(i, 3, "kernel") &&
+			volume_named(i, 4, "cramfs");
+	int layout901 = volume_named(i, 0, "kernel") &&
+			volume_named(i, 1, "cramfs") &&
+			volume_named(i, 2, "ubifs") &&
+			volume_named(i, 3, "kernel_bak") &&
+			volume_named(i, 4, "cramfs_bak");
+	int primary773 = !strcmp(i->firmware, "7.7.3 r16676") && layout901;
 	if (!strstr(i->model, "Baby") &&
 	    !strstr(i->model, "Squeezebox Radio")) {
 		snprintf(r, n, "unsupported_model");
@@ -725,7 +758,7 @@ static int compatible(const info_t *i, char *r, size_t n)
 	}
 	if (((!strcmp(i->firmware, "7.7.2 r9663") ||
 	      !strcmp(i->firmware, "7.7.3 r16676")) &&
-	     !layout77x) ||
+	     !layout77x && !primary773) ||
 	    (!strcmp(i->firmware, "9.0.1 r17084") && !layout901)) {
 		snprintf(r, n, "missing_production_volume");
 		return 0;
@@ -745,6 +778,10 @@ static int compatible(const info_t *i, char *r, size_t n)
 	}
 	if (i->read_only == 1) {
 		snprintf(r, n, "ubi_read_only");
+		return 0;
+	}
+	if (primary773 && !primary_773_geometry()) {
+		snprintf(r, n, "unvalidated_primary_first_geometry");
 		return 0;
 	}
 	if (target < 0 ||

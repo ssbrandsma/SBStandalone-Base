@@ -105,3 +105,7 @@ Baby and Fab4 share one source tree, with target-specific static binaries and in
 ## Release 0.7.1
 
 Adds remembered-browser web access, larger access codes, firmware standby power/sequence handling and shared Radio connection fixes. The matching Standalone Radio standby guard is released separately. Baby and Fab4 packages retain Standalone Music disabled by default.
+
+## Release 0.7.2
+
+Supports the validated primary-first 7.7.3 r16676 Radio storage layout, retaining strict volume identity, geometry and health checks. Native compatibility matching now uses exact volume names. Baby and Fab4 packages retain the existing feature gates; the new layout support applies to Baby. See [layout validation](docs/EXTENDED_STORAGE_773_PRIMARY_FIRST.md).

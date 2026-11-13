@@ -47,6 +47,59 @@ printf '7.7.1 r9000\n' >"$fixture/etc/squeezeos.version"
 set +e; out=$(run check); s=$?; set -e; test "$s" = 2
 echo "$out" | grep -q '^reason=unsupported_firmware$'
 printf '7.7.3 r16676\n' >"$fixture/etc/squeezeos.version"
+# The measured 7.7.3 primary-first layout is a separate, exact profile.
+for spec in '0 kernel 23' '1 cramfs 106' '2 ubifs 82' '3 kernel_bak 23' '4 cramfs_bak 106'; do
+ set -- $spec; d="$fixture/sys/class/ubi/ubi0/ubi0_$1"
+ printf '%s\n' "$2" >"$d/name"
+ printf '1\n' >"$d/alignment"; printf '%s\n' "$3" >"$d/reserved_ebs"
+ printf '%s\n' "$(($3 * 129024))" >"$d/data_bytes"
+ printf '129024\n' >"$d/usable_eb_size"; printf '0\n' >"$d/upd_marker"
+done
+out=$(run check); echo "$out" | grep -q '^compatible=true$'
+check_refused() {
+ set +e; out=$(run check); s=$?; set -e; test "$s" = 2
+ echo "$out" | grep -q "^reason=$1$"
+}
+# This ordering is not newly authorized for unmeasured firmware builds.
+printf '7.7.2 r9663\n' >"$fixture/etc/squeezeos.version"
+check_refused missing_production_volume
+printf '7.7.3 r16676\n' >"$fixture/etc/squeezeos.version"
+for id in 0 1 2 3 4; do
+ d="$fixture/sys/class/ubi/ubi0/ubi0_$id"
+ for field in type alignment reserved_ebs data_bytes usable_eb_size corrupted upd_marker; do
+  saved=$(cat "$d/$field")
+  if test "$field" = type; then wrong=static; else wrong=$((saved + 1)); fi
+  printf '%s\n' "$wrong" >"$d/$field"
+  if test "$field" = corrupted; then check_refused volume_corrupted_or_unknown
+  elif test "$field" = type && test "$id" = 2; then check_refused production_volume_invalid
+  else check_refused unvalidated_primary_first_geometry; fi
+  printf '%s\n' "$saved" >"$d/$field"
+ done
+done
+rm "$fixture/sys/class/ubi/ubi0/ubi0_1/upd_marker"
+check_refused unvalidated_primary_first_geometry
+printf '0\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/upd_marker"
+printf '106junk\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/reserved_ebs"
+check_refused unvalidated_primary_first_geometry
+printf '106\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/reserved_ebs"
+printf '0junk\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/upd_marker"
+check_refused unvalidated_primary_first_geometry
+printf '0\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/upd_marker"
+# Whole-token matching must reject a mixed order and duplicate backup names.
+printf 'kernel_bak\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/name"
+check_refused missing_production_volume
+printf 'kernel\n' >"$fixture/sys/class/ubi/ubi0/ubi0_3/name"
+check_refused missing_production_volume
+printf 'kernel\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/name"
+printf 'kernel_bak\n' >"$fixture/sys/class/ubi/ubi0/ubi0_3/name"
+printf 'cramfs_bak\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/name"
+check_refused missing_production_volume
+printf 'cramfs\n' >"$fixture/sys/class/ubi/ubi0/ubi0_4/name"
+check_refused missing_production_volume
+# Restore the original profile for all pre-existing regression cases below.
+for spec in '0 kernel_bak' '1 cramfs_bak' '3 kernel' '4 cramfs'; do
+ set -- $spec; printf '%s\n' "$2" >"$fixture/sys/class/ubi/ubi0/ubi0_$1/name"
+done
 set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" migration_and_mount_safety_pending; echo "$out" | grep -q '^planned_volume=sbdata$'; echo "$out" | grep -q '^formatter_valid=true$'
 set +e; run install >/dev/null 2>&1; s=$?; set -e; test "$s" = 78
 set +e; run install >/dev/null 2>&1; s=$?; set -e; test "$s" = 78
