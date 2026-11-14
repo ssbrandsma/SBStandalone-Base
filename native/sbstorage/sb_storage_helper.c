@@ -1233,7 +1233,7 @@ int main(int argc, char **argv)
 {
 	info_t i;
 	if (argc == 2 && !strcmp(argv[1], "--version")) {
-		puts("sb-storage-helper 0.7.2 dynamic-layout-v1");
+		puts("sb-storage-helper 0.7.3 dynamic-layout-v1");
 		return 0;
 	}
 	if (argc == 2 && !strcmp(argv[1], "validate-layout"))

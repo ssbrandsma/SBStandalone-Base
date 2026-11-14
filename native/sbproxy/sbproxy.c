@@ -64,7 +64,7 @@ static curl_socket_t public_image_socket(void *data,
 	return socket(address->family, address->socktype, address->protocol);
 }
 
-#define VERSION "0.7.2"
+#define VERSION "0.7.3"
 
 #define MAX_REQUEST 16384
 #define MAX_HEADERS 32768
@@ -89,7 +89,7 @@ typedef struct {
 	 */
 	const char *artwork_source;
 	unsigned width, height, web_port;
-	int svg, svg_redirect;
+	int svg, svg_redirect, repository_fetch;
 } transfer_ctx;
 
 static pthread_mutex_t worker_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -429,7 +429,7 @@ static size_t header_cb(char *data, size_t size, size_t count, void *opaque)
 	    (length == 1 && data[0] == '\n')) {
 
 		if ((ctx->status >= 100 && ctx->status < 200) ||
-		    (ctx->status >= 300 && ctx->status < 400)) {
+		    (!ctx->repository_fetch && ctx->status >= 300 && ctx->status < 400)) {
 			return length;
 		}
 
@@ -665,6 +665,7 @@ static int send_health_response(int fd, int head)
 				 "HTTP/1.1 200 OK\r\n"
 				 "Content-Type: text/plain\r\n"
 				 "X-SB-Public-Fetch: 1\r\n"
+				 "X-SB-Repository-Fetch: 1\r\n"
 				 "X-SB-Firmware-Fetch: 1\r\n"
 				 "X-SB-HLS: aac-mp3-ts\r\n"
 				 "Content-Length: %d\r\n"
@@ -1012,6 +1013,8 @@ static void *worker_main(void *opaque)
 	}
 
 	memset(&transfer, 0, sizeof(transfer));
+	transfer.repository_fetch = strstr(request, "\r\nX-SB-Public-Fetch: 1\r\n") &&
+		strstr(request, "\r\nX-SB-Repository-Fetch: 1\r\n");
 
 	transfer.fd = fd;
     char parent_trace[80];
@@ -1049,12 +1052,18 @@ static void *worker_main(void *opaque)
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3L);
 		int firmware_fetch = strstr(request,
 			"\r\nX-SB-Firmware-Fetch: 1\r\n") != NULL;
-		curl_easy_setopt(curl, CURLOPT_TIMEOUT, firmware_fetch ? 300L : 8L);
+		int repository_package = transfer.repository_fetch &&
+			strstr(request, "\r\nX-SB-Repository-Package: 1\r\n");
+		/* Repository redirects are followed by the bounded webserver client,
+		 * preserving the effective URL used to resolve relative ZIP references.
+		 * Socket-level public-address enforcement still applies to every hop. */
+		if (transfer.repository_fetch) curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0L);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, firmware_fetch ? 300L : repository_package ? 60L : 8L);
 		if (!artwork && !plain_http && !hls)
 			curl_easy_setopt(curl,
 					 CURLOPT_MAXFILESIZE_LARGE,
-					 (curl_off_t)(firmware_fetch ?
-					 24u * 1024u * 1024u : 1024u * 1024u));
+					 (curl_off_t)(firmware_fetch ? 24u * 1024u * 1024u :
+					 repository_package ? 16u * 1024u * 1024u : 1024u * 1024u));
 	}
 
 	/*

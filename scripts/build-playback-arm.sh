@@ -36,8 +36,8 @@ libs="$music/libsbmusic-storage.a $music/libsbmusic.a $music/libsbmusic-sqlite.a
  $core $common $libs -o "$out/sbbase_music_test"
 "$cc" $flags -D_GNU_SOURCE -DSB_MUSIC_PLAYBACK_TESTING=1 -static -pthread -Wl,--gc-sections \
  -DMG_ENABLE_EPOLL=0 -DMG_ENABLE_POLL=1 -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 \
- -I"$root/native/sbwebserver/src" -I"$root/native/sbwebserver/third_party" -I"$root/native/sbbase/include" -I"$image/include" \
- "$root/native/sbwebserver/src/"*.c "$root/native/sbwebserver/third_party/mongoose.c" \
+ -I"$root/native/sbwebserver/src" -I"$root/native/sbwebserver/third_party" -I"$root/native/sbwebserver/third_party/yxml" -I"$root/native/sbbase/include" -I"$image/include" \
+ "$root/native/sbwebserver/src/"*.c "$root/native/sbwebserver/third_party/mongoose.c" "$root/native/sbwebserver/third_party/yxml/yxml.c" \
  "$root/native/sbbase/src/nowplaying.c" "$root/native/sbbase/src/alarms.c" $common "$image/lib/libz.a" -o "$out/sbwebserver_music_test"
 for binary in test_music_queue test_music_http_policy test_music_stream test_music_load test_music_playback sbbase_music_test sbwebserver_music_test; do
  "$sdk/bin/arm-buildroot-linux-musleabi-strip" --strip-all "$out/$binary"

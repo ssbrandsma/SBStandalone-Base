@@ -1,0 +1,92 @@
+{
+  "version": "0.7.3",
+  "applets": [
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.3",
+      "target": "baby",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.3-baby.zip",
+      "sha": "e13eaa1cdac01a9cf8b4318f2fd466a5af13a7cc",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
+      "changes": "Add source-aware XML applet repositories, bounded public downloads, firmware compatibility filtering and persistent cached catalogs; retain safe dynamic Extended Storage validation.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.3",
+      "target": "fab4",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.3-fab4.zip",
+      "sha": "db8651d0f7d022cabb9d03621b8c80eb00aa0f7c",
+      "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
+      "changes": "Add source-aware XML applet repositories, bounded public downloads, firmware compatibility filtering and persistent cached catalogs; retain safe dynamic Extended Storage validation.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Radio.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Touch.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "StandaloneBase-0.7.3-baby.zip",
+      "target": "baby",
+      "sha1": "e13eaa1cdac01a9cf8b4318f2fd466a5af13a7cc",
+      "sha256": "32811e05c1f5e38a79bf687e6e2a0efa3a1f9a04d08676e7bbb3110a05be9cb3",
+      "bytes": 2742423
+    },
+    {
+      "file": "StandaloneBase-0.7.3-fab4.zip",
+      "target": "fab4",
+      "sha1": "db8651d0f7d022cabb9d03621b8c80eb00aa0f7c",
+      "sha256": "9d943ade7e27c967b8206c31ae1d74436e46488bb45cf01af12d7202828d07a6",
+      "bytes": 2650945
+    },
+    {
+      "file": "StandaloneRadio-0.9.20.zip",
+      "target": "baby,fab4",
+      "sha1": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "sha256": "f46460b59232540eaf4ccb74438d94f90bc22745367332ddc05cefa46fe8b489"
+    }
+  ],
+  "qualification": {
+    "host_regression_suites": 27,
+    "additional_installer_projection_test": "passed on host, Baby ARM and Fab4 ARM, including 200 KiB saved XML",
+    "repository_api": "CRUD, parser rejection, persistence, conflicts, SHA-checked ZIP/cache, last-good fallback and proxy support guard passed",
+    "deployment_fixture": "passed with root ownership",
+    "full_arm_builds": [
+      "baby",
+      "fab4"
+    ],
+    "qemu_checks": "version, self-test, storage, standby and shared Radio passed on both targets; public proxy guard passed",
+    "research_status": "WP4a.6 drafts retain documented failed and unproven experiments; no experimental playback activation",
+    "physical_flash_mutations": 0
+  }
+}

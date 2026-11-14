@@ -84,6 +84,14 @@ int sb_lms_json_valid_budget(const char *json, size_t length, unsigned budget)
 	if(!value(&c,0,budget))return 0;
 	space(&c);return c.p==c.end;
 }
+/* Persisted repository state has a larger bound than network commands. */
+int sb_lms_json_valid_catalog(const char *json, size_t length)
+{
+ if(!json || !length || length>512u*1024u)return 0;
+ cursor c={(const unsigned char *)json,(const unsigned char *)json+length,0};
+ if(!value(&c,0,32768))return 0;
+ space(&c);return c.p==c.end;
+}
 int sb_lms_json_valid(const char *json, size_t length)
 {
 	if(!json || !length || length>131072u)return 0;

@@ -19,7 +19,7 @@ fi
 "$cc" -static $flags -std=c99 -Wall -Wextra -pthread -Wl,--gc-sections \
   -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -DMG_ENABLE_EPOLL=0 -DMG_ENABLE_POLL=1 \
   -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 -I"$root/native/sbwebserver/src" \
-  -I"$root/native/sbwebserver/third_party" "$root/native/sbwebserver/src/"*.c \
-  "$root/native/sbwebserver/third_party/mongoose.c" -o "$root/build-arm/sbwebserver"
+  -I"$root/native/sbwebserver/third_party" -I"$root/native/sbwebserver/third_party/yxml" "$root/native/sbwebserver/src/"*.c \
+  "$root/native/sbwebserver/third_party/mongoose.c" "$root/native/sbwebserver/third_party/yxml/yxml.c" -o "$root/build-arm/sbwebserver"
 "$strip" --strip-all "$root/build-arm/svgpngrenderer" "$root/build-arm/sbwebserver"
 file "$root/build-arm/svgpngrenderer" "$root/build-arm/sbwebserver"

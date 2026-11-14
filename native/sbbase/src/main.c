@@ -33,6 +33,7 @@
 #include "alarms.h"
 #include "sleep.h"
 #include "../../common/firmware_state.h"
+#include "../../common/applet_compat.h"
 
 #include <arpa/inet.h>
 #include <ctype.h>
@@ -147,12 +148,13 @@ typedef struct {
 
 static firmware_subscription firmware_subscriptions[CLIENTS];
 
-static char catalog_data[16384] = "{\"count\":0,\"item_loop\":[]}";
-static struct {
-	size_t offset;
-	size_t length;
-	char target[64];
-} catalog_entries[64];
+static char catalog_data[65536] = "{\"count\":0,\"item_loop\":[]}";
+typedef struct {
+    size_t offset, length;
+    char target[64], name[65], version[33], minimum[64], maximum[64];
+    int blocked;
+} catalog_entry;
+static catalog_entry catalog_entries[128];
 static size_t catalog_entry_count;
 
 static sb_config *active_config;
@@ -927,16 +929,17 @@ static void add_json(char *out, size_t cap, size_t *used, const char *json)
  * @param path Filesystem path to process.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
-static int load_catalog(const char *path)
+static int load_catalog_file(const char *path, long maximum)
 {
 	FILE *f;
 	char *b, *p, *start;
 	long size;
 	size_t used = 0;
 	int count = 0, depth, in_string, escape;
+    struct catalog_stage { char data[sizeof catalog_data]; catalog_entry entries[128]; } *staged = NULL;
 	if (!path || !(f = fopen(path, "rb")))
 		return -1;
-	if (fseek(f, 0, SEEK_END) || ((size = ftell(f)) < 2) || size > 65536 ||
+	if (fseek(f, 0, SEEK_END) || ((size = ftell(f)) < 2) || size > maximum ||
 	    fseek(f, 0, SEEK_SET)) {
 		fclose(f);
 		return -1;
@@ -947,20 +950,21 @@ static int load_catalog(const char *path)
 		return -1;
 	}
 	if (fread(b, 1, (size_t)size, f) != (size_t)size) {
-		free(b);
+		free(staged); free(b);
 		fclose(f);
 		return -1;
 	}
 	fclose(f);
 	b[size] = 0;
+    if (!sb_lms_json_valid_catalog(b, (size_t)size) || !(staged = calloc(1,sizeof *staged))) { free(staged); free(b); return -1; }
 	p = strstr(b, "\"applets\"");
 	if (!p || (p = strchr(p, '[')) == NULL) {
-		free(b);
+		free(staged); free(b);
 		return -1;
 	}
-	strcpy(catalog_data, "{\"count\":0,\"item_loop\":[");
-	catalog_entry_count = 0;
-	used = strlen(catalog_data);
+	strcpy(staged->data, "{\"count\":0,\"item_loop\":[");
+
+	used = strlen(staged->data);
 	for (p++; *p && *p != ']';) {
 		while (*p && *p != '{' && *p != ']')
 			p++;
@@ -986,51 +990,78 @@ static int load_catalog(const char *path)
 				depth--;
 		} while (*p && depth);
 		if (depth ||
-		    used + (size_t)(p - start) + 4 >= sizeof catalog_data) {
-			free(b);
+		    used + (size_t)(p - start) + 4 >= sizeof staged->data) {
+			free(staged); free(b);
 			return -1;
 		}
-		if ((size_t)count >= sizeof catalog_entries / sizeof catalog_entries[0]) {
-			free(b);
+		if ((size_t)count >= sizeof staged->entries / sizeof staged->entries[0]) {
+			free(staged); free(b);
 			return -1;
 		}
 		if (count)
-			catalog_data[used++] = ',';
-		catalog_entries[count].offset = used;
-		catalog_entries[count].length = (size_t)(p - start);
-		catalog_entries[count].target[0] = 0;
+			staged->data[used++] = ',';
+		staged->entries[count].offset = used;
+		staged->entries[count].length = (size_t)(p - start);
+		staged->entries[count].target[0] = 0;
 		{
 			char saved = *p;
 			*p = 0;
-			json_string(start, "\"target\"", catalog_entries[count].target,
-				    sizeof catalog_entries[count].target);
-			*p = saved;
+			json_string(start, "\"target\"", staged->entries[count].target,
+				    sizeof staged->entries[count].target);
+            json_string(start,"\"name\"",staged->entries[count].name,sizeof staged->entries[count].name);
+            json_string(start,"\"version\"",staged->entries[count].version,sizeof staged->entries[count].version);
+            json_string(start,"\"min_target_version\"",staged->entries[count].minimum,sizeof staged->entries[count].minimum);
+            json_string(start,"\"max_target_version\"",staged->entries[count].maximum,sizeof staged->entries[count].maximum);
+            char blocked[8]="", conflict[8]="";
+            json_raw(start,"\"blocked\"",blocked,sizeof blocked);
+            json_raw(start,"\"conflict\"",conflict,sizeof conflict);
+            staged->entries[count].blocked=!strcmp(blocked,"true")||!strcmp(conflict,"true");
+            *p = saved;
 		}
-		memcpy(catalog_data + used, start, (size_t)(p - start));
+		memcpy(staged->data + used, start, (size_t)(p - start));
 		used += (size_t)(p - start);
-		catalog_data[used] = 0;
+		staged->data[used] = 0;
 		count++;
 	}
-	if (used + 3 >= sizeof catalog_data) {
-		free(b);
+	if (used + 3 >= sizeof staged->data) {
+		free(staged); free(b);
 		return -1;
 	}
-	catalog_data[used++] = ']';
-	catalog_data[used++] = '}';
-	catalog_data[used] = 0;
+	staged->data[used++] = ']';
+	staged->data[used++] = '}';
+	staged->data[used] = 0;
 	{
 		char prefix[32];
 		size_t old = strlen("{\"count\":0");
 		snprintf(prefix, sizeof prefix, "{\"count\":%d", count);
-		if (strlen(prefix) != old) {
-			free(b);
-			return -1;
-		}
-		memcpy(catalog_data, prefix, old);
+        size_t added=strlen(prefix)-old;
+        if (used+added+1>=sizeof staged->data) { free(staged); free(b); return -1; }
+        memmove(staged->data+strlen(prefix),staged->data+old,used-old+1);
+        for(int i=0;i<count;i++)staged->entries[i].offset+=added;
+        memcpy(staged->data,prefix,strlen(prefix));
 	}
-	catalog_entry_count = (size_t)count;
-	free(b);
+	memcpy(catalog_data,staged->data,sizeof catalog_data);
+    memcpy(catalog_entries,staged->entries,sizeof catalog_entries);
+    catalog_entry_count = (size_t)count;
+	free(staged); free(b);
 	return count;
+}
+
+static int load_catalog(const char *path)
+{
+    char snapshot[1024], expected[128], recorded[128]="", header[512];
+    if (!sb_applet_config_stamp(path,expected,sizeof expected)) {
+        sb_applet_snapshot_path(path,snapshot,sizeof snapshot);
+        FILE *f=fopen(snapshot,"rb");
+        if(f){size_t n=fread(header,1,sizeof header-1,f);header[n]=0;fclose(f);
+            if(json_string(header,"\"base_revision\"",recorded,sizeof recorded)&&
+               !strcmp(recorded,expected)) {
+                int count=load_catalog_file(snapshot,512*1024);
+                if(count>=0)return count;
+            }
+        }
+    }
+    return load_catalog_file(path,65536);
 }
 
 /**
@@ -1041,7 +1072,7 @@ static int load_catalog(const char *path)
  * Untargeted and wildcard entries are shared by all models. Capacity failures
  * return an empty catalog rather than a partial or malformed JSON response.
  */
-static void catalog_response(const char *target, char *out, size_t capacity)
+static void catalog_response(const char *target, const char *firmware, char *out, size_t capacity)
 {
 	char header[64];
 	size_t i, used = 0, count = 0, length;
@@ -1049,9 +1080,17 @@ static void catalog_response(const char *target, char *out, size_t capacity)
 	if (!target[0])
 		target = "baby";
 	for (i = 0; i < catalog_entry_count; i++) {
-		const char *model = catalog_entries[i].target;
-		if (model[0] && strcmp(model, "*") && strcmp(model, target))
-			continue;
+        catalog_entry *entry=&catalog_entries[i];
+        if(entry->blocked||!sb_applet_compatible(entry->target,target,entry->minimum,entry->maximum,firmware))continue;
+        int superseded=0;
+        for(size_t j=0;j<catalog_entry_count;j++){
+            catalog_entry *other=&catalog_entries[j];
+            if(i==j||strcmp(entry->name,other->name)||other->blocked||
+               !sb_applet_compatible(other->target,target,other->minimum,other->maximum,firmware))continue;
+            int newer=sb_applet_version_compare(other->version,entry->version);
+            if(newer>0||(newer==0&&j<i)){superseded=1;break;}
+        }
+        if(superseded)continue;
 		length = catalog_entries[i].length;
 		if (used + length + 67 >= capacity)
 			goto empty;
@@ -1217,7 +1256,7 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 
 	const char *p = body, *next;
 	size_t used = 1;
-	char id[32], id_field[48], reply[160], msg[20000], data[18000];
+	char id[32], id_field[48], reply[160], msg[65536], data[60000];
 	out[0] = '[';
 	out[1] = 0;
 
@@ -1336,9 +1375,10 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 				 (unsigned long)time(NULL));
 
 		else if (!strcmp(command.arguments[0], "jiveapplets")) {
-			char target[64];
+			char target[64], firmware[64];
 			firmware_parameter(p, next, "target:", target, sizeof target);
-			catalog_response(target, data, sizeof data);
+			firmware_parameter(p,next,"version:",firmware,sizeof firmware);
+            catalog_response(target, firmware, data, sizeof data);
 		}
 
 		/* SlimMenus requires LMS' notification-array shape before it

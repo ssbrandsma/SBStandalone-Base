@@ -25,8 +25,8 @@ libs="$music/libsbmusic-storage.a $music/libsbmusic.a $music/libsbmusic-sqlite.a
  $core $common "$root/native/sbmusic/music_snapshot.c" "$root/native/sbmusic/music_snapshot_view.c" "$music/libsbmusic-scanner.a" "$music/libsbmusic-metadata.a" $libs -o "$out/sbbase_music"
 "$cc" $flags -D_GNU_SOURCE -DSB_MUSIC_RUNTIME=1 -static -pthread -Wl,--gc-sections \
  -DMG_ENABLE_EPOLL=0 -DMG_ENABLE_POLL=1 -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 \
- -I"$root/native/sbwebserver/src" -I"$root/native/sbwebserver/third_party" -I"$root/native/sbbase/include" -I"$image/include" \
- "$root/native/sbwebserver/src/"*.c "$root/native/sbwebserver/third_party/mongoose.c" \
+ -I"$root/native/sbwebserver/src" -I"$root/native/sbwebserver/third_party" -I"$root/native/sbwebserver/third_party/yxml" -I"$root/native/sbbase/include" -I"$image/include" \
+ "$root/native/sbwebserver/src/"*.c "$root/native/sbwebserver/third_party/mongoose.c" "$root/native/sbwebserver/third_party/yxml/yxml.c" \
  "$root/native/sbbase/src/nowplaying.c" "$root/native/sbbase/src/alarms.c" $common "$image/lib/libz.a" -o "$out/sbwebserver_music"
 "$cc" $flags -static -pthread -Wl,--gc-sections \
  "$root/native/sbbase/src/music_session.c" "$root/native/common/music_resource_ipc.c" -o "$out/sbmusic-session"

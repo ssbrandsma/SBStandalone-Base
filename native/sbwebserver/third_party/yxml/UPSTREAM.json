@@ -1,0 +1,17 @@
+[
+  {
+    "file": "yxml.c",
+    "url": "https://g.blicky.net/yxml.git/plain/yxml.c",
+    "sha256": "7699a9c0e9d9b987b74ff86bf3fc28be6deed062d22d9a0f8376b868b15864e5"
+  },
+  {
+    "file": "yxml.h",
+    "url": "https://g.blicky.net/yxml.git/plain/yxml.h",
+    "sha256": "6f79158a3811bf1fab575ef512b91ffc87a795f070b562f7fb6bcbf71fdd9078"
+  },
+  {
+    "file": "COPYING",
+    "url": "https://g.blicky.net/yxml.git/plain/COPYING",
+    "sha256": "b9b5ca63904b3cf589d5719be2968436550914dc3fdf5d81b37ddbdd67986d06"
+  }
+]

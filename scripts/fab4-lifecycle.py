@@ -70,7 +70,10 @@ def save_json(path, value):
 
 class Device(transport.SSH):
     def __init__(self, host):
-        if host != "192.168.1.244":
+        # The Touch is DHCP; the owner confirms its current lease via
+        # SB_DEVICE_HOST (verified by MAC + contents, never assumed).
+        allowed = os.environ.get("SB_DEVICE_HOST", "192.168.1.244")
+        if host != allowed:
             raise ValueError("Only the owner-designated Fab4 development Touch is authorized")
         super().__init__(host)
 

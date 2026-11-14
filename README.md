@@ -109,3 +109,7 @@ Adds remembered-browser web access, larger access codes, firmware standby power/
 ## Release 0.7.2
 
 Supports the validated primary-first 7.7.3 r16676 Radio storage layout, retaining strict volume identity, geometry and health checks. Native compatibility matching now uses exact volume names. Baby and Fab4 packages retain the existing feature gates; the new layout support applies to Baby. See [layout validation](docs/EXTENDED_STORAGE_773_PRIMARY_FIRST.md).
+
+## Release 0.7.3
+
+Adds persistent XML applet repositories with public URL downloads, cached refreshes, source conflict handling and model/firmware filtering. Includes the remaining WP4a.6 research documents and diagnostic tools, with experimental playback inactive. See [release notes](docs/RELEASE_0.7.3.md).

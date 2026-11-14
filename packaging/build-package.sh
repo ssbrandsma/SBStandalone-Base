@@ -35,7 +35,7 @@ stage=${SB_PACKAGE_STAGE:-$root/build-package/$platform/StandaloneBase}
 output=${SB_PACKAGE_OUTPUT:-$root/build-package}
 mkdir -p "$output"
 output=$(CDPATH= cd -- "$output" && pwd)
-zipfile="$output/StandaloneBase-0.7.2-$platform.zip"
+zipfile="$output/StandaloneBase-0.7.3-$platform.zip"
 rm -rf "$stage"
 mkdir -p "$stage"
 cp "$root/applet/Platform.lua" "$root/applet/StandaloneBaseMeta.lua" "$root/applet/StandaloneBaseApplet.lua" "$root/applet/StorageManager.lua" "$root/applet/ExtendedStorageState.lua" "$root/applet/TimeSync.lua" "$root/applet/TimeResolver.lua" "$root/applet/RemoteBridge.lua" "$root/applet/ServerMigration.lua" "$root/applet/NetworkAddress.lua" "$root/applet/strings.txt" "$stage/"
@@ -58,6 +58,9 @@ cp "$module" "$stage/sbubifs-authorized.ko"
 cp "$image" "$stage/sbdata-empty.ubifs"
 cp "$root/native/sbwebserver/web/index.html" "$stage/index.html"
 cp "$root/native/sbwebserver/web/css/style.css" "$stage/style.css"
+cp "$root/native/sbwebserver/third_party/yxml/COPYING" "$stage/YXML-LICENSE"
+cp "$root/native/sbwebserver/web/js/repositories.js" "$stage/repositories.js"
+cp "$root/applet/PlaybackFenceV4.lua" "$root/applet/RadioStop.lua" "$root/applet/SbCapture.lua" "$stage/"
 cp "$root/native/sbwebserver/web/js/app.js" "$stage/app.js"
 cp "$root/native/sbwebserver/web/js/backup.js" "$stage/backup.js"
 cp "$root/native/sbwebserver/web/js/firmware.js" "$stage/firmware.js"

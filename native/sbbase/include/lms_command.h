@@ -22,6 +22,7 @@ typedef struct {
 } sb_lms_command;
 /* Strict JSON validation precedes the existing bounded JSON string decoder.
  * No allocations; one complete Comet message object (not its batch). */
+int sb_lms_json_valid_catalog(const char *json, size_t length);
 int sb_lms_json_valid(const char *, size_t);
 int sb_lms_json_valid_budget(const char *, size_t, unsigned);
 sb_command_result sb_lms_command_parse(const char *, size_t, sb_lms_command *);

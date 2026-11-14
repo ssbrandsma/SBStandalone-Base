@@ -26,6 +26,7 @@ def main():
         connection.request('GET', '/health')
         response = connection.getresponse()
         assert response.status == 200 and response.getheader('X-SB-Public-Fetch') == '1'
+        assert response.getheader('X-SB-Repository-Fetch') == '1'
         response.read()
         connection.close()
         for route, host in [(route, host) for route in ('/https/', '/http/', '/artwork/320/320/80/https/')

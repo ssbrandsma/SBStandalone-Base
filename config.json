@@ -1,6 +1,6 @@
 {
   "catalog_version": "1",
-  "standalone_base_version": "0.7.2",
+  "standalone_base_version": "0.7.3",
   "server": {
     "name": "Standalone Base",
     "uuid": "9d989f40-499a-4b85-b92f-8dc415af2a04",
@@ -15,26 +15,26 @@
     {
       "name": "StandaloneBase",
       "title": "Standalone Base",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "target": "baby",
       "min_target_version": "7.7.2",
-      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-baby.zip",
-      "sha": "8badebfa216e27440d3d19e9db4ba56dae4a5632",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.3-baby.zip",
+      "sha": "e13eaa1cdac01a9cf8b4318f2fd466a5af13a7cc",
       "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
-      "changes": "Dynamically validate Radio Extended Storage from the live UBI/MTD inventory, health and capacity. Support valid backup-size variations and both complete 9.0.1 A/B orders while strictly protecting existing firmware volumes.",
+      "changes": "Add source-aware XML applet repositories, bounded public downloads, firmware compatibility filtering and persistent cached catalogs; retain safe dynamic Extended Storage validation.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },
     {
       "name": "StandaloneBase",
       "title": "Standalone Base",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "target": "fab4",
       "min_target_version": "7.7.2",
-      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-fab4.zip",
-      "sha": "ae62e2f9a5dad987dac39f719af6238800c83f90",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.3-fab4.zip",
+      "sha": "db8651d0f7d022cabb9d03621b8c80eb00aa0f7c",
       "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
-      "changes": "Dynamically validate Radio Extended Storage from the live UBI/MTD inventory, health and capacity. Support valid backup-size variations and both complete 9.0.1 A/B orders while strictly protecting existing firmware volumes.",
+      "changes": "Add source-aware XML applet repositories, bounded public downloads, firmware compatibility filtering and persistent cached catalogs; retain safe dynamic Extended Storage validation.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },

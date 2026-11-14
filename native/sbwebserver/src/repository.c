@@ -408,6 +408,8 @@ static int parse_items(char *json, RepoApplet *items, int *count)
 		copy_json(o, "changes", i->changes, sizeof i->changes);
 		copy_json(o, "creator", i->creator, sizeof i->creator);
 		copy_json(o, "email", i->email, sizeof i->email);
+		copy_json(o,"max_target_version",i->max_target_version,sizeof i->max_target_version);
+		copy_json(o,"source_kind",i->source_kind,sizeof i->source_kind);
 		if (!i->name[0])
 			return -1;
 		c++;
@@ -459,7 +461,7 @@ static void write_item(FILE *f, const RepoApplet *i)
 			   "desc",
 			   "changes",
 			   "creator",
-			   "email"};
+			   "email", "max_target_version", "repository_id", "source_label", "source_kind"};
 	const char *v[] = {i->name,
 			   i->title,
 			   i->version,
@@ -470,14 +472,14 @@ static void write_item(FILE *f, const RepoApplet *i)
 			   i->desc,
 			   i->changes,
 			   i->creator,
-			   i->email};
+			   i->email, i->max_target_version, i->repository_id, i->source_label, i->source_kind};
 	fputs("    {\n", f);
-	for (int x = 0; x < 11; x++) {
+	for (int x = 0; x < 15; x++) {
 		fprintf(f, "      \"%s\": ", k[x]);
 		js(f, v[x]);
-		fprintf(f, "%s\n", x == 10 ? "" : ",");
+		fprintf(f, "%s\n", x == 14 ? "" : ",");
 	}
-	fputs("    }", f);
+	fprintf(f,",\"conflict\":%s,\"blocked\":%s}",i->conflict?"true":"false",i->blocked?"true":"false");
 }
 
 /**
@@ -1647,3 +1649,8 @@ void repo_notify_catalog(void)
 #endif
 	fclose(f);
 }
+
+int repo_read_applets(RepoApplet *items,int *count){size_t length;char *text=read_file(repo_config_path(),&length);if(!text)return -1;int result=parse_items(text,items,count);free(text);return result;}
+void repo_write_applet(FILE *file,const RepoApplet *item){write_item(file,item);}
+int repo_catalog_lock(void){return lock_config();}
+void repo_catalog_unlock(int fd){unlock_config(fd);}

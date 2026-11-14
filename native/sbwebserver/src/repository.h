@@ -1,6 +1,7 @@
 #ifndef SB_REPOSITORY_H
 #define SB_REPOSITORY_H
 #include <stddef.h>
+#include <stdio.h>
 
 #define REPO_MAX_APPLETS 32
 #define REPO_MAX_UPLOAD (16u * 1024u * 1024u)
@@ -9,10 +10,17 @@
 
 typedef struct {
 	char name[65], title[129], version[33], target[33],
-		min_target_version[33];
+		min_target_version[33], max_target_version[33];
 	char url[513], sha[41], desc[513], changes[513], creator[129],
 		email[129];
+	char repository_id[40], source_label[161], source_kind[20];
+	int conflict, blocked;
 } RepoApplet;
+
+int repo_read_applets(RepoApplet *, int *);
+void repo_write_applet(FILE *, const RepoApplet *);
+int repo_catalog_lock(void);
+void repo_catalog_unlock(int);
 
 const char *repo_config_path(void);
 const char *repo_root(void);

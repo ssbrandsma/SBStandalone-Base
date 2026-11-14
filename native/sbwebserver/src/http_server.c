@@ -14,6 +14,7 @@
 #include "settings.h"
 #include "repository.h"
 #include "catalog_sync.h"
+#include "repository_sources.h"
 #include "remote.h"
 #include "radio_stations.h"
 #include "auth.h"
@@ -579,6 +580,7 @@ normal(Server *s, struct mg_connection *c, struct mg_http_message *m)
 		return;
 	if (remote_handle(c, m, x.readonly))
 		return;
+	if (repo_sources_download(c, m)) return;
 	if (logs_handle(c, m))
 		return;
 	if (monitor_handle(c, m))
@@ -602,8 +604,12 @@ normal(Server *s, struct mg_connection *c, struct mg_http_message *m)
 			reply(c, 202, "{\"ok\":true}");
 		return;
 	}
-	if (is(m->uri, "/api/applets") && is(m->method, "GET")) {
-		if (repo_list_json(b, sizeof b))
+	if (repo_sources_is_api(m->uri)) {
+        if (!is(m->method, "GET") && !is(m->method, "HEAD") && !writable(s,c,m)) return;
+        repo_sources_handle(c,m); return;
+    }
+    if (is(m->uri, "/api/applets") && is(m->method, "GET")) {
+		if (repo_sources_list(b, sizeof b))
 			error(c, 500, "Cannot load catalog");
 		else
 			reply(c, 200, b);
@@ -731,6 +737,7 @@ static void fn(struct mg_connection *c, int ev, void *data)
 		return;
 #endif
 	Server *s = c->fn_data;
+    if (repo_sources_headers(c,ev,data)) return;
 	int firmware_readonly = 0;
 	if (ev == MG_EV_HTTP_HDRS &&
 	    is(((struct mg_http_message *)data)->uri, "/api/firmware/upload")) {
@@ -816,6 +823,7 @@ int http_server_run(int port, const char *root)
 #endif
 		image_render_tick(&mgr);
 		catalog_sync_tick(&mgr);
+        repo_sources_tick(&mgr);
 		remote_tick();
 		firmware_tick();
 	}
