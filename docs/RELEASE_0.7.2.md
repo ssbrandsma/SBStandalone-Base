@@ -60,3 +60,32 @@ The immutable ZIPs are not repacked to embed their own checksums. Historical
 release files and archives remain unchanged. Server catalog rollback backups
 were retained; private build, test, snapshot and verification receipts are in
 `.local/release-072/`.
+
+## Dynamic layout refresh ? 14 November 2026
+
+This explicitly requested same-version refresh supersedes the original archive
+hashes and the immutable-archive statement above. Previous server ZIPs and all
+active catalogs are backed up together before replacement.
+
+Extended Storage now validates the complete live UBI inventory, mapped MTD
+geometry, health, kernel-specific capacity accounting, CramFS image bounds and
+maintenance headroom. Both complete A/B orders on 9.0.1 and the reported 98-LEB
+backup layout are supported within the documented size policy. The 645-free-LEB
+case retains 124 LEBs after the existing 521-LEB allocation. Firmware volume
+identities, supported platforms, minimum capacity and module/image pins remain
+strict. Revalidation occurs under the existing operation lock and device nodes
+are checked against sysfs identities before writes.
+
+The disabled legacy native installer is distinguished from the guarded shell
+initialization workflow. Installing this refresh does not initialize, migrate or
+reformat storage. Diagnostics remain read-only. The qualified Radio hardware
+check preserved its existing ACTIVE state and all captured persistent metadata.
+
+The dynamic suite contains 157 cases and passes ASan/UBSan; storage, recovery,
+boot and installer regressions pass. Complete Baby and Fab4 builds and QEMU
+checks are recorded in the private release receipt. The live Radio, Spotify and
+Qobuz catalog entries are preserved. Native Music remains disabled in the normal
+packages and unrelated working-tree experiments are excluded.
+
+See [dynamic layout qualification](../research/STANDALONE_BASE_EXTENDED_STORAGE_DYNAMIC_LAYOUT.md)
+and `packaging/releases/0.7.2.json` for policy and published hashes.

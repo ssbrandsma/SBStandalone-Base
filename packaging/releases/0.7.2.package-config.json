@@ -65,19 +65,6 @@
       "email": ""
     },
     {
-      "name": "SpotifyConnect",
-      "title": "Spotify Connect",
-      "version": "0.6.3",
-      "target": "baby",
-      "min_target_version": "7.7",
-      "url": "http://49.12.198.91/sbspotifyconnect/SpotifyConnect-0.6.3.zip",
-      "sha": "d84ee932863dafb2734e31ddfebf9701957272a6",
-      "desc": "Standalone Spotify Connect playback for Logitech Squeezebox Radio.",
-      "changes": "Fix device authorization status JSON so the Spotify pairing QR code is displayed.",
-      "creator": "Sjoerd Brandsma",
-      "email": ""
-    },
-    {
       "name": "QobuzConnect",
       "title": "Qobuz Connect",
       "version": "0.1.2",
@@ -87,6 +74,32 @@
       "sha": "f1f24a4e377e6b6ee3e95d82b0c536a23f6e7b1e",
       "desc": "Qobuz Connect playback for Logitech Squeezebox Radio. Requires StandaloneBase.",
       "changes": "Adds Disabled, Manual and Always On lifecycle modes with safe supervision and detailed status.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "SpotifyConnect",
+      "title": "Spotify Connect",
+      "version": "0.7.0",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbspotifyconnect/SpotifyConnect-0.7.0.zip",
+      "sha": "838362554be3ea0828dcfff3dcf30414b19ff47c",
+      "desc": "Standalone Spotify Connect playback for Logitech Squeezebox Radio. LMS is only needed to install the applet.",
+      "changes": "Latch audio-completed events for reliable automatic track advancement; preserve complete endings and immediate manual skips; fix mobile selection and native Now Playing updates; remove UI shell polling.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "SpotifyConnect",
+      "title": "Spotify Connect",
+      "version": "0.7.0",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbspotifyconnect/SpotifyConnect-0.7.0.zip",
+      "sha": "838362554be3ea0828dcfff3dcf30414b19ff47c",
+      "desc": "Standalone Spotify Connect playback for Logitech Squeezebox Touch. LMS is only needed to install the applet.",
+      "changes": "Latch audio-completed events for reliable automatic track advancement; preserve complete endings and immediate manual skips; fix mobile selection and native Now Playing updates; remove UI shell polling.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     }

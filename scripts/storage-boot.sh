@@ -46,6 +46,9 @@ test "$(cat "$VOLUME/type" 2>/dev/null)" = dynamic || fail_open "sbdata is not d
 test "$(cat "$VOLUME/corrupted" 2>/dev/null)" = 0 || fail_open "sbdata is corrupt or unreadable"
 test "$(cat "$VOLUME/upd_marker" 2>/dev/null)" = 0 || fail_open "sbdata update marker is set"
 
+test -x "$HELPER" && "$HELPER" validate-target >/dev/null 2>&1 \
+    || fail_open "sbdata capacity or geometry is incompatible"
+
 volume_mount() {
     awk -v target="$1" -v kind="$2" '
         $2 == target && ($1 == "ubi0:sbdata" || $1 == "/dev/ubi0_5") && $3 == kind { ok=1 }

@@ -26,6 +26,10 @@ class NativeBootTests(unittest.TestCase):
         for name in ['sys/class/bdi/ubifs_0_2', 'mnt/sbdata/applets/StandaloneBase',
                      'mnt/sbdata/applets/SetupAppletInstaller', 'usr/share/jive/applets/StandaloneBase', 'bin', 'tmp']:
             (self.root / name).mkdir(parents=True, exist_ok=True)
+        # Boot orchestration uses a mock verifier; real target validation is
+        # exercised by the dynamic-layout native fixture suite.
+        self.write('usr/share/jive/applets/StandaloneBase/sb-storage-helper',
+                   '#!/bin/sh\ntest "$1" = validate-target\n').chmod(0o755)
         self.write('mnt/sbdata/config/keep.json', '{"preserve":true}')
         self.write('bin/mount', '''#!/bin/sh
 echo "$*" >>"$SB_STORAGE_ROOT/actions"

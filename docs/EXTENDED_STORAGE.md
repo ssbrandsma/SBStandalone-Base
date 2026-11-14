@@ -224,12 +224,21 @@ watchdog.
 
 Firmware `9.0.1 r17084` uses the same NAND and UBI geometry but reorders the
 active and backup kernel/CramFS volume IDs and reserves 113 rather than 106
-LEBs for the active CramFS. The initialization gate recognizes this exact
-five-volume profile. Factory-managed bad eraseblocks are accepted only when
-`total_eraseblocks + bad_peb_count` remains 1,014 and
-`avail_eraseblocks + bad_peb_count` remains 653. At least 600 available LEBs
-are required before creating the 521-LEB `sbdata` volume, preserving a minimum
-79-LEB UBI reserve.
+LEBs for active CramFS. Version 0.7.2 supports complete primary-first and
+backup-first A/B pairs on 9.0.1, and validates the live stock inventory and
+mapped MTD capacities. Backup CramFS can vary within the bounded filesystem and
+maintenance-capacity policy; it need not reserve exactly 106 LEBs. UBI accounting
+uses the actual volume sum, good/bad PEBs and qualified internal reservations.
+At least 600 available LEBs are still required before creating the fixed
+521-LEB sbdata volume, retaining at least 79 free allocation LEBs and enough
+headroom to replace backup CramFS at the running firmware size.
+
+The read-only `sb-storage-helper validate-layout` command reports the allocation
+plan and a specific failure reason. Shell `storage-setup.sh check` and `analyze`
+use the same validator. `MODULE_RUNTIME_CHECK` distinguishes pinned prerequisites
+from runtime activation. See
+[dynamic layout qualification](../research/STANDALONE_BASE_EXTENDED_STORAGE_DYNAMIC_LAYOUT.md)
+for exact supported profiles, accounting derivation and evidence.
 
 ## Transaction after filesystem initialization
 

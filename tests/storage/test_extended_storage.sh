@@ -17,13 +17,17 @@ make_base() {
         "$fixture/usr/share/jive/applets/SetupAppletInstaller" \
         "$fixture/usr/share/jive/applets/StandaloneBase" "$fixture/mnt/storage" \
         "$fixture/tmp" "$fixture/bin" "$fixture/dev" "$fixture/usr/sbin"
-    printf 'Hardware : Baby\n' >"$fixture/proc/cpuinfo"
+    printf '\105\075\315\050\000\000\001\000\000\000\000\000\000\000\000\000\103\157\155\160\162\145\163\163\145\144\040\122\117\115\106\123\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\100\000\000\000\000\000\000\000\000\000\000' >"$fixture/dev/mtd3"
+    cp "$fixture/dev/mtd3" "$fixture/dev/mtd6"
+    printf 'Processor : ARM926EJ-S rev 4 (v5l)\nHardware : Baby\n' >"$fixture/proc/cpuinfo"
     printf '2.6.26.8-rt16\n' >"$fixture/proc/sys/kernel/osrelease"
     printf '7.7.3 r16676\n' >"$fixture/etc/squeezeos.version"
     printf 'dev: size erasesize name\n' >"$fixture/proc/mtd"
     printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
     printf 'nodev\tubifs\n' >"$fixture/proc/filesystems"
     printf '#!/bin/sh\ntest -x /etc/init.d/rcS.local && /etc/init.d/rcS.local\n' >"$fixture/etc/init.d/rcS"
+    printf '253:0\n' >"$fixture/sys/class/ubi/ubi0/dev"
+    printf '1\n' >"$fixture/sys/class/ubi/ubi0/mtd_num"
     printf '1014\n' >"$fixture/sys/class/ubi/ubi0/total_eraseblocks"
     printf '660\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
     printf '129024\n' >"$fixture/sys/class/ubi/ubi0/eraseblock_size"
@@ -42,6 +46,7 @@ printf '%s\n' "$*" >>"$SB_STORAGE_ROOT/tmp/ubimkvol.calls"
 test "${SB_TEST_FAIL_UBIMKVOL:-0}" = 1 && exit 9
 volume="$SB_STORAGE_ROOT/sys/class/ubi/ubi0_5"
 mkdir -p "$volume"
+printf '253:6\n' >"$volume/dev"
 printf '%s\n' "${SB_TEST_POST_NAME:-sbdata}" >"$volume/name"
 printf '%s\n' "${SB_TEST_POST_TYPE:-dynamic}" >"$volume/type"
 printf '1\n' >"$volume/alignment"
@@ -103,6 +108,17 @@ make_901() {
     add_stock_volume 4 cramfs_bak 106 13676544
 }
 
+write_mtd() {
+    {
+        printf 'dev: size erasesize name\nmtd0: 00080000 00020000 "redboot"\nmtd1: 07ec0000 00020000 "ubi"\n'
+        for mid in 0 1 2 3 4; do
+            md="$fixture/sys/class/ubi/ubi0_$mid"
+            test -r "$md/name" && test -r "$md/data_bytes" || continue
+            printf 'mtd%d: %08x 0001f800 "%s"\n' "$((mid + 2))" "$(cat "$md/data_bytes")" "$(cat "$md/name")"
+        done
+    } >"$fixture/proc/mtd"
+}
+
 add_stock_volume() {
     stock="$fixture/sys/class/ubi/ubi0_$1"
     mkdir -p "$stock"
@@ -114,6 +130,7 @@ add_stock_volume() {
     printf '0\n' >"$stock/upd_marker"
     printf '1\n' >"$stock/alignment"
     printf '129024\n' >"$stock/usable_eb_size"
+    write_mtd
 }
 
 primary_773_names() {
@@ -121,12 +138,14 @@ primary_773_names() {
         set -- $spec
         printf '%s\n' "$2" >"$fixture/sys/class/ubi/ubi0_$1/name"
     done
+    write_mtd
 }
 
-make_773_primary() { make_base; primary_773_names; }
+make_773_primary() { make_base; primary_773_names; write_mtd; }
 
 add_volume() {
     mkdir -p "$fixture/sys/class/ubi/ubi0_5"
+    printf '253:6\n' >"$fixture/sys/class/ubi/ubi0_5/dev"
     printf '%s\n' "${1:-sbdata}" >"$fixture/sys/class/ubi/ubi0_5/name"
     printf 'dynamic\n' >"$fixture/sys/class/ubi/ubi0_5/type"
     printf '1\n' >"$fixture/sys/class/ubi/ubi0_5/alignment"
@@ -215,7 +234,7 @@ expect_precreate_failure() {
 # The new profile is accepted only as a complete measured 7.7.3 layout.
 make_773_primary; expect_status AVAILABLE
 check | grep -q '^INITIALIZATION_SUPPORTED=1$'
-grep -q '^PROFILE=7.7.3-primary-first$' "$fixture/tmp/sbstorage-check.log"
+grep -q '^DYNAMIC_LAYOUT_COMPATIBLE=1$' "$fixture/tmp/sbstorage-check.log"
 ! grep -q '^FAIL ' "$fixture/tmp/sbstorage-check.log"
 assert_ubimkvol_not_called; assert_ubiupdatevol_not_called
 for id in 0 1 2 3 4; do
@@ -250,9 +269,9 @@ make_base
 printf '599\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
 printf '61\n' >"$fixture/sys/class/ubi/ubi0/bad_peb_count"
 printf '953\n' >"$fixture/sys/class/ubi/ubi0/total_eraseblocks"
-expect_status AVAILABLE
+expect_status UNAVAILABLE
 check | grep -q '^INITIALIZATION_SUPPORTED=0$'
-expect_precreate_failure 29
+expect_precreate_failure 28
 make_base; printf '128000\n' >"$fixture/sys/class/ubi/ubi0/eraseblock_size"; expect_precreate_failure 28
 make_base; printf '4096\n' >"$fixture/sys/class/ubi/ubi0/min_io_size"; expect_precreate_failure 20
 make_base; rm -rf "$fixture/sys/class/ubi/ubi0_3"; expect_precreate_failure 28
@@ -474,24 +493,24 @@ printf 'nodev\tubifs\n' >"$fixture/proc/filesystems"
 set +e; SB_TEST_FAIL_INSMOD=1 run_init; rc=$?; set -e; test "$rc" = 22
 unset SB_TEST_FAIL_INSMOD
 # mount failure
-printf 'nodev\tubifs\nnodev\tsbubifs\n' >"$fixture/proc/filesystems"; : >"$fixture/proc/mounts"
+printf 'nodev\tubifs\nnodev\tsbubifs\n' >"$fixture/proc/filesystems"; printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
 set +e; SB_TEST_FAIL_MOUNT=1 run_init; rc=$?; set -e; test "$rc" = 24
 unset SB_TEST_FAIL_MOUNT
 # migration failure
-: >"$fixture/proc/mounts"
+printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
 set +e; SB_TEST_FAIL_MIGRATION=1 run_init; rc=$?; set -e; test "$rc" = 25
 unset SB_TEST_FAIL_MIGRATION
 # validation failure
-rm -rf "$fixture/mnt/sbdata"; : >"$fixture/proc/mounts"
+rm -rf "$fixture/mnt/sbdata"; printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
 set +e; SB_TEST_FAIL_VALIDATION=1 run_init; rc=$?; set -e; test "$rc" = 26
 unset SB_TEST_FAIL_VALIDATION
 # boot installation failure
-rm -rf "$fixture/mnt/sbdata"; : >"$fixture/proc/mounts"
+rm -rf "$fixture/mnt/sbdata"; printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
 set +e; SB_TEST_FAIL_BOOT_INSTALL=1 run_init; rc=$?; set -e
 test "$rc" = 27 || { cat "$fixture/tmp/sbstorage.log"; exit 1; }
 unset SB_TEST_FAIL_BOOT_INSTALL
 # successful fixture transaction -> reboot required
-rm -rf "$fixture/mnt/sbdata" "$fixture/mnt/storage/standalonebase"; : >"$fixture/proc/mounts"
+rm -rf "$fixture/mnt/sbdata" "$fixture/mnt/storage/standalonebase"; printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
 printf 'ubi0:ubifs %s/mnt/storage ubifs rw 0 0\n' "$fixture" >"$fixture/proc/mounts"
 run_init
 assert_ubimkvol_not_called
@@ -555,6 +574,7 @@ grep -q "^ubi0:ubifs $fixture/mnt/storage ubifs " "$fixture/proc/mounts"
 for spec in '0 kernel_bak' '1 cramfs_bak' '3 kernel' '4 cramfs'; do
     set -- $spec; printf '%s\n' "$2" >"$fixture/sys/class/ubi/ubi0_$1/name"
 done
+write_mtd
 
 # Explicit destructive recovery never creates a new volume, and must be
 # confirmed. The fixture updater logs calls; no physical flash is touched.
@@ -621,10 +641,10 @@ printf '1\n' >"$fixture/sys/class/ubi/ubi0_1/data_bytes"
 expect_status UNAVAILABLE
 report="$fixture/tmp/sbstorage-check.log"
 test -s "$report"
-grep -q 'FAIL ubi0_0.name expected=\[kernel_bak\] actual=\[wrong-kernel-name\]' "$report"
-grep -q 'FAIL ubi0_1.data_bytes expected=\[13676544\] actual=\[1\]' "$report"
-grep -q 'FAIL exact_virgin_layout' "$report"
-grep -q 'operation=check .*FAIL ubi0_0.name' "$fixture/tmp/syslog.messages"
+grep -q 'LAYOUT_REASON=volume_identity_mismatch' "$report"
+grep -q 'ubi0_1.data_bytes=1' "$report"
+grep -q 'FAIL dynamic_layout' "$report"
+grep -q 'operation=check .*LAYOUT_REASON=volume_identity_mismatch' "$fixture/tmp/syslog.messages"
 grep -q 'ubi0.avail_eraseblocks=660' "$report"
 test "$(stat -c %a "$report")" = 600
 test "$(wc -c <"$report")" -lt 32768
@@ -641,18 +661,18 @@ SB_STORAGE_ROOT="$fixture" SB_STORAGE_APPLET_DIR="$fixture/usr/share/jive/applet
 ! grep -q unchanged-report-sentinel "$report"
 grep -q 'operation=analyze .*CHECK_REPORT_BEGIN' "$fixture/tmp/syslog.messages"
 test "$(wc -c <"$fixture/tmp/syslog.messages")" -gt "$syslog_size"
-grep -q 'FAIL ubi0_0.name' "$fixture/tmp/analysis-output"
+grep -q 'LAYOUT_REASON=volume_identity_mismatch' "$fixture/tmp/analysis-output"
 assert_ubimkvol_not_called; assert_ubiupdatevol_not_called
 test ! -e "$fixture/tmp/mount.calls"
 make_base
 printf '599\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
 check >/dev/null
 grep -q 'FAIL minimum_600_available_lebs' "$fixture/tmp/sbstorage-check.log"
-grep -q 'FAIL available_plus_bad expected=\[660\] actual=\[599\]' "$fixture/tmp/sbstorage-check.log"
+grep -q 'LAYOUT_REASON=ubi_accounting_inconsistent' "$fixture/tmp/sbstorage-check.log"
 make_base
 printf '7.7.3 unknown-build\n' >"$fixture/etc/squeezeos.version"
 check >/dev/null
-grep -q 'FAIL firmware_profile' "$fixture/tmp/sbstorage-check.log"
+grep -q 'LAYOUT_REASON=unsupported_firmware' "$fixture/tmp/sbstorage-check.log"
 make_base; add_volume wrongname
 check >/dev/null
 grep -q 'FAIL ubi0_5.name expected=\[sbdata\] actual=\[wrongname\]' "$fixture/tmp/sbstorage-check.log"

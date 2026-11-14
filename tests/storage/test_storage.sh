@@ -13,6 +13,8 @@ for spec in '0 kernel_bak' '1 cramfs_bak' '2 ubifs' '3 kernel' '4 cramfs'; do
 done
 printf '129024\n' >"$fixture/sys/class/ubi/ubi0/ubi0_2/usable_eb_size"
 printf '82\n' >"$fixture/sys/class/ubi/ubi0/ubi0_2/reserved_ebs"
+printf '\105\075\315\050\000\000\001\000\000\000\000\000\000\000\000\000\103\157\155\160\162\145\163\163\145\144\040\122\117\115\106\123\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\100\000\000\000\000\000\000\000\000\000\000' >"$fixture/dev/mtd3"
+cp "$fixture/dev/mtd3" "$fixture/dev/mtd6"
 printf 'Hardware : Baby\n' >"$fixture/proc/cpuinfo"
 printf 'armv5tejl\n' >"$fixture/proc/sys/kernel/architecture"
 printf '2.6.26.8-rt16\n' >"$fixture/proc/sys/kernel/osrelease"
@@ -20,6 +22,8 @@ printf 'nodev\tubifs\n' >"$fixture/proc/filesystems"
 printf 'dev: size erasesize name\nmtd1: 08000000 00020000 "root"\n' >"$fixture/proc/mtd"
 printf 'ubi0:ubifs /mnt/storage ubifs rw,noatime 0 0\n' >"$fixture/proc/mounts"
 printf '7.7.3 r16676\n' >"$fixture/etc/squeezeos.version"
+printf '253:0\n' >"$fixture/sys/class/ubi/ubi0/dev"
+printf '1\n' >"$fixture/sys/class/ubi/ubi0/mtd_num"
 printf '1014\n' >"$fixture/sys/class/ubi/ubi0/total_eraseblocks"
 printf '660\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
 printf '10\n' >"$fixture/sys/class/ubi/ubi0/reserved_for_bad"
@@ -35,6 +39,25 @@ printf '/tmp/sb-mkfs-test/mkfs.ubifs\n' >"$fixture/sys/class/ubi/ubi0/test_forma
 printf '8178893\n' >"$fixture/sys/class/ubi/ubi0/test_fs_total_bytes"
 printf '5347738\n' >"$fixture/sys/class/ubi/ubi0/test_fs_free_bytes"
 touch "$fixture/dev/ubi0" "$fixture/usr/sbin/ubimkvol" "$fixture/mnt/storage/standalonebase/mkfs.ubifs"
+# Complete mandatory inventory for the shared dynamic validator.
+for spec in '0 23' '1 106' '2 82' '3 23' '4 106'; do
+ set -- $spec; d="$fixture/sys/class/ubi/ubi0/ubi0_$1"
+ printf '1\n' >"$d/alignment"; printf '%s\n' "$2" >"$d/reserved_ebs"
+ printf '%s\n' "$(($2 * 129024))" >"$d/data_bytes"
+ printf '129024\n' >"$d/usable_eb_size"; printf '0\n' >"$d/upd_marker"
+ ln -s "ubi0/ubi0_$1" "$fixture/sys/class/ubi/ubi0_$1"
+done
+printf '129024\n' >"$fixture/sys/class/ubi/ubi0/eraseblock_size"
+write_mtd() {
+ {
+ printf 'dev: size erasesize name\nmtd0: 00080000 00020000 "redboot"\nmtd1: 07ec0000 00020000 "ubi"\n'
+ for mid in 0 1 2 3 4; do
+  md="$fixture/sys/class/ubi/ubi0/ubi0_$mid"
+  printf 'mtd%d: %08x 0001f800 "%s"\n' "$((mid + 2))" "$(cat "$md/data_bytes")" "$(cat "$md/name")"
+ done
+ } >"$fixture/proc/mtd"
+}
+write_mtd
 run(){ SB_STORAGE_ROOT="$fixture" $runner "$helper" "$@"; }
 reason(){ echo "$1" | grep -q "^prepare_reason=$2$"; }
 
@@ -55,6 +78,7 @@ for spec in '0 kernel 23' '1 cramfs 106' '2 ubifs 82' '3 kernel_bak 23' '4 cramf
  printf '%s\n' "$(($3 * 129024))" >"$d/data_bytes"
  printf '129024\n' >"$d/usable_eb_size"; printf '0\n' >"$d/upd_marker"
 done
+write_mtd
 out=$(run check); echo "$out" | grep -q '^compatible=true$'
 check_refused() {
  set +e; out=$(run check); s=$?; set -e; test "$s" = 2
@@ -72,18 +96,22 @@ for id in 0 1 2 3 4; do
   printf '%s\n' "$wrong" >"$d/$field"
   if test "$field" = corrupted; then check_refused volume_corrupted_or_unknown
   elif test "$field" = type && test "$id" = 2; then check_refused production_volume_invalid
-  else check_refused unvalidated_primary_first_geometry; fi
+  elif test "$field" = type; then check_refused volume_type_mismatch
+  elif test "$field" = alignment; then check_refused volume_alignment_mismatch
+  elif test "$field" = reserved_ebs || test "$field" = data_bytes; then check_refused volume_capacity_inconsistent
+  elif test "$field" = usable_eb_size; then check_refused unsupported_ubi_geometry
+  else check_refused volume_update_in_progress; fi
   printf '%s\n' "$saved" >"$d/$field"
  done
 done
 rm "$fixture/sys/class/ubi/ubi0/ubi0_1/upd_marker"
-check_refused unvalidated_primary_first_geometry
+check_refused invalid_volume_metadata
 printf '0\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/upd_marker"
 printf '106junk\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/reserved_ebs"
-check_refused unvalidated_primary_first_geometry
+check_refused invalid_volume_metadata
 printf '106\n' >"$fixture/sys/class/ubi/ubi0/ubi0_1/reserved_ebs"
 printf '0junk\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/upd_marker"
-check_refused unvalidated_primary_first_geometry
+check_refused invalid_volume_metadata
 printf '0\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/upd_marker"
 # Whole-token matching must reject a mixed order and duplicate backup names.
 printf 'kernel_bak\n' >"$fixture/sys/class/ubi/ubi0/ubi0_0/name"
@@ -100,6 +128,7 @@ check_refused missing_production_volume
 for spec in '0 kernel_bak' '1 cramfs_bak' '3 kernel' '4 cramfs'; do
  set -- $spec; printf '%s\n' "$2" >"$fixture/sys/class/ubi/ubi0/ubi0_$1/name"
 done
+write_mtd
 set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" migration_and_mount_safety_pending; echo "$out" | grep -q '^planned_volume=sbdata$'; echo "$out" | grep -q '^formatter_valid=true$'
 set +e; run install >/dev/null 2>&1; s=$?; set -e; test "$s" = 78
 set +e; run install >/dev/null 2>&1; s=$?; set -e; test "$s" = 78
@@ -118,7 +147,7 @@ rm -rf "$fixture/sys/class/ubi/ubi0/ubi0_6"
 
 # Capacity reserve, unexpected production ID, and corruption.
 printf '599\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
-set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" insufficient_capacity_with_reserve
+set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" ubi_accounting_inconsistent
 printf '660\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
 mv "$fixture/sys/class/ubi/ubi0/ubi0_3" "$fixture/sys/class/ubi/ubi0/ubi0_7"
 set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" unexpected_volume_id
@@ -146,16 +175,20 @@ for why in wrong_architecture_or_linkage wrong_checksum unsupported_version chec
 printf 'ok\n' >"$fixture/sys/class/ubi/ubi0/test_formatter_reason"
 printf '4096\n' >"$fixture/sys/class/ubi/ubi0/test_memory_available_kb"; set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" insufficient_free_ram; printf '16384\n' >"$fixture/sys/class/ubi/ubi0/test_memory_available_kb"
 printf '1048576\n' >"$fixture/sys/class/ubi/ubi0/test_tmp_available_bytes"; set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" insufficient_temporary_capacity; printf '8388608\n' >"$fixture/sys/class/ubi/ubi0/test_tmp_available_bytes"
-printf '4096\n' >"$fixture/sys/class/ubi/ubi0/min_io_size"; set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" invalid_min_io_size; printf '2048\n' >"$fixture/sys/class/ubi/ubi0/min_io_size"
-printf '131072\n' >"$fixture/sys/class/ubi/ubi0/ubi0_2/usable_eb_size"; set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" invalid_leb_size; printf '129024\n' >"$fixture/sys/class/ubi/ubi0/ubi0_2/usable_eb_size"
+printf '4096\n' >"$fixture/sys/class/ubi/ubi0/min_io_size"; set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" unsupported_ubi_geometry; printf '2048\n' >"$fixture/sys/class/ubi/ubi0/min_io_size"
+printf '131072\n' >"$fixture/sys/class/ubi/ubi0/ubi0_2/usable_eb_size"; set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" unsupported_ubi_geometry; printf '129024\n' >"$fixture/sys/class/ubi/ubi0/ubi0_2/usable_eb_size"
 
 # Correct sbdata, incomplete install, and then complete verified state.
 d="$fixture/sys/class/ubi/ubi0/ubi0_5"; mkdir "$d"; printf 'sbdata\n' >"$d/name"; printf 'dynamic\n' >"$d/type"; printf '0\n' >"$d/corrupted"; printf '521\n' >"$d/reserved_ebs"; printf '129024\n' >"$d/usable_eb_size"; touch "$fixture/dev/ubi0_5"
-printf '100\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
+printf '253:6\n' >"$fixture/sys/class/ubi/ubi0/ubi0_5/dev"
+printf '139\n' >"$fixture/sys/class/ubi/ubi0/avail_eraseblocks"
+printf '1\n' >"$d/alignment"; printf '67221504\n' >"$d/data_bytes"; printf '0\n' >"$d/upd_marker"
+ln -s ubi0/ubi0_5 "$fixture/sys/class/ubi/ubi0_5"
 set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" migration_and_mount_safety_pending
 rm "$fixture/dev/ubi0_5"
 set +e; out=$(run prepare); s=$?; set -e; test "$s" = 2; reason "$out" missing_sbdata_device_node
 touch "$fixture/dev/ubi0_5"
+printf '253:6\n' >"$fixture/sys/class/ubi/ubi0/ubi0_5/dev"
 out=$(run storage-status); echo "$out" | grep -q '^installation_state=partial$'
 set +e; out=$(run verify); s=$?; set -e; test "$s" = 3; echo "$out" | grep -q '^verify_reason=sbdata_not_mounted$'
 mkdir -p "$fixture/mnt/sbdata/applets/SetupAppletInstaller" "$fixture/mnt/sbdata/applets/StandaloneBase"

@@ -19,9 +19,9 @@
       "target": "baby",
       "min_target_version": "7.7.2",
       "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-baby.zip",
-      "sha": "6e3530a01b04504fd16ab238641850bd047b45aa",
+      "sha": "8badebfa216e27440d3d19e9db4ba56dae4a5632",
       "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
-      "changes": "Support the validated primary-first Radio 7.7.3 storage layout, retaining strict volume geometry, health and firmware checks. Fix exact volume-name matching.",
+      "changes": "Dynamically validate Radio Extended Storage from the live UBI/MTD inventory, health and capacity. Support valid backup-size variations and both complete 9.0.1 A/B orders while strictly protecting existing firmware volumes.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },
@@ -32,9 +32,9 @@
       "target": "fab4",
       "min_target_version": "7.7.2",
       "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-fab4.zip",
-      "sha": "26568cfedb6c32fce317cc7ed4895cbf0329114e",
+      "sha": "ae62e2f9a5dad987dac39f719af6238800c83f90",
       "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
-      "changes": "Support the validated primary-first Radio 7.7.3 storage layout, retaining strict volume geometry, health and firmware checks. Fix exact volume-name matching.",
+      "changes": "Dynamically validate Radio Extended Storage from the live UBI/MTD inventory, health and capacity. Support valid backup-size variations and both complete 9.0.1 A/B orders while strictly protecting existing firmware volumes.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },

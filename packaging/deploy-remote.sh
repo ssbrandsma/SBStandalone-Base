@@ -8,13 +8,18 @@ test -r "$config" || { echo "Missing private deployment configuration: $config" 
 : "${WEB_OWNER:?}" "${BOOTSTRAP_OWNER:?}" "${CONTAINER_NAME:?}"
 version=${SB_RELEASE_VERSION:?Set the release version}
 stage=${SB_RELEASE_STAGE:?Set the validated release staging directory}
+replace_version=${SB_REPLACE_RELEASE_VERSION:-}
+test -z "$replace_version" || test "$replace_version" = "$version" || {
+  echo 'Replacement authorization must name the exact release version' >&2; exit 1;
+}
 
 # Recheck archives, both hardware entries and live-file preconditions before writes.
 python3 - "$stage" "$version" <<'PY'
-import hashlib,json,sys
+import hashlib,json,re,sys
 from pathlib import Path
 from xml.etree import ElementTree as E
 stage=Path(sys.argv[1]);version=sys.argv[2]
+assert re.fullmatch(r'\d+\.\d+\.\d+',version)
 m=json.loads((stage/f'release-{version}.json').read_text())
 assert m['version']==version
 assert len(m['artifacts'])==3
@@ -44,7 +49,7 @@ for file,names in [('base-extensions.xml',{'StandaloneBase'}),('radio-extensions
 PY
 
 stamp=$(date +%Y%m%d-%H%M%S)
-backup=/var/backups/standalonebase/$version-$stamp
+backup=${SB_RELEASE_BACKUP_ROOT:-/var/backups/standalonebase}/$version-$stamp
 mkdir -p "$backup" "$BASE_ROOT" "$RADIO_ROOT"
 cp -p "$MERGED_XML" "$backup/merged-extensions.xml"
 cp -p "$BOOTSTRAP_CONFIG" "$backup/bootstrap-config.json"
@@ -58,10 +63,34 @@ if test -f "$BASE_ROOT/config.json"; then
   cp -p "$BASE_ROOT/config.json" "$backup/public-config.json"
   public_existed=1
 fi
+# Same-version refreshes require an explicit, version-scoped opt-in. Preserve
+# the old ZIPs and manifest as well as catalogs so rollback restores matching
+# advertised hashes and bytes. The default immutable-artifact policy remains.
+for target in baby fab4; do
+  file=StandaloneBase-$version-$target.zip
+  if test -f "$BASE_ROOT/$file"; then
+    if ! cmp -s "$stage/$file" "$BASE_ROOT/$file"; then
+      test "$replace_version" = "$version" || {
+        echo "Refusing replacement of published $file without explicit version authorization" >&2; exit 1;
+      }
+    fi
+    cp -p "$BASE_ROOT/$file" "$backup/$file"
+  fi
+done
+if test -f "$BASE_ROOT/release-$version.json"; then
+  cp -p "$BASE_ROOT/release-$version.json" "$backup/release-$version.json"
+fi
 success=0
 rollback() {
   result=$?
   if test "$success" != 1; then
+    for target in baby fab4; do
+      file=StandaloneBase-$version-$target.zip
+      if test -f "$backup/$file"; then cp -p "$backup/$file" "$BASE_ROOT/$file"; else rm -f "$BASE_ROOT/$file"; fi
+    done
+    if test -f "$backup/release-$version.json"; then
+      cp -p "$backup/release-$version.json" "$BASE_ROOT/release-$version.json"
+    else rm -f "$BASE_ROOT/release-$version.json"; fi
     cp -p "$backup/merged-extensions.xml" "$MERGED_XML"
     cp -p "$backup/bootstrap-config.json" "$BOOTSTRAP_CONFIG"
     cp -p "$backup/base-extensions.xml" "$BASE_ROOT/extensions.xml"
@@ -79,10 +108,11 @@ trap rollback EXIT
 
 radio=$(python3 -c 'import json,sys;print(next(a["file"] for a in json.load(open(sys.argv[1]))["artifacts"] if a["file"].startswith("StandaloneRadio-")))' "$stage/release-$version.json")
 # Install immutable artifacts before advertising them. Existing same-version bytes
-# must match, preventing an accidental replacement of a published release.
+# must match unless the exact version replacement was explicitly authorized
+# and its previous bytes were backed up above.
 for target in baby fab4; do
   file=StandaloneBase-$version-$target.zip
-  if test -f "$BASE_ROOT/$file"; then cmp "$stage/$file" "$BASE_ROOT/$file"; fi
+  if test -f "$BASE_ROOT/$file" && test "$replace_version" != "$version"; then cmp "$stage/$file" "$BASE_ROOT/$file"; fi
   install -o root -g root -m 0644 "$stage/$file" "$BASE_ROOT/$file.new"
   mv "$BASE_ROOT/$file.new" "$BASE_ROOT/$file"
 done

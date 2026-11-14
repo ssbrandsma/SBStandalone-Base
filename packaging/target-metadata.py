@@ -16,7 +16,7 @@ apps = ET.SubElement(xml, "applets")
 a = ET.SubElement(apps, "applet", name="StandaloneBase", version="0.7.2", target=target, minTarget="7.7.2", maxTarget="*")
 ET.SubElement(a, "title", lang="EN").text = "Standalone Base"
 ET.SubElement(a, "desc", lang="EN").text = "Local standalone services for Squeezebox " + ("Touch." if target == "fab4" else "Radio.")
-ET.SubElement(a, "changes", lang="EN").text = "Support the validated primary-first Squeezebox Radio 7.7.3 storage layout with strict geometry and health checks."
+ET.SubElement(a, "changes", lang="EN").text = "Validate Radio Extended Storage dynamically from the live UBI inventory, mapped MTD geometry and free capacity, with strict firmware-volume protection."
 ET.SubElement(a, "creator").text = "Sjoerd Brandsma"
 ET.SubElement(a, "url").text = url
 ET.SubElement(a, "sha").text = sha

@@ -100,6 +100,10 @@ if(NOT WIN32)
       ${CMAKE_CURRENT_SOURCE_DIR}/nowplaying/test_metadata.py)
   endif()
   if(Python3_Interpreter_FOUND)
+    add_test(NAME release_deployment COMMAND ${Python3_EXECUTABLE}
+      ${CMAKE_CURRENT_SOURCE_DIR}/packaging/test_release_deployment.py ${CMAKE_SOURCE_DIR}/packaging/deploy-remote.sh)
+    add_test(NAME storage_dynamic_layout COMMAND ${Python3_EXECUTABLE}
+      ${CMAKE_CURRENT_SOURCE_DIR}/storage/test_dynamic_layout.py $<TARGET_FILE:sb-storage-helper>)
     add_test(NAME storage_firmware_recovery COMMAND ${Python3_EXECUTABLE}
       ${CMAKE_CURRENT_SOURCE_DIR}/storage/test_firmware_recovery.py
       ${CMAKE_SOURCE_DIR}/scripts/storage-setup.sh

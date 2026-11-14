@@ -1,0 +1,72 @@
+{
+  "description": "Synthetic read-only inventory from the reported device; module/image prerequisites use the real pinned repository artifacts, not forged verifier results.",
+  "cpuinfo": "Processor : ARM926EJ-S rev 4 (v5l)\nHardware : Logitech MX25 Baby Board\nRevision : 0005\n",
+  "kernel": "2.6.26.8-rt16",
+  "firmware": "9.0.1 r17084",
+  "controller": {
+    "mtd_num": 1,
+    "total_eraseblocks": 1013,
+    "avail_eraseblocks": 660,
+    "bad_peb_count": 1,
+    "reserved_for_bad": 10,
+    "eraseblock_size": 129024,
+    "min_io_size": 2048
+  },
+  "volumes": [
+    {
+      "id": 0,
+      "name": "kernel",
+      "reserved_ebs": 23,
+      "data_bytes": 2967552
+    },
+    {
+      "id": 1,
+      "name": "cramfs",
+      "reserved_ebs": 113,
+      "data_bytes": 14579712
+    },
+    {
+      "id": 2,
+      "name": "ubifs",
+      "reserved_ebs": 82,
+      "data_bytes": 10579968
+    },
+    {
+      "id": 3,
+      "name": "kernel_bak",
+      "reserved_ebs": 23,
+      "data_bytes": 2967552
+    },
+    {
+      "id": 4,
+      "name": "cramfs_bak",
+      "reserved_ebs": 98,
+      "data_bytes": 12644352
+    }
+  ],
+  "volume_defaults": {
+    "type": "dynamic",
+    "alignment": 1,
+    "usable_eb_size": 129024,
+    "corrupted": 0,
+    "upd_marker": 0
+  },
+  "mtd": "dev: size erasesize name\nmtd0: 00080000 00020000 \"redboot\"\nmtd1: 07ec0000 00020000 \"ubi\"\nmtd2: 002d4800 0001f800 \"kernel\"\nmtd3: 00de7800 0001f800 \"cramfs\"\nmtd4: 00a17000 0001f800 \"ubifs\"\nmtd5: 002d4800 0001f800 \"kernel_bak\"\nmtd6: 00c0f000 0001f800 \"cramfs_bak\"\n",
+  "mounts": "ubi0:ubifs {root}/mnt/storage ubifs rw,noatime 0 0\n",
+  "target_present": false,
+  "driver_loaded": false,
+  "boot_hook": "#!/bin/sh\ntest -x /etc/init.d/rcS.local && /etc/init.d/rcS.local\n",
+  "device_nodes": {
+    "ubi0": {
+      "present": true,
+      "dev": "253:0"
+    },
+    "ubi0_5": {
+      "present": false
+    },
+    "backup_cramfs": {
+      "path": "dev/mtd6",
+      "evidence": "Synthetic 76-byte CramFS superblock with a bounded declared image length; not a captured firmware image."
+    }
+  }
+}

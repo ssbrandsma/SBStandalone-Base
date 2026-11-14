@@ -8,9 +8,9 @@
       "target": "baby",
       "min_target_version": "7.7.2",
       "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-baby.zip",
-      "sha": "6e3530a01b04504fd16ab238641850bd047b45aa",
+      "sha": "8badebfa216e27440d3d19e9db4ba56dae4a5632",
       "desc": "Local LMS-compatible infrastructure for Squeezebox Radio.",
-      "changes": "Support the validated primary-first Radio 7.7.3 storage layout, retaining strict volume geometry, health and firmware checks. Fix exact volume-name matching.",
+      "changes": "Dynamically validate Radio Extended Storage from the live UBI/MTD inventory, health and capacity. Support valid backup-size variations and both complete 9.0.1 A/B orders while strictly protecting existing firmware volumes.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },
@@ -21,9 +21,9 @@
       "target": "fab4",
       "min_target_version": "7.7.2",
       "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.2-fab4.zip",
-      "sha": "26568cfedb6c32fce317cc7ed4895cbf0329114e",
+      "sha": "ae62e2f9a5dad987dac39f719af6238800c83f90",
       "desc": "Local LMS-compatible infrastructure for Squeezebox Touch.",
-      "changes": "Support the validated primary-first Radio 7.7.3 storage layout, retaining strict volume geometry, health and firmware checks. Fix exact volume-name matching.",
+      "changes": "Dynamically validate Radio Extended Storage from the live UBI/MTD inventory, health and capacity. Support valid backup-size variations and both complete 9.0.1 A/B orders while strictly protecting existing firmware volumes.",
       "creator": "Sjoerd Brandsma",
       "email": ""
     },
@@ -58,16 +58,16 @@
     {
       "file": "StandaloneBase-0.7.2-baby.zip",
       "target": "baby",
-      "sha1": "6e3530a01b04504fd16ab238641850bd047b45aa",
-      "sha256": "a5f645983e1a37ee2e49c5dc2608183c3d576c6cbad6d8e36574cfb907513d42",
-      "bytes": 2711911
+      "sha1": "8badebfa216e27440d3d19e9db4ba56dae4a5632",
+      "sha256": "d3d69c111983aac0a1dab9b8f8ac325fbfe662ae3faf70b1502fd5aa2dbf6ecc",
+      "bytes": 2717962
     },
     {
       "file": "StandaloneBase-0.7.2-fab4.zip",
       "target": "fab4",
-      "sha1": "26568cfedb6c32fce317cc7ed4895cbf0329114e",
-      "sha256": "489b4a6743ca85c60fffb07fb3feef46db34656761bc90d543d157f5670df1a3",
-      "bytes": 2620451
+      "sha1": "ae62e2f9a5dad987dac39f719af6238800c83f90",
+      "sha256": "ae0de45ab338db8930c73770f5cc3b6b550eacb7148e87ea3798805c584ed250",
+      "bytes": 2626491
     },
     {
       "file": "StandaloneRadio-0.9.20.zip",
@@ -75,5 +75,17 @@
       "sha1": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
       "sha256": "f46460b59232540eaf4ccb74438d94f90bc22745367332ddc05cefa46fe8b489"
     }
-  ]
+  ],
+  "qualification": {
+    "host_suites": 22,
+    "storage_fixture_cases": 157,
+    "deployment_cases": 4,
+    "full_arm_builds": [
+      "baby",
+      "fab4"
+    ],
+    "qemu_checks": "version,self-test,storage,standby,radio-shared passed on both targets",
+    "source_scope": "Git HEAD plus storage and release changes only",
+    "physical_flash_mutations": 0
+  }
 }

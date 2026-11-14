@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <sys/sysmacros.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 
@@ -117,10 +118,40 @@ static int read_text(const char *n, char *out, size_t z)
 	if (!(f = fopen(p, "r")))
 		return -1;
 	q = fread(out, 1, z - 1, f);
+	if (ferror(f) || memchr(out, 0, q) || (q == z - 1 && fgetc(f) != EOF)) {
+		fclose(f);
+		out[0] = 0;
+		return -1;
+	}
 	fclose(f);
 	out[q] = 0;
 	while (q && strchr("\r\n \t", out[q - 1]))
 		out[--q] = 0;
+	return 0;
+}
+
+/* SqueezeOS appends builder and source revision lines to this file. Only
+ * its bounded first line is the firmware identity used by the existing API. */
+static int read_first_line(const char *name, char *out, size_t size)
+{
+	char p[PATH_MAX];
+	FILE *f;
+	size_t length = 0;
+	int ch;
+	if (size < 2) return -1;
+	path(p, sizeof p, name);
+	f = fopen(p, "r");
+	if (!f) return -1;
+	while ((ch = fgetc(f)) != EOF && ch != '\n') {
+		if (!ch || length + 1 >= size) {
+			fclose(f); out[0] = 0; return -1;
+		}
+		out[length++] = (char)ch;
+	}
+	if (ferror(f)) { fclose(f); out[0] = 0; return -1; }
+	fclose(f);
+	out[length] = 0;
+	while (length && strchr("\r\n \t", out[length-1])) out[--length] = 0;
 	return 0;
 }
 
@@ -138,8 +169,10 @@ static long read_long(const char *n, long d)
 		return d;
 	errno = 0;
 	v = strtol(b, &e, 10);
-	return errno || e == b ? d : v;
+	return errno || e == b || *e || v < 0 ? d : v;
 }
+
+#include "dynamic_layout.h"
 
 /**
  * @brief Handle exists.
@@ -627,7 +660,7 @@ static void collect(info_t *i)
 		snprintf(i->arch, sizeof i->arch, "%.63s", b);
 	if (!read_text("/proc/sys/kernel/osrelease", b, sizeof b))
 		snprintf(i->kernel, sizeof i->kernel, "%.127s", b);
-	read_text("/etc/squeezeos.version", i->firmware, sizeof i->firmware);
+	read_first_line("/etc/squeezeos.version", i->firmware, sizeof i->firmware);
 	if ((nl = strpbrk(i->firmware, "\r\n")))
 		*nl = 0;
 	mounts(i);
@@ -675,27 +708,6 @@ static int volume_named(const info_t *i, int id, const char *name)
 		p = end + 1;
 	}
 	return 0;
-}
-
-/* Qualify the newly measured 7.7.3 primary-first profile, not arbitrary
- * reordered firmware volumes or the larger 9.0.1 cramfs geometry. */
-static int primary_773_geometry(void)
-{
-	static const long lebs[] = {23, 106, 82, 23, 106};
-	static const char *fields[] = {"alignment", "reserved_ebs", "data_bytes",
-		"usable_eb_size", "corrupted", "upd_marker"};
-	char p[128], type[32], actual[64], expected_text[64];
-	for (int id = 0; id < 5; id++) {
-		long expected[] = {1, lebs[id], lebs[id] * 129024, 129024, 0, 0};
-		snprintf(p, sizeof p, "/sys/class/ubi/ubi0/ubi0_%d/type", id);
-		if (read_text(p, type, sizeof type) || strcmp(type, "dynamic")) return 0;
-		for (size_t field = 0; field < sizeof fields / sizeof fields[0]; field++) {
-			snprintf(p, sizeof p, "/sys/class/ubi/ubi0/ubi0_%d/%s", id, fields[field]);
-			snprintf(expected_text, sizeof expected_text, "%ld", expected[field]);
-			if (read_text(p, actual, sizeof actual) || strcmp(actual, expected_text)) return 0;
-		}
-	}
-	return 1;
 }
 
 /* Read-only compatibility inspection; the shell initialization frontend
@@ -759,7 +771,7 @@ static int compatible(const info_t *i, char *r, size_t n)
 	if (((!strcmp(i->firmware, "7.7.2 r9663") ||
 	      !strcmp(i->firmware, "7.7.3 r16676")) &&
 	     !layout77x && !primary773) ||
-	    (!strcmp(i->firmware, "9.0.1 r17084") && !layout901)) {
+	    (!strcmp(i->firmware, "9.0.1 r17084") && !layout901 && !layout77x)) {
 		snprintf(r, n, "missing_production_volume");
 		return 0;
 	}
@@ -780,14 +792,15 @@ static int compatible(const info_t *i, char *r, size_t n)
 		snprintf(r, n, "ubi_read_only");
 		return 0;
 	}
-	if (primary773 && !primary_773_geometry()) {
-		snprintf(r, n, "unvalidated_primary_first_geometry");
-		return 0;
-	}
+	{
+        layout_t layout;
+        if (!layout_validate(&layout)) {
+            snprintf(r, n, "%s", layout.reason);
+            return 0;
+        }
+    }
 	if (target < 0 ||
-	    (i->sbdata_present
-		     ? (i->sbdata_lebs < target || i->avail_pebs < RESERVE_LEBS)
-		     : (i->avail_pebs < target + RESERVE_LEBS))) {
+	    (!i->sbdata_present && i->avail_pebs < target + RESERVE_LEBS)) {
 		snprintf(r, n, "insufficient_capacity_with_reserve");
 		return 0;
 	}
@@ -995,7 +1008,9 @@ static int prepare(const info_t *i)
 	status(i);
 	printf("prepare_ready=%s\nprepare_reason=%s\nplanned_volume="
 	       "sbdata\nplanned_bytes=%llu\nplanned_lebs=%ld\nminimum_free_"
-	       "reserve_lebs=%d\ninstall_enabled=false\n",
+	       "reserve_lebs=%d\ninstall_enabled=false\n"
+	       "install_scope=legacy_native_command\n"
+	       "initialization_frontend=storage-setup.sh\n",
 	       ok ? "true" : "false",
 	       r,
 	       TARGET_BYTES,
@@ -1217,6 +1232,18 @@ done:
 int main(int argc, char **argv)
 {
 	info_t i;
+	if (argc == 2 && !strcmp(argv[1], "--version")) {
+		puts("sb-storage-helper 0.7.2 dynamic-layout-v1");
+		return 0;
+	}
+	if (argc == 2 && !strcmp(argv[1], "validate-layout"))
+		return layout_report();
+	if (argc == 2 && !strcmp(argv[1], "validate-target"))
+		return layout_target() ? 0 : 2;
+	if (argc == 2 && !strcmp(argv[1], "validate-controller-node"))
+		return layout_device_node(0) ? 0 : 2;
+	if (argc == 2 && !strcmp(argv[1], "validate-target-node"))
+		return layout_device_node(1) ? 0 : 2;
 	if (argc == 4 && !strcmp(argv[1], "verify-copy"))
 		return verify_copy(argv[2], argv[3]);
 	if (argc == 3 && !strcmp(argv[1], "inspect-superblock"))
@@ -1228,15 +1255,16 @@ int main(int argc, char **argv)
 	if (argc != 2) {
 		fprintf(stderr,
 			"usage: sb-storage-helper "
-			"info|check|storage-status|prepare|install|verify|"
+			"--version|validate-layout|validate-target|validate-controller-node|validate-target-node|info|check|storage-status|prepare|install|verify|"
 			"verify-module FILE|verify-sbdata-image "
 			"FILE|inspect-superblock FILE|expand\n");
 		return 64;
 	}
 	if (!strcmp(argv[1], "install")) {
 		fprintf(stderr,
-			"sbdata installation is intentionally disabled pending "
-			"physical approval\n");
+			"legacy native install command is disabled; use the "
+			"explicit Extended Storage initialization workflow in "
+			"storage-setup.sh; no storage mutation performed\n");
 		return 78;
 	}
 	if (!strcmp(argv[1], "expand")) {
