@@ -13,7 +13,7 @@ def refused(binary, args, **kwargs):
     r = subprocess.run([str(binary), *args], capture_output=True, timeout=5, **kwargs)
     assert r.returncode == 2, (binary, args, r.returncode, r.stderr)
 
-for flag in ('--test-music-db', '--test-music-root', '--test-music-mock-adapters',
+for flag in ('--test-network-playback', '--test-music-db', '--test-music-root', '--test-music-mock-adapters',
              '--test-playback-ipc', '--test-nowplaying'):
     refused(base, [flag, '/tmp/forbidden'])
 for args in ([], ['--music-root'], ['--music-scan', '--music-scan'],

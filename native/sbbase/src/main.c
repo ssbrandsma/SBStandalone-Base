@@ -2295,6 +2295,7 @@ int main(int argc, char **argv)
 	struct pollfd pf[7 + 2*CLIENTS];
 #ifndef SB_MUSIC_RUNTIME
 	const char *playback_root = NULL;
+	int playback_network_fixture = 0;
 	int playback_ipc = -1;
 	unsigned playback_http_port = 0;
 #endif
@@ -2352,6 +2353,7 @@ int main(int argc, char **argv)
   if(!strcmp(argv[i],"--ownership-token")&&i+1<argc){ownership_token_path=argv[++i];continue;}
   if(!strcmp(argv[i],"--tinysc-arbitration")){arbitration_enabled=1;continue;}
 #if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
+		if (!strcmp(argv[i], "--test-network-playback")) { playback_network_fixture=1; continue; }
 		if (!strcmp(argv[i], "--test-music-root") && i + 1 < argc) {
 			playback_root = argv[++i];
 			continue;
@@ -2561,7 +2563,13 @@ int main(int argc, char **argv)
 	}
 #endif
 #if defined(SB_MUSIC_PLAYBACK_INTEGRATION) && !defined(SB_MUSIC_RUNTIME)
-	if (playback_root || playback_ipc >= 0 || playback_http_port) {
+	if (playback_network_fixture) {
+		if(playback_root||music_browse||!local_mock_adapters||playback_ipc<0||!playback_http_port)return 2;
+		sb_owner_init(&local_owner,1);
+		if(!sb_owner_register(&local_owner,SB_OWNER_MUSIC,104))return 2;
+		local_music=sb_playback_create(1,NULL,NULL,&local_owner,nowplaying,playback_ipc,playback_http_port,playback_send,NULL);
+		if(!local_music||!sb_playback_probe_resources(local_music,np_monotonic_ms()))return 2;
+	} else if (playback_root || playback_ipc >= 0 || playback_http_port) {
 		if (!music_browse || !local_mock_adapters || !playback_root ||
 		    playback_ipc < 0 || !playback_http_port ||
 		    !playback_start(
