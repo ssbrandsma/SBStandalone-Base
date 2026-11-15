@@ -1,5 +1,9 @@
 #include "music_contracts.h"
 #include <string.h>
+int sb_music_track_valid(const sb_music_track_id *t)
+{return t&&sb_music_source_equal(&t->source,&t->source)&&((t->kind==SB_TRACK_LOCAL&&t->track_id&&!t->network_id)||(t->kind==SB_TRACK_NETWORK&&!t->track_id&&t->network_id));}
+int sb_music_track_equal(const sb_music_track_id *a,const sb_music_track_id *b)
+{return sb_music_track_valid(a)&&sb_music_track_valid(b)&&a->kind==b->kind&&a->track_id==b->track_id&&a->network_id==b->network_id&&sb_music_source_equal(&a->source,&b->source);}
 
 int sb_music_source_equal(const sb_music_source_id *a, const sb_music_source_id *b)
 {
@@ -31,9 +35,9 @@ int sb_music_can_commit_owner(const sb_music_ownership *o, uint64_t now)
 static int stream_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)
 {
 	return a->epoch && a->owner_generation && a->media_generation && a->connection_generation &&
-		a->track.track_id && a->epoch == b->epoch && a->owner_generation == b->owner_generation &&
+		sb_music_track_valid(&a->track) && a->epoch == b->epoch && a->owner_generation == b->owner_generation &&
 		a->media_generation == b->media_generation && a->connection_generation == b->connection_generation &&
-		a->track.track_id == b->track.track_id && sb_music_source_equal(&a->track.source, &b->track.source);
+		sb_music_track_equal(&a->track,&b->track);
 }
 int sb_music_stream_event(sb_music_stream_guard *s, const sb_music_stream_id *id, sb_music_event event)
 {

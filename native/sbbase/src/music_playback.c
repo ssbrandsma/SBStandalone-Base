@@ -17,6 +17,10 @@ struct sb_music_playback {
 	sb_physical_owner *owner;
 	np_manager *np;
 	sb_music_media media;
+	sb_music_media local_media;
+	sb_music_source_id network_source;
+	sb_music_network_track network;
+	int remote_capable;
 	sb_transport transport;
 	sb_music_stream_id stream;
 	sb_music_send send;
@@ -38,6 +42,7 @@ struct sb_music_playback {
 	int candidate_registered, revoke_candidate;
 	int resource_active;
 	int single_mp3, attempted;
+	sb_queue_mode stop_previous_mode;
 	int ipc_probe_required, ipc_verified;
 	uint64_t ipc_probe_deadline, ipc_sent_ms;
 	uint64_t keepalive_ms;
@@ -139,6 +144,7 @@ static void publish(sb_music_playback *p)
 			? NP_BUFFERING
 		: q.mode == SB_Q_ERROR ? NP_ERROR
 				       : NP_STOPPED;
+	if(p->transport.state==SB_T_STOPPING&&!p->transport.stream.terminal_seen)status.state=NP_BUFFERING;
 	status.position_ms = q.elapsed_ms;
 	status.playlist_revision = q.revision;
 	status.capabilities.play = status.capabilities.pause =
@@ -150,8 +156,9 @@ static void publish(sb_music_playback *p)
 		status.duration_ms = item->duration_ms;
 		snprintf(status.track.id,
 			 sizeof status.track.id,
-			 "music:%" PRIu64,
-			 item->identity.track.track_id);
+			 "%s:%" PRIu64,
+			 item->identity.track.kind==SB_TRACK_NETWORK?"network":"music",
+			 item->identity.track.kind==SB_TRACK_NETWORK?item->identity.track.network_id:item->identity.track.track_id);
 		snprintf(status.track.title,
 			 sizeof status.track.title,
 			 "%s",
@@ -166,6 +173,9 @@ static void publish(sb_music_playback *p)
 			 item->album);
 		strcpy(status.track.audio.codec,
 		       item->codec == 'm' ? "MP3" : "FLAC");
+		snprintf(status.track.artwork,sizeof status.track.artwork,"%s",item->artwork);
+		snprintf(status.track.genre,sizeof status.track.genre,"%s",item->genre);
+		status.track.track_number=item->track_number;
 		status.track.audio.lossless = item->codec == 'm' ? 1 : 2;
 	}
 	(void)np_native_music(p->np, &status, 1);
@@ -181,7 +191,7 @@ sb_music_playback *sb_playback_create(int enabled,
 				      sb_music_send send,
 				      void *send_context)
 {
-	if (!enabled || !async || !root || !owner || !owner->enabled || !np ||
+	if (!enabled || (!!async!=!!root) || !owner || !owner->enabled || !np ||
 	    ipc < 0 || !port || port > 65535 || !send)
 		return NULL;
 	if (!sb_resource_adopt(ipc))
@@ -202,8 +212,8 @@ sb_music_playback *sb_playback_create(int enabled,
 		free(p);
 		return NULL;
 	}
-	p->load = sb_music_load_create(async, p->queue);
-	if (!p->load) {
+	if(async)p->load = sb_music_load_create(async, p->queue);
+	if (async && !p->load) {
 		sb_queue_destroy(p->queue);
 		free(p);
 		return NULL;
@@ -222,12 +232,46 @@ sb_music_playback *sb_playback_create(int enabled,
 	p->port = port;
 	p->send = send;
 	p->send_context = send_context;
-	p->media = root->media;
+	if(root)p->media=p->local_media = root->media;
+	else p->media.online=1;
+	memcpy(p->network_source.bytes,incarnation,16);
 	p->context = context;
 	p->observed_owner = owner->value.current;
 	sb_queue_context(p->queue, p->context, owner->value.generation);
 	sb_transport_init(&p->transport, 1);
 	return p;
+}
+
+static void network_candidate(sb_music_playback *p,const sb_queue_item *item)
+{
+ memset(&p->candidate,0,sizeof p->candidate);p->candidate.identity=item->identity.track;
+ p->candidate.media_generation=item->network.generation;p->candidate.duration_ms=item->duration_ms;
+ strcpy(p->candidate.codec,"mp3");snprintf(p->candidate.title,sizeof p->candidate.title,"%s",item->title);
+ snprintf(p->candidate.album,sizeof p->candidate.album,"%s",item->album);snprintf(p->candidate.artists[0],sizeof p->candidate.artists[0],"%s",item->artist);p->candidate.artist_count=*item->artist?1:0;
+ p->network=item->network;p->media=(sb_music_media){item->identity.track.source,item->network.generation,1};
+}
+int sb_playback_network_pending(const sb_music_playback *p,const char *source)
+{return p&&p->completed<p->operation&&p->candidate.identity.kind==SB_TRACK_NETWORK&&(!source||!strcmp(p->network.server,source));}
+sb_queue_result sb_playback_load_network(sb_music_playback *p,sb_queue_edit edit,const sb_queue_item *items,unsigned count,uint64_t context,uint64_t now)
+{
+ if(!p||!items||!count||count>SB_QUEUE_LIMIT||context!=p->context||p->stopping||!p->remote_capable||p->owner->suspended)return SB_Q_UNAVAILABLE;
+ if(p->ipc_pending||p->reset||p->retired_file||p->detail_job||(p->phase!=SB_PLAY_IDLE&&p->phase!=SB_PLAY_ACTIVE&&p->phase!=SB_PLAY_FAILED))return SB_Q_BUSY;
+ if(p->owner->value.current!=SB_OWNER_NONE&&p->owner->value.current!=SB_OWNER_MUSIC)return SB_Q_BUSY;
+ if(p->operation==UINT64_MAX)return SB_Q_FULL;
+ sb_queue_status snapshot=sb_queue_snapshot(p->queue);uint64_t op=++p->operation;
+ sb_queue_result result=sb_queue_begin(p->queue,edit,op,snapshot.revision,context);if(result!=SB_Q_OK)return result;
+ sb_queue_item first={0};
+ for(unsigned i=0;i<count;i++){
+  sb_queue_item item=items[i];item.identity.track.kind=SB_TRACK_NETWORK;item.identity.track.track_id=0;
+  item.identity.track.source=p->network_source;item.identity.track.network_id=op*SB_QUEUE_LIMIT+i;
+  if(op>UINT64_MAX/SB_QUEUE_LIMIT){sb_queue_abort(p->queue,op);return SB_Q_FULL;}
+  item.identity.media_generation=item.network.generation;
+  if((result=sb_queue_stage(p->queue,op,&item,1))!=SB_Q_OK){sb_queue_abort(p->queue,op);return result;}
+  if(!i)first=item;
+ }
+ p->selection_count=count;p->error[0]=0;p->edit=edit;p->owner_requested=0;
+ if(edit!=SB_Q_LOAD){result=sb_queue_commit(p->queue,op);p->completed=op;p->completed_success=result==SB_Q_OK;return result;}
+ network_candidate(p,&first);p->file_request=0;p->staged=1;p->existing=0;p->phase=SB_PLAY_FILE;p->deadline=now+20000;return SB_Q_OK;
 }
 
 sb_music_queue *sb_playback_queue(sb_music_playback *p)
@@ -316,6 +360,8 @@ sb_queue_result sb_playback_load(sb_music_playback *p,
 	if (!p || p->stopping || !p->media.online || context != p->context ||
 	    now > UINT64_MAX - 20000)
 		return SB_Q_STALE;
+	if(!p->load||!p->local_media.online)return SB_Q_UNAVAILABLE;
+	p->media=p->local_media;
 	if (p->ipc_pending || p->reset || p->retired_file || p->detail_job ||
 	    (p->phase != SB_PLAY_IDLE && p->phase != SB_PLAY_ACTIVE &&
 	     p->phase != SB_PLAY_FAILED))
@@ -461,8 +507,14 @@ int sb_playback_control(sb_music_playback *p,
 {
 	if (!p || context != p->context || !strchr("puq", command) || !command)
 		return 0;
-	if (command == 'q' && p->completed < p->operation)
+	if ((command == 'q'||command=='p') && p->completed < p->operation){
 		sb_playback_cancel(p, p->operation, context);
+		if(!p->transport.used_connection||p->transport.stream.terminal_seen){p->reset=1;p->existing=0;return 1;}
+	}
+	if(command=='q'){
+	 p->stop_previous_mode=sb_queue_snapshot(p->queue).mode;p->existing=0;
+	 if(p->phase==SB_PLAY_NEED_CONNECTION&&(!p->transport.used_connection||p->transport.stream.terminal_seen)){p->phase=SB_PLAY_IDLE;p->reset=1;return 1;}
+	}
 	if (!control(p, command, now))
 		return 0;
 	if (command == 'q') {
@@ -577,8 +629,10 @@ static void prepare_file(sb_music_playback *p, uint64_t now)
 			return;
 		}
 		uint64_t request = p->epoch + 1;
-		sb_ml_status s =
-			sb_music_file_submit(p->file,
+		sb_ml_status s;
+		if(p->candidate.identity.kind==SB_TRACK_NETWORK)
+		 s=sb_music_file_submit_network(p->file,request,&p->candidate,&p->network,p->owner->value.generation,request,now+ttl+60000);
+		else s=sb_music_file_submit(p->file,
 					     request,
 					     &p->candidate,
 					     p->owner->value.generation,
@@ -603,7 +657,7 @@ static void prepare_file(sb_music_playback *p, uint64_t now)
 	}
 	p->file_request = 0; /* worker result consumed; epoch retains identity */
 	p->message = message;
-	if (!issue(p, SB_RESOURCE_RESERVE)) {
+	if (!issue(p, message.resource.streaming?SB_RESOURCE_STREAM_RESERVE:SB_RESOURCE_RESERVE)) {
 		close(message.fd);
 		p->message.fd = -1;
 		fail(p, "resource_busy");
@@ -640,6 +694,7 @@ static int ipc_tick(sb_music_playback *p)
 		return -1;
 	}
 	unsigned operation = p->message.operation;
+	if(operation==SB_RESOURCE_RESET)p->remote_capable=!!(ack.codec&SB_RESOURCE_CAP_STREAM);
 	p->ipc_pending = p->ipc_sent = 0;
 	if (p->message.fd >= 0)
 		close(p->message.fd);
@@ -850,6 +905,7 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 				sb_queue_at(p->queue, q.intended);
 			if (!item || !item->available)
 				fail(p, "queue_entry_unavailable");
+			else if(item->identity.track.kind==SB_TRACK_NETWORK){network_candidate(p,item);p->file_request=0;p->phase=SB_PLAY_FILE;}
 			else if (!p->detail_job) {
 				sb_ml_request request = {0};
 				request.operation = SB_ML_DETAIL;
@@ -885,7 +941,7 @@ void sb_playback_tick(sb_music_playback *p, uint64_t now)
 	if (p->phase == SB_PLAY_FILE && !p->ipc_pending)
 		prepare_file(p, now);
 	if (p->phase == SB_PLAY_RESERVING &&
-	    acknowledged == SB_RESOURCE_RESERVE)
+	    (acknowledged == SB_RESOURCE_RESERVE || acknowledged==SB_RESOURCE_STREAM_RESERVE))
 		p->phase = SB_PLAY_OWNER;
 	if (p->phase == SB_PLAY_OWNER) {
 		if (p->transport.used_connection) {
@@ -1156,6 +1212,7 @@ int sb_playback_event(sb_music_playback *p,
 void sb_playback_media_removed(sb_music_playback *p,
 			       const sb_music_media *media)
 {
+	if(p&&media&&sb_music_source_equal(&p->local_media.source,&media->source)&&p->local_media.generation==media->generation)p->local_media.online=0;
 	if (!p || !media ||
 	    !sb_music_source_equal(&p->media.source, &media->source) ||
 	    p->media.generation != media->generation)
@@ -1195,6 +1252,9 @@ static int status_row(char *out,
 	np_json_escape(title, sizeof title, item->title);
 	np_json_escape(artist, sizeof artist, item->artist);
 	np_json_escape(album, sizeof album, item->album);
+	if(item->identity.track.kind==SB_TRACK_NETWORK){
+	 return status_append(out,cap,used,"{\"id\":\"network:%" PRIu64 "\",\"source_type\":\"network\",\"queue_entry_id\":\"%" PRIu64 "\",\"playlist index\":%u,\"title\":\"%s\",\"artist\":\"%s\",\"album\":\"%s\",\"duration\":%.3f,\"type\":\"mp3\",\"available\":%d,\"playable\":%d,\"text\":\"%s\",\"params\":{\"playlist_index\":%u}}",item->identity.track.network_id,item->identity.entry_id,index,title,artist,album,item->duration_ms/1000.0,item->available,item->eligible,title,index);
+	}
 	if (!status_append(out,
 			   cap,
 			   used,
@@ -1294,6 +1354,7 @@ int sb_playback_status_page(sb_music_playback *p,
 	const char *mode = q.mode == SB_Q_PLAYING  ? "play"
 			   : q.mode == SB_Q_PAUSED ? "pause"
 						   : "stop";
+	if(p->transport.state==SB_T_STOPPING&&!p->transport.stream.terminal_seen)mode=p->stop_previous_mode==SB_Q_PAUSED?"pause":"play";
 	size_t used = 0;
 	if (!status_append(
 		    out,
@@ -1381,7 +1442,7 @@ int sb_playback_destroy(sb_music_playback *p)
 		p->ipc = -1;
 		np_native_music(p->np, NULL, 0);
 	}
-	if (!sb_music_load_destroy(p->load))
+	if (p->load && !sb_music_load_destroy(p->load))
 		return 0;
 	p->load = NULL;
 	if (p->detail_job) {

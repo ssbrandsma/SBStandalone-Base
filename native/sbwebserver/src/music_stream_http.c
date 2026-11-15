@@ -158,6 +158,7 @@ static int start(struct mg_connection *c, struct mg_http_message *m)
 		range[header->len] = 0;
 		selected = range;
 	}
+	if(resource.streaming&&header){range_error(c,resource.size);return 1;}
 	sb_music_http_range r = sb_music_http_select(resource.size, selected);
 	if (r.status == 416) {
 		range_error(c, resource.size);
@@ -230,13 +231,13 @@ static void pump(stream_client *s)
 			mg_printf(c,
 				  "HTTP/1.1 %d %s\r\nContent-Type: "
 				  "%s\r\nContent-Length: %" PRIu64
-				  "\r\nAccept-Ranges: bytes\r\nCache-Control: "
+				  "\r\nAccept-Ranges: %s\r\nCache-Control: "
 				  "no-store\r\nConnection: close\r\n",
 				  s->range.status,
 				  s->range.status == 206 ? "Partial Content"
 							 : "OK",
 				  s->resource.mime,
-				  s->range.length);
+				  s->range.length,s->resource.streaming?"none":"bytes");
 			if (s->range.status == 206)
 				mg_printf(c,
 					  "Content-Range: bytes %" PRIu64

@@ -576,7 +576,11 @@ static int music_prefix_drain(client *c,
 
 static int music_http_begin(client *c, const char *body, size_t length)
 {
-	if (!music_browse)
+	if (!music_browse
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+        && !local_music
+#endif
+       )
 		return 0;
 	const char *p = body, *end;
 	unsigned messages = 0;
@@ -646,7 +650,11 @@ static void music_inherit(client *c, client *old)
 
 static void music_events(void)
 {
-	if (!music_browse)
+	if (!music_browse
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+        && !local_music
+#endif
+       )
 		return;
 	sb_browse_tick(music_browse, np_monotonic_ms());
 	uint64_t version = sb_browse_version(music_browse);

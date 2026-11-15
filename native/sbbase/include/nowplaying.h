@@ -113,6 +113,10 @@ int np_lms_arguments(const char *json,
 typedef struct { char channel[64], client[32], response[160], unsubscribe[160], id[96]; } np_lms_envelope;
 int np_lms_envelope_read(const char *,size_t,np_lms_envelope *);
 size_t np_json_escape(char *,size_t,const char *);
+/* Bounded decoder for one trusted provider metadata projection. */
+int np_json_first_item_field(const char *,size_t,const char *,char *,size_t);
+int np_json_item_field(const char *,size_t,unsigned,const char *,char *,size_t);
+int np_json_root_field(const char *,size_t,const char *,char *,size_t);
 
 /* Returns an HTTP status code and writes a JSON response. changed is set when
  * SqueezePlay-visible state changed. */

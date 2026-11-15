@@ -13,6 +13,7 @@ static struct {
 	unsigned database_mib;
 	sb_music_snapshot_view view;
 	int resource_fd, scan, scan_only, open_existing, initialize, check_only, database_opened;
+	int network_only,baby_verified;
 	unsigned port;
 	sb_storage_root media_root, db_root;
 	sb_storage_model *model;
@@ -26,6 +27,7 @@ static struct {
 static int music_runtime_argument(int argc, char **argv, int *index)
 {
 	const char *flag = argv[*index];
+	if(!strcmp(flag,"--music-network")){if(music_runtime.network_only)return -1;music_runtime.network_only=1;music_idle_only=1;return 1;}
 	if(!strcmp(flag,"--music-open-check")){if(music_runtime.check_only)return -1;music_runtime.check_only=1;return 1;}
 	if (!strcmp(flag,"--music-open") || !strcmp(flag,"--music-init")) {
 		int *mode=!strcmp(flag,"--music-open")?&music_runtime.open_existing:&music_runtime.initialize;
@@ -382,8 +384,37 @@ static int runtime_open_check(void)
  return ok;
 }
 
+static int music_safety_allowed(void)
+{
+#ifndef SB_TARGET_FAB4
+ if(music_runtime.network_only)return music_runtime.baby_verified;
+#endif
+ return sb_ts_music_allowed(tinysc_lifecycle);
+}
+static int network_runtime_start(void)
+{
+ if(!ownership_bridge.enabled||music_runtime.root||music_runtime.database||music_runtime.store||music_runtime.scan||music_runtime.initialize||music_browse_only||!music_runtime.port)return 0;
+#ifndef SB_TARGET_FAB4
+ char board[8192],firmware[128];FILE *f=fopen("/proc/cpuinfo","r");size_t n=f?fread(board,1,sizeof board-1,f):0;if(f)fclose(f);board[n]=0;
+ f=fopen("/etc/squeezeos.version","r");char *line=f?fgets(firmware,sizeof firmware,f):NULL;if(f)fclose(f);
+ music_runtime.baby_verified=strstr(board,"Logitech MX25 Baby Board")&&line&&!strncmp(firmware,"7.7.3 r16676",12)&&(firmware[12]==0||firmware[12]=='\n'||firmware[12]=='\r');
+#endif
+ if(!music_safety_allowed())return 0;
+ if(music_runtime.resource_fd<0){int conn=sb_resource_rendezvous_connect(12000),pair[2]={-1,-1};
+  if(conn>=0&&sb_resource_pair(pair)&&sb_resource_push_fd(conn,pair[1])){close(pair[1]);music_runtime.resource_fd=pair[0];}
+  else {if(pair[0]>=0)close(pair[0]);if(pair[1]>=0)close(pair[1]);}
+  if(conn>=0)close(conn);
+ }
+ local_music=sb_playback_create(1,NULL,NULL,&production_owner,nowplaying,music_runtime.resource_fd,music_runtime.port,playback_send,NULL);
+ if(!local_music||!sb_playback_probe_resources(local_music,np_monotonic_ms()))return 0;
+ sb_ob_bind_music(&ownership_bridge,sb_playback_bridge_proof,sb_playback_bridge_begin,sb_playback_bridge_ready,local_music);
+ ownership_bridge.unavailable_mask=(1u<<SB_OWNER_RADIO)|(1u<<SB_OWNER_SPOTIFY)|(1u<<SB_OWNER_QOBUZ);
+ ownership_bridge.startup_native_absent_mask=runtime_native_absence();ownership_bridge.idle_only=1;
+ fputs("NETWORK_MUSIC ready; shared Music owner, no SQLite and no autoplay\n",stderr);return 1;
+}
 static int music_runtime_start(void)
 {
+	if(music_runtime.network_only)return network_runtime_start();
 	/* Normal browse startup opens the existing catalogue and never implies scan. */
 	if(music_browse_only&&!music_runtime.scan&&!music_runtime.initialize)
 		music_runtime.open_existing=1;
@@ -565,6 +596,11 @@ static int music_runtime_start(void)
 
 static void music_runtime_tick(void)
 {
+	if(music_runtime.network_only){
+	 if(!music_safety_allowed()&&!music_runtime.revoked){music_runtime.revoked=1;ownership_bridge.admission_holds|=1u<<31;
+	  sb_queue_status q=sb_queue_snapshot(sb_playback_queue(local_music));sb_playback_control(local_music,'q',q.context,np_monotonic_ms());}
+	 return;
+	}
 	/* Snapshot validation/reopen/removal is serialized on the DB worker. */
 	if(music_runtime.store){
 		if(!music_runtime.revoked&&!sb_ts_music_allowed(tinysc_lifecycle)){

@@ -244,8 +244,7 @@ static int id_equal(const sb_music_stream_id *a, const sb_music_stream_id *b)
 	       a->owner_generation == b->owner_generation &&
 	       a->connection_generation == b->connection_generation &&
 	       a->media_generation == b->media_generation &&
-	       a->track.track_id == b->track.track_id &&
-	       sb_music_source_equal(&a->track.source, &b->track.source);
+	       sb_music_track_equal(&a->track,&b->track);
 }
 
 static void
@@ -327,7 +326,7 @@ int sb_transport_prepare(sb_transport *t,
 	    t->used_connection || id->connection_generation != t->connection ||
 	    id->owner_generation != t->owner_generation || !id->epoch ||
 	    id->epoch <= t->last_epoch || !id->media_generation ||
-	    !id->track.track_id ||
+	    !sb_music_track_valid(&id->track) ||
 	    !sb_music_source_equal(&id->track.source, &id->track.source) ||
 	    now > UINT64_MAX - 10000)
 		return 0;

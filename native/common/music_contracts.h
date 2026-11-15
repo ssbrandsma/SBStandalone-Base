@@ -17,7 +17,15 @@ typedef struct {
 	uint64_t generation; /* monotonic within controller incarnation; zero invalid */
 	int online;
 } sb_music_media;
-typedef struct { sb_music_source_id source; uint64_t track_id; } sb_music_track_id;
+enum { SB_TRACK_LOCAL=0,SB_TRACK_NETWORK=1 };
+typedef struct { sb_music_source_id source; uint64_t track_id;
+ unsigned kind;uint64_t network_id; } sb_music_track_id;
+int sb_music_track_valid(const sb_music_track_id *);
+int sb_music_track_equal(const sb_music_track_id *,const sb_music_track_id *);
+typedef struct {
+ char server[256],object[512],uri[2048];
+ uint64_t generation;
+} sb_music_network_track;
 typedef enum { SB_OWNER_NONE, SB_OWNER_RADIO, SB_OWNER_SPOTIFY,
 	SB_OWNER_QOBUZ, SB_OWNER_MUSIC } sb_music_owner;
 typedef enum { SB_YIELD_IDLE, SB_YIELD_REQUESTED, SB_YIELD_ACKNOWLEDGED,
@@ -96,6 +104,7 @@ typedef struct {
 	unsigned methods;
 	char mime[64];
 	int revoked;
+	int streaming; /* explicit resource wire v3 socket stream; never pread/seek */
 } sb_music_resource;
 typedef struct { uint64_t first, length; } sb_music_byte_range;
 /* API-only future provider: successful open transfers one owned descriptor.

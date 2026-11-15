@@ -59,7 +59,7 @@ test -f "$image_prefix/lib/libz.a" || { echo "Run scripts/build-image-libs.sh fi
 mkdir -p "$out"
 
 "$cc" -static $flags -std=c99 -Wall -Wextra -Wpedantic -Wl,--gc-sections \
-  -I"$root/native/sbbase/include" "$root/native/sbbase/src/main.c" "$root/native/sblifecycle/tinysc.c" -pthread "$root/native/sbbase/src/ownership_bridge.c" "$root/native/common/music_resource_ipc.c" \
+  -I"$root/native/sbbase/include" "$root/native/sbbase/src/main.c" "$root/native/sblifecycle/tinysc.c" -pthread "$root/native/sbbase/src/ownership_bridge.c" "$root/native/common/upnp_ipc.c" "$root/native/common/music_resource_ipc.c" \
   "$root/native/sbbase/src/protocol.c" "$root/native/sbbase/src/nowplaying.c" \
   "$root/native/sbbase/src/alarms.c" "$root/native/sbbase/src/sleep.c" \
   "$root/native/sbbase/src/output_queue.c" "$root/native/sbbase/src/slim_controller.c" \
@@ -113,6 +113,7 @@ sh "$root/scripts/verify-arm.sh" "$platform" "$out" "$toolchain/bin/$target-read
   sha256sum "$cc" "$tls_prefix/lib/libcurl.a" "$wolf_prefix/lib/libwolfssl.a" \
     "$image_prefix/lib/libz.a" "$image_prefix/lib/libpng16.a" "$image_prefix/lib/libjpeg.a"
 } > "$out/build-manifest.txt"
+
 
 # WP1/WP6a/WP2 build isolated music components; the runtime stays disabled.
 ARM_TOOLCHAIN_DIR="$toolchain" sh "$root/scripts/build-music-arm.sh" "$platform"

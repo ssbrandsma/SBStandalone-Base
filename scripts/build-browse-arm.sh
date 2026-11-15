@@ -20,7 +20,7 @@ sources="$root/native/sbmusic/music_async.c $root/native/sbbase/src/music_browse
  "$root/tests/music/test_browse.c" $sources "$music/libsbmusic-scanner.a" "$music/libsbmusic-storage.a" \
  "$music/libsbmusic.a" "$music/libsbmusic-metadata.a" "$music/libsbmusic-sqlite.a" -o "$out/test_music_browse"
 "$cc" $flags -D_GNU_SOURCE -DSB_MUSIC_BROWSE_TESTING=1 -static -pthread -Wl,--gc-sections -I"$root/native/sbbase/include" \
- "$root/native/sbbase/src/main.c" "$root/native/sblifecycle/tinysc.c" -pthread "$root/native/sbbase/src/ownership_bridge.c" "$root/native/common/music_resource_ipc.c" "$root/native/sbbase/src/protocol.c" "$root/native/sbbase/src/alarms.c" \
+ "$root/native/sbbase/src/main.c" "$root/native/sblifecycle/tinysc.c" -pthread "$root/native/sbbase/src/ownership_bridge.c" "$root/native/common/upnp_ipc.c" "$root/native/common/music_resource_ipc.c" "$root/native/sbbase/src/protocol.c" "$root/native/sbbase/src/alarms.c" \
  "$root/native/sbbase/src/sleep.c" "$root/native/sbbase/src/slim_controller.c" "$root/native/sbbase/src/output_queue.c" \
  $sources "$music/libsbmusic.a" "$music/libsbmusic-sqlite.a" -o "$out/sbbase_browse_test"
 "$sdk/bin/arm-buildroot-linux-musleabi-strip" --strip-all "$out/test_music_browse" "$out/sbbase_browse_test"

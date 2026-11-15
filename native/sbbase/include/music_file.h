@@ -4,6 +4,7 @@
 #include "../../sbmusic/music_library.h"
 #include "../../common/music_resource_ipc.h"
 typedef struct sb_music_file sb_music_file;
+sb_ml_status sb_music_file_submit_network(sb_music_file *,uint64_t,const sb_ml_track *,const sb_music_network_track *,uint64_t,uint64_t,uint64_t);
 /* Explicit validated root, duplicated at construction. One bounded open job.
  * No root discovery and no database opens; disabled creates nothing. */
 sb_music_file *sb_music_file_start(int enabled, const sb_storage_root *);

@@ -77,6 +77,8 @@ if(LUA_EXECUTABLE)
   add_test(NAME playback_fence_lua COMMAND ${LUA_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/music/test_playback_fence.lua
     ${CMAKE_SOURCE_DIR})
+  add_test(NAME network_music_lua COMMAND ${LUA_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/music/test_network_music.lua ${CMAKE_SOURCE_DIR})
 endif()
 
 find_program(NODE_EXECUTABLE NAMES node nodejs)
@@ -335,6 +337,10 @@ if(TARGET sbmusic_queue)
  target_include_directories(test_music_playback PRIVATE ../native/sbwebserver/src ../native/common)
  target_compile_options(test_music_playback PRIVATE -UNDEBUG -Wall -Wextra -Wpedantic)
  target_link_libraries(test_music_playback PRIVATE sbmusic_playback sbmusic_browse sbmusic_scanner)
+ add_executable(test_network_playback music/test_network_playback.c ../native/sbbase/src/nowplaying.c ../native/sbbase/src/lms_command.c ../native/sbwebserver/src/music_stream.c)
+ target_include_directories(test_network_playback PRIVATE ../native/sbwebserver/src ../native/common)
+ target_compile_options(test_network_playback PRIVATE -UNDEBUG -Wall -Wextra -Wpedantic)
+ target_link_libraries(test_network_playback PRIVATE sbmusic_playback)
  add_executable(test_music_load music/test_load.c ../native/sbbase/src/nowplaying.c ../native/sbbase/src/lms_command.c)
  target_compile_options(test_music_load PRIVATE -UNDEBUG -Wall -Wextra -Wpedantic)
  target_link_libraries(test_music_load PRIVATE sbmusic_load)

@@ -1,3 +1,72 @@
 STANDALONE_BASE
 	EN	Standalone Base
 	NL	Standalone Basis
+
+NETWORK_MUSIC_LOADING
+	EN	Loading…
+	NL	Laden…
+NETWORK_MUSIC_UNAVAILABLE
+	EN	Music source unavailable — select to retry
+	NL	Muziekbron niet beschikbaar — selecteer om opnieuw te proberen
+NETWORK_MUSIC_MORE
+	EN	More
+	NL	Meer
+NETWORK_MUSIC_EMPTY
+	EN	No items
+	NL	Geen items
+NETWORK_MUSIC_SEARCH
+	EN	Search
+	NL	Zoeken
+NETWORK_MUSIC_PLAY
+	EN	Play
+	NL	Afspelen
+
+NETWORK_MUSIC_NETWORK_PLAYBACK
+	EN	Network Playback
+	NL	Netwerkweergave
+NETWORK_MUSIC_ALLOW
+	EN	Allow Network Playback
+	NL	Netwerkweergave toestaan
+NETWORK_MUSIC_DEVICE_NAME
+	EN	Device Name
+	NL	Apparaatnaam
+NETWORK_MUSIC_RENDERER_NAME
+	EN	Squeezebox Network Playback
+	NL	Squeezebox netwerkweergave
+NETWORK_MUSIC_ON
+	EN	On
+	NL	Aan
+NETWORK_MUSIC_OFF
+	EN	Off
+	NL	Uit
+
+NETWORK_MUSIC_TITLE
+	EN	Title
+	NL	Titel
+NETWORK_MUSIC_ARTIST
+	EN	Artist
+	NL	Artiest
+NETWORK_MUSIC_ALBUM
+	EN	Album
+	NL	Album
+NETWORK_MUSIC_GENRE
+	EN	Genre
+	NL	Genre
+NETWORK_MUSIC_SORT_TITLE
+	EN	Sort by title
+	NL	Sorteren op titel
+NETWORK_MUSIC_SERVER_ORDER
+	EN	Server order
+	NL	Volgorde van server
+NETWORK_MUSIC_PLAY_ALL
+	EN	Play this container (up to 256 items)
+	NL	Deze map afspelen (maximaal 256 items)
+NETWORK_MUSIC_ADD_ALL
+	EN	Add this container (up to 256 items)
+	NL	Deze map toevoegen (maximaal 256 items)
+NETWORK_MUSIC_ADD
+	EN	Add to queue
+	NL	Toevoegen aan wachtrij
+NETWORK_MUSIC_PLAY_NEXT
+	EN	Play next
+	NL	Hierna afspelen

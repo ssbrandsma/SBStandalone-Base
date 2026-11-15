@@ -16,7 +16,7 @@ out="$root/build-arm/$platform/playback"
 image=${ARM_IMAGE_PREFIX:-$root/build-image-arm/prefix}
 mkdir -p "$out"
 flags="$flags -D_FILE_OFFSET_BITS=64 -ffunction-sections -fdata-sections -std=c99 -Wall -Wextra -Wpedantic -UNDEBUG"
-common="$root/native/common/music_resource_ipc.c $root/native/common/music_http.c"
+common="$root/native/common/music_resource_ipc.c $root/native/common/music_http.c $root/native/common/upnp_ipc.c $root/native/common/remote_http.c"
 core="$root/native/sbbase/src/music_queue.c $root/native/sbbase/src/music_load.c $root/native/sbbase/src/music_file.c $root/native/sbbase/src/music_playback.c $root/native/sbmusic/music_async.c $root/native/sbbase/src/music_browse.c $root/native/sbbase/src/nowplaying.c $root/native/sbbase/src/lms_command.c $root/native/sbbase/src/slim_controller.c $root/native/sbbase/src/output_queue.c $root/native/sbbase/src/protocol.c"
 libs="$music/libsbmusic-storage.a $music/libsbmusic.a $music/libsbmusic-sqlite.a"
 "$cc" $flags -static -pthread -Wl,--gc-sections -I"$root/native/sbbase/include" \

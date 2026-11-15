@@ -11,8 +11,10 @@ enum {
 	SB_RESOURCE_RESET,
 	SB_RESOURCE_ACK,
 	SB_RESOURCE_RESERVE,
-	SB_RESOURCE_ACTIVATE
+	SB_RESOURCE_ACTIVATE,
+	SB_RESOURCE_STREAM_RESERVE /* v3: connected TCP fd, never local-file semantics */
 };
+#define SB_RESOURCE_CAP_STREAM 128u /* RESET ACK codec capability bit */
 
 typedef struct {
 	unsigned operation, codec, status;

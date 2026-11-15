@@ -326,13 +326,13 @@ int sb_resource_pair(int pair[2])
 int sb_resource_send(int socket, const sb_resource_message *m)
 {
 	if (!m || !m->sequence || m->operation < SB_RESOURCE_REGISTER ||
-	    m->operation > SB_RESOURCE_ACTIVATE ||
+	    m->operation > SB_RESOURCE_STREAM_RESERVE ||
 	    ((m->operation == SB_RESOURCE_REGISTER ||
-	      m->operation == SB_RESOURCE_RESERVE) != (m->fd >= 0)))
+	      m->operation == SB_RESOURCE_RESERVE || m->operation==SB_RESOURCE_STREAM_RESERVE) != (m->fd >= 0)))
 		return -1;
 	unsigned char wire[SB_RESOURCE_WIRE] = {0};
 	memcpy(wire, "SBM4", 4);
-	wire[4] = 2;
+	wire[4] = m->operation==SB_RESOURCE_STREAM_RESERVE?3:2;
 	wire[5] = (unsigned char)m->operation;
 	wire[6] = (unsigned char)m->codec;
 	wire[7] = (unsigned char)(m->operation == SB_RESOURCE_ACK
@@ -428,10 +428,10 @@ int sb_resource_receive(int socket, sb_resource_message *out)
 	}
 	if (n != SB_RESOURCE_WIRE ||
 	    (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC)) || invalid ||
-	    memcmp(wire, "SBM4", 4) || wire[4] != 2 || !get(wire + 8) ||
-	    wire[5] < SB_RESOURCE_REGISTER || wire[5] > SB_RESOURCE_ACTIVATE ||
+	    memcmp(wire, "SBM4", 4) || wire[4] != (wire[5]==SB_RESOURCE_STREAM_RESERVE?3:2) || !get(wire + 8) ||
+	    wire[5] < SB_RESOURCE_REGISTER || wire[5] > SB_RESOURCE_STREAM_RESERVE ||
 	    count != (wire[5] == SB_RESOURCE_REGISTER ||
-				      wire[5] == SB_RESOURCE_RESERVE
+				      wire[5] == SB_RESOURCE_RESERVE || wire[5]==SB_RESOURCE_STREAM_RESERVE
 			      ? 1
 			      : 0))
 		goto fail;
@@ -457,21 +457,25 @@ int sb_resource_receive(int socket, sb_resource_message *out)
 	m.mtime_seconds = get(wire + 120);
 	m.mtime_nanoseconds = get(wire + 128);
 	m.resource.kind = SB_RESOURCE_AUDIO;
+	m.resource.streaming=m.operation==SB_RESOURCE_STREAM_RESERVE;
 	if (m.codec == 'm')
 		strcpy(m.resource.mime, "audio/mpeg");
 	else if (m.codec == 'f')
 		strcpy(m.resource.mime, "audio/flac");
 	if ((m.operation == SB_RESOURCE_REGISTER ||
-	     m.operation == SB_RESOURCE_RESERVE) &&
+	     m.operation == SB_RESOURCE_RESERVE || m.operation==SB_RESOURCE_STREAM_RESERVE) &&
 	    (!m.resource.mime[0] || !m.resource.media.generation ||
 	     !m.resource.owner_generation || !m.resource.stream_epoch ||
 	     !m.resource.expires_ms || !m.resource.methods ||
 	     (m.resource.methods & ~(SB_RESOURCE_GET | SB_RESOURCE_HEAD))))
 		goto fail;
 	if (m.operation == SB_RESOURCE_REGISTER ||
-	    m.operation == SB_RESOURCE_RESERVE) {
-		if (!m.inode || m.mtime_nanoseconds >= 1000000000)
+	    m.operation == SB_RESOURCE_RESERVE || m.operation==SB_RESOURCE_STREAM_RESERVE) {
+		if (!m.resource.streaming && (!m.inode || m.mtime_nanoseconds >= 1000000000))
 			goto fail;
+		if(m.resource.streaming){struct sockaddr_storage peer;socklen_t len=sizeof peer;int type;socklen_t ts=sizeof type;
+		 if(getpeername(fd,(struct sockaddr *)&peer,&len)||peer.ss_family!=AF_INET||getsockopt(fd,SOL_SOCKET,SO_TYPE,&type,&ts)||type!=SOCK_STREAM||!m.resource.size)goto fail;
+		}
 		unsigned token = 0, source = 0;
 		for (unsigned i = 0; i < 32; i++)
 			token |= m.resource.token[i];

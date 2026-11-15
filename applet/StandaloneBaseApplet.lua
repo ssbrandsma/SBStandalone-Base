@@ -33,11 +33,12 @@ oo.class(_M, Applet)
 local ROOT = "/usr/share/jive/applets/StandaloneBase"
 local RUN = "/tmp/standalonebase"
 local CONFIG = "/mnt/storage/standalonebase/config.json"
-local SERVICES = {
+local function defaultServices() return {
     { name="HTTPS Proxy", exe="sbproxy", args="--listen 127.0.0.1:8765" },
     { name="Bootstrap service", exe="sbbase", args="--config "..CONFIG },
     { name="Webserver", exe="sbwebserver", args="--web-root "..ROOT.." --config-dir /mnt/storage/standalonebase" },
-}
+} end
+local SERVICES=defaultServices()
 local started = false
 local checkedInitialPlayerSelection = false
 
@@ -190,6 +191,7 @@ local function refreshConfig()
 end
 function init(self)
     if started then return end
+    SERVICES=defaultServices()
     if platform.name == "unknown" or not Platform.packageMatches(platform.name) then
         migrationLog:error("StandaloneBase: unsupported board; services not started")
         return
@@ -230,6 +232,40 @@ function init(self)
             "--root '/media/sda1/mp3/Fleetwood Mac - Rumors-1977-FAF' --database /dev/standalone-music-test/library-wp4a3b.db "..
             "--token /var/run/sb-music-owner/token --catalog "..CONFIG.." --web-config /mnt/storage/standalonebase --web-root "..ROOT.." --port 80"}}
     end
+    local upnp=io.open(ROOT.."/sbupnp","rb")
+    if upnp then
+        upnp:close()
+        local networkBase=io.open(ROOT.."/sbbase-network","rb")
+        local networkWeb=io.open(ROOT.."/sbwebserver-network","rb")
+        local firmwareFile=io.open("/etc/squeezeos.version","r")
+        local firmwareVersion=firmwareFile and firmwareFile:read("*l")
+        if firmwareFile then firmwareFile:close() end
+        local qualified=firmwareVersion=="7.7.3 r16676" and (platform.name=="baby" or arbitration)
+        if networkBase and networkWeb and not self.musicFence and qualified then
+            networkBase:close();networkWeb:close()
+            os.execute("mkdir -m 700 /var/run/standalonebase /var/run/sb-music-owner >/dev/null 2>&1")
+            local previousMarker=io.open("/var/run/standalonebase/music-fence.enabled","r")
+            if previousMarker then previousMarker:close() end
+            local marker=io.open("/var/run/standalonebase/music-fence.enabled","w")
+            if marker then
+                marker:close()
+                local fence,reason=require("applets.StandaloneBase.PlaybackFenceV6").install()
+                if fence then
+                    self.networkFence=fence
+                    self.networkFenceMarker=not previousMarker
+                    SERVICES[2]={name="Bootstrap and music",exe="sbbase-network",args="--music-network --ownership-token /var/run/sb-music-owner/token --music-http-port 80 --config "..CONFIG..(arbitration and " --tinysc-arbitration" or "")}
+                    SERVICES[3]={name="Webserver",exe="sbwebserver-network",args="--web-root "..ROOT.." --config-dir /mnt/storage/standalonebase"}
+                else
+                    if not previousMarker then os.remove("/var/run/standalonebase/music-fence.enabled") end
+                    migrationLog:error("Network decoder fence unavailable: ",reason)
+                end
+            end
+        else
+            if networkBase then networkBase:close() end
+            if networkWeb then networkWeb:close() end
+        end
+        SERVICES[#SERVICES+1]={name="Network Music",exe="sbupnp",args="--daemon"}
+    end
     started=true
     if arbitration then
         os.execute("mkdir -m 700 /var/run/standalonebase >/dev/null 2>&1")
@@ -246,6 +282,7 @@ function init(self)
     launch(SERVICES[1])
     refreshConfig()
     for i=2,#SERVICES do if not launch(SERVICES[i]) then self.failures[SERVICES[i].exe]=1 end end
+    if upnp then self.networkMusic=require("applets.StandaloneBase.NetworkMusic").new(self) end
     self.timeSync=TimeSync.new(); self.timeSync:start()
     self.remoteBridge=RemoteBridge(); self.remoteBridge:init()
     if self.musicFence then
@@ -314,6 +351,21 @@ function startServices(self)
 end
 function supervise(self)
     if self.firmwareUpdates and self.firmwareUpdates:busy() then return end
+    -- Preserve the ordinary bootstrap/web service if the optional network
+    -- runtime repeatedly fails its platform or resource admission at startup.
+    if SERVICES[2].exe=="sbbase-network" and not alive(SERVICES[2]) and
+        (self.failures["sbbase-network"] or 0)>=5 then
+        for _,index in ipairs({2,3}) do
+            local service=SERVICES[index]
+            if self.backoff[service.exe] then self.backoff[service.exe]:stop();self.backoff[service.exe]=nil end
+            stop(service)
+        end
+        local ordinary=defaultServices()
+        SERVICES[2]=ordinary[2];SERVICES[3]=ordinary[3]
+        if self.networkFenceMarker then os.remove("/var/run/standalonebase/music-fence.enabled");self.networkFenceMarker=nil end
+        migrationLog:error("Network music runtime unavailable; restoring bootstrap and web services")
+        launch(SERVICES[2]);launch(SERVICES[3])
+    end
     suppressRetiredCloudServer()
     redirectLiveBootstrapServer()
     connectToLocalServer()
@@ -328,9 +380,11 @@ function supervise(self)
     end
 end
 function menu(self)
+    -- Network Playback remains in the existing Standalone settings window.
     local window=Window("text_list","Standalone Base")
     local menu=SimpleMenu("menu")
     for _,s in ipairs(SERVICES) do menu:addItem({text=s.name..": "..(alive(s) and "Running" or "Stopped")}) end
+    if self.networkMusic then menu:addItem({text=self:string("NETWORK_MUSIC_NETWORK_PLAYBACK"),callback=function() self.networkMusic:settings() end}) end
     if platform.extended_storage then menu:addItem({text="Extended Storage",callback=function() self:storageMenu() end}) end
     menu:addItem({text="Web Access",callback=function() if not self.remoteBridge:isInjecting() then self:webAccessMenu() end end})
     if self.firmwareUpdates then menu:addItem({text="Custom Firmware Updates",callback=function() self.firmwareUpdates:menu() end}) end
@@ -514,6 +568,8 @@ function getStandaloneStorageStatus(self) return storage:getStorageStatus() end
 function getStandaloneStoragePreparation(self) return storage:getStoragePreparation() end
 function verifyStandaloneStorage(self) return storage:verifyStorage() end
 function free(self)
+    if self.networkMusic then self.networkMusic:stop();self.networkMusic=nil end
+    if self.networkFenceMarker then os.remove("/var/run/standalonebase/music-fence.enabled");self.networkFenceMarker=nil end
     if self.musicStartupTimer then self.musicStartupTimer:stop();self.musicStartupTimer=nil end
     if self.musicProduction then self.musicProduction:shutdown();self.musicProduction=nil end
     if self.musicFence then self.musicFence:shutdown();self.musicFence=nil end

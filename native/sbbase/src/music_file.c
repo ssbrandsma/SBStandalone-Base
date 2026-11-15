@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _FILE_OFFSET_BITS 64
 #include "music_file.h"
+#include "../../common/remote_http.h"
 #include <sys/stat.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -18,6 +19,7 @@ struct sb_music_file {
 	int pipe[2];
 	uint64_t request, last_request;
 	sb_ml_track track;
+	sb_music_network_track network;
 	sb_resource_message result;
 	sb_ml_status status;
 };
@@ -41,7 +43,12 @@ static void *open_worker(void *opaque)
 		sb_ml_status status = SB_ML_IO;
 		sb_music_media media = {
 			f->track.identity.source, f->track.media_generation, 1};
-		if (sb_storage_open_relative(&f->root,
+		if(f->track.identity.kind==SB_TRACK_NETWORK){
+		 uint64_t size=0;fd=sb_remote_http_open(f->network.uri,&size);
+		 if(fd>=0&&sb_music_resource_entropy(f->result.resource.token)){
+		  f->result.resource.size=size;f->result.resource.streaming=1;status=SB_ML_OK;
+		 }
+		}else if (sb_storage_open_relative(&f->root,
 					     &media,
 					     f->track.path,
 					     0,
@@ -89,19 +96,20 @@ static void *open_worker(void *opaque)
 
 sb_music_file *sb_music_file_start(int enabled, const sb_storage_root *root)
 {
-	if (!enabled || !root || root->fd < 0 || !root->media.online)
+	if (!enabled || (root && (root->fd < 0 || !root->media.online)))
 		return NULL;
 	sb_music_file *f = calloc(1, sizeof *f);
 	if (!f)
 		return NULL;
-	f->root = *root;
+	f->root.fd=-1;
+	if(root)f->root = *root;
 	f->result.fd = -1;
-	f->root.fd = fcntl(root->fd, F_DUPFD, 3);
-	if (f->root.fd < 0) {
+	if(root)f->root.fd = fcntl(root->fd, F_DUPFD, 3);
+	if (root && f->root.fd < 0) {
 		free(f);
 		return NULL;
 	}
-	if (fcntl(f->root.fd, F_SETFD, FD_CLOEXEC) < 0)
+	if (root && fcntl(f->root.fd, F_SETFD, FD_CLOEXEC) < 0)
 		goto fail_fd;
 	if (pipe(f->pipe))
 		goto fail_fd;
@@ -178,6 +186,20 @@ sb_ml_status sb_music_file_submit(sb_music_file *f,
 	}
 	pthread_mutex_unlock(&f->lock);
 	return status;
+}
+
+sb_ml_status sb_music_file_submit_network(sb_music_file *f,uint64_t request,const sb_ml_track *track,const sb_music_network_track *network,uint64_t owner,uint64_t epoch,uint64_t expires)
+{
+ if(!f||!track||!network||track->identity.kind!=SB_TRACK_NETWORK||!sb_music_track_valid(&track->identity)||!request||!owner||!epoch||!expires||!network->generation||!memchr(network->uri,0,sizeof network->uri))return SB_ML_INVALID;
+ if(pthread_mutex_trylock(&f->lock))return SB_ML_BUSY;
+ sb_ml_status status=SB_ML_BUSY;
+ if(!f->stop&&!f->state&&request>f->last_request){
+  f->request=f->last_request=request;f->track=*track;f->network=*network;memset(&f->result,0,sizeof f->result);f->result.fd=-1;
+  f->result.codec='m';f->result.operation=SB_RESOURCE_STREAM_RESERVE;f->result.resource.kind=SB_RESOURCE_AUDIO;
+  f->result.resource.media=(sb_music_media){track->identity.source,network->generation,1};f->result.resource.owner_generation=owner;f->result.resource.stream_epoch=epoch;f->result.resource.expires_ms=expires;f->result.resource.methods=SB_RESOURCE_GET|SB_RESOURCE_HEAD;
+  f->cancelled=0;f->state=1;pthread_cond_signal(&f->wake);status=SB_ML_OK;
+ }
+ pthread_mutex_unlock(&f->lock);return status;
 }
 
 sb_ml_status sb_music_file_result(sb_music_file *f,

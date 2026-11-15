@@ -498,6 +498,26 @@ static int string_value(const char *j, const jtok *t, char *o, size_t cap)
  * @param d Object referenced by d.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
+int np_json_first_item_field(const char *json,size_t len,const char *key,char *out,size_t capacity)
+{
+ return np_json_item_field(json,len,0,key,out,capacity);
+}
+static int projection_field(const char *json,size_t len,unsigned index,int root,const char *key,char *out,size_t capacity)
+{
+ jtok tokens[2048];int count=parse_json(json,len,tokens,2048);if(count<=0)return 0;
+ int object=0;
+ if(!root){int items=member(json,tokens,count,0,"items");if(items<0||tokens[items].type!=J_ARRAY)return 0;
+  object=items+1;while(index--&&object<count)object=subtree(tokens,count,object);
+  if(object>=count||tokens[object].type!=J_OBJECT||tokens[object].parent!=items)return 0;
+ }
+ int value=member(json,tokens,count,object,key);if(value<0)return 0;
+ if(tokens[value].type==J_STRING)return string_value(json,&tokens[value],out,capacity);
+ size_t n=(size_t)(tokens[value].end-tokens[value].start);if(tokens[value].type!=J_PRIMITIVE||n>=capacity)return 0;memcpy(out,json+tokens[value].start,n);out[n]=0;return 1;
+}
+int np_json_item_field(const char *json,size_t len,unsigned index,const char *key,char *out,size_t capacity)
+{return projection_field(json,len,index,0,key,out,capacity);}
+int np_json_root_field(const char *json,size_t len,const char *key,char *out,size_t capacity)
+{return projection_field(json,len,0,1,key,out,capacity);}
 static int boolean(const char *j, const jtok *t, int *d)
 {
 	int n = t->end - t->start;

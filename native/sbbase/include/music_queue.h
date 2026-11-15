@@ -29,7 +29,10 @@ typedef enum {
 
 typedef struct {
 	sb_music_queue_entry identity;
+	sb_music_network_track network;
 	char title[128], artist[128], album[128];
+	char artwork[384],genre[128];
+	unsigned track_number;
 	uint64_t duration_ms;
 	uint64_t
 		queue_revision; /* creation/last availability change revision */

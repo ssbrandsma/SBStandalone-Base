@@ -30,6 +30,7 @@
 #include <stdarg.h>
 #endif
 #include "../../common/music_contracts.h"
+#include "../../common/upnp_ipc.h"
 #include "alarms.h"
 #include "sleep.h"
 #include "../../common/firmware_state.h"
@@ -73,6 +74,15 @@
 
 typedef struct {
 	int fd, kind, helo, close_after_drain, http_resume;
+	int upnp_fd;
+	uint64_t upnp_request,upnp_deadline;
+	char *upnp_reply;
+	size_t upnp_length,upnp_sent;
+	sb_upnp_request *upnp_selection;
+	int upnp_edit;
+	void *upnp_items;
+	unsigned upnp_item_count,upnp_update_id,upnp_page_count;
+	uint64_t upnp_intent;
 	sb_output output;
 #ifdef SB_MUSIC_BROWSE_INTEGRATION
 	struct music_http *music_http;
@@ -158,12 +168,14 @@ static catalog_entry catalog_entries[128];
 static size_t catalog_entry_count;
 
 static sb_config *active_config;
+static uint64_t upnp_intent_generation;
 
 static volatile sig_atomic_t running = 1;
 static volatile sig_atomic_t exit_signal = 0;
 static sb_tinysc *tinysc_lifecycle;
 #ifdef SB_MUSIC_RUNTIME
 static void music_runtime_tick(void);
+static int music_safety_allowed(void);
 static int music_browse_only;
 static int music_idle_only;
 #endif
@@ -274,6 +286,8 @@ static uint64_t ownership_connection_sequence;
 
 static void close_client(client *c)
 {
+ if(c->upnp_fd>=0)close(c->upnp_fd);
+ c->upnp_fd=-1;free(c->upnp_reply);c->upnp_reply=NULL;free(c->upnp_selection);c->upnp_selection=NULL;free(c->upnp_items);c->upnp_items=NULL;
  if(c->ownership_connection)sb_ob_connection(&ownership_bridge,c->ownership_connection,0);
  c->ownership_connection=0;c->ownership_wait=0;
 #ifdef SB_MUSIC_PLAYBACK_INTEGRATION
@@ -1286,6 +1300,9 @@ request_responses(const char *body, const sb_config *cfg, char *out, size_t cap)
 
 
 		parsed = sb_lms_command_parse(p, (size_t)(next - p), &command);
+		if(parsed==SB_COMMAND_OK && (!strcmp(command.arguments[0],"stop") ||
+		 (!strcmp(command.arguments[0],"power")&&command.count>1&&!strcmp(command.arguments[1],"0")) ||
+		 (!strcmp(command.arguments[0],"pause")&&(command.count==1||strcmp(command.arguments[1],"0")))))upnp_intent_generation=0;
 		if (parsed != SB_COMMAND_OK) {
 			snprintf(msg, sizeof msg,
 				 "{%s\"channel\":\"/slim/request\",\"successful\":false,\"error\":\"%s\"}",
@@ -1555,6 +1572,7 @@ static void comet_malformed_log(const client *c,
 		dump);
 }
 
+#include "upnp_http.inc"
 static void handle_http_once(client *c,
 				 const sb_config *cfg,
 				 char *body,
@@ -1710,6 +1728,7 @@ static void handle_http_once(client *c,
 			   0);
 		return;
 	}
+	if(!strcmp(path,"/api/network-music")){upnp_http(c,method,s,(size_t)(end-s)+2,body,(size_t)need,chunked);return;}
 
 if(!strcmp(path,"/api/music/ownership")){
   ownership_http(c,method,s,(size_t)(end-s)+2,body,(size_t)need,chunked);
@@ -2273,14 +2292,14 @@ int main(int argc, char **argv)
 	int udp, tcp, http, i;
 	client cs[CLIENTS];
 #ifdef SB_MUSIC_PLAYBACK_INTEGRATION
-	struct pollfd pf[7 + CLIENTS];
+	struct pollfd pf[7 + 2*CLIENTS];
 #ifndef SB_MUSIC_RUNTIME
 	const char *playback_root = NULL;
 	int playback_ipc = -1;
 	unsigned playback_http_port = 0;
 #endif
 #else
-	struct pollfd pf[5 + CLIENTS];
+	struct pollfd pf[5 + 2*CLIENTS];
 #endif
 	int poll_count = 3 + CLIENTS;
 #ifdef SB_MUSIC_BROWSE_INTEGRATION
@@ -2579,6 +2598,7 @@ int main(int argc, char **argv)
 	}
 	for (i = 0; i < CLIENTS; i++) {
 		cs[i].fd = -1;
+		cs[i].upnp_fd=-1;cs[i].upnp_reply=NULL;cs[i].upnp_selection=NULL;cs[i].upnp_items=NULL;
         cs[i].ownership_wait=0;cs[i].ownership_connection=0;
 #ifdef SB_MUSIC_PLAYBACK_INTEGRATION
 		cs[i].music_connection = cs[i].music_control_context = 0;
@@ -2607,6 +2627,7 @@ int main(int argc, char **argv)
  sb_ts_operational(tinysc_lifecycle,1);
 
 	while (running) {
+		for(i=0;i<CLIENTS;i++)if(cs[i].fd>=0)upnp_pump(&cs[i]);
 		if (reload_catalog) {
 			reload_catalog = 0;
 			if (cfg.catalog_path[0] &&
@@ -2630,7 +2651,7 @@ int main(int argc, char **argv)
 			pf[3 + i] = (struct pollfd){
 				cs[i].fd,
 				(short)((cs[i].close_after_drain ? 0 : POLLIN) |
-					(cs[i].output.length ? POLLOUT : 0)),
+					((cs[i].output.length || cs[i].upnp_reply) ? POLLOUT : 0)),
 				0};
 #ifdef SB_MUSIC_BROWSE_INTEGRATION
 #ifdef SB_MUSIC_PLAYBACK_INTEGRATION
@@ -2653,7 +2674,8 @@ int main(int argc, char **argv)
 				pf[3 + i].events |= POLLOUT;
 #endif
   pf[poll_count]=(struct pollfd){sb_ts_fd(tinysc_lifecycle),POLLIN,0};
-		if (poll(pf, poll_count+1, 1000) < 0) {
+        for(i=0;i<CLIENTS;i++)pf[poll_count+1+i]=(struct pollfd){cs[i].upnp_fd,POLLIN,0};
+		if (poll(pf, poll_count+1+CLIENTS, 1000) < 0) {
 			if (errno == EINTR)
 				continue;
 			break;
@@ -2791,6 +2813,7 @@ int main(int argc, char **argv)
 					close_client(&cs[i]);
 					continue;
 				}
+				if(cs[i].upnp_fd>=0||cs[i].upnp_reply){upnp_pump(&cs[i]);continue;}
 #ifdef SB_MUSIC_BROWSE_INTEGRATION
 				if (cs[i].music_http) {
 					if (rev & POLLIN) {

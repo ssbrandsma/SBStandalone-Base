@@ -32,6 +32,10 @@ sb_music_playback *sb_playback_create(int enabled,
 				      sb_music_send,
 				      void *);
 sb_music_queue *sb_playback_queue(sb_music_playback *);
+/* Trusted metadata adapter only. Network IDs are allocated here, never SQLite
+ * IDs. Shared Music owner, queue, decoder and terminal lifecycle are reused. */
+sb_queue_result sb_playback_load_network(sb_music_playback *,sb_queue_edit,const sb_queue_item *,unsigned,uint64_t,uint64_t);
+int sb_playback_network_pending(const sb_music_playback *,const char *source);
 sb_play_phase sb_playback_phase(const sb_music_playback *);
 const char *sb_playback_error(const sb_music_playback *);
 int sb_playback_poll_fd(const sb_music_playback *, unsigned which);
@@ -97,7 +101,7 @@ int sb_playback_status(sb_music_playback *, char *, size_t);
  * quantity 1; ["status", x] stays invalid; Jive's "-" offset means "from
  * the current song" (audible, else intended, else 0). Count/strings are
  * passed separately because sb_lms_command stores a fixed 2D argument
- * array (no char** decay). Returns nonzero with *offset/*quantity set. */
+ * array (no char** decay). Returns nonzero with offset and quantity set. */
 int sb_playback_status_args(unsigned,
 			    const char *,
 			    const char *,

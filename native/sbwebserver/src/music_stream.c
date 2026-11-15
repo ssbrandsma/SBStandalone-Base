@@ -11,19 +11,22 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#include <poll.h>
+#include <sys/socket.h>
 
 typedef struct {
 	sb_music_resource resource;
 	uint64_t sequence;
 	uint64_t device, inode, mtime_seconds, mtime_nanoseconds;
-	int used, fd, prepared;
+	int used, fd, prepared,stream_busy;
+	uint64_t consumed;
 } resource;
 
 typedef struct {
 	uint64_t id, sequence, offset, size;
 	uint64_t device, inode, mtime_seconds, mtime_nanoseconds;
 	unsigned slot, wanted, length;
-	int state, fd, cancelled, status;
+	int state, fd, cancelled, status,streaming;
 	unsigned char data[SB_STREAM_BUFFER];
 } read_job;
 
@@ -65,7 +68,12 @@ static void *reader(void *opaque)
 		struct stat before, after;
 		int status = 200;
 		ssize_t length = 0;
-		if (fstat(j->fd, &before) || !S_ISREG(before.st_mode) ||
+		if(j->streaming){
+		 if(j->wanted){struct pollfd ready={j->fd,POLLIN,0};int result=poll(&ready,1,3000);
+		  if(result>0){do{length=recv(j->fd,j->data,j->wanted,MSG_DONTWAIT);}while(length<0&&errno==EINTR);}
+		  if(result<=0||length<=0)status=503;
+		 }
+		}else if (fstat(j->fd, &before) || !S_ISREG(before.st_mode) ||
 		    !before.st_nlink || before.st_size < 0 ||
 		    (uint64_t)before.st_size != j->size ||
 		    (uint64_t)before.st_dev != j->device ||
@@ -197,7 +205,7 @@ int sb_stream_registry_tick(sb_stream_registry *s, uint64_t now)
 		}
 		s->sequence = m.sequence;
 		if (m.operation == SB_RESOURCE_REGISTER ||
-		    m.operation == SB_RESOURCE_RESERVE) {
+		    m.operation == SB_RESOURCE_RESERVE || m.operation==SB_RESOURCE_STREAM_RESERVE) {
 			resource *target = NULL;
 			for (unsigned i = 0; i < SB_MUSIC_RESOURCE_MAX; i++)
 				if (s->resources[i].used &&
@@ -233,8 +241,9 @@ int sb_stream_registry_tick(sb_stream_registry *s, uint64_t now)
 				target->sequence = m.sequence;
 				target->fd = m.fd;
 				target->used = 1;
+				target->stream_busy=0;target->consumed=0;
 				target->prepared =
-					m.operation == SB_RESOURCE_RESERVE;
+					m.operation == SB_RESOURCE_RESERVE || m.operation==SB_RESOURCE_STREAM_RESERVE;
 			}
 		} else if (m.operation == SB_RESOURCE_ACTIVATE) {
 			status = 1;
@@ -281,6 +290,7 @@ int sb_stream_registry_tick(sb_stream_registry *s, uint64_t now)
 		s->ack.operation = SB_RESOURCE_ACK;
 		s->ack.sequence = m.sequence;
 		s->ack.status = status;
+		if(m.operation==SB_RESOURCE_RESET)s->ack.codec=SB_RESOURCE_CAP_STREAM;
 		s->ack.fd = -1;
 		s->ack_pending = 1;
 	}
@@ -332,6 +342,7 @@ uint64_t sb_stream_read(sb_stream_registry *s,
 	for (slot = 0; slot < SB_MUSIC_RESOURCE_MAX; slot++) {
 		resource *r = &s->resources[slot];
 		if (r->used && !r->prepared && !r->resource.revoked &&
+		    (!r->resource.streaming||(!r->stream_busy&&offset==r->consumed)) &&
 		    now < r->resource.expires_ms &&
 		    !memcmp(r->resource.token, token, 32) &&
 		    offset <= r->resource.size &&
@@ -360,6 +371,8 @@ uint64_t sb_stream_read(sb_stream_registry *s,
 			j->offset = offset;
 			j->wanted = length;
 			j->size = r->resource.size;
+			j->streaming=r->resource.streaming;
+			if(j->streaming)r->stream_busy=1;
 			j->device = r->device;
 			j->inode = r->inode;
 			j->mtime_seconds = r->mtime_seconds;
@@ -392,6 +405,7 @@ int sb_stream_result(sb_stream_registry *s,
 				  ? 410
 				  : j->status;
 		*length = *status == 200 ? j->length : 0;
+		if(j->streaming&&r->sequence==j->sequence){r->stream_busy=0;if(*status==200)r->consumed+=*length;else resource_revoke(r);}
 		if (*length)
 			memcpy(out, j->data, *length);
 		j->state = 0;
@@ -414,6 +428,7 @@ int sb_stream_cancel(sb_stream_registry *s, uint64_t id)
 		read_job *j = &s->jobs[n];
 		if (j->id != id || !j->state)
 			continue;
+		if(j->streaming&&s->resources[j->slot].sequence==j->sequence)resource_revoke(&s->resources[j->slot]);
 		if (j->state == 2)
 			j->cancelled = 1;
 		else {

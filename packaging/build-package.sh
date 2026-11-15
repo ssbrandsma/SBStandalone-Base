@@ -81,13 +81,16 @@ printf '%s\n' "$platform" > "$stage/build-target"
 if [ "$platform" = fab4 ]; then
   rm "$stage/sbubifs-authorized.ko" "$stage/sbdata-empty.ubifs"
 fi
+if [ -n "${SB_PACKAGE_UPNP_ROOT:-}" ]; then
+  sh "$root/packaging/stage-upnp.sh" "$platform" "$stage" "$SB_PACKAGE_UPNP_ROOT"
+fi
 rm -f "$zipfile"
 python3 - "$stage" "$zipfile" <<'PYZIP'
 import sys, zipfile, stat
 from pathlib import Path
 stage=Path(sys.argv[1])
 with zipfile.ZipFile(sys.argv[2], 'w', zipfile.ZIP_DEFLATED) as z:
-    executables={'sbbase','sbproxy','sbwebserver','svgpngrenderer','sb-storage-helper','sb-storage-updater','storage-setup.sh','storage-boot.sh','patch-squeezeplay-artwork.sh'}
+    executables={'sbbase','sbproxy','sbwebserver','svgpngrenderer','sb-storage-helper','sb-storage-updater','storage-setup.sh','storage-boot.sh','patch-squeezeplay-artwork.sh','sbupnp','sbbase-network','sbwebserver-network'}
     for f in sorted(stage.iterdir()):
         info=zipfile.ZipInfo.from_file(f,f.name)
         info.create_system=3

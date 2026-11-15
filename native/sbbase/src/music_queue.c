@@ -107,12 +107,17 @@ static int valid(const sb_queue_item *i)
 {
 	return sb_music_source_equal(&i->identity.track.source,
 				     &i->identity.track.source) &&
-	       i->identity.track.track_id && i->identity.media_generation &&
+	       sb_music_track_valid(&i->identity.track) && i->identity.media_generation &&
+	       (i->identity.track.kind==SB_TRACK_LOCAL ||
+	        (memchr(i->network.server,0,sizeof i->network.server)&&i->network.server[0]&&
+	         memchr(i->network.object,0,sizeof i->network.object)&&i->network.object[0]&&
+	         memchr(i->network.uri,0,sizeof i->network.uri)&&i->network.uri[0]&&i->network.generation)) &&
 	       i->available && i->eligible &&
 	       (i->codec == 'm' || i->codec == 'f') &&
 	       memchr(i->title, 0, sizeof i->title) &&
 	       memchr(i->artist, 0, sizeof i->artist) &&
-	       memchr(i->album, 0, sizeof i->album);
+	       memchr(i->album, 0, sizeof i->album) &&
+	       memchr(i->artwork,0,sizeof i->artwork) && memchr(i->genre,0,sizeof i->genre);
 }
 
 sb_queue_result sb_queue_stage(sb_music_queue *q,

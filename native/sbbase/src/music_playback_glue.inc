@@ -10,7 +10,7 @@ static int playback_send(void *unused,
 #ifdef SB_MUSIC_RUNTIME
  /* strm-s alone starts a new stream; teardown commands remain available. */
  if(length>6&&!memcmp(frame+2,"strm",4)&&frame[6]=='s'&&
-    !sb_ts_music_allowed(tinysc_lifecycle))return 0;
+    !music_safety_allowed())return 0;
 #endif
 	for (unsigned i = 0; i < CLIENTS; i++) {
 		client *c = &clients[i];
@@ -53,19 +53,20 @@ static void playback_service(void)
 #endif
 	static uint64_t metadata, playback, queue_revision;
 	int alarm = sb_alarms_active(alarms);
-	if (alarm && !local_owner.suspended &&
-	    local_owner.value.current == SB_OWNER_MUSIC) {
+	int held=alarm || !np_player_power(nowplaying);
+	if (held && !local_owner.suspended) {
 		sb_queue_status q =
 			sb_queue_snapshot(sb_playback_queue(local_music));
+		sb_playback_cancel(local_music,sb_playback_operation(local_music),q.context);
 		(void)sb_playback_control(
 			local_music, 'q', q.context, np_monotonic_ms());
 	}
-	sb_owner_suspend(&local_owner, alarm);
+	sb_owner_suspend(&local_owner, held);
 	sb_playback_tick(local_music, np_monotonic_ms());
 #ifdef SB_MUSIC_RUNTIME
 	if (music_idle_only) {
 		int ready = ownership_bridge.idle_admitted &&
-			sb_ts_music_allowed(tinysc_lifecycle) &&
+			music_safety_allowed() &&
 			(local_owner.value.current == SB_OWNER_MUSIC ||
 			 (local_owner.baseline_idle && sb_playback_bridge_ready(local_music)));
 		sb_browse_playback(music_browse, ready ? sb_playback_codecs(local_music) & 1u : 0);
@@ -123,6 +124,7 @@ static int playback_command(client *connection, struct music_http *h)
 	const sb_lms_command *cmd = &h->command;
 	const char *name = cmd->arguments[0];
 	int playlistcontrol = !strcmp(name, "playlistcontrol");
+	if(playlistcontrol||!strcmp(name,"stop")||(!strcmp(name,"pause")&&(cmd->count==1||strcmp(cmd->arguments[1],"0"))))upnp_intent_generation=0;
 	int control_command = !strcmp(name, "play") || !strcmp(name, "pause") ||
 			      !strcmp(name, "stop") ||
 			      !strcmp(name, "playlist");
@@ -130,6 +132,7 @@ static int playback_command(client *connection, struct music_http *h)
 	 * application command merely because physical admission is suspended.
 	 */
 	int owns = local_owner.value.current == SB_OWNER_MUSIC;
+	if(!owns&&(!strcmp(name,"stop")||!strcmp(name,"pause"))&&sb_playback_result(local_music,sb_playback_operation(local_music),sb_queue_snapshot(sb_playback_queue(local_music)).context)==0)owns=1;
 	if (!owns && !strcmp(name, "play") &&
 	    local_owner.value.current == SB_OWNER_NONE &&
 	    local_owner.baseline_idle &&
@@ -144,7 +147,7 @@ static int playback_command(client *connection, struct music_http *h)
  if(playlistcontrol && music_idle_only && !ownership_bridge.idle_admitted){
   strcpy(data,"{\"error\":\"music_idle_not_admitted\"}");goto reply;
  }
- if(!sb_ts_music_allowed(tinysc_lifecycle)){
+ if(!music_safety_allowed()){
   music_runtime_tick();
   strcpy(data,"{\"error\":\"tinysc_lifecycle_unavailable\"}");goto reply;
  }
