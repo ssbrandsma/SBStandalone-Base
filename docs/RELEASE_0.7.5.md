@@ -2,7 +2,9 @@
 
 Prepared 2026-11-16. These are private review candidates, pending full Baby and Touch acceptance. Software validation was followed by owner-authorized Baby installation testing and controlled restarts. Two stock-installer attempts rolled back before commit: executable-permission command failure, then inability to start a permission probe under memory pressure after extraction. The existing runtime was preserved.
 
-The installer now precreates and qualifies executable permissions before downloading, keeps those same inodes through extraction, and verifies inode/owner retention before commit without spawning a process after extraction. Installer tests include unavailable process creation and inode replacement. This correction is built and its bootstrap is on the Baby; a successful stock installation is still unverified. The owner reports a red Wi-Fi icon and is restarting the Radio. Hardware work is paused while the implementation is committed and pushed. Public catalogs and hosting have not been changed.
+The installer now precreates and qualifies executable permissions before downloading, keeps those same inodes through extraction, and verifies inode/owner retention before commit without spawning a process after extraction. A further preflight failure before download led to bounded garbage collection of temporary inventory buffers. Tests include unavailable process creation, inode replacement, and an 8 MiB inventory under a retained 10 MiB Lua heap with less than 1 MiB of temporary growth. The correction is committed, built, and its bootstrap is on the Baby; a successful stock installation is still unverified.
+
+The owner restored connectivity over Ethernet at 192.168.1.151. The trusted SSH key and existing HTTPS certificate matched, and the exact test catalog checksum was verified. After the next approved bootstrap reboot, neither Ethernet nor the previous Wi-Fi address answered. Hardware testing is paused for the owner to check Ethernet link/address. No network configuration was changed by deployment, and public catalogs and hosting have not been changed.
 
 ## Implemented
 
@@ -31,8 +33,8 @@ Under `.local/release075/candidates/`:
 
 | Package | Bytes | SHA-256 |
 | --- | ---: | --- |
-| StandaloneBase-0.7.5-baby.zip | 4461538 | 85488bb7d0a1587df2df19d45a9d864a105c350d37769fc002bd58de2d98c787 |
-| StandaloneBase-0.7.5-fab4.zip | 4357827 | f94e8f1a319875bd76cd5972edddbfee7d32df2401e854c70ff17cbe356d6212 |
+| StandaloneBase-0.7.5-baby.zip | 4461648 | 27f0f188b0555fc2813cce71ffaf5ca40b3d53abbf7b4d5faacfa7d2203ba248 |
+| StandaloneBase-0.7.5-fab4.zip | 4357937 | d9ca6b425c6bcb92e1806b697d35b2dfb2c332c86cae8628a6b2404e8b72f922 |
 
 Each contains 11 native executables. `release-verification.json` records the verified hashes. Per-target XML/manifest files accompany the ZIPs. `catalog-review/` contains proposed 0.7.5 config.json and extensions XML files, prepared locally against those hashes. The published root catalog remains at its existing version; nothing was uploaded. Embedded package catalogs do not offer the stale Base self-update.
 
