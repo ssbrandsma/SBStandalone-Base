@@ -25,6 +25,7 @@ local AlarmPlayback = require("applets.StandaloneBase.AlarmPlayback")
 local LifecycleHeartbeat = require("applets.StandaloneBase.LifecycleHeartbeat")
 local io, os, tonumber, tostring = io, os, tonumber, tostring
 local ipairs, pairs, math, pcall, string = ipairs, pairs, math, pcall, string
+local require, type, table = require, type, table
 local appletManager = appletManager
 local jnt = jnt
 module(..., Framework.constants)
