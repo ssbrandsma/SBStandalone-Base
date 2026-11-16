@@ -134,6 +134,15 @@ class Transaction(unittest.TestCase):
         with self.assertRaisesRegex(Exception,'Executable inode changed'):
             transaction.commit(transaction,self.convert({'StandaloneBase':{}}))
 
+    def test_inventory_keeps_dead_read_buffers_bounded(self):
+        old=self.applet('StandaloneBase')
+        (old/'large-asset.bin').write_bytes(b'x'*(8*1024*1024))
+        self.lua.execute(b'retained=string.rep("r",10*1024*1024);collectgarbage("collect")')
+        before=self.lua.eval(b'collectgarbage("count")')
+        self.begin('StandaloneBase')
+        after=self.lua.eval(b'collectgarbage("count")')
+        self.assertLess(after-before,1024,'Inventory retained over 1 MiB of temporary Lua buffers')
+
     def stage(self, transaction, name, version='new'):
         directory = Path(os.fsdecode(transaction.destination(transaction, name.encode())))
         (directory / (name + 'Meta.lua')).write_text('return {version="' + version + '"}')

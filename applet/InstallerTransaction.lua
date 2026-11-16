@@ -38,7 +38,8 @@ function M.new(parent,names,options)
         local result=(system.execute or os.execute)("chmod "..mode.." "..quote(path))
         -- LuaFileSystem 1.2 has no permissions attribute. Establish actual
         -- mode/ownership before downloading, while a shell can still fork.
-        local probe=assert((files.popen or io.popen)("LC_ALL=C ls -ldn "..quote(path).." 2>/dev/null","r"),"Cannot inspect installer permissions")
+        local probe,reason=(files.popen or io.popen)("LC_ALL=C ls -ldn "..quote(path).." 2>/dev/null","r")
+        assert(probe,"Cannot inspect installer permissions: "..tostring(reason))
         local line=probe:read(1024);probe:close()
         local permissions,uid,gid=(line or ""):match("^(%S+)%s+%d+%s+(%d+)%s+(%d+)%s+")
         local expected=kind..(mode=="700" and "rwx------" or "rwxr-xr-x")
@@ -64,7 +65,13 @@ function M.new(parent,names,options)
                     assert(value.mode=="file","Installer refuses symlinks and special files")
                     count=count+1;assert(count<=4096,"Too many installer members")
                     local file=assert(files.open(path.."/"..name,"rb"));local digest=hasher()
-                    while true do local data=file:read(16384);if not data then break end;total=total+#data;assert(total<=67108864,"Installer tree exceeds 64 MiB");digest:update(data) end
+                    while true do
+                        local data=file:read(16384);if not data then break end
+                        total=total+#data;assert(total<=67108864,"Installer tree exceeds 64 MiB");digest:update(data)
+                        -- Do not retain megabytes of dead read buffers until
+                        -- Lua's next automatic cycle on the 64 MB Baby.
+                        collectgarbage("step",64)
+                    end
                     assert(file:close());result[relative]=digest:digest()
                 end
             end end
@@ -104,6 +111,7 @@ function M.new(parent,names,options)
         assert(record.applets[name],"Unplanned installer applet")
         local path=self.root.."/new/"..name;directory(path)
         if name=="StandaloneBase" and not prepared[name] then
+            collectgarbage("collect")
             prepared[name]={}
             for _,member in ipairs(executables) do
                 local target=path.."/"..member
