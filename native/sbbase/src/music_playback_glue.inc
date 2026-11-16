@@ -93,14 +93,9 @@ static void playback_service(void)
 			close_client(c);
 			continue;
 		}
-		if (sb_playback_phase(local_music) == SB_PLAY_NEED_CONNECTION &&
-		    c->music_connection == sb_playback_stream(local_music)
-						   ->connection_generation) {
-			if (c->output.length)
-				c->close_after_drain = 1;
-			else
-				close_client(c);
-		}
+		/* The controller releases its completed stream epoch and reuses
+		 * the real attached SlimProto connection. NEED_CONNECTION is a
+		 * preparation phase, not permission to disconnect the player. */
 	}
 }
 
@@ -119,6 +114,22 @@ static int playback_number(const char *s, uint64_t limit, uint64_t *value)
 	return 1;
 }
 
+static int playlist_context_menu(char *out,size_t cap,const sb_queue_status *q,uint32_t index)
+{
+ size_t used=0;
+ int n=snprintf(out,cap,"{\"count\":%u,\"offset\":0,\"window\":{\"isContextMenu\":1},\"item_loop\":[",3u+(index>0)+(index+1<q->count));if(n<0||(size_t)n>=cap)return 0;used=(size_t)n;
+ const char *labels[]={"Play","Remove","Move up","Move down","Clear playlist"};
+ const char *ops[]={"index","delete","move","move","clear"};int comma=0;
+ for(unsigned i=0;i<5;i++){
+  if((i==2&&!index)||(i==3&&index+1>=q->count))continue;
+  n=snprintf(out+used,cap-used,"%s{\"text\":\"%s\",\"actions\":{\"go\":{\"cmd\":[\"playlist\",\"%s\"",comma++?",":"",labels[i],ops[i]);if(n<0||(size_t)n>=cap-used)return 0;used+=(size_t)n;
+  if(i!=4){n=snprintf(out+used,cap-used,",\"%u\"",index);if(n<0||(size_t)n>=cap-used)return 0;used+=(size_t)n;}
+  if(i==2||i==3){n=snprintf(out+used,cap-used,",\"%u\"",i==2?index-1:index+1);if(n<0||(size_t)n>=cap-used)return 0;used+=(size_t)n;}
+  n=snprintf(out+used,cap-used,"],\"params\":{\"queue_context\":\"%llu\",\"queue_revision\":\"%llu\"},\"nextWindow\":\"%s\"}}}",(unsigned long long)q->context,(unsigned long long)q->revision,i==0?"nowPlaying":"playlist");if(n<0||(size_t)n>=cap-used)return 0;used+=(size_t)n;
+ }
+ return snprintf(out+used,cap-used,"]}")==2;
+}
+
 static int playback_command(client *connection, struct music_http *h)
 {
 	const sb_lms_command *cmd = &h->command;
@@ -132,12 +143,18 @@ static int playback_command(client *connection, struct music_http *h)
 	 * application command merely because physical admission is suspended.
 	 */
 	int owns = local_owner.value.current == SB_OWNER_MUSIC;
+	if(playlist_music_selected()&&(!strcmp(name,"status")||!strcmp(name,"playlist")))owns=1;
 	if(!owns&&(!strcmp(name,"stop")||!strcmp(name,"pause"))&&sb_playback_result(local_music,sb_playback_operation(local_music),sb_queue_snapshot(sb_playback_queue(local_music)).context)==0)owns=1;
 	if (!owns && !strcmp(name, "play") &&
 	    local_owner.value.current == SB_OWNER_NONE &&
 	    local_owner.baseline_idle &&
 	    sb_queue_snapshot(sb_playback_queue(local_music)).count)
 		owns = 1;
+	if(!playlist_music_selected()&&!strcmp(name,"playlist")&&
+	   (sb_lms_tag(cmd,"queue_context")||sb_lms_tag(cmd,"queue_revision")||sb_lms_tag(cmd,"queue_entry_id"))){
+	 if(!music_reply(h,0,"{\"error\":\"stale_playlist_provider\"}"))music_overflow(h);
+	 return 2;
+	}
 	if (!playlistcontrol &&
 	    (!owns || (!control_command && strcmp(name, "status"))))
 		return 0;
@@ -147,7 +164,7 @@ static int playback_command(client *connection, struct music_http *h)
  if(playlistcontrol && music_idle_only && !ownership_bridge.idle_admitted){
   strcpy(data,"{\"error\":\"music_idle_not_admitted\"}");goto reply;
  }
- if(!music_safety_allowed()){
+ if(strcmp(name,"status")&&!music_safety_allowed()){
   music_runtime_tick();
   strcpy(data,"{\"error\":\"tinysc_lifecycle_unavailable\"}");goto reply;
  }
@@ -242,6 +259,7 @@ static int playback_command(client *connection, struct music_http *h)
 		for (unsigned n = 3; n < cmd->count; n++)
 			if (strncmp(cmd->arguments[n], "tags:", 5) &&
 			    strncmp(cmd->arguments[n], "menu:", 5) &&
+			    strncmp(cmd->arguments[n], "useContextMenu:", 15) &&
 			    strncmp(cmd->arguments[n], "subscribe:", 10)) {
 				strcpy(data,
 				       "{\"error\":\"unsupported_status_"
@@ -253,7 +271,7 @@ static int playback_command(client *connection, struct music_http *h)
 			strcpy(data, "{\"error\":\"status_busy\"}");
 			goto reply;
 		}
-		success = sb_playback_status_page(local_music,
+		success = (sb_lms_tag(cmd,"menu")&&!strcmp(sb_lms_tag(cmd,"menu"),"menu")?sb_playback_playlist_page:sb_playback_status_page)(local_music,
 						  offset,
 						  quantity,
 						  page,
@@ -270,13 +288,25 @@ static int playback_command(client *connection, struct music_http *h)
 	if (!strcmp(name, "playlist") && cmd->count >= 2) {
 		const char *operation = cmd->arguments[1];
 		uint64_t index;
-		if (!strcmp(operation, "clear") && cmd->count == 2) {
+		unsigned positional=2;while(positional<cmd->count&&!strchr(cmd->arguments[positional],':'))positional++;
+		unsigned expected=!strcmp(operation,"clear")?2:!strcmp(operation,"move")?4:3;
+		if(positional==expected+2){uint64_t start,quantity;if(!playback_number(cmd->arguments[expected],UINT32_MAX,&start)||!playback_number(cmd->arguments[expected+1],200,&quantity))goto invalid_playlist;positional=expected;}
+		for(unsigned n=expected;n<cmd->count;n++){
+		 if(n<expected+2&&!strchr(cmd->arguments[n],':'))continue;
+		 if(strncmp(cmd->arguments[n],"queue_context:",14)&&strncmp(cmd->arguments[n],"queue_revision:",15)&&strncmp(cmd->arguments[n],"queue_entry_id:",15)&&strncmp(cmd->arguments[n],"useContextMenu:",15))goto invalid_playlist;
+		}
+		const char *revision=sb_lms_tag(cmd,"queue_revision"),*entry=sb_lms_tag(cmd,"queue_entry_id"),*tagcontext=sb_lms_tag(cmd,"queue_context");uint64_t value;
+		if((revision&&(!playback_number(revision,UINT64_MAX,&value)||value!=q.revision))||(tagcontext&&(!playback_number(tagcontext,UINT64_MAX,&value)||value!=context)))goto stale_playlist;
+		if(entry){uint64_t at;if(positional<3||!playback_number(cmd->arguments[2],UINT32_MAX,&at)||at>=q.count||!playback_number(entry,UINT64_MAX,&value)||sb_queue_at(sb_playback_queue(local_music),(uint32_t)at)->identity.entry_id!=value)goto stale_playlist;}
+		if(!strcmp(operation,"itemmenu")&&positional==3&&playback_number(cmd->arguments[2],UINT32_MAX,&index)&&index<q.count){success=playlist_context_menu(data,sizeof data,&q,(uint32_t)index);goto reply;}
+		if (!strcmp(operation, "clear") && positional == 2) {
+			upnp_intent_generation=0;sb_playback_cancel(local_music,sb_playback_operation(local_music),context);
 			(void)sb_playback_control(
 				local_music, 'q', context, np_monotonic_ms());
 			success = sb_queue_clear(sb_playback_queue(local_music),
 						 q.revision,
 						 context) == SB_Q_OK;
-		} else if (!strcmp(operation, "delete") && cmd->count == 3 &&
+		} else if (!strcmp(operation, "delete") && positional == 3 &&
 			   playback_number(
 				   cmd->arguments[2], UINT32_MAX, &index)) {
 			if (index == q.audible || index == q.intended)
@@ -289,7 +319,9 @@ static int playback_command(client *connection, struct music_http *h)
 						(uint32_t)index,
 						q.revision,
 						context) == SB_Q_OK;
-		} else if (!strcmp(operation, "index") && cmd->count == 3) {
+		} else if (!strcmp(operation,"move")&&positional==4){uint64_t to;
+		 if(playback_number(cmd->arguments[2],UINT32_MAX,&index)&&playback_number(cmd->arguments[3],UINT32_MAX,&to))success=sb_queue_move(sb_playback_queue(local_music),(uint32_t)index,(uint32_t)to,q.revision,context)==SB_Q_OK;
+		} else if (!strcmp(operation, "index") && positional == 3) {
 			if (!strcmp(cmd->arguments[2], "+1"))
 				index = q.intended == SB_QUEUE_NONE
 						? UINT64_MAX
@@ -345,4 +377,8 @@ reply:
 		music_overflow(h);
 	(void)connection;
 	return 2;
+stale_playlist:
+	strcpy(data,"{\"error\":\"stale_playlist\"}");goto reply;
+invalid_playlist:
+	strcpy(data,"{\"error\":\"invalid_playlist_action\"}");goto reply;
 }

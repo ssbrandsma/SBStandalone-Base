@@ -1,0 +1,15 @@
+Mozilla CA certificate bundle, converted by curl mk-ca-bundle.pl 1.33.
+License: Mozilla Public License 2.0 (see MPL-2.0 alongside this notice).
+curl documents the converted PEM's license at:
+https://curl.se/docs/caextract.html#CAcertificatestorelicense
+
+Exact dated upstream source:
+https://curl.se/ca/cacert-2026-09-25.pem
+SHA-256 (upstream LF form):
+a41b5d356aea97a529fe27e0f7316d2f9d946d75927476cf9cf1b90637d00505
+
+The committed native/sbproxy/cacert.pem matches that upstream byte-for-byte.
+The Windows working/package copy uses CRLF line endings; decoded certificate
+content and all text are otherwise unchanged. The complete PEM source is in
+the accompanying StandaloneBase source archive at native/sbproxy/cacert.pem.
+No private keys or owner credentials are present in this public root bundle.

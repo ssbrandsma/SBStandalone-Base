@@ -75,7 +75,7 @@ static void test_status_modes(void)
 int main(void)
 {
 	np_manager *m = np_create(1, 8);
-	char reply[1024], claim[256], token[NP_TOKEN_MAX];
+	char reply[8192], claim[256], token[NP_TOKEN_MAX];
 	const char *start, *end;
 	int changed;
 	uint64_t revision;
@@ -122,6 +122,11 @@ int main(void)
 	assert(strstr(reply, "\"count\":1,"));
 	assert(strstr(reply, "\"offset\":0,"));
 	assert(strstr(reply, "\"playlist_tracks\":1,"));
+	assert(strstr(reply, "\"playlist_provider\":\"radio\""));
+	assert(strstr(reply, "\"shuffleDisabled\""));
+	char small[128];
+	assert(np_playerstatus_json(m, small, sizeof small) < 0);
+	assert(strstr(small, "status_too_large"));
 	assert(strstr(reply, "\"playlist repeat\":0,"));
 	assert(strstr(reply, "\"playlist shuffle\":0,"));
 

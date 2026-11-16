@@ -115,5 +115,6 @@ int sb_playback_status_page(
 	uint32_t quantity,
 	char *,
 	size_t); /* at most200 wire rows, bounded caller buffer */
+int sb_playback_playlist_page(sb_music_playback *, uint32_t offset, uint32_t quantity, char *, size_t);
 int sb_playback_destroy(sb_music_playback *); /* cooperative, retry BUSY */
 #endif

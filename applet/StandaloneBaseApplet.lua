@@ -33,11 +33,16 @@ oo.class(_M, Applet)
 local ROOT = "/usr/share/jive/applets/StandaloneBase"
 local RUN = "/tmp/standalonebase"
 local CONFIG = "/mnt/storage/standalonebase/config.json"
-local function defaultServices() return {
+local function defaultServices()
+ local services={
     { name="HTTPS Proxy", exe="sbproxy", args="--listen 127.0.0.1:8765" },
     { name="Bootstrap service", exe="sbbase", args="--config "..CONFIG },
     { name="Webserver", exe="sbwebserver", args="--web-root "..ROOT.." --config-dir /mnt/storage/standalonebase" },
-} end
+ }
+ local vpn=io.open(ROOT.."/sbvpn","rb")
+ if vpn then vpn:close();services[#services+1]={name="VPN Manager",exe="sbvpn",args=""} end
+ return services
+end
 local SERVICES=defaultServices()
 local started = false
 local checkedInitialPlayerSelection = false
@@ -212,6 +217,13 @@ function init(self)
     local musicMarker=io.open("/var/run/standalonebase/music-idle-test.enabled","r")
     if musicMarker then
         musicMarker:close()
+        for _,name in ipairs({"MusicIdleFence.lua","MusicProduction.lua","NativeMusicOwnership.lua","OwnershipBinding.lua","MusicOwnership.lua","OwnershipDecoder.lua","sbmusic-session","sbbase-music","sbwebserver-music","sbmusic-metadata-helper"}) do
+            local file=io.open(ROOT.."/"..name,"rb")
+            if file then file:close() else musicMarker=nil;break end
+        end
+        if not musicMarker then migrationLog:warn("Ignoring incomplete developer music qualification bundle") end
+    end
+    if musicMarker then
         local firmware=io.open("/etc/squeezeos.version","r")
         local version=firmware and firmware:read("*l")
         if firmware then firmware:close() end
@@ -240,7 +252,10 @@ function init(self)
         local firmwareFile=io.open("/etc/squeezeos.version","r")
         local firmwareVersion=firmwareFile and firmwareFile:read("*l")
         if firmwareFile then firmwareFile:close() end
-        local qualified=firmwareVersion=="7.7.3 r16676" and (platform.name=="baby" or arbitration)
+        local networkProfile=require("applets.StandaloneBase.NetworkProfile")
+        local qualified,profileReason=networkProfile.allowed(platform.name,firmwareVersion,arbitration)
+        if qualified and not networkProfile.runtime(ROOT,platform.name) then qualified=false;profileReason="incomplete_or_stale_network_package" end
+        if not qualified then migrationLog:warn("Network playback unavailable: ",profileReason or "unsupported profile") end
         if networkBase and networkWeb and not self.musicFence and qualified then
             networkBase:close();networkWeb:close()
             os.execute("mkdir -m 700 /var/run/standalonebase /var/run/sb-music-owner >/dev/null 2>&1")
@@ -285,6 +300,8 @@ function init(self)
     if upnp then self.networkMusic=require("applets.StandaloneBase.NetworkMusic").new(self) end
     self.timeSync=TimeSync.new(); self.timeSync:start()
     self.remoteBridge=RemoteBridge(); self.remoteBridge:init()
+    local vpnOk,Vpn=pcall(require,"applets.StandaloneBase.Vpn")
+    if vpnOk and type(Vpn)=="table" and type(Vpn.new)=="function" then self.vpn=Vpn.new(self) end
     if self.musicFence then
         local attempts,busy,expired=0,false,false
         self.musicStartupTimer=Timer(500,function()
@@ -387,20 +404,60 @@ function menu(self)
     if self.networkMusic then menu:addItem({text=self:string("NETWORK_MUSIC_NETWORK_PLAYBACK"),callback=function() self.networkMusic:settings() end}) end
     if platform.extended_storage then menu:addItem({text="Extended Storage",callback=function() self:storageMenu() end}) end
     menu:addItem({text="Web Access",callback=function() if not self.remoteBridge:isInjecting() then self:webAccessMenu() end end})
+    if self.vpn then menu:addItem({text=self:string("VPN_TITLE"),callback=function()self.vpn:menu()end}) end
     if self.firmwareUpdates then menu:addItem({text="Custom Firmware Updates",callback=function() self.firmwareUpdates:menu() end}) end
-	menu:addItem({text="Version: 0.7.3"})
+	local version="0.7.5";local versionFile=io.open(ROOT.."/build-version","r")
+	if versionFile then local value=versionFile:read(64);versionFile:close();if value then version=value:gsub("[\r\n].*","") end end
+	menu:addItem({text="Version: "..version})
     window:addWidget(menu); window:show()
 end
 function webAccessMenu(self)
     local window=Window("text_list","Web Access")
     local menu=SimpleMenu("menu")
     menu:setHeaderWidget(Textarea("help_text","Pair a browser without SSH. Pairing actions must be selected on the physical Radio."))
+    menu:addItem({text="Secure Web Pairing Code",callback=function() if not self.remoteBridge:isInjecting() then self:showPairingCode(window,true) end end})
+    menu:addItem({text="Reset Device Certificate...",callback=function() if not self.remoteBridge:isInjecting() then self:confirmCertificateReset(window) end end})
+    menu:addItem({text="Device Certificate",callback=function() if not self.remoteBridge:isInjecting() then self:showDeviceCertificate(window) end end})
     menu:addItem({text="Show Pairing Code",callback=function() if not self.remoteBridge:isInjecting() then self:showPairingCode(window) end end})
     menu:addItem({text="Revoke All Web Sessions",callback=function() if not self.remoteBridge:isInjecting() then self:confirmWebRevoke(window) end end})
     window:addWidget(menu); window:show()
 end
-function showPairingCode(self,previous)
-    self.remoteBridge:webAccess("start",function(data,err)
+function confirmCertificateReset(self,previous)
+    local window=Window("text_list","Reset Device Certificate?")
+    local menu=SimpleMenu("menu")
+    menu:setHeaderWidget(Textarea("help_text","Advanced recovery only. This changes device identity, closes secure sessions and revokes browser pairing. Every browser must compare the NEW full fingerprint on this device before pairing again. Existing VPN profiles and credentials are preserved."))
+    menu:addItem({text="Cancel",callback=function() window:hide() end})
+    menu:addItem({text="Reset certificate and revoke sessions",callback=function()
+        if self.remoteBridge:isInjecting() then return end
+        self.remoteBridge:webAccess("certificate-reset",function(data,err)
+            window:hide()
+            if err or not data or not data:match('"ok"%s*:%s*true') then self:webAccessError(previous,"Certificate reset failed. Existing identity was preserved; check clock, entropy and storage.")
+            else self:showDeviceCertificate(previous) end
+        end)
+    end})
+    window:addWidget(menu);window:show()
+end
+function showDeviceCertificate(self,previous)
+    self.remoteBridge:webAccess("certificate",function(data,err)
+        if err or not data then self:webAccessError(previous,"Secure portal status unavailable."); return end
+        local available=data:match('"available"%s*:%s*true')
+        local fingerprint=data:match('"fingerprint"%s*:%s*"([A-Fa-f0-9:]+)"')
+        local port=tonumber(data:match('"port"%s*:%s*(%d+)')) or 443
+        local address=NetworkAddress.current()
+        local window=Window("text_list","Device Certificate")
+        local menu=SimpleMenu("menu")
+        menu:setHeaderWidget(Textarea("help_text","Before entering a pairing code, inspect the certificate in your browser. Compare ALL SHA-256 groups below. Continue only if every group matches. Never accept an unexpected changed certificate."))
+        menu:addItem({text=available and "HTTPS available" or "HTTPS unavailable",style="item_info"})
+        if address then menu:addItem({text="https://"..address..(port==443 and "" or ":"..port),style="item_info"}) end
+        if fingerprint and #fingerprint==95 then
+            menu:addItem({text="SHA-256 certificate fingerprint",style="item_info"})
+            for first=1,95,24 do menu:addItem({text=fingerprint:sub(first,math.min(first+22,95)),style="item_info"}) end
+        else menu:addItem({text="Certificate unavailable. Check clock and storage.",style="item_info"}) end
+        window:addWidget(menu);window:show()
+    end)
+end
+function showPairingCode(self,previous,secure)
+    self.remoteBridge:webAccess(secure and "secure-start" or "start",function(data,err)
         if err or not data then self:webAccessError(previous,"Could not create a pairing code."); return end
         local pin=data:match('"pin"%s*:%s*"(%d%d%d%d%d%d)"')
         local seconds=tonumber(data:match('"expiresIn"%s*:%s*(%d+)')) or 120
@@ -409,10 +466,11 @@ function showPairingCode(self,previous)
         local window=Window("text_list","Web Access")
         window:setAllowScreensaver(false)
         local menu=SimpleMenu("menu")
-        menu:setHeaderWidget(Textarea("help_text","Enter this code in the Standalone Base web page. Remote screen capture is disabled while the code is active."))
+        menu:setHeaderWidget(Textarea("help_text",secure and "First compare the browser certificate fingerprint with Device Certificate. Then enter this HTTPS-only code. Screen capture is disabled while this code is active." or "This code authorizes ordinary HTTP management only. For secure provisioning use Secure Web Pairing Code."))
         local pinItem={text="Pairing code: "..pin:sub(1,3).." "..pin:sub(4,6)}
         local address=NetworkAddress.current()
-        local addressItem={text=address and ("Web access: http://"..address) or "Web access: IP address unavailable",style="item_info"}
+        local securePort=tonumber(data:match('"https_port"%s*:%s*(%d+)')) or 443
+        local addressItem={text=address and ("Web access: "..(secure and "https://" or "http://")..address..(secure and securePort~=443 and (":"..securePort) or "")) or "Web access: IP address unavailable",style="item_info"}
         local expiresItem={text="Expires in 02:00",style="item_info"}
         menu:addItem(pinItem); menu:addItem(addressItem); menu:addItem(expiresItem)
         local remaining=seconds
@@ -579,6 +637,7 @@ function free(self)
     if self.monitor then self.monitor:stop() end
     if self.storageRecoveryTimer then self.storageRecoveryTimer:stop(); self.storageRecoveryTimer=nil end
     if self.timeSync then self.timeSync:stop(); self.timeSync=nil end
+    if self.vpn then self.vpn:stop();self.vpn=nil end
     if self.remoteBridge then self.remoteBridge:stop(); self.remoteBridge=nil end
     storage:stop()
     for _,t in pairs(self.backoff or {}) do t:stop() end

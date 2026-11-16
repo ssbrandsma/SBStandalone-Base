@@ -29,3 +29,11 @@
 .photo-hotspot{pointer-events:auto}
 
 .pairing .remember-browser{display:flex;align-items:center;gap:10px}.pairing input[type="checkbox"]{width:20px;height:20px;flex-shrink:0}
+
+/* VPN counters update in place; profile editors remain outside the live region. */
+.vpn-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin:16px 0}
+.vpn-summary .card{margin:0;min-width:0}
+.vpn-value{font-size:1.55rem;font-weight:650;overflow-wrap:anywhere;line-height:1.35}
+.vpn-summary small{display:block;color:var(--muted,#64748b);line-height:1.5}
+.vpn-summary p{overflow-wrap:anywhere}
+#vpn-traffic-note{font-size:.85rem;line-height:1.5}

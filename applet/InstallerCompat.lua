@@ -67,8 +67,46 @@ function M.apply(installer, options)
     end
     installer._download = function(self, ...)
         route(self)
+        if self._standaloneTransactionFailed then return end
         self._standaloneInstallerError = nil
         self._standaloneInstallerCompleted = {}
+        if self._standaloneTransaction then
+            local sha1=require("sha1")
+            local ltn12=require("ltn12")
+            local zip=require("zipfilter")
+            for name,data in pairs(self.todownload or {}) do
+                if self._standaloneInstallerError then break end
+                if type(data.sha)~="string" or not data.sha:match("^%x+$") or #data.sha~=40 then
+                    self._standaloneInstallerError="A verified applet archive checksum is required";break
+                end
+                local digest=sha1:new()
+                local ready,sink=pcall(self._zipSink,self,self.appletdir.."/"..name.."/")
+                if not ready then self._standaloneInstallerError=tostring(sink);break end
+                local extract=ltn12.sink.chain(zip.filter(),sink)
+                self.fetched=false
+                local function sink(chunk,err)
+                    if err then self._standaloneInstallerError=tostring(err);self.fetched=true;return nil,err end
+                    if chunk then digest:update(chunk) end
+                    local ok,result,detail=pcall(extract,chunk)
+                    if not ok then self._standaloneInstallerError=tostring(result);self.fetched=true;return nil,result end
+                    if chunk==nil then
+                        if digest:digest()~=data.sha then self._standaloneInstallerError="Downloaded archive checksum mismatch: "..name
+                        else
+                            local valid,message=pcall(self._standaloneTransaction.verify,self._standaloneTransaction,name)
+                            if not valid then self._standaloneInstallerError=tostring(message) end
+                        end
+                        self.fetched=true
+                    end
+                    return result,detail
+                end
+                local RequestHttp=require("jive.net.RequestHttp")
+                local SocketHttp=require("jive.net.SocketHttp")
+                local request=RequestHttp(sink,"GET",data.url,{stream=true});local uri=request:getURI()
+                SocketHttp(jnt,uri.host,uri.port,uri.host):fetch(request)
+                while not self.fetched do self.task:yield() end
+            end
+            return
+        end
         local result = download(self, ...)
         for name in pairs(self.todownload or {}) do
             if not self._standaloneInstallerCompleted[name] then
@@ -77,7 +115,21 @@ function M.apply(installer, options)
         end
         return result
     end
-    installer._remove = function(self, ...) route(self); return remove(self, ...) end
+    installer._remove = function(self, ...)
+        route(self)
+        if type(fs.dir)=="function" and type(fs.rmdir)=="function" then
+            local names={};for name in pairs(self.toremove or {}) do names[name]=true end
+            for name in pairs(self.todownload or {}) do names[name]=true end
+            if next(names) then
+                local Transaction=require("applets.StandaloneBase.InstallerTransaction")
+                local ok,value=pcall(Transaction.new,self.appletdir,names,{fs=fs,io=files})
+                if ok then self._standaloneTransaction=value
+                else self._standaloneInstallerError=tostring(value);self._standaloneTransactionFailed=true end
+                return -- Every removal waits for verified staged archives.
+            end
+        end
+        return remove(self, ...)
+    end
     if type(installer._sha1Sink) == "function" then
         local shaSink=installer._sha1Sink
         installer._sha1Sink=function(self,...)
@@ -95,6 +147,17 @@ function M.apply(installer, options)
     if type(installer._finished) == "function" then
         local finished=installer._finished
         installer._finished=function(self,...)
+            if self._standaloneTransaction then
+                local transaction=self._standaloneTransaction
+                if not self._standaloneInstallerError then
+                    local ok,err=pcall(transaction.commit,transaction,self.todownload or {})
+                    if not ok then self._standaloneInstallerError=tostring(err) end
+                end
+                if self._standaloneInstallerError then
+                    local ok,err=pcall(transaction.rollback,transaction)
+                    if not ok then self._standaloneInstallerError=self._standaloneInstallerError.."; rollback: "..tostring(err) end
+                end
+            end
             if not self._standaloneInstallerError then return finished(self,...) end
             local message=self._standaloneInstallerError
             log:warn("StandaloneBase: Applet Installer stopped: ",message)
@@ -110,6 +173,7 @@ function M.apply(installer, options)
     end
     installer._zipSink = function(self, directory)
         local handle, failed
+        local members,total,count={},0,0
         local reject
         local function close()
             if handle then
@@ -125,6 +189,8 @@ function M.apply(installer, options)
             error("StandaloneBase: applet ZIP extraction failed: " .. reason)
         end
         local root = directory:gsub("/+$", "")
+        local applet=root:match("/([^/]+)$")
+        if self._standaloneTransaction and self._standaloneTransaction:planned(applet) then root=self._standaloneTransaction:destination(applet) end
         local function directoryExists(path)
             local attr = fs.symlinkattributes and fs.symlinkattributes(path) or fs.attributes(path)
             if attr and attr.mode ~= "directory" then reject("non-directory path component") end
@@ -142,7 +208,7 @@ function M.apply(installer, options)
             elseif type(chunk) == "table" then
                 close()
                 local name = type(chunk.filename) == "string" and chunk.filename:gsub("\\", "/") or ""
-                if name == "" or name:find("[%z%c:]") or name:sub(1,1) == "/" or name:find("//",1,true) then reject("invalid member path") end
+                if name == "" or #name>1024 or name:find("[%z%c:]") or name:sub(1,1) == "/" or name:find("//",1,true) then reject("invalid member path") end
                 for part in name:gmatch("[^/]+") do
                     if part == "." or part == ".." then reject("unsafe member path") end
                 end
@@ -154,12 +220,15 @@ function M.apply(installer, options)
                 path = path .. "/" .. parts[#parts]
                 if name:sub(-1) == "/" then directoryExists(path)
                 else
+                    if members[name] then reject("duplicate file member") end
+                    members[name]=true;count=count+1;if count>4096 then reject("too many members") end
                     local attr = fs.symlinkattributes and fs.symlinkattributes(path) or fs.attributes(path)
                     if attr and attr.mode ~= "file" then reject("non-file member destination") end
                     handle = files.open(path, "wb")
                     if not handle then reject("cannot open member") end
                 end
             elseif type(chunk) == "string" then
+                total=total+#chunk;if total>67108864 then reject("uncompressed archive exceeds 64 MiB") end
                 if handle and not handle:write(chunk) then reject("cannot write member") end
             else reject("invalid ZIP chunk") end
             return 1

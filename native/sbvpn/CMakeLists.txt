@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
+find_package(Threads REQUIRED)
+add_executable(sbvpn main.c profile.c store.c process.c ownership.c network.c json.c traffic.c verification.c ../sbwebserver/third_party/mongoose.c)
+target_include_directories(sbvpn PRIVATE . ../sbwebserver/third_party)
+target_compile_definitions(sbvpn PRIVATE _GNU_SOURCE MG_ENABLE_EPOLL=0 MG_ENABLE_POLL=1 MG_ENABLE_DIRLIST=0 MG_ENABLE_SSI=0)
+target_compile_options(sbvpn PRIVATE -Os -Wall -Wextra)
+target_link_libraries(sbvpn PRIVATE Threads::Threads)

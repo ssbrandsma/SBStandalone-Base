@@ -260,13 +260,13 @@ void repo_sources_tick(struct mg_mgr *mgr){load();if(corrupt)return;Settings set
  }
 }
 int repo_sources_headers(struct mg_connection *c,int event,void *data){
- if(event==MG_EV_HTTP_HDRS){struct mg_http_message *m=data;if(repo_sources_is_api(m->uri)){if(!auth_session_ok(m,NULL)){reply(c,401,"Browser pairing required");c->is_draining=1;return 1;}struct mg_str *length=mg_http_get_header(m,"Content-Length");if(length){size_t size=0;for(size_t i=0;i<length->len;i++){if(length->buf[i]<'0'||length->buf[i]>'9'||size>REPO_XML_LIMIT/10){reply(c,413,"XML request exceeds size limit");c->is_draining=1;return 1;}size=size*10+(unsigned)(length->buf[i]-'0');}if(size>REPO_XML_LIMIT){reply(c,413,"XML request exceeds size limit");c->is_draining=1;return 1;}}}}
+ if(event==MG_EV_HTTP_HDRS){struct mg_http_message *m=data;if(repo_sources_is_api(m->uri)){if(!auth_session_ok(c, m,NULL)){reply(c,401,"Browser pairing required");c->is_draining=1;return 1;}struct mg_str *length=mg_http_get_header(m,"Content-Length");if(length){size_t size=0;for(size_t i=0;i<length->len;i++){if(length->buf[i]<'0'||length->buf[i]>'9'||size>REPO_XML_LIMIT/10){reply(c,413,"XML request exceeds size limit");c->is_draining=1;return 1;}size=size*10+(unsigned)(length->buf[i]-'0');}if(size>REPO_XML_LIMIT){reply(c,413,"XML request exceeds size limit");c->is_draining=1;return 1;}}}}
  if(event==MG_EV_READ&&c->recv.len>REPO_XML_LIMIT+8192){struct mg_http_message m;if(mg_http_parse((char *)c->recv.buf,c->recv.len,&m)>0&&repo_sources_is_api(m.uri)){reply(c,413,"XML request exceeds size limit");c->is_draining=1;return 1;}}
  return 0;
 }
 int repo_sources_download(struct mg_connection *c,struct mg_http_message *m){
  const char *prefix="/applets/remote/";if(m->uri.len<strlen(prefix)||memcmp(m->uri.buf,prefix,strlen(prefix)))return 0;
- if((c->rem.is_ip6||c->rem.ip[0]!=127)&&!auth_session_ok(m,NULL)){reply(c,401,"Browser pairing required");return 1;}
+ if((c->rem.is_ip6||c->rem.ip[0]!=127)&&!auth_session_ok(c, m,NULL)){reply(c,401,"Browser pairing required");return 1;}
  if(mg_strcmp(m->method,mg_str("GET"))&&mg_strcmp(m->method,mg_str("HEAD"))){reply(c,405,"GET or HEAD required");return 1;}
  size_t start=strlen(prefix);if(m->uri.len!=start+44||memcmp(m->uri.buf+start+40,".zip",4)){reply(c,404,"Unknown package");return 1;}char sha[41];memcpy(sha,m->uri.buf+start,40);sha[40]=0;if(strspn(sha,"0123456789abcdef")!=40){reply(c,404,"Unknown package");return 1;}
  load();RepoApplet *item=NULL;char model[16],firmware[64];device(model,firmware);

@@ -1267,7 +1267,7 @@ typedef struct {
 	uint64_t bits;
 	unsigned char b[64];
 	size_t n;
-} SHA1;
+} RepositorySHA1;
 
 /**
  * @brief Handle rol.
@@ -1285,7 +1285,7 @@ static uint32_t rol(uint32_t x, unsigned n)
  * @param s Object referenced by s.
  * @param b Input text for b.
  */
-static void shablock(SHA1 *s, const unsigned char *b)
+static void shablock(RepositorySHA1 *s, const unsigned char *b)
 {
 	uint32_t w[80], a, c, d, e, f, k, t, bb;
 	for (int i = 0; i < 16; i++)
@@ -1330,7 +1330,7 @@ static void shablock(SHA1 *s, const unsigned char *b)
  * @brief Handle shainit.
  * @param s Object referenced by s.
  */
-static void shainit(SHA1 *s)
+static void shainit(RepositorySHA1 *s)
 {
 	memset(s, 0, sizeof *s);
 	s->h[0] = 0x67452301;
@@ -1346,7 +1346,7 @@ static void shainit(SHA1 *s)
  * @param p Object referenced by p.
  * @param n Capacity or item count associated with the operation.
  */
-static void shaup(SHA1 *s, const void *p, size_t n)
+static void shaup(RepositorySHA1 *s, const void *p, size_t n)
 {
 	const unsigned char *b = p;
 	s->bits += (uint64_t)n * 8;
@@ -1370,7 +1370,7 @@ static void shaup(SHA1 *s, const void *p, size_t n)
  * @param s Object referenced by s.
  * @param d Numeric value for d.
  */
-static void shafinal(SHA1 *s, unsigned char d[20])
+static void shafinal(RepositorySHA1 *s, unsigned char d[20])
 {
 	uint64_t bits = s->bits;
 	unsigned char one = 0x80, zero = 0;
@@ -1398,7 +1398,7 @@ static void shafinal(SHA1 *s, unsigned char d[20])
 int repo_sha1_file(const char *p, char hex[41])
 {
 	FILE *f = fopen(p, "rb");
-	SHA1 s;
+	RepositorySHA1 s;
 	unsigned char b[32768], d[20];
 	size_t n;
 	if (!f)

@@ -26,6 +26,9 @@ class Origin(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.split("?")[0]
+        if path == "/disconnect":
+            self.close_connection = True
+            return  # Deterministic upstream transport failure, without external DNS.
         if path == "/slow":
             time.sleep(9)
         if path in ("/to-http", "/to-https", "/loop", "/relative", "/unsafe", "/ftp"):
@@ -156,9 +159,10 @@ with tempfile.TemporaryDirectory() as temporary:
             assert response.status in (400, 404)
             response.read()
             connection.close()
-        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
-        connection.request("GET", "/artwork/320/320/80/http/no-artwork.invalid/image.jpg")
-        response = connection.getresponse()
+        # Exercise the same upstream transport-error -> 502 branch using our
+        # controlled origin. An unreachable DNS resolver made .invalid stall
+        # beyond the client deadline in the isolated network namespace.
+        connection, response = request("http", "/disconnect")
         assert response.status == 502
         response.read()
         connection.close()

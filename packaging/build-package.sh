@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+# 0.7.5 release profile includes network music; explicit 0 is diagnostic only.
+SB_PACKAGE_UPNP=${SB_PACKAGE_UPNP:-1}
+export SB_PACKAGE_UPNP
 
 # The cross-toolchain is Linux ELF; Git Bash must enter WSL first.
 case "$(uname -s)" in
@@ -20,6 +23,7 @@ case "$platform" in
  baby|fab4) ;;
  *) echo "Usage: $0 [baby|fab4|all]" >&2; exit 2 ;;
 esac
+test -x "$root/build-arm/$platform/sbvpn" || { echo "Build scripts/build-vpn-arm.sh first" >&2; exit 1; }
 sh "$root/scripts/verify-arm.sh" "$platform" "$root/build-arm/$platform"
 config=${SB_PACKAGE_CONFIG:-$root/config.json}
 test -f "$config" || { echo "missing package catalog: $config" >&2; exit 1; }
@@ -27,15 +31,21 @@ module="$root/artifacts/sbubifs-authorized.ko"
 expected_sha=63652ce67df06a78abb84a4986253bdab02fbd7b7c000779c60b3d393ba9566b
 image="$root/artifacts/ubi/sbdata-empty.ubifs"
 expected_image_sha=34f26e33d80393c1f1f497e85dff6b78dbc6fc0e2df98ed1150ea45c6631065d
+if [ "$platform" = baby ]; then
 test "$(wc -c <"$module" | tr -d ' ')" = 199119 || { echo "incorrect authorized module size" >&2; exit 1; }
 test "$(sha256sum "$module" | awk '{print $1}')" = "$expected_sha" || { echo "incorrect authorized module SHA-256" >&2; exit 1; }
 test "$(wc -c <"$image" | tr -d ' ')" = 1806336 || { echo "incorrect sbdata image size" >&2; exit 1; }
 test "$(sha256sum "$image" | awk '{print $1}')" = "$expected_image_sha" || { echo "incorrect sbdata image SHA-256" >&2; exit 1; }
+fi
 stage=${SB_PACKAGE_STAGE:-$root/build-package/$platform/StandaloneBase}
 output=${SB_PACKAGE_OUTPUT:-$root/build-package}
 mkdir -p "$output"
 output=$(CDPATH= cd -- "$output" && pwd)
-zipfile="$output/StandaloneBase-0.7.3-$platform.zip"
+version=${SB_PACKAGE_VERSION:-$(tr -d '\r\n' < "$root/VERSION")}
+case "$version" in ''|*[!0-9A-Za-z.-]*) echo 'Invalid package version' >&2; exit 2;; esac
+test "$version" = "$(tr -d '\r\n' < "$root/VERSION")" || { echo "Package version must match VERSION" >&2; exit 2; }
+export SB_PACKAGE_VERSION="$version"
+zipfile="$output/StandaloneBase-$version-$platform.zip"
 rm -rf "$stage"
 mkdir -p "$stage"
 cp "$root/applet/Platform.lua" "$root/applet/StandaloneBaseMeta.lua" "$root/applet/StandaloneBaseApplet.lua" "$root/applet/StorageManager.lua" "$root/applet/ExtendedStorageState.lua" "$root/applet/TimeSync.lua" "$root/applet/TimeResolver.lua" "$root/applet/RemoteBridge.lua" "$root/applet/ServerMigration.lua" "$root/applet/NetworkAddress.lua" "$root/applet/strings.txt" "$stage/"
@@ -44,6 +54,7 @@ cp "$root/build-arm/$platform/svgpngrenderer" "$stage/"
 cp "$root/applet/ImageRender.lua" "$root/applet/ArtworkUrlNormalizer.lua" "$stage/"
 cp "$root/applet/Artwork.lua" "$stage/"
 cp "$root/applet/InstallerCompat.lua" "$stage/"
+cp "$root/applet/InstallerTransaction.lua" "$stage/"
 cp "$root/applet/HttpTrace.lua" "$stage/"
 cp "$root/applet/FirmwareUpdates.lua" "$stage/"
 cp "$root/applet/AlarmPlayback.lua" "$stage/"
@@ -54,11 +65,20 @@ cp "$root/native/svgpngrenderer/THIRD_PARTY.md" "$stage/SVG-THIRD-PARTY-NOTICES"
 chmod 0755 "$stage/svgpngrenderer"
 cp "$root/scripts/storage-setup.sh" "$root/scripts/storage-boot.sh" "$stage/"
 cp "$root/scripts/patch-squeezeplay-artwork.sh" "$stage/"
-cp "$module" "$stage/sbubifs-authorized.ko"
-cp "$image" "$stage/sbdata-empty.ubifs"
+if [ "$platform" = baby ]; then
+ cp "$module" "$stage/sbubifs-authorized.ko"
+ cp "$image" "$stage/sbdata-empty.ubifs"
+fi
 cp "$root/native/sbwebserver/web/index.html" "$stage/index.html"
 cp "$root/native/sbwebserver/web/css/style.css" "$stage/style.css"
 cp "$root/native/sbwebserver/third_party/yxml/COPYING" "$stage/YXML-LICENSE"
+portal_tls_prefix=${ARM_PORTAL_TLS_PREFIX:-$root/build-portal-tls/prefix}
+cp "$portal_tls_prefix/PORTAL-TLS-LICENSE" "$stage/PORTAL-TLS-LICENSE"
+cp "$portal_tls_prefix/portal-tls-manifest.txt" "$stage/portal-tls-manifest.txt"
+cp "$root/build-arm/$platform/sbvpn" "$stage/sbvpn"
+cp "$root/applet/Vpn.lua" "$stage/Vpn.lua"
+cp "$root/native/sbwebserver/web/js/secure.js" "$stage/secure.js"
+cp "$root/native/sbwebserver/web/js/vpn.js" "$stage/vpn.js"
 cp "$root/native/sbwebserver/web/js/repositories.js" "$stage/repositories.js"
 cp "$root/applet/PlaybackFenceV4.lua" "$root/applet/RadioStop.lua" "$root/applet/SbCapture.lua" "$stage/"
 cp "$root/native/sbwebserver/web/js/app.js" "$stage/app.js"
@@ -75,14 +95,12 @@ cp "$root/native/sbwebserver/web/assets/virtual-radio/touch-front.webp" "$stage/
 cp "$config" "$stage/config.json"
 cp "$root/config/catalog.example.json" "$stage/catalog.json"
 cp "$root/native/sbproxy/cacert.pem" "$stage/cacert.pem"
-chmod 0755 "$stage/sbbase" "$stage/sbwebserver" "$stage/sbproxy" "$stage/sb-storage-helper" "$stage/sb-storage-updater" "$stage/storage-setup.sh" "$stage/storage-boot.sh" "$stage/patch-squeezeplay-artwork.sh"
+chmod 0755 "$stage/sbvpn" "$stage/sbbase" "$stage/sbwebserver" "$stage/sbproxy" "$stage/sb-storage-helper" "$stage/sb-storage-updater" "$stage/storage-setup.sh" "$stage/storage-boot.sh" "$stage/patch-squeezeplay-artwork.sh"
 cp "$root/build-arm/$platform/build-manifest.txt" "$stage/"
 printf '%s\n' "$platform" > "$stage/build-target"
-if [ "$platform" = fab4 ]; then
-  rm "$stage/sbubifs-authorized.ko" "$stage/sbdata-empty.ubifs"
-fi
-if [ -n "${SB_PACKAGE_UPNP_ROOT:-}" ]; then
-  sh "$root/packaging/stage-upnp.sh" "$platform" "$stage" "$SB_PACKAGE_UPNP_ROOT"
+printf '%s\n' "$version" > "$stage/build-version"
+if [ "${SB_PACKAGE_UPNP:-0}" = 1 ]; then
+  sh "$root/packaging/stage-upnp.sh" "$platform" "$stage"
 fi
 rm -f "$zipfile"
 python3 - "$stage" "$zipfile" <<'PYZIP'
@@ -90,7 +108,7 @@ import sys, zipfile, stat
 from pathlib import Path
 stage=Path(sys.argv[1])
 with zipfile.ZipFile(sys.argv[2], 'w', zipfile.ZIP_DEFLATED) as z:
-    executables={'sbbase','sbproxy','sbwebserver','svgpngrenderer','sb-storage-helper','sb-storage-updater','storage-setup.sh','storage-boot.sh','patch-squeezeplay-artwork.sh','sbupnp','sbbase-network','sbwebserver-network'}
+    executables={'sb-tinysc-control','sbvpn','sbbase','sbproxy','sbwebserver','svgpngrenderer','sb-storage-helper','sb-storage-updater','storage-setup.sh','storage-boot.sh','patch-squeezeplay-artwork.sh','sbupnp','sbbase-network','sbwebserver-network'}
     for f in sorted(stage.iterdir()):
         info=zipfile.ZipInfo.from_file(f,f.name)
         info.create_system=3

@@ -154,7 +154,7 @@ def main():
                 connection.close()
                 assert request('/api/image/render?width=999', SVG, upload)[0] == 400
                 assert request('/api/image/render', SVG, upload | {'Origin': 'http://evil.invalid'})[0] == 403
-                assert request(image(), headers={'Host': 'evil.invalid'})[0] == 401
+                assert request(image(), headers={'Host': 'evil.invalid'})[0] == 400  # listener-level Host rejection
                 assert request(image(), headers={'Origin': 'http://evil.invalid'})[0] == 401
                 for url in ['http://127.0.0.1/a', 'http://10.0.0.1/a', 'http://169.254.169.254/a',
                             'http://2130706433/a', 'http://localhost/a']:

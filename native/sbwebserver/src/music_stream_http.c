@@ -63,6 +63,16 @@ int sb_web_music_enabled(void)
 {
 	return registry != NULL;
 }
+int sb_web_music_shutdown(void)
+{
+ if(!registry)return 1;
+ test_now_set=0;
+ uint64_t deadline=music_now()+5000;
+ struct timespec pause={0,1000000};
+ while(!sb_stream_registry_stop(registry)){if(music_now()>=deadline)return 0;nanosleep(&pause,NULL);}
+ while(!sb_stream_registry_destroy(registry)){if(music_now()>=deadline)return 0;nanosleep(&pause,NULL);}
+ registry=NULL;memset(clients,0,sizeof clients);return 1;
+}
 
 static void retire(stream_client *s)
 {

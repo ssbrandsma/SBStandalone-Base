@@ -31,12 +31,7 @@
 --   6. (Build 11) Pause frames carry a NUMERIC CometD id with the
 --      response path nested under data (the Base envelope contract);
 --      the legacy top-level response + string id drew a silent 400.
---   7. (Build 12 DIAG, temporary) Snoop Jive's /cometd reply bodies
---      into fence.snoop to name the Now Playing 121-byte reply.
---   8. (Build 13 DIAG, temporary) Snoop URL filter fixed
---      (t_httpRequest.uri.path); ownership noise excluded.
---   9. (Build 14 DIAG, temporary) Snoop also captures /cometd
---      REQUEST bodies (wrap, never consume).
+--   Production build 15 removes HTTP body capture and disk event tracing.
 --   7. (V6 build 8) The music flag tracks the SBOWN1 GRANT
 --      (owner==4), not the Jive HTTP stream object: Jive slurps a
 --      whole loopback track in seconds (clean FIN) and decodes from
@@ -52,7 +47,7 @@
 -- partially patching them.
 local M = {}
 M.VERSION = 6
-M.BUILD = 14
+M.BUILD = 15
 M.MARKER = "/var/run/standalonebase/music-fence.enabled"
 M.PIDDIR = "/tmp/standalonebase"
 M.MUSIC_STREAM_MATCH = "/music/stream/"
@@ -558,10 +553,7 @@ function M.install(options)
         return true
     end
 
-    -- Build 4: stream-event ring. The mid-play killer sends DSCO
-    -- +STMf from Jive; capture verbatim (reason, flush, stream, decode
-    -- codes) so the next kill is attributable. In-memory ring (20),
-    -- flushed to the status dir on every event.
+    -- Bounded in-memory state events only; never capture HTTP bodies or headers.
     local streamRing = {}
     function self:streamEventLog()
         return streamRing
@@ -569,94 +561,9 @@ function M.install(options)
     local function ringPush(text)
         streamRing[#streamRing + 1] = tostring(self.clock()) .. " " .. text
         while #streamRing > 20 do table.remove(streamRing, 1) end
-        pcall(function()
-            local f = assert(io.open(
-                "/tmp/standalonebase/fence.streams", "w"))
-            for _, line in ipairs(streamRing) do
-                f:write(line, "\n")
-            end
-            f:close()
-        end)
+
     end
     self.streamRingPush = ringPush
-    -- Build 12 diag (temporary): snoop Jive->Base /cometd REPLY
-    -- bodies (request bodies can't be re-read safely). Proves what
-    -- the Now Playing query actually gets back. Stripped in final.
-    local snoopRing = {}
-    local function snoopPush(data)
-        snoopRing[#snoopRing + 1] = tostring(self.clock())
-            .. " " .. tostring(data):sub(1, 1200)
-        while #snoopRing > 4 do table.remove(snoopRing, 1) end
-        pcall(function()
-            local f = assert(io.open(
-                "/tmp/standalonebase/fence.snoop", "w"))
-            for _, line in ipairs(snoopRing) do
-                f:write(line, "\n")
-            end
-            f:close()
-        end)
-    end
-    local function wrapSnoop()
-        local SocketHttp = tryRequire("jive.net.SocketHttp")
-        if type(SocketHttp) ~= "table" then return true end
-        if SocketHttp._sbSnoop then return true end
-        if type(SocketHttp.fetch) ~= "function" then
-            return nil, "unsupported_socket_revision"
-        end
-        local origFetch = SocketHttp.fetch
-        SocketHttp._sbSnoop = true
-        SocketHttp.fetch = function(socket, request)
-            local ours = request and request._sbFenceOurs
-            origFetch(socket, request)
-            if ours then return end
-            local ok, prev = pcall(function()
-                return request.t_setResponseBody
-            end)
-            if not ok or type(prev) ~= "function" then return end
-            if request._sbSnoopWrapped then return end
-            request._sbSnoopWrapped = true
-            local url = ""
-            pcall(function()
-                local spec = request.t_httpRequest
-                if spec and spec.uri then
-                    url = tostring(spec.uri.path or "")
-                end
-            end)
-            request.t_setResponseBody = function(req, data)
-                if type(data) == "string" and #data > 0
-                    and (url == "" or url:find("cometd", 1, true))
-                    and data:find("^%s*[[{]") then
-                    pcall(snoopPush, data)
-                end
-                return prev(req, data)
-            end
-            -- Build 14: also capture REQUEST bodies (wrap, never
-            -- consume: the fetcher calls our wrapper instead).
-            local isCometd = url == ""
-                or url:find("cometd", 1, true) ~= nil
-            local okS, source = pcall(function()
-                return request.t_bodySource
-            end)
-            if okS and isCometd and not request._sbSnoopSrcWrapped then
-                if type(source) == "string" and #source > 0 then
-                    request._sbSnoopSrcWrapped = true
-                    pcall(snoopPush, "REQ " .. source:sub(1, 400))
-                elseif type(source) == "function" then
-                    request._sbSnoopSrcWrapped = true
-                    request.t_bodySource = function(...)
-                        local okR, body = pcall(source, ...)
-                        if not okR then error(body) end
-                        if type(body) == "string" and #body > 0 then
-                            pcall(snoopPush, "REQ " .. body:sub(1, 400))
-                        end
-                        return body
-                    end
-                end
-            end
-        end
-        log:info("PlaybackFence: cometd snoop installed")
-        return true
-    end
     local function decodeCodes()
         if not self.decode then return "?/?" end
         local ok, st = pcall(function() return self.decode:status() end)
@@ -670,7 +577,6 @@ function M.install(options)
         return function(instance, ...)
             ringPush("CONNECT stream=" ..
                 (instance.stream ~= nil and "set" or "nil") ..
-                " hdr=" .. tostring(instance.header):sub(1, 44) ..
                 " dec=" .. decodeCodes())
             detectMusicStream(instance, "connect")
             return original(instance, ...)
@@ -700,13 +606,7 @@ function M.install(options)
     -- invoker. Pure observer: never blocks, never alters.
     local function mkStopInternal(original)
         return function(instance, ...)
-            local tb = "notrace"
-            pcall(function()
-                tb = tostring(debug.traceback("stopInternal", 2))
-                    :gsub("\n", " | "):sub(1, 300)
-            end)
-            ringPush("STOPINTERNAL music=" ..
-                tostring(self.musicActive) .. " tb=" .. tb)
+            ringPush("STOPINTERNAL music=" .. tostring(self.musicActive))
             return original(instance, ...)
         end
     end
@@ -716,7 +616,6 @@ function M.install(options)
                 " flush=" .. tostring(flush) ..
                 " stream=" ..
                 (instance.stream ~= nil and "set" or "nil") ..
-                " hdr=" .. tostring(instance.header):sub(1, 44) ..
                 " dec=" .. decodeCodes() ..
                 " music=" .. tostring(self.musicActive))
             local result = original(instance, reason, flush)
@@ -1209,7 +1108,7 @@ function M.install(options)
                 pbObj = tostring(pb):match(": ([0-9A-Fa-fx]+)") or "obj"
                 pbStream = pb.stream ~= nil and "set" or "nil"
                 if type(pb.header) == "string" then
-                    pbHeader = pb.header:sub(1, 48)
+                    pbHeader = pb.header:find(M.MUSIC_STREAM_MATCH,1,true) and "music" or "other"
                 else
                     pbHeader = type(pb.header)
                 end
@@ -1581,7 +1480,6 @@ function M.install(options)
         wrapRetry("spotifyWrapped", wrapSpotify, "spotify")
         wrapRetry("playerWrapped", wrapPlayerPause, "player")
         wrapRetry("actionsWatched", watchActions, "actions")
-        wrapRetry("snoopWrapped", wrapSnoop, "snoop")
         observeForeignOwnership()
         -- Local backstop: reap a stale active flag when the decoder is
         -- provably idle (covers missed disconnect observations) or has
@@ -1597,7 +1495,7 @@ function M.install(options)
         -- the HTTP stream); a latch whose stream moved on to
         -- non-Music, or whose native ownership moved to another
         -- app, still reaps (a new owner holds the decoder).
-        local movedOn = playback.stream ~= nil
+        local movedOn = playback and playback.stream ~= nil
             and not headerIsMusic(playback)
         local foreignOwns = gv.owner ~= nil and gv.owner ~= 0
             and gv.owner ~= 4

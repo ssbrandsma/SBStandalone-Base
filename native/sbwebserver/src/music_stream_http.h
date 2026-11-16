@@ -6,6 +6,7 @@ int sb_web_music_init(int private_ipc);
 int sb_web_music_event(struct mg_connection *, int event, void *data);
 void sb_web_music_tick(void);
 int sb_web_music_enabled(void);
+int sb_web_music_shutdown(void);
 /* Test hook: freeze/advance the pump clock. Production never calls it. */
 void sb_web_music_test_now(uint64_t now_ms, int set);
 #endif

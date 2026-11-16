@@ -341,10 +341,10 @@ def run(base, web, scanner, helper, initial_owner=None, library_size=0, fixture=
                 assert request('/test/music/owner')[1]['intended'] == 0
                 player.stat('STMu', 200)
                 wait(lambda: request('/test/music/owner')[1]['intended'] == 1)
-                assert player.starts.empty()
-                second_player = Player()
-                wait(lambda: request('/test/music/owner')[1]['connection'] == 2)
-                wait(lambda: request('/test/music/adapter/idle')[0] == 200)
+                # A completed epoch reuses the actual attached firmware peer;
+                # physical Fab4 does not issue a fresh HELO between tracks.
+                second_player = player
+                assert request('/test/music/owner')[1]['connection'] == 1
                 second = second_player.starts.get(timeout=8)
                 assert second[1:] == ('f', data['second.flac'])
                 second_player.stat('STMs')
@@ -366,9 +366,11 @@ def run(base, web, scanner, helper, initial_owner=None, library_size=0, fixture=
 
                     def reconnect(expected_codec, expected_bytes):
                         previous_connection = request('/test/music/owner')[1]['connection']
-                        current = Player()
-                        wait(lambda: request('/test/music/owner')[1]['connection'] > previous_connection)
+                        current = player
+                        # Explicit fake-adapter proof is required after a
+                        # selected-item stop; STMf alone cannot release it.
                         wait(lambda: request('/test/music/adapter/idle')[0] == 200)
+                        assert request('/test/music/owner')[1]['connection'] == previous_connection
                         try:
                             stream = current.starts.get(timeout=8)
                         except queue.Empty:
@@ -385,9 +387,26 @@ def run(base, web, scanner, helper, initial_owner=None, library_size=0, fixture=
                     assert command(['playlist', 'index', '-1'])[0]
                     fourth_player = reconnect('f', data['second.flac'])
                     assert command(['stop'])[0]
+                    # STMf acknowledges input flush, not physical decoder release.
+                    # Supply the same trusted idle proof used for every start above.
+                    wait(lambda: request('/test/music/adapter/idle')[0] == 200)
                     wait(lambda: command(['status', 0, 50])[1]['mode'] == 'stop')
+                    # Follow the mocked decoder's actual connection boundary.
+                    # A terminal may free the connection for reuse, or the
+                    # reset may require a fresh HELO. Never force a reconnect
+                    # while a valid start is already using the old connection.
                     assert command(['play'])[0]
-                    second_player = reconnect('f', data['second.flac'])
+                    wait(lambda: not fourth_player.starts.empty() or
+                         request('/test/music/owner')[1]['phase'] == 7)
+                    if fourth_player.starts.empty():
+                        second_player = reconnect('f', data['second.flac'])
+                    else:
+                        resumed = fourth_player.starts.get(timeout=8)
+                        assert resumed[1:] == ('f', data['second.flac'])
+                        verified.append(resumed[2])
+                        fourth_player.stat('STMs')
+                        wait(lambda: command(['status', 0, 50])[1]['mode'] == 'play')
+                        second_player = fourth_player
                 entries_before_removal = request('/test/music/owner')[1]['count']
                 if initial_owner:
                     assert request('/test/music/adapter/owner/' + initial_owner)[0] == 200

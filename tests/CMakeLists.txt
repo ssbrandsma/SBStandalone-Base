@@ -31,6 +31,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     "-Wl,--wrap=clock_gettime" "-Wl,--wrap=gettimeofday")
   add_test(NAME mongoose_clock_fallback COMMAND test_mongoose_clock)
 endif()
+
+
 add_test(NAME squeezeplay_artwork_patch COMMAND sh
   ${CMAKE_SOURCE_DIR}/tests/comet/test_artwork_patch.sh
   ${CMAKE_SOURCE_DIR}/scripts/patch-squeezeplay-artwork.sh)
@@ -129,10 +131,19 @@ if(NOT WIN32)
     add_test(NAME repository_xml_sources COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/repository/test_xml_sources.py $<TARGET_FILE:sbwebserver_catalog_test> ${CMAKE_SOURCE_DIR}/native/sbwebserver/web)
     target_include_directories(sbwebserver_catalog_test PRIVATE
       ../native/sbwebserver/src ../native/sbwebserver/third_party ../native/sbwebserver/third_party/yxml ../native/sbbase/include)
-    target_compile_definitions(sbwebserver_catalog_test PRIVATE _GNU_SOURCE SB_CATALOG_TESTING SB_REPOSITORY_TESTING SB_FIRMWARE_TESTING SB_IMAGE_TESTING
+    target_compile_definitions(sbwebserver_catalog_test PRIVATE _GNU_SOURCE SB_CATALOG_TESTING SB_REPOSITORY_TESTING SB_VPN_TESTING SB_FIRMWARE_TESTING SB_IMAGE_TESTING
       MG_ENABLE_EPOLL=0 MG_ENABLE_POLL=1 MG_ENABLE_DIRLIST=0 MG_ENABLE_SSI=0)
     find_package(ZLIB REQUIRED)
     target_link_libraries(sbwebserver_catalog_test PRIVATE Threads::Threads ZLIB::ZLIB)
+    if(SB_WEB_TLS)
+      find_package(OpenSSL REQUIRED)
+      target_compile_definitions(sbwebserver_catalog_test PRIVATE MG_TLS=MG_TLS_OPENSSL)
+      target_link_libraries(sbwebserver_catalog_test PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+      add_test(NAME secure_portal_https COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/portal/test_https.py $<TARGET_FILE:sbwebserver_catalog_test>
+        $<TARGET_FILE:sbvpn> ${CMAKE_SOURCE_DIR}/native/sbwebserver/web)
+    endif()
+
     add_executable(test_firmware_image firmware/image_check.c
       ../native/sbwebserver/src/firmware_image.c ../native/sbwebserver/third_party/mongoose.c)
     target_include_directories(test_firmware_image PRIVATE
@@ -447,6 +458,9 @@ if(UNIX AND TARGET sbbase)
   target_compile_options(maintenance_helper_fixture PRIVATE -Wall -Wextra -Wpedantic -Werror)
   add_executable(maintenance_jive_fixture music/maintenance_jive_fixture.c)
   add_executable(restart_probe_fixture music/restart_probe_fixture.c)
+  add_test(NAME installer_transaction COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/images/test_installer_transaction.py
+    ${CMAKE_SOURCE_DIR} $<TARGET_FILE:restart_probe_fixture> -v)
+  set_tests_properties(installer_transaction PROPERTIES TIMEOUT 60)
   target_compile_options(restart_probe_fixture PRIVATE -Wall -Wextra -Wpedantic -Werror)
   add_test(NAME maintenance_primitives COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/music/test_maintenance_helper.py
     $<TARGET_FILE:maintenance_helper_fixture> $<TARGET_FILE:sb_maintenance_helper> $<TARGET_FILE:maintenance_jive_fixture> -v)
@@ -482,4 +496,72 @@ if(UNIX AND TARGET sbbase)
     $<TARGET_FILE:tinysc_control_fixture> $<TARGET_FILE:tinysc_lifecycle_fixture> -v)
   set_tests_properties(tinysc_lifecycle PROPERTIES TIMEOUT 30)
  endif()
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_executable(test_vpn_profile vpn/profile_driver.c ../native/sbvpn/profile.c ../native/sbvpn/json.c)
+ target_include_directories(test_vpn_profile PRIVATE ../native/sbvpn ../native/sbwebserver/third_party)
+ target_compile_definitions(test_vpn_profile PRIVATE _GNU_SOURCE)
+ add_test(NAME vpn_security_storage COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/vpn/test_vpn.py $<TARGET_FILE:test_vpn_profile> $<TARGET_FILE:sbvpn>)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_test(NAME vpn_http_security COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/vpn/test_http.py $<TARGET_FILE:sbvpn> $<TARGET_FILE:sbwebserver_catalog_test> ${CMAKE_SOURCE_DIR}/native/sbwebserver/web)
+endif()
+
+if(LUA_EXECUTABLE)
+ add_test(NAME vpn_jive_frontend COMMAND ${LUA_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/vpn/test_jive.lua ${CMAKE_SOURCE_DIR})
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_library(vpn_exec_fault SHARED vpn/fault_exec.c)
+ target_link_libraries(vpn_exec_fault PRIVATE dl)
+endif()
+
+if(Python3_Interpreter_FOUND AND EXISTS "${SB_RADIO_SOURCE}/applet/StandaloneRadio/StreamPlayer.lua")
+ add_test(NAME vpn_radio_playback_recovery COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/vpn/test_playback_recovery.py ${SB_RADIO_SOURCE})
+ set_tests_properties(vpn_radio_playback_recovery PROPERTIES SKIP_RETURN_CODE 77)
+endif()
+
+if(NODE_EXECUTABLE)
+ add_test(NAME vpn_web_frontend COMMAND ${NODE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/vpn/test_frontend.js ${CMAKE_SOURCE_DIR}/native/sbwebserver/web/js/vpn.js)
+ set_tests_properties(vpn_web_frontend PROPERTIES SKIP_RETURN_CODE 77)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_executable(test_vpn_telemetry vpn/test_telemetry.c ../native/sbvpn/traffic.c ../native/sbvpn/verification.c ../native/sbvpn/json.c ../native/sbwebserver/third_party/mongoose.c)
+ target_include_directories(test_vpn_telemetry PRIVATE ../native/sbvpn ../native/sbwebserver/third_party)
+ target_compile_definitions(test_vpn_telemetry PRIVATE _GNU_SOURCE MG_ENABLE_EPOLL=0 MG_ENABLE_POLL=1)
+ target_link_libraries(test_vpn_telemetry PRIVATE Threads::Threads)
+ add_test(NAME vpn_traffic_verification COMMAND test_vpn_telemetry)
+endif()
+
+if(NODE_EXECUTABLE AND SB_WEB_TLS)
+ add_test(NAME secure_portal_frontend COMMAND ${NODE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/portal/test_frontend.js ${CMAKE_SOURCE_DIR}/native/sbwebserver/web)
+endif()
+
+if(TARGET sbupnp AND Python3_EXECUTABLE)
+  add_test(NAME upnp_network COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_SOURCE_DIR}/native/sbupnp/tests/test_network.py $<TARGET_FILE:sbupnp> $<TARGET_FILE:sbbase>
+    $<TARGET_FILE:sbbase_music_test> $<TARGET_FILE:sbwebserver_music_test>)
+  add_test(NAME upnp_network_playback COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_SOURCE_DIR}/native/sbupnp/tests/test_remote_playback.py
+    $<TARGET_FILE:test_network_playback> ${CMAKE_SOURCE_DIR}/tests/music/fixtures/media/base.mp3)
+  set_tests_properties(upnp_network upnp_network_playback PROPERTIES RUN_SERIAL TRUE TIMEOUT 90)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_executable(test_portal_path_bounds portal/test_path_bounds.c ../native/sbwebserver/third_party/mongoose.c)
+ target_include_directories(test_portal_path_bounds PRIVATE ../native/sbwebserver/third_party)
+ target_compile_definitions(test_portal_path_bounds PRIVATE _GNU_SOURCE MG_ENABLE_EPOLL=0 MG_ENABLE_POLL=1)
+ target_link_libraries(test_portal_path_bounds PRIVATE Threads::Threads)
+ add_test(NAME secure_portal_path_bounds COMMAND test_portal_path_bounds)
+endif()
+
+if(LUA_EXECUTABLE)
+ add_test(NAME upnp_network_profile COMMAND ${LUA_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/upnp/test_network_profile.lua ${CMAKE_SOURCE_DIR})
+endif()
+
+if(Python3_Interpreter_FOUND)
+ add_test(NAME upnp_package_contract COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/upnp/test_package_contract.py ${CMAKE_SOURCE_DIR})
 endif()

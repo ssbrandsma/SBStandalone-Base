@@ -201,9 +201,20 @@ class Coordinator(unittest.TestCase):
 
     def test_stale_watched_pid_is_refused(self):
         self.pidfile.write_text(str(os.getpid()) + "\n")
-        self.launch()
+        # Refusal can finish before the detached launcher's /proc identity
+        # snapshot. Either launcher result is safe only if REFUSED is recorded
+        # and no watched process or PID file is changed.
+        result = self.call("launch-restart")
+        self.assertIn(result.returncode, (0, 2), result.stderr)
+        if result.returncode == 0:
+            self.coordinators.append(json.loads(result.stdout))
         self.state("REFUSED")
         self.assertIsNone(self.player.poll())
+        self.assertEqual(self.pidfile.read_text(), str(os.getpid()) + "\n")
+        if (self.root / "actions.log").exists():
+            actions = (self.root / "actions.log").read_text().splitlines()
+            self.assertNotIn("stop", actions)
+            self.assertNotIn("start", actions)
 
     def test_feeder_failure_before_handoff_is_refused(self):
         self.watchdog.kill()

@@ -3,8 +3,9 @@ set -eu
 platform=$1
 out=$2
 readelf=${3:-readelf}
-for binary in sbbase sbwebserver sbproxy sb-storage-helper sb-storage-updater svgpngrenderer; do
+for binary in sbbase sbwebserver sbproxy sb-storage-helper sb-storage-updater svgpngrenderer sbvpn; do
   f="$out/$binary"
+  if test "$binary" = sbvpn && ! test -f "$f"; then continue; fi
   test -x "$f"
   "$readelf" -h "$f" | grep -q 'Machine:.*ARM'
   "$readelf" -h "$f" | grep -q 'Version5 EABI'

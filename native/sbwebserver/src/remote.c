@@ -1,3 +1,4 @@
+#include "auth.h"
 /*
  * Virtual Radio sessions, remote input queues and capture coordination.
  *
@@ -129,19 +130,8 @@ static void field(struct mg_str b, const char *k, char *out, size_t n)
  * @param m HTTP request message.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
-static int origin_ok(struct mg_http_message *m)
-{
-	struct mg_str *o = mg_http_get_header(m, "Origin"),
-		      *h = mg_http_get_header(m, "Host");
-	const char *p;
-	if (!o)
-		return 1;
-	if (!h || o->len > 300)
-		return 0;
-	p = memmem(o->buf, o->len, "://", 3);
-	return p && (size_t)(o->buf + o->len - (p + 3)) == h->len &&
-	       !memcmp(p + 3, h->buf, h->len);
-}
+static int origin_ok(struct mg_connection *c,struct mg_http_message *m)
+{return auth_origin_ok(c,m);}
 
 /**
  * @brief Handle loopback.
@@ -386,7 +376,7 @@ handle_session(struct mg_connection *c, struct mg_http_message *m, int readonly)
 {
 	char id[49], source[12];
 	Lease *l;
-	if (!origin_ok(m)) {
+	if (!origin_ok(c,m)) {
 		json_error(c, 403, "Cross-origin request rejected");
 		return;
 	}
@@ -496,7 +486,7 @@ handle_input(struct mg_connection *c, struct mg_http_message *m, int readonly)
 		json_error(c, 403, "Web management is read-only");
 		return;
 	}
-	if (!origin_ok(m)) {
+	if (!origin_ok(c,m)) {
 		json_error(c, 403, "Cross-origin request rejected");
 		return;
 	}

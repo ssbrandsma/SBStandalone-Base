@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+# 0.7.5 release profile includes network music; explicit 0 is diagnostic only.
+SB_PACKAGE_UPNP=${SB_PACKAGE_UPNP:-1}
+export SB_PACKAGE_UPNP
 
 # The cross-toolchain is Linux ELF; Git Bash must enter WSL first.
 case "$(uname -s)" in
@@ -53,6 +56,8 @@ if [ ! -f "$wolf_prefix/sbproxy-rsa-capacity" ] ||
    [ "$(tr -d '\r\n' < "$wolf_prefix/sbproxy-static-rsa")" != aes-gcm-v1 ]; then
   SBHTTPSPROXY_ROOT="$SBHTTPSPROXY_ROOT" sh "$root/scripts/build-proxy-tls.sh"
 fi
+portal_prefix=${ARM_PORTAL_TLS_PREFIX:-$root/build-portal-tls/prefix}
+test -f "$portal_prefix/lib/libwolfssl.a"
 test -f "$wolf_prefix/lib/libwolfssl.a"
 image_prefix="${ARM_IMAGE_PREFIX:-$root/build-image-arm/prefix}"
 test -f "$image_prefix/lib/libz.a" || { echo "Run scripts/build-image-libs.sh first" >&2; exit 1; }
@@ -70,9 +75,9 @@ ARM_TOOLCHAIN_DIR="$toolchain" SB_LIFECYCLE_OUTPUT="$out" \
 
 "$cc" -static $flags -std=c99 -Wall -Wextra -pthread -Wl,--gc-sections \
   -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -DMG_ENABLE_EPOLL=0 -DMG_ENABLE_POLL=1 \
-  -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 -I"$root/native/sbwebserver/src" -I"$image_prefix/include" -I"$root/native/sbbase/include" \
+  -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 -DMG_TLS=MG_TLS_WOLFSSL -I"$portal_prefix/include" -I"$portal_prefix/include/wolfssl" -include "$root/native/sbwebserver/src/portal_tls_config.h" -I"$root/native/sbwebserver/src" -I"$image_prefix/include" -I"$root/native/sbbase/include" \
   -I"$root/native/sbwebserver/third_party" -I"$root/native/sbwebserver/third_party/yxml" "$root/native/sbwebserver/src/"*.c \
-  "$root/native/sbwebserver/third_party/mongoose.c" "$root/native/sbwebserver/third_party/yxml/yxml.c" "$root/native/sbbase/src/alarms.c" "$root/native/sbbase/src/nowplaying.c" "$image_prefix/lib/libz.a" -o "$out/sbwebserver"
+  "$root/native/sbwebserver/third_party/mongoose.c" "$root/native/sbwebserver/third_party/yxml/yxml.c" "$root/native/sbbase/src/alarms.c" "$root/native/sbbase/src/nowplaying.c" "$image_prefix/lib/libz.a" "$portal_prefix/lib/libwolfssl.a" -o "$out/sbwebserver"
 
 "$cc" -static $flags -std=c99 -Wall -Wextra -Wpedantic -pthread -Wl,--gc-sections \
   -D_GNU_SOURCE -I"$wolf_prefix/include" -I"$tls_prefix/include" "$root/native/sbproxy/sbproxy.c" \
@@ -104,6 +109,8 @@ for binary in sbbase sbwebserver sbproxy sb-storage-helper sb-storage-updater sv
   if readelf -d "$out/$binary" 2>/dev/null | grep -q NEEDED; then echo "$binary unexpectedly has shared dependencies" >&2; exit 1; fi
 done
 
+ARM_TOOLCHAIN_DIR="$toolchain" SB_VPN_OUTPUT="$out" sh "$root/scripts/build-vpn-arm.sh" "$platform"
+
 sh "$root/scripts/verify-arm.sh" "$platform" "$out" "$toolchain/bin/$target-readelf"
 
 {
@@ -117,3 +124,8 @@ sh "$root/scripts/verify-arm.sh" "$platform" "$out" "$toolchain/bin/$target-read
 
 # WP1/WP6a/WP2 build isolated music components; the runtime stays disabled.
 ARM_TOOLCHAIN_DIR="$toolchain" sh "$root/scripts/build-music-arm.sh" "$platform"
+if [ "${SB_PACKAGE_UPNP:-0}" = 1 ]; then
+  ARM_TOOLCHAIN_DIR="$toolchain" ARM_IMAGE_PREFIX="$image_prefix" \
+    sh "$root/scripts/build-music-session-arm.sh" "$platform"
+  ARM_TOOLCHAIN_DIR="$toolchain" sh "$root/scripts/build-upnp-arm.sh" "$platform"
+fi

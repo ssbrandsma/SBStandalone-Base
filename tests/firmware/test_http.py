@@ -101,7 +101,7 @@ with tempfile.TemporaryDirectory() as directory:
         assert code == 200 and content == image
         assert int(headers['Content-Length']) == len(image)
         assert call(path, headers={'Origin': 'http://evil.invalid'})[0] == 403
-        assert call(path, headers={'Host': 'evil.invalid'})[0] == 403
+        assert call(path, headers={'Host': 'evil.invalid'})[0] == 400  # rejected before endpoint authorization
         assert call(path, headers={'Range': 'bytes=0-1'})[0] == 403
         assert call('/firmware/' + 'b'*64 + '/custom.baby.bin')[0] == 403
         time.sleep(46)

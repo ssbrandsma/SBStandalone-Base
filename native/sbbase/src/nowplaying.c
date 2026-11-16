@@ -703,7 +703,7 @@ int np_public_json(np_manager *m, char *out, size_t cap)
 int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 {
 	const np_status *s = &m->s;
-	char ti[512], ar[512], al[512], st[512], aw[768], text[1600];
+	char ti[512], ar[512], al[512], st[512], aw[768], text[1600], identity[NP_ID_MAX*6];
 	const char *display_album;
 	uint64_t pos = np_position(m);
 	int length;
@@ -720,6 +720,7 @@ int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 				"\"player_needs_upgrade\":0,\"player_is_"
 				"upgrading\":0,\"seq_no\":%u}",m->power,m->volume,m->sequence);
 	esc(ti, sizeof ti, s->track.title);
+	esc(identity,sizeof identity,s->track.id[0]?s->track.id:s->station.id[0]?s->station.id:s->source);
 	esc(ar, sizeof ar, s->track.artist);
 	esc(al, sizeof al, s->track.album);
 	esc(st,
@@ -749,7 +750,7 @@ int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 		"volume\":%d,\"digital_volume_control\":1,\"use_volume_"
 		"control\":1,\"player_needs_upgrade\":0,\"player_is_"
 		"upgrading\":0,\"seq_no\":%u,\"item_loop\":[{\"text\":\"%s\","
-		"\"id\":-1,\"track\":\"%s\",\"artist\":\"%s\",\"album\":\"%s\","
+		"\"id\":\"%s\",\"track\":\"%s\",\"artist\":\"%s\",\"album\":\"%s\","
 		"\"duration\":%.3f,\"icon\":\"%s\",\"params\":{\"track_id\":-1,"
 		"\"playlist_index\":0}}],\"base\":{\"actions\":{\"more\":{"
 		"\"cmd\":[\"contextmenu\"],\"itemsParams\":\"params\","
@@ -764,11 +765,17 @@ int np_playerstatus_json(np_manager *m, char *out, size_t cap)
 		strcmp(s->source, "demo") ? 1 : 0,
 		s->live && st[0] ? st : ti,m->volume,m->sequence,
 		text,
+		identity,
 		ti,
 		ar,
 		display_album,
 		s->duration_known ? (double)s->duration_ms / 1000.0 : 0.0,
 		aw);
+	if(length>=0&&(size_t)length<cap){
+	 char provider[NP_SOURCE_MAX*6];esc(provider,sizeof provider,s->source);
+	 int extra=snprintf(out+length-1,cap-(size_t)length+1,",\"playlist_provider\":\"%s\",\"provider_generation\":\"%llu\",\"remoteMeta\":{\"shuffle\":true,\"repeat\":true,\"buttons\":{\"fwd\":%d,\"rew\":%d,\"shuffle\":{\"jiveStyle\":\"shuffleDisabled\",\"command\":[\"jiveblankcommand\"]},\"repeat\":{\"jiveStyle\":\"repeatDisabled\",\"command\":[\"jiveblankcommand\"]}}},\"playlist_capabilities\":{\"select\":false,\"remove\":false,\"move\":false,\"clear\":false,\"next\":%s,\"previous\":%s}}",provider,(unsigned long long)s->generation,s->capabilities.next?1:0,s->capabilities.previous?1:0,s->capabilities.next?"true":"false",s->capabilities.previous?"true":"false");
+	 if(extra<0||(size_t)extra>=cap-(size_t)length+1)length=-1;else length+=extra-1;
+	}
 	if (length < 0 || (size_t)length >= cap) {
 		snprintf(out,
 			 cap,

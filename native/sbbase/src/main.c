@@ -430,10 +430,21 @@ static void stream_event(client *c, const char *body)
  * @param out Destination buffer for the result.
  * @param cap Size or count for cap.
  */
+#ifdef SB_MUSIC_PLAYBACK_INTEGRATION
+static int playlist_music_selected(void)
+{
+ if(!local_music)return 0;
+ if(local_owner.value.current==SB_OWNER_MUSIC)return 1;
+ if(local_owner.value.current!=SB_OWNER_NONE)return 0;
+ const np_status *status=np_current(nowplaying);
+ if(status->active&&status->state!=NP_STOPPED&&strcmp(status->source,"MyMusic"))return 0;
+ return sb_queue_snapshot(sb_playback_queue(local_music)).count!=0;
+}
+#endif
 static void player_status_json(char *out, size_t cap)
 {
 #ifdef SB_MUSIC_PLAYBACK_INTEGRATION
-	if (local_music && local_owner.value.current == SB_OWNER_MUSIC)
+	if (playlist_music_selected())
 		sb_playback_status(local_music, out, cap);
 	else
 #endif

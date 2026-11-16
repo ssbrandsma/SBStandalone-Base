@@ -1033,12 +1033,12 @@ int firmware_upload_event(struct mg_connection *c,
 	struct mg_str *legacy_sha = mg_http_get_header(m, "X-Firmware-SHA256");
 	char digest[65] = {0}, directory[400];
 	uint64_t size = 0;
-	if (!auth_session_ok(m, NULL)) {
+	if (!auth_session_ok(c, m, NULL)) {
 		code = 401;
 		error = "Browser pairing required";
 		goto reject;
 	}
-	if (readonly || !auth_origin_ok(m)) {
+	if (readonly || !auth_origin_ok(c, m)) {
 		code = 403;
 		error = "Write authorization denied";
 		goto reject;
@@ -1354,7 +1354,7 @@ int firmware_handle(struct mg_connection *c,
 		status_reply(c);
 		return 1;
 	}
-	if (readonly || !auth_origin_ok(m)) {
+	if (readonly || !auth_origin_ok(c, m)) {
 		mg_http_reply(c,
 			      403,
 			      FW_HEADERS,

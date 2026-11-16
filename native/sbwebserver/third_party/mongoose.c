@@ -26,6 +26,10 @@
 // SPDX-License-Identifier: GPL-2.0-only or commercial
 
 #include "mongoose.h"
+#if MG_TLS == MG_TLS_WOLFSSL
+/* wolfSSL does not transitively expose PEM key readers through ssl.h. */
+#include <openssl/pem.h>
+#endif
 
 #ifdef MG_ENABLE_LINES
 #line 1 "src/base64.c"
@@ -13635,6 +13639,25 @@ void mg_tls_init(struct mg_connection *c, const struct mg_tls_opts *opts) {
 #ifdef MG_TLS_SSLKEYLOGFILE
   SSL_CTX_set_keylog_callback(tls->ctx, ssl_keylog_cb);
 #endif
+#if MG_TLS == MG_TLS_WOLFSSL
+  /* wolfSSL rejects a server SSL_new without a context certificate/key.
+   * Load and validate the supplied identity before constructing the SSL. */
+  if (!c->is_client) {
+    /* Match the device P-256 identity and bound embedded key-exchange cost. */
+    if (wolfSSL_CTX_set1_groups_list(tls->ctx, "P-256") != WOLFSSL_SUCCESS ||
+        opts->cert.len == 0 || opts->key.len == 0 ||
+        wolfSSL_CTX_use_certificate_buffer(tls->ctx,
+            (const unsigned char *) opts->cert.buf, (long) opts->cert.len,
+            SSL_FILETYPE_PEM) != WOLFSSL_SUCCESS ||
+        wolfSSL_CTX_use_PrivateKey_buffer(tls->ctx,
+            (const unsigned char *) opts->key.buf, (long) opts->key.len,
+            SSL_FILETYPE_PEM) != WOLFSSL_SUCCESS ||
+        wolfSSL_CTX_check_private_key(tls->ctx) != WOLFSSL_SUCCESS) {
+      mg_error(c, "Server TLS identity initialization failed");
+      goto fail;
+    }
+  }
+#endif
   if ((tls->ssl = SSL_new(tls->ctx)) == NULL) {
     mg_error(c, "SSL_new");
     goto fail;
@@ -13671,7 +13694,7 @@ void mg_tls_init(struct mg_connection *c, const struct mg_tls_opts *opts) {
       goto fail;
     }
   }
-  if (opts->cert.buf != NULL && opts->cert.buf[0] != '\0') {
+  if ((MG_TLS != MG_TLS_WOLFSSL || c->is_client) && opts->cert.buf != NULL && opts->cert.buf[0] != '\0') {
     X509 *cert = load_cert(opts->cert);
     rc = cert == NULL ? 0 : SSL_use_certificate(tls->ssl, cert);
     X509_free(cert);
@@ -13680,7 +13703,7 @@ void mg_tls_init(struct mg_connection *c, const struct mg_tls_opts *opts) {
       goto fail;
     }
   }
-  if (opts->key.buf != NULL && opts->key.buf[0] != '\0') {
+  if ((MG_TLS != MG_TLS_WOLFSSL || c->is_client) && opts->key.buf != NULL && opts->key.buf[0] != '\0') {
     EVP_PKEY *key = load_key(opts->key);
     rc = key == NULL ? 0 : SSL_use_PrivateKey(tls->ssl, key);
     EVP_PKEY_free(key);
@@ -19077,9 +19100,11 @@ int mg_check_ip_acl(struct mg_str acl, struct mg_addr *remote_ip) {
 bool mg_path_is_sane(const struct mg_str path) {
   const char *s = path.buf;
   size_t n = path.len;
-  if (path.buf[0] == '.' && path.buf[1] == '.') return false;  // Starts with ..
-  for (; s[0] != '\0' && n > 0; s++, n--) {
-    if ((s[0] == '/' || s[0] == '\\') && n >= 2) {   // Subdir?
+  // GHSA-cjmx-764f-286c: respect mg_str bounds, including empty strings.
+  if (s == NULL || n == 0) return false;
+  if (n >= 2 && s[0] == '.' && s[1] == '.') return false;  // Starts with ..
+  for (; n > 0 && s[0] != '\0'; s++, n--) {
+    if ((s[0] == '/' || s[0] == '\\') && n >= 3) {   // Subdir?
       if (s[1] == '.' && s[2] == '.') return false;  // Starts with ..
     }
   }

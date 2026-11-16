@@ -17,11 +17,13 @@
 #include <unistd.h>
 #endif
 #include <signal.h>
+#include <sys/resource.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+static void web_stop(int sig){(void)sig;http_server_request_stop();}
 static void web_fatal(int sig)
 {
 	const char *m = "SBWEB_FATAL signal\n";
@@ -53,7 +55,11 @@ static void web_exit(void)
  */
 int main(int argc, char **argv)
 {
+    /* HTTP bodies may contain provisioning secrets: never write a core dump. */
+    struct rlimit core={0,0};if(setrlimit(RLIMIT_CORE,&core))return 1;
 	signal(SIGSEGV, web_fatal);
+	signal(SIGTERM, web_stop);
+	signal(SIGINT, web_stop);
 	signal(SIGABRT, web_fatal);
 	signal(SIGBUS, web_fatal);
 	signal(SIGILL, web_fatal);
@@ -92,6 +98,8 @@ int main(int argc, char **argv)
 #endif
 			if (!strcmp(argv[i], "--port") && i + 1 < argc)
 			s.port = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "--https-port") && i + 1 < argc)
+ setenv("SBWEBSERVER_HTTPS_PORT",argv[++i],1);
 		else if (!strcmp(argv[i], "--web-root") && i + 1 < argc)
 			root = argv[++i];
 		else if (!strcmp(argv[i], "--config-dir") && i + 1 < argc) {

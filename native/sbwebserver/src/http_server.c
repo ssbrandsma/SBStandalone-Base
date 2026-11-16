@@ -1,3 +1,4 @@
+#include "portal.h"
 /*
  * Management HTTP routing and Mongoose event-loop integration.
  *
@@ -15,6 +16,7 @@
 #include "repository.h"
 #include "catalog_sync.h"
 #include "repository_sources.h"
+#include "vpn_http.h"
 #include "remote.h"
 #include "radio_stations.h"
 #include "auth.h"
@@ -32,6 +34,10 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
+
+static volatile sig_atomic_t shutdown_requested;
+void http_server_request_stop(void){shutdown_requested=1;}
 
 #define UPLOAD_SLOTS 4
 #define PREAMBLE_LIMIT 4096
@@ -208,11 +214,11 @@ writable(Server *s, struct mg_connection *c, struct mg_http_message *m)
 		error(c, 403, "Web management is read-only");
 		return 0;
 	}
-	if (!auth_origin_ok(m)) {
+	if (!auth_origin_ok(c, m)) {
 		error(c, 403, "Cross-origin write rejected");
 		return 0;
 	}
-	if (!auth_session_ok(m, NULL)) {
+	if (!auth_session_ok(c, m, NULL)) {
 		error(c, 401, "Browser session required");
 		return 0;
 	}
@@ -229,7 +235,7 @@ writable(Server *s, struct mg_connection *c, struct mg_http_message *m)
 static int
 radio_auth(Server *s, struct mg_connection *c, struct mg_http_message *m)
 {
-	if (!auth_session_ok(m, NULL)) {
+	if (!auth_session_ok(c, m, NULL)) {
 		error(c, 401, "Browser session required");
 		return 0;
 	}
@@ -543,6 +549,7 @@ normal(Server *s, struct mg_connection *c, struct mg_http_message *m)
 	Settings x;
 	int protected_route;
 	settings_load(&x);
+ if(portal_handle(c,m,remote_internal_authorized(c,m)))return;
 	if ((m->uri.len >= 23 &&
 	     !memcmp(m->uri.buf, "/api/internal/firmware/", 23)) ||
 	    (m->uri.len >= 10 && !memcmp(m->uri.buf, "/firmware/", 10))) {
@@ -550,6 +557,7 @@ normal(Server *s, struct mg_connection *c, struct mg_http_message *m)
 			c, m, remote_internal_authorized(c, m), x.readonly);
 		return;
 	}
+	if (vpn_http_is_api(m->uri)) {vpn_http_handle(c,m,remote_internal_authorized(c,m),x.readonly);return;}
 	if (auth_is_endpoint(m->uri)) {
 		auth_handle(c, m, remote_internal_authorized(c, m));
 		return;
@@ -568,7 +576,7 @@ normal(Server *s, struct mg_connection *c, struct mg_http_message *m)
 		is(m->uri, "/webserver-settings") ||
 		(m->uri.len >= 18 &&
 		 !memcmp(m->uri.buf, "/applets/packages/", 18));
-	if (protected_route && !auth_session_ok(m, NULL)) {
+	if (protected_route && !auth_session_ok(c, m, NULL)) {
 		error(c, 401, "Browser pairing required");
 		return;
 	}
@@ -737,6 +745,9 @@ static void fn(struct mg_connection *c, int ev, void *data)
 		return;
 #endif
 	Server *s = c->fn_data;
+ if(portal_event(c,ev,data))return;
+ if(ev==MG_EV_HTTP_HDRS&&!portal_host_ok(c,data)){error(c,400,"Invalid portal Host");c->is_draining=1;return;}
+    if(vpn_http_headers(c,ev,data))return;
     if (repo_sources_headers(c,ev,data)) return;
 	int firmware_readonly = 0;
 	if (ev == MG_EV_HTTP_HDRS &&
@@ -801,7 +812,7 @@ int http_server_run(int port, const char *root)
 	memset(&s, 0, sizeof s);
 	s.root = root;
 	auth_init();
-	remote_init(d);
+
 	firmware_init(port);
 	snprintf(url, sizeof url, "http://0.0.0.0:%d", port);
 	fprintf(stderr, "SBWebserver: binding %s\n", url);
@@ -811,10 +822,15 @@ int http_server_run(int port, const char *root)
 		fprintf(stderr, "Cannot listen on %s: %s\n", url, strerror(errno));
 		remote_free();
 		auth_free();
+#if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
+		(void)sb_web_music_shutdown();
+#endif
 		return 1;
 	}
 	fprintf(stderr, "SBWebserver: bound %s\n", url);
-	for (;;) {
+ portal_init(&mgr,port,fn,&s);
+ remote_init(d);
+	while (!shutdown_requested) {
 #if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
 		sb_web_music_tick();
 		mg_mgr_poll(&mgr, sb_web_music_enabled() ? 10 : 100);
@@ -824,7 +840,14 @@ int http_server_run(int port, const char *root)
 		image_render_tick(&mgr);
 		catalog_sync_tick(&mgr);
         repo_sources_tick(&mgr);
+        vpn_http_tick(&mgr);
 		remote_tick();
 		firmware_tick();
 	}
+	mg_mgr_free(&mgr);
+	remote_free();auth_free();
+#if defined(SB_MUSIC_PLAYBACK_TESTING) || defined(SB_MUSIC_RUNTIME)
+	if(!sb_web_music_shutdown())return 2;
+#endif
+	return 0;
 }

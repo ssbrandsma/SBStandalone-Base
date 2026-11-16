@@ -135,18 +135,37 @@ def run(base, fixture):
                             b'Content-Type: application/json\r\nContent-Length: '
                             + str(len(payload)).encode() + b'\r\nConnection: '
                             + conn + b'\r\n\r\n' + payload)
+                def pipeline_responses(sock, count):
+                    # TCP may split the final body after its headers. Parse full
+                    # Content-Length frames rather than counting header strings
+                    # or relying on the server to close a keep-alive connection.
+                    blob = b''
+                    offset = 0
+                    for _ in range(count):
+                        while b'\r\n\r\n' not in blob[offset:]:
+                            more = sock.recv(65536)
+                            assert more, 'EOF before response header'
+                            blob += more
+                            assert len(blob) <= 256 * 1024
+                        end = blob.index(b'\r\n\r\n', offset)
+                        header = blob[offset:end]
+                        length = int(next(line.split(b':', 1)[1] for line in header.split(b'\r\n') if line.lower().startswith(b'content-length:')))
+                        complete = end + 4 + length
+                        while len(blob) < complete:
+                            more = sock.recv(65536)
+                            assert more, 'EOF before response body'
+                            blob += more
+                            assert len(blob) <= 256 * 1024
+                        json.loads(blob[end + 4:complete])
+                        offset = complete
+                    return blob
                 psock = socket.create_connection(('127.0.0.1', 9000), timeout=5)
                 sockets.append(psock)
                 p_hs = json.dumps([{'channel': '/meta/handshake'}]).encode()
                 p_m1 = json.dumps([message(['menu', 0, 10, 'direct:1'], 11, cid='pipe')]).encode()
                 p_m2 = json.dumps([message(['menu', 0, 10, 'direct:1'], 12, cid='pipe')]).encode()
                 psock.sendall(framed(p_hs) + framed(p_m1) + framed(p_m2, keep=False))
-                blob = b''
-                while blob.count(b'HTTP/1.1 200 OK') < 3:
-                    more = psock.recv(65536)
-                    if not more:
-                        break
-                    blob += more
+                blob = pipeline_responses(psock, 3)
                 assert blob.count(b'HTTP/1.1 200 OK') == 3, blob[:300]
                 assert b'400 Bad Request' not in blob, blob[:300]
                 p11, p12 = blob.find(b'"id":"11"'), blob.find(b'"id":"12"')
@@ -162,12 +181,7 @@ def run(base, fixture):
                 fsock.sendall(wire[:-25])
                 time.sleep(0.3)
                 fsock.sendall(wire[-25:])
-                blob = b''
-                while blob.count(b'HTTP/1.1 200 OK') < 2:
-                    more = fsock.recv(65536)
-                    if not more:
-                        break
-                    blob += more
+                blob = pipeline_responses(fsock, 2)
                 assert blob.count(b'HTTP/1.1 200 OK') == 2, blob[:300]
                 assert b'"id":"21"' in blob and b'"id":"22"' in blob, blob[-600:]
 

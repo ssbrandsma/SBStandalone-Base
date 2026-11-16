@@ -70,3 +70,91 @@ NETWORK_MUSIC_ADD
 NETWORK_MUSIC_PLAY_NEXT
 	EN	Play next
 	NL	Hierna afspelen
+
+VPN_TITLE
+	EN	VPN
+	NL	VPN
+
+VPN_ENABLE
+	EN	Enable VPN
+	NL	VPN inschakelen
+
+VPN_DISABLE
+	EN	Disable VPN
+	NL	VPN uitschakelen
+
+VPN_LOCATION
+	EN	VPN Location
+	NL	VPN-locatie
+
+VPN_STARTUP
+	EN	Toggle Connect on Startup
+	NL	Verbinden bij opstarten omschakelen
+
+VPN_STATUS
+	EN	Refresh Connection Status
+	NL	Verbindingsstatus vernieuwen
+
+VPN_PROVISION
+	EN	Configure in Web Interface
+	NL	Instellen via webinterface
+
+VPN_LOADING
+	EN	Loading VPN state...
+	NL	VPN-status laden...
+
+VPN_UNAVAILABLE
+	EN	VPN service unavailable
+	NL	VPN-service niet beschikbaar
+
+VPN_NO_PROFILES
+	EN	Configure VPN profiles and credentials securely using the Standalone web interface.
+	NL	Stel VPN-profielen en inloggegevens veilig in via de Standalone-webinterface.
+
+VPN_IP_UNVERIFIED
+	EN	Public IP unverified
+	NL	Publiek IP-adres niet geverifieerd
+
+VPN_STATE_UNAVAILABLE
+	EN	Unavailable
+	NL	Niet beschikbaar
+
+VPN_STATE_DISABLED
+	EN	Disabled
+	NL	Uitgeschakeld
+
+VPN_STATE_DISCONNECTED
+	EN	Disconnected
+	NL	Niet verbonden
+
+VPN_STATE_CONNECTING
+	EN	Connecting
+	NL	Verbinden
+
+VPN_STATE_CONNECTED
+	EN	Connected
+	NL	Verbonden
+
+VPN_STATE_SWITCHING
+	EN	Switching
+	NL	Wisselen
+
+VPN_STATE_RECONNECTING
+	EN	Reconnecting
+	NL	Opnieuw verbinden
+
+VPN_STATE_DISCONNECTING
+	EN	Disconnecting
+	NL	Verbinding verbreken
+
+VPN_STATE_ERROR
+	EN	Error
+	NL	Fout
+
+VPN_ON
+	EN	On
+	NL	Aan
+
+VPN_OFF
+	EN	Off
+	NL	Uit

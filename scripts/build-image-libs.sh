@@ -2,7 +2,7 @@
 # Pinned static raster codecs, shared by native tests and the ARM renderer.
 set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-work=${SB_IMAGE_BUILD_DIR:-$HOME/.cache/sb-image-libs}
+work=${SB_IMAGE_BUILD_DIR:-$root/.downloads/image-libs}
 mkdir -p "$work"
 fetch() {
   name=$1 repo=$2 tag=$3 commit=$4
@@ -16,6 +16,7 @@ fetch png https://github.com/pnggroup/libpng.git v1.6.59 cd952f49f95bb27154ae77d
 fetch jpeg https://github.com/libjpeg-turbo/libjpeg-turbo.git 3.2.0 c85e6b905bf237038faa936dab160ebfc5da0344
 for arch in host arm; do
   prefix="$root/build-image-$arch/prefix"
+  if [ "$arch" = arm ]; then prefix=${ARM_IMAGE_PREFIX:-$prefix}; fi
   compiler=$(command -v cc)
   extra=""
   if [ "$arch" = arm ]; then

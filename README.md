@@ -1,5 +1,7 @@
 # StandaloneBase
 
+The current private **0.7.5** candidate integrates UPnP My Music/original playlist, transactional installation, VPN and secure HTTPS management. See [delivery and hardware acceptance status](docs/RELEASE_0.7.5.md). Local builds do not publish or deploy.
+
 The minimum advertised SqueezePlay firmware is 7.7.2. Extended Storage initial
 creation accepts the measured `7.7.2 r9663` layout with the same strict geometry
 and capacity checks as 7.7.3; see [Extended Storage](docs/EXTENDED_STORAGE.md).
@@ -35,6 +37,12 @@ stateless System Performance/process monitor. See
 [`docs/PROCESS_MONITOR_IMPLEMENTATION.md`](docs/PROCESS_MONITOR_IMPLEMENTATION.md).
 
 This repository is an engineering baseline. Host protocol tests are automated. Local-LMS activation is intentionally not performed until the hardware checklist is approved and run on a recoverable Radio.
+
+The development VPN subsystem adds shared native and web controls for compatible
+Radio/Touch firmware. See the [VPN user guide](docs/VPN.md),
+[implementation](docs/VPN_IMPLEMENTATION.md), and [validation report](docs/VPN_DELIVERY.md).
+See the [production-readiness review](docs/VPN_READINESS_REVIEW.md) for final build evidence
+and pending hardware acceptance. This remains a private development candidate.
 
 ## Build and test
 
@@ -113,3 +121,5 @@ Supports the validated primary-first 7.7.3 r16676 Radio storage layout, retainin
 ## Release 0.7.3
 
 Adds persistent XML applet repositories with public URL downloads, cached refreshes, source conflict handling and model/firmware filtering. Includes the remaining WP4a.6 research documents and diagnostic tools, with experimental playback inactive. See [release notes](docs/RELEASE_0.7.3.md).
+
+Secure management development: [user guide](docs/SECURE_WEB_PORTAL.md), [TLS architecture](docs/TLS_ARCHITECTURE.md). HTTPS provisioning replaces the mandatory SSH tunnel; physical certificate verification and HTTPS pairing are required. See the acceptance notes before release.

@@ -8,6 +8,13 @@ import sys
 import time
 
 
+def receive(sock, size):
+    part = sock.recv(size)
+    if not part:
+        raise EOFError('Base closed the Comet connection before its expected response')
+    return part
+
+
 def post(payload):
     connection = http.client.HTTPConnection("127.0.0.1", 9000, timeout=2)
     body = json.dumps([payload])
@@ -36,7 +43,7 @@ def stream(client_id):
     sock.sendall(chunk)
     received = b""
     while b"\r\n\r\n" not in received or client_id.encode() not in received:
-        received += sock.recv(8192)
+        received += receive(sock, 8192)
     assert b"200 OK" in received and client_id.encode() in received
     return sock
 
@@ -54,11 +61,11 @@ def reused_handshake_stream():
     sock.sendall(request)
     received = b""
     while b"\r\n\r\n" not in received:
-        received += sock.recv(4096)
+        received += receive(sock, 4096)
     header, body = received.split(b"\r\n\r\n", 1)
     length = int(next(line.split(b":", 1)[1] for line in header.split(b"\r\n") if line.lower().startswith(b"content-length:")))
     while len(body) < length:
-        body += sock.recv(4096)
+        body += receive(sock, 4096)
     client_id = json.loads(body[:length])[0]["clientId"]
 
     connect = json.dumps([
@@ -74,7 +81,7 @@ def reused_handshake_stream():
     )
     response = b""
     while b"/meta/connect" not in response:
-        response += sock.recv(8192)
+        response += receive(sock, 8192)
     assert client_id.encode() in response
     return sock
 
@@ -82,6 +89,8 @@ def reused_handshake_stream():
 process = subprocess.Popen(shlex.split(sys.argv[1]), stderr=subprocess.PIPE)
 try:
     for _ in range(40):
+        if process.poll() is not None:
+            raise AssertionError('Base failed to start: ' + process.stderr.read().decode(errors='replace'))
         try:
             health = http.client.HTTPConnection("127.0.0.1", 9000, timeout=0.2)
             health.request("GET", "/health")
@@ -109,7 +118,7 @@ try:
     replacement.settimeout(5)
     heartbeat = b""
     while b"[]" not in heartbeat:
-        heartbeat += replacement.recv(256)
+        heartbeat += receive(replacement, 256)
     assert b"[]" in heartbeat, "stream heartbeat was not received"
 
     for _ in range(48):

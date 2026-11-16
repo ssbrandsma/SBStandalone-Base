@@ -246,6 +246,24 @@ sb_queue_result sb_queue_remove(sb_music_queue *q,
 	return SB_Q_OK;
 }
 
+sb_queue_result sb_queue_move(sb_music_queue *q,uint32_t from,uint32_t to,uint64_t rev,uint64_t context)
+{
+ sb_queue_result result=guard(q,rev,context);if(result!=SB_Q_OK)return result;
+ if(from>=q->status.count||to>=q->status.count)return SB_Q_INVALID;
+ if(from==to)return SB_Q_OK;
+ uint64_t audible=q->status.audible<q->status.count?q->items[q->status.audible].identity.entry_id:0;
+ uint64_t intended=q->status.intended<q->status.count?q->items[q->status.intended].identity.entry_id:0;
+ sb_queue_item moving=q->items[from];
+ if(from<to)memmove(q->items+from,q->items+from+1,(to-from)*sizeof moving);
+ else memmove(q->items+to+1,q->items+to,(from-to)*sizeof moving);
+ q->items[to]=moving;
+ for(uint32_t i=0;i<q->status.count;i++){
+  if(audible&&q->items[i].identity.entry_id==audible)q->status.audible=i;
+  if(intended&&q->items[i].identity.entry_id==intended)q->status.intended=i;
+ }
+ q->status.revision++;return SB_Q_OK;
+}
+
 sb_queue_result sb_queue_select(sb_music_queue *q,
 				uint32_t index,
 				uint64_t rev,

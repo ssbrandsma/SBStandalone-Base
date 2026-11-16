@@ -40,6 +40,8 @@ REQUIRED = {
     "patch-squeezeplay-artwork.sh",
 }
 EXECUTABLES = {
+    "sb-tinysc-control",
+    "sbvpn",
     "svgpngrenderer",
     "sbbase",
     "sbwebserver",
@@ -59,8 +61,10 @@ APPLET_FILES = {
     "StandaloneBaseApplet.lua", "StandaloneBaseMeta.lua", "Platform.lua",
     "StorageManager.lua", "ExtendedStorageState.lua", "TimeSync.lua", "TimeResolver.lua",
     "RemoteBridge.lua", "ServerMigration.lua", "NetworkAddress.lua", "ImageRender.lua",
-    "ArtworkUrlNormalizer.lua", "Artwork.lua", "InstallerCompat.lua", "HttpTrace.lua",
+    "ArtworkUrlNormalizer.lua", "Artwork.lua", "InstallerCompat.lua", "InstallerTransaction.lua", "HttpTrace.lua",
     "FirmwareUpdates.lua", "AlarmPlayback.lua", "LifecycleHeartbeat.lua", "strings.txt", "build-target",
+    "NetworkProfile.lua", "NetworkMusic.lua", "PlaybackFenceV6.lua", "OwnershipHooks.lua",
+    "OwnershipRuntime.lua", "OwnershipClient.lua", "OwnershipHttp.lua",
 }
 
 
@@ -82,16 +86,17 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--preserve-config", action="store_true", help="keep the existing persistent Base configuration")
     parser.add_argument("--dry-run", action="store_true", help="validate locally without connecting")
     parser.add_argument("--applet-only", action="store_true", help="copy only qualified Lua/data files; requires --no-restart and --backup-dir")
+    parser.add_argument("--applet-only-target",choices=("fab4","baby"),default="fab4",help="explicit board profile for applet-only staging; default remains Fab4")
     parser.add_argument("--backup-dir", type=Path, help="new local directory for verified original applet files")
     parser.add_argument("--restore-backup", type=Path, help="restore a matching applet-only backup without loading/restarting Jive")
     return parser.parse_args()
 
 
-def validate_package(path: Path, applet_only=False) -> tuple[list[str], str]:
+def validate_package(path: Path, applet_only=False, applet_target="fab4") -> tuple[list[str], str]:
     path = path.resolve()
     if not path.is_file():
         raise ValueError(f"package not found: {path}")
-    match = re.fullmatch(r"StandaloneBase-([0-9]+\.[0-9]+\.[0-9]+)(?:-fab4)?\.zip", path.name)
+    match = re.fullmatch(r"StandaloneBase-([0-9]+\.[0-9]+\.[0-9]+(?:-rc[0-9]+)?)(?:-(baby|fab4))?\.zip", path.name)
     if not match:
         raise ValueError("package name must be StandaloneBase-X.Y.Z.zip")
     if path.parent.name.lower() != "dist":
@@ -104,7 +109,7 @@ def validate_package(path: Path, applet_only=False) -> tuple[list[str], str]:
         if any("/" in name or "\\" in name or name in (".", "..") for name in names):
             raise ValueError("package entries must all be flat file names")
         missing = sorted((APPLET_FILES if applet_only else REQUIRED).difference(names))
-        if not applet_only and tuple(map(int, match.group(1).split('.'))) >= (0, 5, 7) and "InstallerCompat.lua" not in names:
+        if not applet_only and tuple(map(int, match.group(1).split('-')[0].split('.'))) >= (0, 5, 7) and "InstallerCompat.lua" not in names:
             missing.append("InstallerCompat.lua")
         if missing:
             raise ValueError("package is missing: " + ", ".join(missing))
@@ -113,8 +118,8 @@ def validate_package(path: Path, applet_only=False) -> tuple[list[str], str]:
             raise ValueError("package must not contain directories")
         if archive.testzip() is not None:
             raise ValueError("package CRC validation failed")
-        if applet_only and archive.read("build-target").strip() != b"fab4":
-            raise ValueError("applet-only smoke deployment requires a Fab4 package")
+        if applet_only and (applet_target not in ("baby","fab4") or archive.read("build-target").strip().decode()!=applet_target):
+            raise ValueError("applet-only package does not match its explicit board profile")
     return sorted(APPLET_FILES) if applet_only else names, match.group(1)
 
 
@@ -383,7 +388,11 @@ def main() -> int:
             raise ValueError("applet-only requires --no-restart, trusted SSH and --backup-dir or --restore-backup")
         if args.restore_backup and not args.applet_only:
             raise ValueError("--restore-backup requires --applet-only")
-        names, version = validate_package(args.zip_file, args.applet_only)
+        names, version = validate_package(args.zip_file, args.applet_only,args.applet_only_target)
+        if not args.applet_only and not args.dry_run:
+            with zipfile.ZipFile(args.zip_file) as package:
+                if "sbupnp" in package.namelist():
+                    raise ValueError("network runtime packages require the transactional stock installer; use applet-only only for the backed-up Lua bootstrap")
         user, host = split_target(args.target)
     except (ValueError, zipfile.BadZipFile) as exc:
         sys.stderr.write(f"deploy_dist: {exc}\n")
@@ -402,8 +411,11 @@ def main() -> int:
     try:
         radio.connect()
         if args.applet_only:
-            if "Logitech Fab4 Board" not in radio.run("cat /proc/cpuinfo", attempts=1):
-                raise RuntimeError("applet-only smoke deployment requires the verified Fab4 board")
+            board="Logitech MX25 Baby Board" if args.applet_only_target=="baby" else "Logitech Fab4 Board"
+            if board not in radio.run("cat /proc/cpuinfo", attempts=1):
+                raise RuntimeError("applet-only deployment board identity mismatch")
+            if args.applet_only_target=="baby" and radio.run("head -n 1 /etc/squeezeos.version",attempts=1).strip() not in ("7.7.3 r16676", "9.0.2 r17160"):
+                raise RuntimeError("unqualified Baby firmware")
             idle = json.loads(radio.run("wget -q -O - http://127.0.0.1:9000/api/nowplaying", attempts=1))
             if idle.get("active") or idle.get("state") != "stopped":
                 raise RuntimeError("playback must be verified inactive before applet deployment")
@@ -460,7 +472,7 @@ def main() -> int:
             # otherwise closes the channel without reporting an exit status.
             radio.run(
                 "nohup sh -c 'sleep 1; "
-                "for n in sbproxy sbbase sbwebserver; do "
+                "for n in sbvpn sbproxy sbbase sbwebserver; do "
                 "p=/tmp/standalonebase/$n.pid; pid=$(cat \"$p\" 2>/dev/null); "
                 "if test -n \"$pid\" && test -r /proc/$pid/cmdline && "
                 "grep -q \"^/usr/share/jive/applets/StandaloneBase/$n\" /proc/$pid/cmdline; "

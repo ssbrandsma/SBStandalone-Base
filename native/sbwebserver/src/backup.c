@@ -366,7 +366,7 @@ int backup_headers(struct mg_connection *c, struct mg_http_message *m)
 		return 0;
 	int status = 0;
 	struct mg_str *length = mg_http_get_header(m, "Content-Length");
-	if (!auth_session_ok(m, NULL))
+	if (!auth_session_ok(c, m, NULL))
 		status = 401;
 	else if (!length || mg_http_get_header(m, "Transfer-Encoding"))
 		status = 411;
@@ -945,7 +945,7 @@ int backup_handle(struct mg_connection *c,
 		respond(c, 405, "{\"error\":\"POST required\"}");
 		return 1;
 	}
-	if (!auth_origin_ok(m) || readonly) {
+	if (!auth_origin_ok(c, m) || readonly) {
 		respond(c,
 			403,
 			"{\"error\":\"Restore is not authorized in this "

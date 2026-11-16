@@ -1085,7 +1085,7 @@ static void transport_status(sb_music_playback *p, uint64_t now)
 			(int)t->stream.state, (unsigned long long)stream->epoch,
 			(unsigned long long)stream->owner_generation);
 		if (t->stream.state == SB_STREAM_STOPPED) {
-			if (p->completed < p->operation) {
+			if (p->completed < p->operation || p->existing) {
 				/* Sub-tick race: the superseded stream's
 				 * terminal landed after LOAD-accept but
 				 * before its first tick. Free the slot for
@@ -1248,12 +1248,13 @@ static int status_row(char *out,
 		      uint32_t index,
 		      int jive)
 {
-	char title[768], artist[768], album[768];
+ char title[768], artist[768], album[768], artwork[2304];
 	np_json_escape(title, sizeof title, item->title);
 	np_json_escape(artist, sizeof artist, item->artist);
 	np_json_escape(album, sizeof album, item->album);
+	np_json_escape(artwork,sizeof artwork,item->artwork);
 	if(item->identity.track.kind==SB_TRACK_NETWORK){
-	 return status_append(out,cap,used,"{\"id\":\"network:%" PRIu64 "\",\"source_type\":\"network\",\"queue_entry_id\":\"%" PRIu64 "\",\"playlist index\":%u,\"title\":\"%s\",\"artist\":\"%s\",\"album\":\"%s\",\"duration\":%.3f,\"type\":\"mp3\",\"available\":%d,\"playable\":%d,\"text\":\"%s\",\"params\":{\"playlist_index\":%u}}",item->identity.track.network_id,item->identity.entry_id,index,title,artist,album,item->duration_ms/1000.0,item->available,item->eligible,title,index);
+	 return status_append(out,cap,used,"{\"id\":\"network:%" PRIu64 "\",\"source_type\":\"network\",\"queue_entry_id\":\"%" PRIu64 "\",\"playlist index\":%u,\"title\":\"%s\",\"artist\":\"%s\",\"album\":\"%s\",\"duration\":%.3f,\"type\":\"mp3\",\"available\":%d,\"playable\":%d,\"text\":\"%s\",\"icon\":\"%s\",\"params\":{\"playlist_index\":%u}}",item->identity.track.network_id,item->identity.entry_id,index,title,artist,album,item->duration_ms/1000.0,item->available,item->eligible,title,artwork,index);
 	}
 	if (!status_append(out,
 			   cap,
@@ -1284,9 +1285,9 @@ static int status_row(char *out,
 	    !status_append(out,
 			   cap,
 			   used,
-			   ",\"text\":\"%s\",\"track\":\"%s\",\"icon\":\"\"",
+			   ",\"text\":\"%s\",\"track\":\"%s\",\"icon\":\"%s\"",
 			   title,
-			   title))
+			   title, artwork))
 		return 0;
 	return status_append(out, cap, used, "}");
 }
@@ -1337,11 +1338,19 @@ int sb_playback_status_args(unsigned count,
 	return 1;
 }
 
-int sb_playback_status_page(sb_music_playback *p,
+static int playlist_row(char *out,size_t cap,size_t *used,const sb_queue_item *item,uint32_t index,const sb_queue_status *q)
+{
+ if(!status_row(out,cap,used,item,index,1))return 0;
+ /* Extend the same typed metadata projection; no second playlist exists. */
+ (*used)--;
+ return status_append(out,cap,used,",\"actions\":{\"go\":{\"cmd\":[\"playlist\",\"index\",\"%u\"],\"params\":{\"queue_context\":\"%" PRIu64 "\",\"queue_revision\":\"%" PRIu64 "\",\"queue_entry_id\":\"%" PRIu64 "\"},\"nextWindow\":\"nowPlaying\"},\"more\":{\"cmd\":[\"playlist\",\"itemmenu\",\"%u\"],\"params\":{\"queue_context\":\"%" PRIu64 "\",\"queue_revision\":\"%" PRIu64 "\",\"queue_entry_id\":\"%" PRIu64 "\"},\"window\":{\"isContextMenu\":1}}}}",index,q->context,q->revision,item->identity.entry_id,index,q->context,q->revision,item->identity.entry_id);
+}
+
+static int playback_status_page(sb_music_playback *p,
 			    uint32_t offset,
 			    uint32_t quantity,
 			    char *out,
-			    size_t cap)
+			    size_t cap, int menu)
 {
 	if (!p || !out || !cap || quantity > 200 ||
 	    offset > UINT32_MAX - quantity)
@@ -1361,7 +1370,7 @@ int sb_playback_status_page(sb_music_playback *p,
 		    cap,
 		    &used,
 		    "{\"player_name\":\"Standalone\",\"player_connected\":%d,"
-		    "\"power\":1,"
+		    "\"power\":%d,\"mixer volume\":%d,\"digital_volume_control\":1,"
 		    "\"mode\":\"%s\",\"rate\":%d,\"time\":%.3f,\"duration\":%."
 		    "3f,"
 		    "\"playlist_tracks\":%u,\"playlist_cur_index\":%d,"
@@ -1372,19 +1381,26 @@ int sb_playback_status_page(sb_music_playback *p,
 		    "\"playlist repeat\":0,"
 		    "\"playlist shuffle\":0,\"source\":\"standalone_music\"",
 		    p->transport.attached,
+		    np_player_power(p->np),np_player_volume(p->np),
 		    mode,
 		    q.mode == SB_Q_PLAYING ? 1 : 0,
 		    q.elapsed_ms / 1000.0,
 		    item ? item->duration_ms / 1000.0 : 0.0,
 		    q.count,
-		    q.audible == SB_QUEUE_NONE ? -1 : (int)q.audible,
+		    q.audible != SB_QUEUE_NONE ? (int)q.audible : q.intended != SB_QUEUE_NONE ? (int)q.intended : -1,
 		    q.revision,
 		    q.revision,
 		    q.context,
 		    q.intended == SB_QUEUE_NONE ? -1 : (int)q.intended,
-		    count,
+		    menu?q.count:count,
 		    offset))
 		return 0;
+ if(!status_append(out,cap,&used,",\"playlist_provider\":\"standalone_music\",\"provider_generation\":\"%" PRIu64 "\",\"remoteMeta\":{\"shuffle\":true,\"repeat\":true,\"buttons\":{\"fwd\":%d,\"rew\":%d,\"shuffle\":{\"jiveStyle\":\"shuffleDisabled\",\"command\":[\"jiveblankcommand\"]},\"repeat\":{\"jiveStyle\":\"repeatDisabled\",\"command\":[\"jiveblankcommand\"]}}}",q.context,q.intended!=SB_QUEUE_NONE&&q.intended+1<q.count,q.intended!=SB_QUEUE_NONE&&q.intended>0))return 0;
+	if(menu){
+	 if(!status_append(out,cap,&used,",\"playlist_capabilities\":{\"select\":true,\"remove\":true,\"move\":true,\"clear\":true,\"shuffle\":false,\"repeat\":false},\"item_loop\":["))return 0;
+	 for(uint32_t n=0;n<count;n++)if((n&&!status_append(out,cap,&used,","))||!playlist_row(out,cap,&used,sb_queue_at(p->queue,offset+n),offset+n,&q))return 0;
+	 return status_append(out,cap,&used,"]}");
+	}
 	/* Stock Player._whatsPlaying indexes item_loop[1] when the key exists.
 	 * An empty Lua array is truthy: omit the key until STMs confirms a
 	 * track. */
@@ -1408,6 +1424,11 @@ int sb_playback_status_page(sb_music_playback *p,
 	}
 	return status_append(out, cap, &used, "]}");
 }
+
+int sb_playback_status_page(sb_music_playback *p,uint32_t offset,uint32_t quantity,char *out,size_t cap)
+{return playback_status_page(p,offset,quantity,out,cap,0);}
+int sb_playback_playlist_page(sb_music_playback *p,uint32_t offset,uint32_t quantity,char *out,size_t cap)
+{return playback_status_page(p,offset,quantity,out,cap,1);}
 
 int sb_playback_status(sb_music_playback *p, char *out, size_t cap)
 {

@@ -81,6 +81,8 @@ sb_queue_result sb_queue_select(sb_music_queue *,
 				uint32_t index,
 				uint64_t revision,
 				uint64_t context);
+sb_queue_result sb_queue_move(sb_music_queue *, uint32_t from, uint32_t to,
+                             uint64_t revision, uint64_t context);
 sb_queue_result
 sb_queue_step(sb_music_queue *, int direction, uint64_t context);
 /* Start only after owner/resource/transport validation. Metadata becomes

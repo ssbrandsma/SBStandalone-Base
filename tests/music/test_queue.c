@@ -98,6 +98,21 @@ int main(void)
 	       SB_Q_OK);
 	sb_queue_context(q, 3, 10);
 	assert(sb_queue_commit(q, 8) == SB_Q_STALE);
+	/* Local IDs and opaque remote objects coexist; moving the audible entry
+	 * changes only its presentation index, never its stream identity. */
+	sb_queue_item mixed[2]={item(46),item(81)};
+	mixed[1].identity.track.kind=SB_TRACK_NETWORK;mixed[1].identity.track.track_id=0;mixed[1].identity.track.network_id=1;
+	mixed[1].identity.track.source.bytes[0]=2;mixed[1].identity.media_generation=1;
+	strcpy(mixed[1].network.server,"uuid:queue-fixture");strcpy(mixed[1].network.object,"opaque:&81");strcpy(mixed[1].network.uri,"http://192.168.1.2:8080/music.mp3");mixed[1].network.generation=1;
+	s=sb_queue_snapshot(q);assert(sb_queue_begin(q,SB_Q_LOAD,9,s.revision,3)==SB_Q_OK);
+	assert(sb_queue_stage(q,9,mixed,2)==SB_Q_OK&&sb_queue_commit(q,9)==SB_Q_OK);
+	assert(sb_queue_prepared(q,3,10,3)==SB_Q_OK&&sb_queue_confirm(q,3,10,3,SB_Q_PLAYING,123)==SB_Q_OK);
+	s=sb_queue_snapshot(q);uint64_t audible=sb_queue_at(q,0)->identity.entry_id;
+	assert(sb_queue_move(q,0,1,s.revision,3)==SB_Q_OK);
+	assert(sb_queue_snapshot(q).audible==1&&sb_queue_snapshot(q).intended==1&&sb_queue_snapshot(q).elapsed_ms==123);
+	assert(sb_queue_at(q,1)->identity.entry_id==audible&&sb_queue_at(q,0)->identity.track.kind==SB_TRACK_NETWORK);
+	assert(sb_queue_move(q,1,0,s.revision,3)==SB_Q_STALE);
+	assert(sb_queue_confirm(q,3,10,3,SB_Q_PLAYING,456)==SB_Q_OK&&sb_queue_snapshot(q).audible==1);
 	printf("Queue atomicity, identities, intent/audible, epochs, bounds "
 	       "and revocation passed; bytes=%zu\n",
 	       sb_queue_allocation_bytes());

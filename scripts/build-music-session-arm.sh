@@ -14,6 +14,8 @@ sh "$root/scripts/build-music-arm.sh" "$platform"
 music="$root/build-arm/$platform/music"
 out="$root/build-arm/$platform/music-session"
 image=${ARM_IMAGE_PREFIX:-$root/build-image-arm/prefix}
+portal_prefix=${ARM_PORTAL_TLS_PREFIX:-$root/build-portal-tls/prefix}
+test -f "$portal_prefix/lib/libwolfssl.a"
 mkdir -p "$out"
 flags="$flags -D_FILE_OFFSET_BITS=64 -ffunction-sections -fdata-sections -std=c99 -Wall -Wextra -Wpedantic -UNDEBUG"
 common="$root/native/common/music_resource_ipc.c $root/native/common/music_http.c $root/native/common/upnp_ipc.c $root/native/common/remote_http.c"
@@ -25,9 +27,10 @@ libs="$music/libsbmusic-storage.a $music/libsbmusic.a $music/libsbmusic-sqlite.a
  $core $common "$root/native/sbmusic/music_snapshot.c" "$root/native/sbmusic/music_snapshot_view.c" "$music/libsbmusic-scanner.a" "$music/libsbmusic-metadata.a" $libs -o "$out/sbbase_music"
 "$cc" $flags -D_GNU_SOURCE -DSB_MUSIC_RUNTIME=1 -static -pthread -Wl,--gc-sections \
  -DMG_ENABLE_EPOLL=0 -DMG_ENABLE_POLL=1 -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_SSI=0 \
+ -DMG_TLS=MG_TLS_WOLFSSL -I"$portal_prefix/include" -I"$portal_prefix/include/wolfssl" -include "$root/native/sbwebserver/src/portal_tls_config.h" \
  -I"$root/native/sbwebserver/src" -I"$root/native/sbwebserver/third_party" -I"$root/native/sbwebserver/third_party/yxml" -I"$root/native/sbbase/include" -I"$image/include" \
  "$root/native/sbwebserver/src/"*.c "$root/native/sbwebserver/third_party/mongoose.c" "$root/native/sbwebserver/third_party/yxml/yxml.c" \
- "$root/native/sbbase/src/nowplaying.c" "$root/native/sbbase/src/alarms.c" $common "$image/lib/libz.a" -o "$out/sbwebserver_music"
+ "$root/native/sbbase/src/nowplaying.c" "$root/native/sbbase/src/alarms.c" $common "$image/lib/libz.a" "$portal_prefix/lib/libwolfssl.a" -o "$out/sbwebserver_music"
 "$cc" $flags -static -pthread -Wl,--gc-sections \
  "$root/native/sbbase/src/music_session.c" "$root/native/common/music_resource_ipc.c" -o "$out/sbmusic-session"
 for binary in sbbase_music sbwebserver_music sbmusic-session; do

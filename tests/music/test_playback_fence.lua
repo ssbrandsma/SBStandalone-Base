@@ -1336,6 +1336,12 @@ do
         fireTimers(5000)
         fireTimers(5000)
         assert(not F6.isActive(), "O4: moved-on latch not reaped")
+        -- O5: Jive can temporarily have no Playback object during startup.
+        local getPlayback=F6.getPlayback
+        F6.getPlayback=function()return nil end
+        fireTimers(5000)
+        assert(F6.timerOk,"O5: missing Playback stopped the fence timer")
+        F6.getPlayback=getPlayback
     end
 end
 

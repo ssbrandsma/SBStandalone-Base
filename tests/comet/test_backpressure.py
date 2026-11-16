@@ -61,7 +61,14 @@ with tempfile.TemporaryFile() as log:
                 if request('GET','/health')[0]==200:break
             except OSError:time.sleep(.02)
         else:raise AssertionError('Base did not start')
-        before=process_info(p.pid);time.sleep(.3);idle=process_info(p.pid)
+        # The /health socket closes on the next server tick. Exclude that
+        # transient descriptor from the leak baseline.
+        deadline=time.monotonic()+1
+        before=process_info(p.pid)
+        while before['fds']!=6 and time.monotonic()<deadline:
+            time.sleep(.01);before=process_info(p.pid)
+        assert before['fds']==6,before
+        time.sleep(.3);idle=process_info(p.pid)
         slim=socket.create_connection(('127.0.0.1',3483),timeout=3)
         hello=bytes([7,0])+bytes.fromhex(player.replace(':',''))+bytes(26)+b'ENModel=fab4,mp3,flc,ogg'
         slim.sendall(b'HELO'+struct.pack('!I',len(hello))+hello)
@@ -130,7 +137,13 @@ with tempfile.TemporaryFile() as log:
         peak=process_info(p.pid)
         done.set()
         for s,r,cid,reader in streams:s.shutdown(socket.SHUT_RDWR);s.close();r.close();reader.close()
-        slim.close();time.sleep(.1);after=process_info(p.pid)
+        slim.close()
+        # Remote EOF is asynchronous; wait for bounded event-loop cleanup rather
+        # than assuming all peers are retired within one 100 ms scheduling slice.
+        deadline=time.monotonic()+2
+        after=process_info(p.pid)
+        while after['fds']!=before['fds'] and time.monotonic()<deadline:
+            time.sleep(.02);after=process_info(p.pid)
         assert after['fds']==before['fds'],(before,after)
         if not measure:assert not errors,errors
         print(json.dumps({'mode':'partial' if partial else 'normal','updates':len(latencies),

@@ -1005,13 +1005,13 @@ int image_render_handle(struct mg_connection *c, struct mg_http_message *m)
 		image_error(c, 405);
 		return 1;
 	}
-	int session = auth_session_ok(m, NULL);
+	int session = auth_session_ok(c, m, NULL);
 	if (!session &&
 	    !(post ? remote_internal_authorized(c, m) : local_artwork(c, m))) {
 		image_error(c, 401);
 		return 1;
 	}
-	if (!auth_origin_ok(m)) {
+	if (!auth_origin_ok(c, m)) {
 		image_error(c, 403);
 		return 1;
 	}

@@ -8,6 +8,7 @@
 
 #define _POSIX_C_SOURCE 200809L
 #include "auth.h"
+#include "portal.h"
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -25,6 +26,7 @@ typedef struct {
 	time_t expires;
 	unsigned long serial;
 	int remembered;
+ int secure;
 } Session;
 
 typedef struct {
@@ -40,6 +42,7 @@ static struct {
 	char pin[7];
 	time_t pin_expires;
 	unsigned pin_attempts;
+ int pin_secure;
 	time_t global_window, global_cooldown;
 	unsigned global_failures;
 	unsigned long serial;
@@ -158,10 +161,10 @@ static int hexval(char c)
 
 #include "auth_store.inc"
 
-static void session_cookie(char *out,size_t size,const char *token,int remembered)
+static void session_cookie(struct mg_connection *c,char *out,size_t size,const char *token,int remembered)
 {
- snprintf(out,size,"Set-Cookie: sb_session=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=Strict\r\n",
-          token,remembered?REMEMBER_COOKIE_LIFE:SESSION_LIFE);
+ snprintf(out,size,"Set-Cookie: %s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=Strict%s\r\n",
+          c->is_tls?"__Host-sb_secure":"sb_session",token,remembered?REMEMBER_COOKIE_LIFE:SESSION_LIFE,c->is_tls?"; Secure":"");
 }
 
 /**
@@ -170,7 +173,7 @@ static void session_cookie(char *out,size_t size,const char *token,int remembere
  * @param out Destination buffer for the result.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
-static int cookie_token(struct mg_http_message *m, unsigned char out[32])
+static int cookie_token(struct mg_connection *c, struct mg_http_message *m, unsigned char out[32])
 {
 	struct mg_str *h = mg_http_get_header(m, "Cookie");
 	if (!h)
@@ -182,8 +185,8 @@ static int cookie_token(struct mg_http_message *m, unsigned char out[32])
 		const char *k = p;
 		while (p < end && *p != '=' && *p != ';')
 			p++;
-		if (p < end && *p == '=' && (size_t)(p - k) == 10 &&
-		    !memcmp(k, "sb_session", 10)) {
+		if (p < end && *p == '=' && (size_t)(p - k) == (c->is_tls?16u:10u) &&
+		    !memcmp(k, c->is_tls?"__Host-sb_secure":"sb_session", c->is_tls?16:10)) {
 			p++;
 			if (end - p < 64)
 				return 0;
@@ -208,16 +211,16 @@ static int cookie_token(struct mg_http_message *m, unsigned char out[32])
  * @param expires Object referenced by expires.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
-int auth_session_ok(struct mg_http_message *m, time_t *expires)
+int auth_session_ok(struct mg_connection *c, struct mg_http_message *m, time_t *expires)
 {
 	unsigned char raw[32], hash[32];
 	time_t now = time(NULL);
-	if (!cookie_token(m, raw))
+	if (!cookie_token(c, m, raw))
 		return 0;
 	hash_token(raw, hash);
 	for (int i = 0; i < SESSION_MAX; i++)
 		if ((A.sessions[i].remembered || A.sessions[i].expires > now) &&
-		    constant_eq(hash, A.sessions[i].hash, 32)) {
+		    A.sessions[i].secure == !!c->is_tls && constant_eq(hash, A.sessions[i].hash, 32)) {
 			if (expires)
 				*expires = A.sessions[i].expires;
 			memset(raw, 0, sizeof raw);
@@ -233,15 +236,15 @@ int auth_session_ok(struct mg_http_message *m, time_t *expires)
  * @brief Handle clear current.
  * @param m HTTP request message.
  */
-static int clear_current(struct mg_http_message *m)
+static int clear_current(struct mg_connection *c, struct mg_http_message *m)
 {
 	unsigned char raw[32], hash[32];
-	if (!cookie_token(m, raw))
+	if (!cookie_token(c, m, raw))
 		return 1;
 	hash_token(raw, hash);
 	Session before[SESSION_MAX];memcpy(before,A.sessions,sizeof before);int persistent=0;
 	for (int i = 0; i < SESSION_MAX; i++)
-		if (constant_eq(hash, A.sessions[i].hash, 32)) {
+		if (A.sessions[i].secure == !!c->is_tls && constant_eq(hash, A.sessions[i].hash, 32)) {
 			persistent|=A.sessions[i].remembered;
 			memset(&A.sessions[i], 0, sizeof A.sessions[i]);
 		}
@@ -306,7 +309,7 @@ int auth_pairing_protected(void)
  * @param m HTTP request message.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
-int auth_origin_ok(struct mg_http_message *m)
+int auth_origin_ok(struct mg_connection *c, struct mg_http_message *m)
 {
 	struct mg_str *o = mg_http_get_header(m, "Origin"),
 		      *h = mg_http_get_header(m, "Host");
@@ -316,7 +319,8 @@ int auth_origin_ok(struct mg_http_message *m)
 	if (!h || o->len > 300 || h->len > 200)
 		return 0;
 	p = memmem(o->buf, o->len, "://", 3);
-	return p && (size_t)(o->buf + o->len - (p + 3)) == h->len &&
+	return p && (size_t)(p-o->buf)==(c->is_tls?5u:4u) &&
+ !memcmp(o->buf,c->is_tls?"https":"http",c->is_tls?5:4) && (size_t)(o->buf + o->len - (p + 3)) == h->len &&
 	       !memcmp(p + 3, h->buf, h->len);
 }
 
@@ -412,14 +416,15 @@ static void record_failure(struct mg_connection *c)
  * @param out Destination buffer for the result.
  * @return Zero on success; otherwise a nonzero status or error code.
  */
-static int issue_pin(char out[7])
+static int issue_pin(char out[7], int secure)
 {
 	uint32_t v, limit = UINT32_MAX - (UINT32_MAX % 1000000u);
 	do {
 		if (secure_random(&v, sizeof v))
 			return -1;
 	} while (v >= limit);
-	snprintf(A.pin, sizeof A.pin, "%06u", v % 1000000u);
+	A.pin_secure=secure;
+ snprintf(A.pin, sizeof A.pin, "%06u", v % 1000000u);
 	A.pin_expires = time(NULL) + PIN_LIFE;
 	A.pin_attempts = 0;
 	snprintf(out, 7, "%s", A.pin);
@@ -440,17 +445,18 @@ internal(struct mg_connection *c, struct mg_http_message *m, int allowed)
 		failure(c, 403, "Internal authentication failed");
 		return;
 	}
-	if (eq(m->uri, "/api/internal/web-access/start") &&
+	if ((eq(m->uri, "/api/internal/web-access/start") || eq(m->uri,"/api/internal/web-access/secure-start")) &&
 	    eq(m->method, "POST")) {
-		if (issue_pin(pin)) {
+		if (eq(m->uri,"/api/internal/web-access/secure-start")&&!portal_https_port()){failure(c,503,"Secure portal is unavailable");return;}
+		if (issue_pin(pin,eq(m->uri,"/api/internal/web-access/secure-start"))) {
 			failure(c, 503, "Secure random source unavailable");
 			return;
 		}
 		snprintf(b,
 			 sizeof b,
-			 "{\"pin\":\"%s\",\"expiresIn\":%d}",
+			 "{\"pin\":\"%s\",\"expiresIn\":%d,\"https_port\":%d}",
 			 pin,
-			 PIN_LIFE);
+			 PIN_LIFE,portal_https_port());
 		json(c, 200, b, NULL);
 		memset(pin, 0, sizeof pin);
 		return;
@@ -484,6 +490,8 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 	time_t now = time(NULL);
 	bool remember=false;
 	mg_json_get_bool(m->body,"$.remember",&remember);
+ /* HTTPS sessions are currently memory-only; never persist them in the legacy HTTP token store. */
+ if(c->is_tls)remember=false;
 	if (!eq(m->method, "POST")) {
 		failure(c, 405, "Method not allowed");
 		return;
@@ -492,7 +500,7 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 		failure(c, 413, "Pairing request is too large");
 		return;
 	}
-	if (!auth_origin_ok(m)) {
+	if (!auth_origin_ok(c, m)) {
 		failure(c, 403, "Cross-origin request rejected");
 		return;
 	}
@@ -504,7 +512,7 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 	int valid = pin && strlen(pin) == 6;
 	for (int i = 0; valid && i < 6; i++)
 		valid = isdigit((unsigned char)pin[i]);
-	if (!valid || !auth_pairing_protected() ||
+	if (!valid || A.pin_secure != !!c->is_tls || !auth_pairing_protected() ||
 	    !constant_eq((unsigned char *)pin, (unsigned char *)A.pin, 6)) {
 		free(pin);
 		record_failure(c);
@@ -535,6 +543,7 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 	Session before=A.sessions[slot];
 	memcpy(A.sessions[slot].hash, hash, 32);
 	A.sessions[slot].remembered=remember;
+ A.sessions[slot].secure=!!c->is_tls;
 	A.sessions[slot].expires = remember?0:now + SESSION_LIFE;
 	A.sessions[slot].serial = ++A.serial;
 	if((remember||before.remembered)&&!save_sessions()){
@@ -544,7 +553,7 @@ static void pair(struct mg_connection *c, struct mg_http_message *m)
 	memset(&before,0,sizeof before);
 	for (int i = 0; i < 32; i++)
 		sprintf(hex + i * 2, "%02x", raw[i]);
-	session_cookie(cookie,sizeof cookie,hex,remember);
+	session_cookie(c,cookie,sizeof cookie,hex,remember);
 	snprintf(body,
 		 sizeof body,
 		 "{\"authenticated\":true,\"expiresAt\":%ld,\"remembered\":%s}",
@@ -574,7 +583,7 @@ int auth_handle(struct mg_connection *c,
 		return 1;
 	}
 	if (eq(m->uri, "/api/auth/status")) {
-		int ok = auth_session_ok(m, &expires);
+		int ok = auth_session_ok(c, m, &expires);
 		snprintf(b,
 			 sizeof b,
 			 "{\"authenticated\":%s%s%ld%s}",
@@ -585,9 +594,9 @@ int auth_handle(struct mg_connection *c,
 		if (!ok)
 			strcpy(b, "{\"authenticated\":false}");
 		char cookie[300]={0};
-		if(ok&&!expires){unsigned char raw[32];if(cookie_token(m,raw)){
+		if(ok&&!expires){unsigned char raw[32];if(cookie_token(c, m,raw)){
 		 char hex[65];for(int i=0;i<32;i++)sprintf(hex+2*i,"%02x",raw[i]);
-		 session_cookie(cookie,sizeof cookie,hex,1);memset(raw,0,sizeof raw);memset(hex,0,sizeof hex);
+		 session_cookie(c,cookie,sizeof cookie,hex,1);memset(raw,0,sizeof raw);memset(hex,0,sizeof hex);
 		 snprintf(b,sizeof b,"{\"authenticated\":true,\"expiresAt\":0,\"remembered\":true}");}}
 		json(c, 200, b, cookie[0]?cookie:NULL);
 		return 1;
@@ -597,21 +606,20 @@ int auth_handle(struct mg_connection *c,
 		return 1;
 	}
 	if (eq(m->uri, "/api/auth/logout")) {
-		if (!eq(m->method, "POST") || !auth_origin_ok(m)) {
+		if (!eq(m->method, "POST") || !auth_origin_ok(c, m)) {
 			failure(c, 403, "Request rejected");
 			return 1;
 		}
-		if(!clear_current(m)){failure(c,503,"Could not forget this browser; try again");return 1;}
+		if(!clear_current(c, m)){failure(c,503,"Could not forget this browser; try again");return 1;}
 		json(c,
 		     200,
 		     "{\"ok\":true}",
-		     "Set-Cookie: sb_session=; Max-Age=0; Path=/; HttpOnly; "
-		     "SameSite=Strict\r\n");
+		     c->is_tls?"Set-Cookie: __Host-sb_secure=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict; Secure\r\n":"Set-Cookie: sb_session=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict\r\n");
 		return 1;
 	}
 	if (eq(m->uri, "/api/auth/revoke-all")) {
-		if (!auth_session_ok(m, NULL) || !eq(m->method, "POST") ||
-		    !auth_origin_ok(m)) {
+		if (!auth_session_ok(c, m, NULL) || !eq(m->method, "POST") ||
+		    !auth_origin_ok(c, m)) {
 			failure(c, 403, "Request rejected");
 			return 1;
 		}
@@ -619,10 +627,15 @@ int auth_handle(struct mg_connection *c,
 		json(c,
 		     200,
 		     "{\"ok\":true}",
-		     "Set-Cookie: sb_session=; Max-Age=0; Path=/; HttpOnly; "
-		     "SameSite=Strict\r\n");
+		     c->is_tls?"Set-Cookie: __Host-sb_secure=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict; Secure\r\n":"Set-Cookie: sb_session=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict\r\n");
 		return 1;
 	}
 	failure(c, 404, "Authentication endpoint not found");
 	return 1;
+}
+
+/* Never infer encryption from forwarding headers. Native capability policy is separate. */
+int auth_sensitive_transport(struct mg_connection *c, struct mg_http_message *m)
+{
+ return auth_session_ok(c,m,NULL) && (c->is_tls || (!c->rem.is_ip6 && c->rem.ip[0]==127));
 }
