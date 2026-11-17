@@ -1,0 +1,88 @@
+{
+  "version": "0.7.5",
+  "status": "experimental-known-startup-failure",
+  "known_issues": [
+    "Experimental 0.7.5: UPnP/DLNA in My Music, optional renderer, VPN and HTTPS. Known issue: Baby startup validation failed with a full reboot loop and required rollback. Hardware acceptance remains incomplete."
+  ],
+  "source_commit": "7b7ab8f88ce8e8014d73c1c0b491e7dd50f4327c",
+  "applets": [
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.5",
+      "target": "baby",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.5-baby.zip",
+      "sha": "824758eacb0caf88290c73e2ffea0a0553826f8c",
+      "desc": "EXPERIMENTAL: known Baby startup/reboot failure; recovery may be required. Standalone Base UPnP/DLNA, VPN and HTTPS candidate.",
+      "changes": "Experimental 0.7.5: UPnP/DLNA in My Music, optional renderer, VPN and HTTPS. Known issue: Baby startup validation failed with a full reboot loop and required rollback. Hardware acceptance remains incomplete.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneBase",
+      "title": "Standalone Base",
+      "version": "0.7.5",
+      "target": "fab4",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbstandalonebase/StandaloneBase-0.7.5-fab4.zip",
+      "sha": "dbd094aab8c7bb270b80b7eab98e1dc929244a60",
+      "desc": "EXPERIMENTAL: known Baby startup/reboot failure; recovery may be required. Standalone Base UPnP/DLNA, VPN and HTTPS candidate.",
+      "changes": "Experimental 0.7.5: UPnP/DLNA in My Music, optional renderer, VPN and HTTPS. Known issue: Baby startup validation failed with a full reboot loop and required rollback. Hardware acceptance remains incomplete.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Radio.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Touch.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "StandaloneBase-0.7.5-baby.zip",
+      "target": "baby",
+      "sha1": "824758eacb0caf88290c73e2ffea0a0553826f8c",
+      "sha256": "56382ffbdda80bb4165d6996b83eb641a37382ff6270c868a80350260615abd0",
+      "bytes": 4461688
+    },
+    {
+      "file": "StandaloneBase-0.7.5-fab4.zip",
+      "target": "fab4",
+      "sha1": "dbd094aab8c7bb270b80b7eab98e1dc929244a60",
+      "sha256": "bddc42906eddd6e3db556f24190a50ea3c358b3a6bed5b81c88113eb4d274276",
+      "bytes": 4357977
+    },
+    {
+      "file": "StandaloneRadio-0.9.20.zip",
+      "target": "baby,fab4",
+      "sha1": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "sha256": "f46460b59232540eaf4ccb74438d94f90bc22745367332ddc05cefa46fe8b489",
+      "bytes": 92645
+    }
+  ],
+  "preserved_extra_radio_targets": [
+    "rg35xxh"
+  ]
+}

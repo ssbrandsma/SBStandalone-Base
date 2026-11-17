@@ -1,0 +1,94 @@
+{
+  "catalog_version": "1",
+  "standalone_base_version": "0.7.5",
+  "server": {
+    "name": "Standalone Base",
+    "uuid": "9d989f40-499a-4b85-b92f-8dc415af2a04",
+    "host": "127.0.0.1",
+    "advertise_ip": "127.0.0.1",
+    "http_port": 9000,
+    "slimproto_port": 3483,
+    "discovery_port": 3483,
+    "version": "7.999.999"
+  },
+  "applets": [
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Radio.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for Squeezebox Touch.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "StandaloneRadio",
+      "title": "Standalone Radio",
+      "version": "0.9.20",
+      "target": "rg35xxh",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbstandalone/StandaloneRadio-0.9.20.zip",
+      "sha": "2b139f6e14ba032aa9b9e47f9f4c1b038d9b4d0c",
+      "desc": "Standalone internet radio playback for RG35XX H.",
+      "changes": "Fix standby and explicit Play resume, respect other sources controls, remember the last station, and prevent local Base synchronization reconnect loops.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "QobuzConnect",
+      "title": "Qobuz Connect",
+      "version": "0.1.2",
+      "target": "baby",
+      "min_target_version": "7.7.2",
+      "url": "http://49.12.198.91/sbqobuzconnect/QobuzConnect-0.1.2.zip",
+      "sha": "f1f24a4e377e6b6ee3e95d82b0c536a23f6e7b1e",
+      "desc": "Qobuz Connect playback for Logitech Squeezebox Radio. Requires StandaloneBase.",
+      "changes": "Adds Disabled, Manual and Always On lifecycle modes with safe supervision and detailed status.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "SpotifyConnect",
+      "title": "Spotify Connect",
+      "version": "0.7.0",
+      "target": "baby",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbspotifyconnect/SpotifyConnect-0.7.0.zip",
+      "sha": "838362554be3ea0828dcfff3dcf30414b19ff47c",
+      "desc": "Standalone Spotify Connect playback for Logitech Squeezebox Radio. LMS is only needed to install the applet.",
+      "changes": "Latch audio-completed events for reliable automatic track advancement; preserve complete endings and immediate manual skips; fix mobile selection and native Now Playing updates; remove UI shell polling.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    },
+    {
+      "name": "SpotifyConnect",
+      "title": "Spotify Connect",
+      "version": "0.7.0",
+      "target": "fab4",
+      "min_target_version": "7.7",
+      "url": "http://49.12.198.91/sbspotifyconnect/SpotifyConnect-0.7.0.zip",
+      "sha": "838362554be3ea0828dcfff3dcf30414b19ff47c",
+      "desc": "Standalone Spotify Connect playback for Logitech Squeezebox Touch. LMS is only needed to install the applet.",
+      "changes": "Latch audio-completed events for reliable automatic track advancement; preserve complete endings and immediate manual skips; fix mobile selection and native Now Playing updates; remove UI shell polling.",
+      "creator": "Sjoerd Brandsma",
+      "email": ""
+    }
+  ]
+}

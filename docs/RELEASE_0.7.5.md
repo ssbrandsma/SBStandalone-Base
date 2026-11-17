@@ -1,12 +1,14 @@
 # Standalone Base 0.7.5 — software validation checkpoint
 
+**Publication, 2026-11-17:** At the owner's explicit request, 0.7.5 was published to 49.12.198.91 and the normal Base/bootstrap update catalogs were updated. It is labelled experimental with the known startup/reboot failure in its description and changes. This publication does not clear failed hardware acceptance; the recovered development Radio remains on 0.7.3. See [publication record](RELEASE_0.7.5_DEPLOYMENT.md).
+
 **2026-11-17 hardware checkpoint: 0.7.5 failed startup acceptance and was rolled back.** The Radio is restored to its original working 0.7.3 installation at 192.168.1.78. All 59 original files verified byte-for-byte, HTTPS identity and both VPN profiles' credential-configured states were preserved, and the same Jive process remained healthy for over four minutes after recovery. The failing 0.7.5 tree and logs are retained for diagnosis. The full reboot-loop cause is not established; 0.7.5 is not qualified for general deployment. See [recovery record](RELEASE_0.7.5_RECOVERY.md). No factory reset, firmware reflash or permanent watchdog change was performed.
 
 Prepared 2026-11-16. These are private review candidates, pending full Baby and Touch acceptance. Software validation was followed by owner-authorized Baby installation testing and controlled restarts. Two stock-installer attempts rolled back before commit: executable-permission command failure, then inability to start a permission probe under memory pressure after extraction. The existing runtime was preserved.
 
 The installer now precreates and qualifies executable permissions before downloading, keeps those same inodes through extraction, and verifies inode/owner retention before commit without spawning a process after extraction. A further preflight failure before download led to bounded garbage collection of temporary inventory buffers. Tests include unavailable process creation, inode replacement, and an 8 MiB inventory under a retained 10 MiB Lua heap with less than 1 MiB of temporary growth. The correction enabled a verified stock transaction commit, but subsequent runtime startup failed. The candidate bootstrap is no longer active on the recovered Radio.
 
-The owner restored connectivity over Ethernet at 192.168.1.151 during testing. Later SSH recovery succeeded at the original 192.168.1.78 after the owner reported repeated full startup logos. Recovery used the firmware's temporary maintenance stop, verified backups, and a single Jive start with restored files. The private candidate update entry was reverted to 0.7.3 and the workstation test server stopped. No network configuration was changed, and public catalogs and hosting have not been changed by deployment.
+The owner restored connectivity over Ethernet at 192.168.1.151 during testing. Later SSH recovery succeeded at the original 192.168.1.78 after the owner reported repeated full startup logos. Recovery used the firmware's temporary maintenance stop, verified backups, and a single Jive start with restored files. The private candidate update entry was reverted to 0.7.3 and the workstation test server stopped. No network configuration was changed. Public catalog publication occurred later at the owner's request, as recorded above.
 
 ## Implemented
 
@@ -35,8 +37,8 @@ Under `.local/release075/candidates/`:
 
 | Package | Bytes | SHA-256 |
 | --- | ---: | --- |
-| StandaloneBase-0.7.5-baby.zip | 4461648 | 27f0f188b0555fc2813cce71ffaf5ca40b3d53abbf7b4d5faacfa7d2203ba248 |
-| StandaloneBase-0.7.5-fab4.zip | 4357937 | d9ca6b425c6bcb92e1806b697d35b2dfb2c332c86cae8628a6b2404e8b72f922 |
+| StandaloneBase-0.7.5-baby.zip | 4461688 | 56382ffbdda80bb4165d6996b83eb641a37382ff6270c868a80350260615abd0 |
+| StandaloneBase-0.7.5-fab4.zip | 4357977 | bddc42906eddd6e3db556f24190a50ea3c358b3a6bed5b81c88113eb4d274276 |
 
 Each contains 11 native executables. `release-verification.json` records the verified hashes. Per-target XML/manifest files accompany the ZIPs. `catalog-review/` contains proposed 0.7.5 config.json and extensions XML files, prepared locally against those hashes. The published root catalog remains at its existing version; nothing was uploaded. Embedded package catalogs do not offer the stale Base self-update.
 

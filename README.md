@@ -1,6 +1,6 @@
 # StandaloneBase
 
-The current private **0.7.5** candidate integrates UPnP My Music/original playlist, transactional installation, VPN and secure HTTPS management. See [delivery and hardware acceptance status](docs/RELEASE_0.7.5.md). Local builds do not publish or deploy.
+The published **0.7.5 experimental** build integrates UPnP My Music/original playlist, transactional installation, VPN and secure HTTPS management. **Baby startup validation failed with a reboot loop; it is not a validated stable release.** See [delivery and hardware acceptance status](docs/RELEASE_0.7.5.md) and [publication details](docs/RELEASE_0.7.5_DEPLOYMENT.md). Local builds do not publish or deploy.
 
 The minimum advertised SqueezePlay firmware is 7.7.2. Extended Storage initial
 creation accepts the measured `7.7.2 r9663` layout with the same strict geometry
